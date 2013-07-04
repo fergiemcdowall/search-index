@@ -1,7 +1,7 @@
 Search-index
 ============
 
-search-index is a search index module for Node.js. Think "node version of Lucene, but much simpler".
+Search-index is a search index module for Node.js. Think "node version of Lucene, but much simpler".
 
 search-index is built with the [soooperfast levelUP module](https://github.com/rvagg/node-levelup), and the
 [very useful Natural module](https://github.com/NaturalNode/natural).
@@ -13,6 +13,10 @@ documents that it is fed.
 Search-index is in an alpha stage- meaning that it has been known to work quite well, but edge cases and portability
 may be challenging. Query-result is robust and sometimes indexing requires hand-holding. See known issues and performance
 tips below.
+
+#The Norch Search Engine
+
+Search-index is currently the index powering the [Norch search engine](https://github.com/rvagg/node-levelup).
 
 #Features
 
@@ -129,22 +133,25 @@ si.index(batch, filters, function(msg) {
 });
 ```
 
-Where ```batch``` is one or more documents similar to
+Where ```batch``` is a JSON file containing one or more documents and formatted similar to:
 
 ```javascript
 {
-    'doc1':{'title':'A really interesting document',
-            'body':'This is a really interesting document',
-            'metadata':['red', 'potato']},
-    'doc2':{'title':'Another interesting document',
-            'body':'This is another really interesting document that is a bit different',
-            'metadata':['yellow', 'potato']}
+  'doc1':{
+    'title':'A really interesting document',
+    'body':'This is a really interesting document',
+    'metadata':['red', 'potato']
+  },
+  'doc2':{
+    'title':'Another interesting document',
+    'body':'This is another really interesting document that is a bit different',
+    'metadata':['yellow', 'potato']
+  }
 }
-```javascript
+```
 
 ...and ```filters``` is an array of field names that may be contained in the document that the index will use for
-building filters. A filter field must always be an array of single String tokens.
-
+building filters. A filter field must always be an array of single String tokens, for example ```['metadata','places']```
 
 
     
