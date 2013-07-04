@@ -1,0 +1,22 @@
+{
+  "name": "search-index",
+  "description": "A text search index module for Node.js. Search-index allows applications to add, delete and retrieve documents from a corpus. Retrieved documents are ordered by tf-idf relevance, filtering on metadata, and field weighting",
+  "version": "0.2.2",
+  "homepage": "https://github.com/fergiemcdowall/search-index",
+  "engines": {
+    "node": ">=0.4.10"
+  },
+  "dependencies": {
+    "natural": "*",
+    "levelup": "*"
+  },
+  "author": "Fergus McDowall <fergusmcdowall@gmail.com>",
+  "keywords": ["natural", "language", "search", "index", "lucene"],
+  "main": "./lib/search-index/index.js",
+  "maintainers": [{
+    "name": "Fergus McDowall",
+    "email": "fergusmcdowall@gmail.com",
+    "web": "https://github.com/fergiemcdowall"
+  }]
+}
+
