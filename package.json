@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "natural": "*",
-    "levelup": "*"
+    "levelup": "*",
+    "leveldown": "*"
   },
   "author": "Fergus McDowall <fergusmcdowall@gmail.com>",
   "keywords": ["natural", "language", "search", "index", "lucene"],
