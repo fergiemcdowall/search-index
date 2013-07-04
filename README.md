@@ -16,7 +16,7 @@ tips below.
 
 #The Norch Search Engine
 
-Search-index is currently the index powering the [Norch search engine](https://github.com/rvagg/node-levelup).
+Search-index is currently the index powering the [Norch search engine](https://github.com/fergiemcdowall/Norch).
 
 #Features
 
