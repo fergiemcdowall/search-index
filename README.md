@@ -96,7 +96,7 @@ si.search(query, function(msg) {
 });
 ```
 
-...where query is an object similar to:
+...where query is an object similar to (see Query Parameters for more info):
 
 ```javascript
     {
@@ -154,5 +154,33 @@ Where ```batch``` is a JSON file containing one or more documents and formatted 
 building filters. A filter field must always be an array of single String tokens, for example ```['metadata','places']```
 
 
-    
-    
+#Query Parameters
+
+##Query
+
+A free text string containing one or many tokens.
+
+##Offset
+
+The starting point in the resultset of the results returned. Useful for paging
+
+##Pagesize
+
+The maximum number of results in the resultset that can be returned. Counted from ```offset```
+
+##Facets
+
+Allows faceted navigation, the parameter is an array of fields. If no ```facets``` is sent, all possible facets are
+returned.
+
+##Weight
+
+Sets a factor by which the score of a field should be weighted. Useful for building custom relevancy models
+
+##Filter
+
+Used to return a resultset on a facet.
+
+
+
+
