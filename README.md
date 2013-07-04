@@ -44,39 +44,59 @@ Returns metadata about the state of the index. Metadata is accrued incrementally
 At any time metadata can be corrected by running the computationally demanding calibrate function.
 
 ```javascript
-    si.indexData(function(msg) {
-      console.log(msg);
-    });
+si.indexData(function(msg) {
+  console.log(msg);
+});
 ```
+
 ##si.calibrate([,callback])
 
-    si.calibrate(function(msg) {
-      console.log(msg);
-    });
+Iterate through entire index and count everything up. Tf-idf calculations are most precise when indexData is up to date.
+Only needs to be called if index has been altered externally, or if key collisions occur (mostly theoretical). A 
+persistant running tally is kept by search-index which can be seen in the file norchindex.json.
+
+```javascript
+si.calibrate(function(msg) {
+  console.log(msg);
+});
+```
 
 ##si.indexPeek(start, stop [,callback])
 
-    si.indexPeek(req.query['start'], req.query['stop'], function(msg) {
-      console.log(msg);
-    });
+Take a look at the raw index. Start is the start point and stop is the stop point. All keys in between will be returned.
+For debug purposes.
+
+```javascript
+si.indexPeek(req.query['start'], req.query['stop'], function(msg) {
+  console.log(msg);
+});
+```
 
 ##si.deleteDoc(req.body.docID [,callback])
 
-    si.deleteDoc(documentID, function(msg) {
-      console.log(msg);
-    });
+Delete the document and all associated index entries.
+
+```javascript
+si.deleteDoc(documentID, function(msg) {
+  console.log(msg);
+});
+```
 
 ##si.search(query, [,callback])
 
-    si.search(query, function(msg) {
-      res.send(msg);
-    });
+```javascript
+si.search(query, function(msg) {
+  res.send(msg);
+});
+```
 
 ##si.index(batch, filters, [,callback])
 
-    si.index(batch, filters, function(msg) {
-      res.send(msg);
-    });
-    
+```javascript
+si.index(batch, filters, function(msg) {
+  res.send(msg);
+});
+```
+
     
     
