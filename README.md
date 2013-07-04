@@ -32,7 +32,7 @@ Search-index is currently the index powering the [Norch search engine](https://g
 
 The current stable release is [0.2.3](https://github.com/fergiemcdowall/search-index/releases/v0.2.3)
 
-The easiest way to include search-index in your project is to to it via npm
+The easiest way to include search-index in your project is by using npm
 
     npm install search-index
     
