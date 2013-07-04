@@ -11,7 +11,7 @@ free from configuration- the index is dynamic and morphs into the structure that
 documents that it is fed.
 
 Search-index is in an alpha stage- meaning that it has been known to work quite well, but edge cases and portability
-may be challenging. Query-result is robust, sometimes indexing requires hand-holding. See known issues and performance
+may be challenging. Query-result is robust and sometimes indexing requires hand-holding. See known issues and performance
 tips below.
 
 #Features
@@ -40,10 +40,14 @@ at the top of your app.
 
 ##si.indexData([,callback])
 
+Returns metadata about the state of the index. Metadata is accrued incrementally, so it is vulnerable to corruption.
+At any time metadata can be corrected by running the computationally demanding calibrate function.
+
+```javascript
     si.indexData(function(msg) {
       console.log(msg);
     });
-    
+```
 ##si.calibrate([,callback])
 
     si.calibrate(function(msg) {
