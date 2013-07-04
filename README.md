@@ -185,6 +185,8 @@ Used to return a resultset on a facet.
 
 #License
 
+Search-index is released under the MIT license:
+
 Copyright (c) 2013 Fergus McDowall
 
 Permission is hereby granted, free of charge, to any person obtaining
