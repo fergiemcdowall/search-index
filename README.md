@@ -129,9 +129,23 @@ si.index(batch, filters, function(msg) {
 });
 ```
 
-Where ```javascript batch ``` is a document similar to
+Where ```batch``` is one or more documents similar to
+
+```javascript
+{
+    'doc1':{'title':'A really interesting document',
+            'body':'This is a really interesting document',
+            'metadata':['red', 'potato']},
+    'doc2':{'title':'Another interesting document',
+            'body':'This is another really interesting document that is a bit different',
+            'metadata':['yellow', 'potato']}
+}
+```javascript
+
+...and ```filters``` is an array of field names that may be contained in the document that the index will use for
+building filters. A filter field must always be an array of single String tokens.
 
 
-and filters is an array of field names that may be contained in the document
+
     
     
