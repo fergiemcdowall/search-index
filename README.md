@@ -84,13 +84,44 @@ si.deleteDoc(documentID, function(msg) {
 
 ##si.search(query, [,callback])
 
+Queries the search index
+
 ```javascript
 si.search(query, function(msg) {
   res.send(msg);
 });
 ```
 
+...where query is an object similar to:
+
+```javascript
+    {
+    "query": [
+      "usa"
+    ],
+    "offset": "0",
+    "pagesize": "20",
+    "facets": [
+      "places",
+      "organisations"
+    ],
+    "weight": {
+      "title": [
+        "10"
+      ]
+    },
+    "filter": {
+      "places": [
+        "usa"
+      ]
+    }
+  }
+```
+
+
 ##si.index(batch, filters, [,callback])
+
+Insets document into the index
 
 ```javascript
 si.index(batch, filters, function(msg) {
@@ -98,5 +129,9 @@ si.index(batch, filters, function(msg) {
 });
 ```
 
+Where ```javascript batch ``` is a document similar to
+
+
+and filters is an array of field names that may be contained in the document
     
     
