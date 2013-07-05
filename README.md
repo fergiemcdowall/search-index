@@ -1,6 +1,8 @@
 Search-index
 ============
 
+**The current stable release is [0.2.4](https://github.com/fergiemcdowall/search-index/releases/v0.2.4)**
+
 Search-index is a search index module for Node.js. Think "node version of Lucene, but much simpler".
 
 Search-index is built with the [soooperfast levelUP module](https://github.com/rvagg/node-levelup), and the
@@ -30,7 +32,7 @@ Search-index is currently the index powering the [Norch search engine](https://g
 
 #Installation
 
-The current stable release is [0.2.3](https://github.com/fergiemcdowall/search-index/releases/v0.2.3)
+The current stable release is [0.2.4](https://github.com/fergiemcdowall/search-index/releases/v0.2.4)
 
 The easiest way to include search-index in your project is by using npm
 
