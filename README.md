@@ -141,11 +141,13 @@ info):
 
 Insets document into the index
 
+
 ```javascript
 si.index(batch, filters, function(msg) {
   res.send(msg);
 });
 ```
+
 
 Where ```batch``` is a JSON file containing one or more documents and
 formatted similar to:
@@ -167,8 +169,7 @@ formatted similar to:
 
 ...and ```filters``` is an array of field names that may be contained
 in the document that the index will use for building filters. A filter
-field must always be an array of single String tokens, for example
-```['metadata','places']```
+field must always be an array of single String tokens, for example ```['metadata','places']```
 
 
 
