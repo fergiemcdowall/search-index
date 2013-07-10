@@ -30,8 +30,9 @@ Search-index is currently the index powering the [Norch search engine](https://g
 * Stopword removal
 * Faceting
 * Filtering
-* Relevance weighting (tf-idf)
+* Fielded search
 * Field weighting
+* Relevance weighting (tf-idf)
 * Paging (offset and resultset length)
 
 #Installation
