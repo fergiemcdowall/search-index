@@ -177,31 +177,81 @@ field must always be an array of single String tokens, for example ```['metadata
 
 ##query
 
-A free text string containing one or many tokens.
+A free text string containing one or many tokens. Search everything with ´´´´*´´´
+
+```javascript
+    "query": [
+      "usa"
+    ]
+```
+
+##searchFields
+
+Fields to search in. Query will only search in the fields specified here.
+
+```javascript
+    "searchFields": [
+      "title"
+    ]
+```
 
 ##offset
 
 The starting point in the resultset of the results returned. Useful
 for paging
 
+```javascript
+    "offset": 0
+```
+
 ##pagesize
 
 The maximum number of results in the resultset that can be
 returned. Counted from ```offset```
+
+```javascript
+    "pagesize": 20
+```
 
 ##facets
 
 Allows faceted navigation, the parameter is an array of fields. If no
 ```facets``` is sent, all possible facets are returned.
 
+```javascript
+    "facets": [
+      "topics",
+      "places"
+    ]
+```
+
 ##weight
 
 Sets a factor by which the score of a field should be weighted. Useful
 for building custom relevancy models
 
+```javascript
+    "weight": {
+      "body": [
+        "10"
+      ],
+      "title": [
+        "5"
+      ]
+    }
+```
+
 ##filter
 
 Used to return a resultset on a facet.
+
+```javascript
+    "filter": {
+      "places": [
+        "ussr"
+      ]
+    }
+```
 
 #License
 
