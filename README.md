@@ -1,6 +1,9 @@
 Search-index
 ============
 
+[![NPM](https://nodei.co/npm/search-index.png?stars&downloads)](https://nodei.co/npm/search-index/)
+[![NPM](https://nodei.co/npm-dl/search-index.png)](https://nodei.co/npm/search-index/)
+
 Search-index is a search index module for Node.js. Think "node version
 of Lucene, but much simpler".
 
