@@ -7,6 +7,9 @@ Search-index
 Search-index is a search index module for Node.js. Think "node version
 of Lucene, but much simpler".
 
+Search-index allows you to perform free-text search over structured or unstructured data, and return
+a resultset ordered by relevance.
+
 Search-index is built with the [soooperfast levelUP module](https://github.com/rvagg/node-levelup), and the
 [very useful Natural module](https://github.com/NaturalNode/natural).
 
