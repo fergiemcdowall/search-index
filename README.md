@@ -25,9 +25,9 @@ challenging. Query-result is robust. See known issues and performance
 tips below.
 
 
-#The Norch Search Engine
+#The Forage Search Engine
 
-Search-index is currently the index powering the [Norch search engine](https://github.com/fergiemcdowall/Norch).
+Search-index is currently the index powering the [Forage search engine](https://github.com/fergiemcdowall/forage).
 
 
 #Features
@@ -76,7 +76,7 @@ Iterate through entire index and count everything up. Tf-idf
 calculations are most precise when indexData is up to date. Only needs
 to be called if index has been altered externally, or if key
 collisions occur (mostly theoretical). A persistant running tally is
-kept by search-index which can be seen in the file norchindex.json.
+kept by search-index which can be seen in the file search-index.json.
 
 
 ```javascript
