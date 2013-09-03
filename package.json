@@ -9,7 +9,7 @@
   "dependencies": {
     "natural": "0.1.21",
     "levelup": "0.14.0",
-    "leveldown": "0.7.0"
+    "leveldown": "0.8.0"
   },
   "author": {
     "name": "Fergus McDowall",
