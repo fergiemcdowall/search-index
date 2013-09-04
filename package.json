@@ -7,9 +7,10 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "natural": "0.1.21",
+    "buster": "*",
+    "leveldown": "0.8.1",
     "levelup": "0.14.0",
-    "leveldown": "0.8.1"
+    "natural": "0.1.21"
   },
   "author": {
     "name": "Fergus McDowall",
