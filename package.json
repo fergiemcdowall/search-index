@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "buster": "*",
-    "leveldown": "0.8.1",
+    "leveldown": "~0.7.0",
     "levelup": "0.14.0",
     "natural": "0.1.21"
   },
