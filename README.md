@@ -147,20 +147,19 @@ info):
 ```
 
 
-##si.index(batch, filters, [,callback])
+##si.index(batch, batchName, filters, [,callback])
 
 Insets document into the index
 
 
 ```javascript
-si.index(batch, filters, function(msg) {
+si.index(batch, batchName, filters, function(msg) {
   res.send(msg);
 });
 ```
 
-
-Where ```batch``` is a JSON file containing one or more documents and
-formatted similar to:
+Where ```batch``` is a JSON sequence named ```batchName``` containing one or more documents in a
+format similar to:
 
 ```javascript
 {
