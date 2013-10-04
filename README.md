@@ -128,7 +128,7 @@ info):
       "usa"
     ],
     "offset": "0",
-    "pagesize": "20",
+    "pageSize": "20",
     "facets": [
       "places",
       "organisations"
@@ -213,13 +213,13 @@ for paging
     "offset": 0
 ```
 
-##pagesize
+##pageSize
 
 The maximum number of results in the resultset that can be
 returned. Counted from ```offset```
 
 ```javascript
-    "pagesize": 20
+    "pageSize": 20
 ```
 
 ##facets
