@@ -10,7 +10,7 @@
     "async": "*",
     "bustermove": "*",
     "leveldown": "~0.7.0",
-    "levelup": "0.14.0",
+    "hyper-level": "*",
     "natural": "0.1.21"
   },
   "author": {
@@ -24,7 +24,7 @@
     "index",
     "lucene"
   ],
-  "main": "./lib/search-index/index.js",
+  "main": "./lib/search-index.js",
   "maintainers": [
     {
       "name": "Fergus McDowall",
