@@ -10,7 +10,7 @@
     "async": "*",
     "bustermove": "*",
     "leveldown": "~0.7.0",
-    "hyper-level": "0.17.0",
+    "level-hyper": "0.17.0",
     "natural": "0.1.21"
   },
   "author": {
