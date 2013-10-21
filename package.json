@@ -7,9 +7,9 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "async": "*",
-    "bustermove": "*",
-    "level": "*",
+    "async": "0.2.9",
+    "buster": "0.7.3",
+    "level": "0.17.0",
     "natural": "0.1.21"
   },
   "author": {
