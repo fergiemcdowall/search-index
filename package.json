@@ -2,7 +2,7 @@
   "name": "search-index",
   "description": "A text search index module for Node.js. Search-index allows applications to add, delete and retrieve documents from a corpus. Retrieved documents are ordered by tf-idf relevance, filtering on metadata, and field weighting",
   "version": "0.2.20",
-  "homepage": "https://github.com/fergiemcdowall/search-index",
+  "homepage": "https://github.com/foragejs/search-index",
   "engines": {
     "node": ">=0.8.0"
   },
