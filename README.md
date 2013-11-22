@@ -5,6 +5,8 @@ Search-index
 
 [![NPM](https://nodei.co/npm-dl/search-index.png)](https://nodei.co/npm/search-index/)
 
+http://npm-stat.vorba.ch/charts.html?package=search-index
+
 [![Build Status](https://secure.travis-ci.org/foragejs/search-index.png)](http://travis-ci.org/foragejs/search-index)
 
 Search-index is a search index module for Node.js. Think "node version
