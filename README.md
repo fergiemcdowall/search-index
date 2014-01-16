@@ -7,7 +7,7 @@ Search-index
 
 http://npm-stat.vorba.ch/charts.html?package=search-index
 
-[![Build Status](https://secure.travis-ci.org/foragejs/search-index.png)](http://travis-ci.org/foragejs/search-index)
+[![Build Status](https://secure.travis-ci.org/fergiemcdowall/search-index.png)](http://travis-ci.org/fergiemcdowall/search-index)
 
 Search-index is a search index module for Node.js. Think "node version
 of Lucene, but much simpler".
@@ -48,7 +48,7 @@ Search-index is currently the index powering the [Forage search engine](https://
 
 #Installation
 
-Releases are listed [here](https://github.com/foragejs/search-index/releases). Generally you will want the most recent one.
+Releases are listed [here](https://github.com/fergiemcdowall/search-index/releases). Generally you will want the most recent one.
 
 The easiest way to include search-index in your project is by using npm
 
