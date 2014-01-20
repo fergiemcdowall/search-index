@@ -236,6 +236,14 @@ Allows faceted navigation, the parameter is an array of fields. If no
     ]
 ```
 
+##teaser
+
+Creates a field that shows where the search terms exist in the given field. For example, a teaser field could be generated from the document field ```body```
+
+```javascript
+    "weight": "body"
+```
+
 ##weight
 
 Sets a factor by which the score of a field should be weighted. Useful
