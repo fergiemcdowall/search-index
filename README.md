@@ -1,4 +1,3 @@
-
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Search-index](#search-index)
@@ -72,6 +71,7 @@ Search-index is currently the index powering the [Forage search engine](https://
 * Field weighting
 * Relevance weighting (tf-idf)
 * Paging (offset and resultset length)
+* Teasers
 
 #Installation
 
