@@ -1,3 +1,30 @@
+
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Search-index](#search-index)
+- [The Forage Search Engine](#the-forage-search-engine)
+- [Features](#features)
+- [Installation](#installation)
+- [API](#api)
+	- [si.indexData([,callback])](#siindexdatacallback)
+	- [si.calibrate([,callback])](#sicalibratecallback)
+	- [si.indexPeek(start, stop [,callback])](#siindexpeekstart-stop-callback)
+	- [si.deleteDoc(req.body.docID [,callback])](#sideletedocreqbodydocid-callback)
+	- [si.search(query, [,callback])](#sisearchquery-callback)
+	- [si.index(batch, batchName, filters, [,callback])](#siindexbatch-batchname-filters-callback)
+- [Query Parameters](#query-parameters)
+	- [query](#query)
+	- [searchFields](#searchfields)
+	- [offset](#offset)
+	- [pageSize](#pagesize)
+	- [facets](#facets)
+	- [teaser](#teaser)
+	- [weight](#weight)
+	- [filter](#filter)
+- [License](#license)
+
+
+
 Search-index
 ============
 
