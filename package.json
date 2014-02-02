@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "async": "0.2.9",
+    "colors": "*",
     "level": "0.18.0",
     "natural": "0.1.25",
     "search-context": "0.1.0"
