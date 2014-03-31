@@ -225,8 +225,8 @@ You can also specify named fields like so :
 
 ```javascript
     "query": {
-      "readme":["javascript"],
-      "description":["framework"]
+      "title":["usa"],
+      "body":["reagan"]
     }
 ```
 
