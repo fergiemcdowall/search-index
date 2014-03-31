@@ -153,9 +153,9 @@ info):
 
 ```javascript
     {
-    "query": [
-      "usa"
-    ],
+    "query": {
+      "*": ["usa"]
+    },
     "offset": "0",
     "pageSize": "20",
     "facets": [
@@ -215,22 +215,19 @@ field must always be an array of single String tokens, for example ```['metadata
 
 ##query
 
-A free text string containing one or many tokens. Search everything with ´´´´*´´´
+A free text string containing one or many tokens. ```*``` is equivalent to 'search all fields'
 
 ```javascript
-    "query": [
-      "usa"
-    ]
+    "query": {'*':["usa"]}
 ```
 
-##searchFields
-
-Fields to search in. Query will only search in the fields specified here.
+You can also specify named fields like so :
 
 ```javascript
-    "searchFields": [
-      "title"
-    ]
+    "query": {
+      "title":["usa"],
+      "body":["reagan"]
+    }
 ```
 
 ##offset
