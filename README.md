@@ -230,17 +230,6 @@ You can also specify named fields like so :
     }
 ```
 
-
-##searchFields
-
-Fields to search in. Query will only search in the fields specified here.
-
-```javascript
-    "searchFields": [
-      "title"
-    ]
-```
-
 ##offset
 
 The starting point in the resultset of the results returned. Useful
