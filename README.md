@@ -153,9 +153,9 @@ info):
 
 ```javascript
     {
-    "query": [
-      "usa"
-    ],
+    "query": {
+      "*": ["usa"]
+    },
     "offset": "0",
     "pageSize": "20",
     "facets": [
@@ -215,7 +215,7 @@ field must always be an array of single String tokens, for example ```['metadata
 
 ##query
 
-A free text string containing one or many tokens. ´´´*´´´ is equivalent to 'search all fields'
+A free text string containing one or many tokens. ```*``` is equivalent to 'search all fields'
 
 ```javascript
     "query": {'*':["usa"]}
