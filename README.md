@@ -215,13 +215,21 @@ field must always be an array of single String tokens, for example ```['metadata
 
 ##query
 
-A free text string containing one or many tokens. Search everything with ´´´´*´´´
+A free text string containing one or many tokens. ´´´*´´´ is equivalent to 'search all fields'
 
 ```javascript
-    "query": [
-      "usa"
-    ]
+    "query": {'*':["usa"]}
 ```
+
+You can also specify named fields like so :
+
+```javascript
+    "query": {
+      "readme":["javascript"],
+      "description":["framework"]
+    }
+```
+
 
 ##searchFields
 
