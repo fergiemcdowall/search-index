@@ -225,10 +225,11 @@ You can also specify named fields like so :
 
 ```javascript
     "query": {
-      "title":["usa"],
-      "body":["reagan"]
+      "title":["usa, reagan"]
     }
 ```
+
+note: currently you can only limit to one field
 
 ##offset
 
