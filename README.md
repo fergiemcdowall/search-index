@@ -87,6 +87,12 @@ The module can then be initialised by including the line
     
 at the top of your app.
 
+#Usage
+
+To make a searchable index, you must first add documents with ```si.add``` and then call ```si.calibrate``` to calibrate the index. When deleting documents with ```si.delete``` the index should also be calibrated.
+
+A note about calibration: Calibration updates the term frequency dictionary, which makes indexing and lookups fast by pre-calculating term frequency. It is generally harmless to have a stale term frequency dictionary, negative consequences only arise if documents have been added or deleted since the last calibration in which case totalDocument scores for single term queries might be slightly old and newly introduced/removed low-frequency terms invisible to the index. In practice, an index can be altered quite a lot before performance degrades significantly.
+
 #API
 
 ##si.indexData([,callback])
@@ -225,10 +231,11 @@ You can also specify named fields like so :
 
 ```javascript
     "query": {
-      "title":["usa"],
-      "body":["reagan"]
+      "title":["usa, reagan"]
     }
 ```
+
+note: currently you can only limit to one field
 
 ##offset
 
