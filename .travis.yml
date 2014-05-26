@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-  - 0.8
-  - 0.10
+  - "0.8"
+  - "0.10"
 branches:
   only:
-    - master
+    - "master"
 notifications:
   email:
-    - fergusmcdowall@gmail.com
+    - "fergusmcdowall@gmail.com"
 before-script:
   - "npm i -g jasmine-node"
-script: npm test
+script: "npm test"
