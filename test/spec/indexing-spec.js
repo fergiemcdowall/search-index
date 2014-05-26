@@ -1,0 +1,60 @@
+var fs = require('fs');
+var si = require('../../lib/search-index.js');
+
+describe('indexing and search', function () {
+
+  it('should index one file of test data', function () {
+    runs(function() {
+      this.indexingMsg = '';
+      var that = this;
+      var data = fs.readFileSync('test/testdata/reuters-000.json');
+      si.index (data, 'reuters-000.json', '', function(indexingMsg) {
+        that.indexingMsg = indexingMsg;  
+      });  
+    });
+    waitsFor(function() {
+      return this.indexingMsg != '';
+    }, 'waiting for search results', 10000)
+    runs(function() {
+      this.calibrationMsg = '';
+      var that = this;
+      si.calibrate(function(calibrationMsg) {
+        that.calibrationMsg = calibrationMsg;
+      });
+    });
+    waitsFor(function() {
+      return this.calibrationMsg != '';
+    }, 'waiting for search results', 10000)
+    runs(function () {
+      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+      expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
+    });
+  });
+
+  it('should be able to search in indexed data', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        },
+        'offset': '0',
+        'pageSize': '20'
+      }, function(searchResults) {
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBeGreaterThan(1);
+      expect(this.searchResults.hits.length).toEqual(4);
+    });
+  });
+
+});
+
