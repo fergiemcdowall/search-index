@@ -36,4 +36,8 @@
       "email": "fergusmcdowall@gmail.com",
       "url": "https://github.com/fergiemcdowall"
     }
-  ]
+  ],
+  "scripts": {
+    "test": "jasmine-node test/"
+  }
+}
