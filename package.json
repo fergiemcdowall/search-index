@@ -38,6 +38,6 @@
     }
   ],
   "scripts": {
-    "test": "jasmine-node test/"
+    "test": "jasmine-node test/spec/*-spec.js"
   }
 }
