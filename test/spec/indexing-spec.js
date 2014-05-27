@@ -14,7 +14,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.indexingMsg != '';
-    }, 'waiting for search results', 10000)
+    }, 'indexingMsg not to be empty (search results returned)', 10000)
     runs(function() {
       this.calibrationMsg = '';
       var that = this;
@@ -24,7 +24,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.calibrationMsg != '';
-    }, 'waiting for search results', 10000)
+    }, 'calibrationMsg not to be emtpy (index calibrated)', 20000)
     runs(function () {
       expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
       expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
