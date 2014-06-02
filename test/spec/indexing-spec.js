@@ -8,7 +8,7 @@ describe('indexing and search', function () {
       this.indexingMsg = '';
       var that = this;
       var data = fs.readFileSync('test/testdata/reuters-000.json');
-      si.index (data, 'reuters-000.json', '', function(indexingMsg) {
+      si.index (data, 'reuters-000.json', 'places', function(indexingMsg) {
         that.indexingMsg = indexingMsg;  
       });  
     });
@@ -39,6 +39,7 @@ describe('indexing and search', function () {
         'query': {
           '*': ['usa']
         },
+        'facets': ['places'],
         'offset': '0',
         'pageSize': '20'
       }, function(searchResults) {
@@ -53,6 +54,8 @@ describe('indexing and search', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(4);
+      expect(JSON.stringify(this.searchResults.facets))
+        .toEqual(JSON.stringify({places:{usa:4,japan:1}}));
     });
   });
 
