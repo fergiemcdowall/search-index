@@ -38,10 +38,7 @@ describe('indexing and search', function () {
       si.search({
         'query': {
           '*': ['usa']
-        },
-        'facets': ['places'],
-        'offset': '0',
-        'pageSize': '20'
+        }
       }, function(searchResults) {
         console.log(searchResults);
         that.searchResults = searchResults;
@@ -54,10 +51,44 @@ describe('indexing and search', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.hits[0].id).toEqual('113');
+      expect(this.searchResults.hits[1].id).toEqual('747');
+      expect(this.searchResults.hits[2].id).toEqual('510');
+      expect(this.searchResults.hits[3].id).toEqual('287');
+    });
+  });
+
+  it('should be able to search in indexed data with faceting', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        },
+        'facets': ['places'],
+      }, function(searchResults) {
+//        console.log(JSON.stringify(searchResults));
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBeGreaterThan(1);
+      expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.hits[0].id).toEqual('113');
+      expect(this.searchResults.hits[1].id).toEqual('747');
+      expect(this.searchResults.hits[2].id).toEqual('510');
+      expect(this.searchResults.hits[3].id).toEqual('287');
       expect(JSON.stringify(this.searchResults.facets))
         .toEqual(JSON.stringify({places:{usa:4,japan:1}}));
     });
   });
+
 
   it('should be able to filter search results', function () {    
     runs(function () {
@@ -70,9 +101,7 @@ describe('indexing and search', function () {
         'facets': ['places'],
         'filter': {
           'places': ['japan']
-        },
-        'offset': '0',
-        'pageSize': '20'
+        }
       }, function(searchResults) {
         console.log(searchResults);
         that.searchResults = searchResults;
@@ -83,6 +112,37 @@ describe('indexing and search', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults.hits.length).toEqual(1);
+      expect(this.searchResults.hits[0].id).toEqual('287');
+    });
+  });
+
+
+  it('should be able to weight search results', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        },
+        'weight': {
+          'body': '20'
+        }
+      }, function(searchResults) {
+//        console.log(JSON.stringify(searchResults));
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      console.log(this.searchResults.hits[0].id);
+      expect(this.searchResults.hits[0].id).toEqual('747');
+      expect(this.searchResults.hits[1].id).toEqual('510');
+      expect(this.searchResults.hits[2].id).toEqual('287');
+      expect(this.searchResults.hits[3].id).toEqual('113');
     });
   });
 
