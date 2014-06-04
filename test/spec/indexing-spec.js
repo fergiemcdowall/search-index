@@ -254,5 +254,23 @@ describe('indexing and search', function () {
   });
 
 
+  it('should be able to display information about the index', function () {    
+    runs(function () {
+      this.indexDataResponse = '';
+      var that = this;
+      si.indexData(function(indexDataResponse) {
+        that.indexDataResponse = indexDataResponse;
+      });
+    });
+    waitsFor(function() {
+      return this.indexDataResponse != '';
+    }, 'waiting for indexData response', 5000)
+    runs(function() {
+      console.log(this.indexDataResponse);
+      expect(this.indexDataResponse.totalDocs).toEqual(1000);
+    });
+  });
+
+
 });
 
