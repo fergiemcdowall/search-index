@@ -2,7 +2,7 @@ var fs = require('fs');
 var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
-/*
+
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
@@ -30,7 +30,7 @@ describe('indexing and search', function () {
       expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
     });
   });
-*/
+
 
   it('should be able to search in indexed data', function () {    
     runs(function () {
@@ -137,7 +137,7 @@ describe('indexing and search', function () {
     });
   });
 
-/*
+
   it('should be able to page (set offset and page size)', function () {    
     runs(function () {
       this.searchResults = '';
@@ -163,7 +163,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[0].id).toEqual('272');
     });
   });
-*/
+
 
   it('should be able to search in indexed data with faceting', function () {    
     runs(function () {
