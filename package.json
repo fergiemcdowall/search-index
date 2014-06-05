@@ -9,14 +9,11 @@
   "dependencies": {
     "async": "0.2.9",
     "bloomfilter": "0.0.14",
-    "colors": "*",
+    "colors": "0.6.2",
     "level": "0.18.0",
     "level-multiply": "0.0.1",
     "natural": "0.1.25",
     "search-context": "0.1.0"
-  },
-  "devDependencies": {
-    "bustermove": "*"
   },
   "author": {
     "name": "Fergus McDowall",
