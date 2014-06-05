@@ -16,6 +16,13 @@ describe('indexing and search', function () {
     waitsFor(function() {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 100000)
+    runs(function () {
+      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+    });
+  });
+
+
+  it('should calibrate index', function () {
     runs(function() {
       this.calibrationMsg = '';
       var that = this;
@@ -27,7 +34,7 @@ describe('indexing and search', function () {
       return this.calibrationMsg != '';
     }, 'calibrationMsg not to be emtpy (index calibrated)', 100000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+      //TODO: add better calibration tests
       expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
     });
   });
