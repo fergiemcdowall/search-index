@@ -3,7 +3,6 @@ var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
 
-
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
@@ -289,8 +288,52 @@ describe('indexing and search', function () {
       return this.indexDataResponse != '';
     }, 'waiting for indexData response', 5000)
     runs(function() {
-      console.log(this.indexDataResponse);
       expect(this.indexDataResponse.totalDocs).toEqual(1000);
+    });
+  });
+
+
+  it('should be able to delete documents from index', function () {    
+    runs(function () {
+      this.indexDataResponse = '';
+      var that = this;
+      si.indexData(function(indexDataResponse) {
+        that.indexDataResponse = indexDataResponse;
+      });
+    });
+    waitsFor(function() {
+      return this.indexDataResponse != '';
+    }, 'waiting for indexData response', 5000)
+    runs(function() {
+      expect(true).toEqual(true);
+    });
+  });
+
+
+  it('should be able to get documents from index', function () {    
+    runs(function () {
+      this.res = '';
+      var that = this;
+      si.getDoc(747, function(res) {
+        that.res = res;
+      });
+    });
+    waitsFor(function() {
+      return this.res != '';
+    }, 'waiting for response', 5000)
+    runs(function() {
+      expect(this.res[0].key).toEqual('DELETE-DOCUMENT~747~*');
+      expect(this.res[1].key).toEqual('DELETE-DOCUMENT~747~body');
+      expect(this.res[2].key).toEqual('DELETE-DOCUMENT~747~date');
+      expect(this.res[3].key).toEqual('DELETE-DOCUMENT~747~places');
+      expect(this.res[4].key).toEqual('DELETE-DOCUMENT~747~title');
+      expect(this.res[5]['VECTOR~*~747~']).toBeDefined();
+      expect(this.res[5]['VECTOR~body~747~']).toBeDefined();
+      expect(this.res[5]['VECTOR~date~747~']).toBeDefined();
+      expect(this.res[5]['VECTOR~places~747~']).toBeDefined();
+      expect(this.res[5]['VECTOR~title~747~']).toBeDefined();
+      expect(this.res[5]['VECTOR~*fielded~747~']).toBeDefined();
+      expect(this.res[5]['DOCUMENT~747~']).toBeDefined();
     });
   });
 
