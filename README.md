@@ -8,7 +8,8 @@
 	- [si.indexData([,callback])](#siindexdatacallback)
 	- [si.calibrate([,callback])](#sicalibratecallback)
 	- [si.indexPeek(start, stop [,callback])](#siindexpeekstart-stop-callback)
-	- [si.deleteDoc(req.body.docID [,callback])](#sideletedocreqbodydocid-callback)
+	- [si.deleteDoc(docID [,callback])](#sideletedocreqbodydocid-callback)
+	- [si.getDoc(docID [,callback])](#sigetdocreqbodydocid-callback)
 	- [si.search(query, [,callback])](#sisearchquery-callback)
 	- [si.index(batch, batchName, filters, [,callback])](#siindexbatch-batchname-filters-callback)
 - [Query Parameters](#query-parameters)
@@ -129,20 +130,31 @@ Take a look at the raw index. Start is the start point and stop is the
 stop point. All keys in between will be returned. For debug purposes.
 
 ```javascript
-si.indexPeek(req.query['start'], req.query['stop'], function(msg) {
+si.indexPeek(startOfRange, endOfRange, function(msg) {
   console.log(msg);
 });
 ```
 
-##si.deleteDoc(req.body.docID [,callback])
+##si.deleteDoc(docID [,callback])
 
 Delete the document and all associated index entries.
 
 ```javascript
-si.deleteDoc(documentID, function(msg) {
+si.deleteDoc(docID, function(msg) {
   console.log(msg);
 });
 ```
+
+##si.getDoc(docID [,callback])
+
+Get the document and all associated index entries.
+
+```javascript
+si.getDoc(docID, function(msg) {
+  console.log(msg);
+});
+```
+
 
 ##si.search(query, [,callback])
 
