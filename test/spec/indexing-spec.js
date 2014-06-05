@@ -5,7 +5,6 @@ describe('indexing and search', function () {
 
   var data = fs.readFileSync('test/testdata/reuters-000.json');
 
-
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
@@ -402,7 +401,6 @@ describe('indexing and search', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
-//      var data = fs.readFileSync('test/testdata/reuters-000.json');
       var singleDoc = {};
       singleDoc['747'] = JSON.parse(data)['747'];
       var stringifiedSingleDoc = JSON.stringify(singleDoc);
