@@ -3,11 +3,13 @@ var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
 
+  var data = fs.readFileSync('test/testdata/reuters-000.json');
+
+
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
-      var data = fs.readFileSync('test/testdata/reuters-000.json');
       si.index (data, 'reuters-000.json', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;  
       });  
@@ -293,21 +295,6 @@ describe('indexing and search', function () {
   });
 
 
-  it('should be able to delete documents from index', function () {    
-    runs(function () {
-      this.indexDataResponse = '';
-      var that = this;
-      si.indexData(function(indexDataResponse) {
-        that.indexDataResponse = indexDataResponse;
-      });
-    });
-    waitsFor(function() {
-      return this.indexDataResponse != '';
-    }, 'waiting for indexData response', 5000)
-    runs(function() {
-      expect(true).toEqual(true);
-    });
-  });
 
 
   it('should be able to get documents from index', function () {    
@@ -322,21 +309,143 @@ describe('indexing and search', function () {
       return this.res != '';
     }, 'waiting for response', 5000)
     runs(function() {
-      expect(this.res[0].key).toEqual('DELETE-DOCUMENT~747~*');
-      expect(this.res[1].key).toEqual('DELETE-DOCUMENT~747~body');
-      expect(this.res[2].key).toEqual('DELETE-DOCUMENT~747~date');
-      expect(this.res[3].key).toEqual('DELETE-DOCUMENT~747~places');
-      expect(this.res[4].key).toEqual('DELETE-DOCUMENT~747~title');
-      expect(this.res[5]['VECTOR~*~747~']).toBeDefined();
-      expect(this.res[5]['VECTOR~body~747~']).toBeDefined();
-      expect(this.res[5]['VECTOR~date~747~']).toBeDefined();
-      expect(this.res[5]['VECTOR~places~747~']).toBeDefined();
-      expect(this.res[5]['VECTOR~title~747~']).toBeDefined();
-      expect(this.res[5]['VECTOR~*fielded~747~']).toBeDefined();
-      expect(this.res[5]['DOCUMENT~747~']).toBeDefined();
+      expect(this.res['DELETE-DOCUMENT~747~*']).toBeDefined();
+      expect(this.res['DELETE-DOCUMENT~747~body']).toBeDefined();
+      expect(this.res['DELETE-DOCUMENT~747~date']).toBeDefined();
+      expect(this.res['DELETE-DOCUMENT~747~places']).toBeDefined();
+      expect(this.res['DELETE-DOCUMENT~747~title']).toBeDefined();
+      expect(this.res['VECTOR~*~747~']).toBeDefined();
+      expect(this.res['VECTOR~body~747~']).toBeDefined();
+      expect(this.res['VECTOR~date~747~']).toBeDefined();
+      expect(this.res['VECTOR~places~747~']).toBeDefined();
+      expect(this.res['VECTOR~title~747~']).toBeDefined();
+      expect(this.res['VECTOR~*fielded~747~']).toBeDefined();
+      expect(this.res['DOCUMENT~747~']).toBeDefined();
     });
   });
 
+
+  it('should be able to delete documents from index', function () {    
+    runs(function () {
+      this.res = '';
+      var that = this;
+      si.deleteDoc(747, function(res) {
+        that.res = res;
+      });
+    });
+    waitsFor(function() {
+      return this.res != '';
+    }, 'waiting for indexData response', 5000)
+    runs(function() {
+      console.log(this.res);
+      expect(true).toEqual(true);
+    });
+  });
+
+
+
+  it('should verify delete', function () {    
+    runs(function () {
+      this.res = '';
+      var that = this;
+      si.getDoc(747, function(res) {
+        that.res = res;
+      });
+    });
+    waitsFor(function() {
+      return this.res != '';
+    }, 'waiting for response', 5000)
+    runs(function() {
+      expect(this.res['DELETE-DOCUMENT~747~*']).toBeUndefined();
+      expect(this.res['DELETE-DOCUMENT~747~body']).toBeUndefined();
+      expect(this.res['DELETE-DOCUMENT~747~date']).toBeUndefined();
+      expect(this.res['DELETE-DOCUMENT~747~places']).toBeUndefined();
+      expect(this.res['DELETE-DOCUMENT~747~title']).toBeUndefined();
+      expect(this.res['VECTOR~*~747~']).toBeUndefined();
+      expect(this.res['VECTOR~body~747~']).toBeUndefined();
+      expect(this.res['VECTOR~date~747~']).toBeUndefined();
+      expect(this.res['VECTOR~places~747~']).toBeUndefined();
+      expect(this.res['VECTOR~title~747~']).toBeUndefined();
+      expect(this.res['VECTOR~*fielded~747~']).toBeUndefined();
+      expect(this.res['DOCUMENT~747~']).toBeUndefined();
+    });
+  });
+
+  it('deleted document is not appearing in results', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        }
+      }, function(searchResults) {
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBeGreaterThan(1);
+      expect(this.searchResults.hits.length).toEqual(3);
+      expect(this.searchResults.hits[0].id).toEqual('113');
+      expect(this.searchResults.hits[1].id).toEqual('510');
+      expect(this.searchResults.hits[2].id).toEqual('287');
+    });
+  });
+
+
+  it('should reindex deleted document', function () {
+    runs(function() {
+      this.indexingMsg = '';
+      var that = this;
+//      var data = fs.readFileSync('test/testdata/reuters-000.json');
+      var singleDoc = {};
+      singleDoc['747'] = JSON.parse(data)['747'];
+      var stringifiedSingleDoc = JSON.stringify(singleDoc);
+      console.log(stringifiedSingleDoc);
+      si.index (stringifiedSingleDoc, 'reuters-000.json', ['places'], function(indexingMsg) {
+        that.indexingMsg = indexingMsg;
+      });  
+    });
+    waitsFor(function() {
+      return this.indexingMsg != '';
+    }, 'indexingMsg not to be empty (search results returned)', 100000)
+    runs(function () {
+      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+    });
+  });
+
+
+  it('document reappears in search', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        }
+      }, function(searchResults) {
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBeGreaterThan(1);
+      expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.hits[0].id).toEqual('113');
+      expect(this.searchResults.hits[1].id).toEqual('747');
+      expect(this.searchResults.hits[2].id).toEqual('510');
+      expect(this.searchResults.hits[3].id).toEqual('287');
+    });
+  });
 
 });
 
