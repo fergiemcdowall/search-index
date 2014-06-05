@@ -3,6 +3,7 @@ var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
 
+
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
@@ -245,11 +246,33 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 5000)
     runs(function() {
-      console.log(this.searchResults.hits[0].id);
       expect(this.searchResults.hits[0].id).toEqual('747');
       expect(this.searchResults.hits[1].id).toEqual('510');
       expect(this.searchResults.hits[2].id).toEqual('287');
       expect(this.searchResults.hits[3].id).toEqual('113');
+    });
+  });
+
+
+  it('should be able to generate teasers', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['usa']
+        },
+        'teaser': 'title'
+      }, function(searchResults) {
+        console.log(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(JSON.stringify(this.searchResults.hits[0].document.teaser)).toEqual('"LIBERTY ALL-STAR <<span class=\\"sc-em\\">usa</span>> SETS INITIAL PAYOUT"');
     });
   });
 
