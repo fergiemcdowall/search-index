@@ -40,6 +40,25 @@ describe('indexing and search', function () {
   });
 
 
+  it('verifies calibration', function () {
+    runs(function() {
+      this.calibrationKey = '';
+      var that = this;
+      si.indexPeek('TF~1987~~~*', 'TF~1987~~~*~', function(calibrationKey) {
+        that.calibrationKey = calibrationKey;
+      });
+    });
+    waitsFor(function() {
+      return this.calibrationKey != '';
+    }, '1987 should be calibrated to 1000', 100000)
+    runs(function () {
+      //TODO: add better calibration tests
+      expect(this.calibrationKey[0].value).toEqual(1000);
+    });
+  });
+
+
+
   it('should be able to search in indexed data', function () {    
     runs(function () {
       this.searchResults = '';
