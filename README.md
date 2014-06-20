@@ -11,7 +11,7 @@
 	- [si.deleteDoc(docID [,callback])](#sideletedocdocid-callback)
 	- [si.getDoc(docID [,callback])](#sigetdocdocid-callback)
 	- [si.search(query, [,callback])](#sisearchquery-callback)
-	- [si.index(batch, batchName, filters, [,callback])](#siindexbatch-batchname-filters-callback)
+	- [si.addDoc(batch, batchName, filters, [,callback])](#siindexbatch-batchname-filters-callback)
 - [Query Parameters](#query-parameters)
 	- [query](#query)
 	- [searchFields](#searchfields)
@@ -194,13 +194,13 @@ info):
 ```
 
 
-##si.index(batch, batchName, filters, [,callback])
+##si.addDoc(batch, batchName, filters, [,callback])
 
 Insets document into the index
 
 
 ```javascript
-si.index(batch, batchName, filters, function(msg) {
+si.addDoc(batch, batchName, filters, function(msg) {
   res.send(msg);
 });
 ```

@@ -9,7 +9,7 @@ describe('indexing and search', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
-      si.index (data, 'reuters-000.json', ['places'], function(indexingMsg) {
+      si.addDoc(data, 'reuters-000.json', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;  
       });  
     });
@@ -404,7 +404,7 @@ describe('indexing and search', function () {
       singleDoc['747'] = JSON.parse(data)['747'];
       var stringifiedSingleDoc = JSON.stringify(singleDoc);
       console.log(stringifiedSingleDoc);
-      si.index (stringifiedSingleDoc, 'reuters-000.json', ['places'], function(indexingMsg) {
+      si.addDoc(stringifiedSingleDoc, 'reuters-000.json', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;
       });  
     });
