@@ -17,7 +17,7 @@ describe('indexing and search', function () {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 100000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+      expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json\n');
     });
   });
 
