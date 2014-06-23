@@ -21,7 +21,7 @@ describe('indexing and search', function () {
     });
   });
 
-
+/*
   it('should calibrate index', function () {
     runs(function() {
       this.calibrationMsg = '';
@@ -442,6 +442,6 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[3].id).toEqual('287');
     });
   });
-
+*/
 });
 
