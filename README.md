@@ -36,11 +36,12 @@ http://npm-stat.vorba.ch/charts.html?package=search-index
 Search-index is a search index module for Node.js. Think "node version
 of Lucene, but much simpler".
 
-Search-index allows you to perform free-text search over structured or unstructured data, and return
-a resultset ordered by relevance.
+Search-index allows you to perform free-text search over structured or
+unstructured data, and return a resultset ordered by relevance.
 
-Search-index is built with the [soooperfast levelUP module](https://github.com/rvagg/node-levelup), and the
-[very useful Natural module](https://github.com/NaturalNode/natural).
+Search-index is built with the [soooperfast levelUP
+module](https://github.com/rvagg/node-levelup), and the [very useful
+Natural module](https://github.com/NaturalNode/natural).
 
 The Point of Search-Index is to simplify set up and operation of an
 search engine. Search-index is essentially free from configuration-
@@ -56,7 +57,8 @@ tips below.
 
 #The Forage Search Engine
 
-Search-index is currently the index powering the [Forage search engine](https://github.com/fergiemcdowall/forage).
+Search-index is currently the index powering the [Forage search
+engine](https://github.com/fergiemcdowall/forage).
 
 
 #Features
@@ -73,7 +75,9 @@ Search-index is currently the index powering the [Forage search engine](https://
 
 #Installation
 
-Releases are listed [here](https://github.com/fergiemcdowall/search-index/releases). Generally you will want the most recent one.
+Releases are listed
+[here](https://github.com/fergiemcdowall/search-index/releases). Generally
+you will want the most recent one.
 
 The easiest way to include search-index in your project is by using npm
 
@@ -106,8 +110,8 @@ si.addDoc(batch, batchName, filters, function(msg) {
 });
 ```
 
-Where ```batch``` is a JSON sequence named ```batchName``` containing one or more documents in a
-format similar to:
+Where ```batch``` is a JSON sequence named ```batchName``` containing
+one or more documents in a format similar to:
 
 ```javascript
 {
@@ -126,7 +130,8 @@ format similar to:
 
 ...and ```filters``` is an array of field names that may be contained
 in the document that the index will use for building filters. A filter
-field must always be an array of single String tokens, for example ```['metadata','places']```
+field must always be an array of single String tokens, for example
+```['metadata','places']```
 
 
 ##si.deleteDoc(docID [,callback])
@@ -203,7 +208,8 @@ si.indexData(function(msg) {
 
 ##query
 
-A free text string containing one or many tokens. ```*``` is equivalent to 'search all fields'
+A free text string containing one or many tokens. ```*``` is
+equivalent to 'search all fields'
 
 ```javascript
     "query": {'*':["usa"]}
@@ -251,7 +257,9 @@ Allows faceted navigation, the parameter is an array of fields. If no
 
 ##teaser
 
-Creates a field that shows where the search terms exist in the given field. For example, a teaser field could be generated from the document field ```body```
+Creates a field that shows where the search terms exist in the given
+field. For example, a teaser field could be generated from the
+document field ```body```
 
 ```javascript
     "teaser": "body"

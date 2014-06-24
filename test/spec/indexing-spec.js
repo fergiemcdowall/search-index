@@ -21,44 +21,21 @@ describe('indexing and search', function () {
     });
   });
 
-//add better test for calibration
-/*
-
-  it('should calibrate index', function () {
+  it('verifies calibration after batch is indexed', function () {
     runs(function() {
-      this.calibrationMsg = '';
+      this.value = '';
       var that = this;
-      si.calibrate(function(calibrationMsg) {
-        that.calibrationMsg = calibrationMsg;
+      si.indexValue('TF~1987~~~*', function(value) {
+        that.value = value;
       });
     });
     waitsFor(function() {
-      return this.calibrationMsg != '';
-    }, 'calibrationMsg not to be emtpy (index calibrated)', 100000)
+      return this.value != '';
+    }, 'TF~1987~~~* should have a value of 1000 in TF index ', 100000)
     runs(function () {
-      //TODO: add better calibration tests
-      expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
+      expect(this.value).toEqual(1000);
     });
   });
-*/
-
-  it('verifies calibration', function () {
-    runs(function() {
-      this.calibrationKey = '';
-      var that = this;
-      si.indexRange('TF~1987~~~*', 'TF~1987~~~*~', function(calibrationKey) {
-        that.calibrationKey = calibrationKey;
-      });
-    });
-    waitsFor(function() {
-      return this.calibrationKey != '';
-    }, '1987 should be calibrated to 1000', 100000)
-    runs(function () {
-      //TODO: add better calibration tests
-      expect(this.calibrationKey[0].value).toEqual(1000);
-    });
-  });
-
 
 
   it('should be able to search in indexed data', function () {    
