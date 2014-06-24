@@ -90,50 +90,47 @@ at the top of your app.
 
 #Usage
 
-To make a searchable index, you must first add documents with ```si.add``` and then call ```si.calibrate``` to calibrate the index. When deleting documents with ```si.delete``` the index should also be calibrated.
+To make a searchable index, you must first add documents with ```si.add```.
 
-A note about calibration: Calibration updates the term frequency dictionary, which makes indexing and lookups fast by pre-calculating term frequency. It is generally harmless to have a stale term frequency dictionary, negative consequences only arise if documents have been added or deleted since the last calibration in which case totalDocument scores for single term queries might be slightly old and newly introduced/removed low-frequency terms invisible to the index. In practice, an index can be altered quite a lot before performance degrades significantly.
+Documents are then searchable with ```si.search```.
+
 
 #API
 
-##si.indexData([,callback])
 
-Returns metadata about the state of the index. Metadata is accrued
-incrementally, so it is vulnerable to corruption. At any time metadata
-can be corrected by running the computationally demanding calibrate
-function.
+##si.addDoc(batch, batchName, filters, [,callback])
 
-```javascript
-si.indexData(function(msg) {
-  console.log(msg);
-});
-```
-
-##si.calibrate([,callback])
-
-Iterate through entire index and count everything up. Tf-idf
-calculations are most precise when indexData is up to date. Only needs
-to be called if index has been altered externally, or if key
-collisions occur (mostly theoretical). A persistant running tally is
-kept by search-index which can be seen in the file search-index.json.
+Insets document into the index
 
 
 ```javascript
-si.calibrate(function(msg) {
-  console.log(msg);
+si.addDoc(batch, batchName, filters, function(msg) {
+  res.send(msg);
 });
 ```
 
-##si.indexPeek(start, stop [,callback])
-
-Take a look at the raw index. Start is the start point and stop is the
-stop point. All keys in between will be returned. For debug purposes.
+Where ```batch``` is a JSON sequence named ```batchName``` containing one or more documents in a
+format similar to:
 
 ```javascript
-si.indexPeek(startOfRange, endOfRange, function(msg) {
-  console.log(msg);
-});
+{
+  'doc1':{
+    'title':'A really interesting document',
+    'body':'This is a really interesting document',
+    'metadata':['red', 'potato']
+  },
+  'doc2':{
+    'title':'Another interesting document',
+    'body':'This is another really interesting document that is a bit different',
+    'metadata':['yellow', 'potato']
+  }
+}
 ```
+
+...and ```filters``` is an array of field names that may be contained
+in the document that the index will use for building filters. A filter
+field must always be an array of single String tokens, for example ```['metadata','places']```
+
 
 ##si.deleteDoc(docID [,callback])
 
@@ -194,39 +191,15 @@ info):
 ```
 
 
-##si.addDoc(batch, batchName, filters, [,callback])
+##si.getIndexMetadata([,callback])
 
-Insets document into the index
-
+Returns metadata about the state of the index.
 
 ```javascript
-si.addDoc(batch, batchName, filters, function(msg) {
-  res.send(msg);
+si.indexData(function(msg) {
+  console.log(msg);
 });
 ```
-
-Where ```batch``` is a JSON sequence named ```batchName``` containing one or more documents in a
-format similar to:
-
-```javascript
-{
-  'doc1':{
-    'title':'A really interesting document',
-    'body':'This is a really interesting document',
-    'metadata':['red', 'potato']
-  },
-  'doc2':{
-    'title':'Another interesting document',
-    'body':'This is another really interesting document that is a bit different',
-    'metadata':['yellow', 'potato']
-  }
-}
-```
-
-...and ```filters``` is an array of field names that may be contained
-in the document that the index will use for building filters. A filter
-field must always be an array of single String tokens, for example ```['metadata','places']```
-
 
 
 #Query Parameters
