@@ -21,7 +21,9 @@ describe('indexing and search', function () {
     });
   });
 
+//add better test for calibration
 /*
+
   it('should calibrate index', function () {
     runs(function() {
       this.calibrationMsg = '';
@@ -38,7 +40,7 @@ describe('indexing and search', function () {
       expect(this.calibrationMsg).toEqual('calibrated 1000 docs');
     });
   });
-
+*/
 
   it('verifies calibration', function () {
     runs(function() {
@@ -404,7 +406,7 @@ describe('indexing and search', function () {
       singleDoc['747'] = JSON.parse(data)['747'];
       var stringifiedSingleDoc = JSON.stringify(singleDoc);
       console.log(stringifiedSingleDoc);
-      si.addDoc(stringifiedSingleDoc, 'reuters-000.json', ['places'], function(indexingMsg) {
+      si.addDoc(stringifiedSingleDoc, 'justOneDoc', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;
       });  
     });
@@ -412,7 +414,7 @@ describe('indexing and search', function () {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 100000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('indexed batch: reuters-000.json\n');
+      expect(this.indexingMsg).toEqual('[success] indexed batch: justOneDoc\n');
     });
   });
 
@@ -442,6 +444,6 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[3].id).toEqual('287');
     });
   });
-*/
+
 });
 
