@@ -46,7 +46,7 @@ describe('indexing and search', function () {
     runs(function() {
       this.calibrationKey = '';
       var that = this;
-      si.indexPeek('TF~1987~~~*', 'TF~1987~~~*~', function(calibrationKey) {
+      si.indexRange('TF~1987~~~*', 'TF~1987~~~*~', function(calibrationKey) {
         that.calibrationKey = calibrationKey;
       });
     });
@@ -343,7 +343,6 @@ describe('indexing and search', function () {
   });
 
 
-
   it('should verify delete', function () {    
     runs(function () {
       this.res = '';
@@ -370,6 +369,40 @@ describe('indexing and search', function () {
       expect(this.res['DOCUMENT~747~']).toBeUndefined();
     });
   });
+
+  it('verifies recalibration after delete', function () {
+    runs(function() {
+      this.value = '';
+      var that = this;
+      si.indexValue('TF~mccaw~~~*', function(value) {
+        that.value = value;
+      });
+    });
+    waitsFor(function() {
+      return this.value != '';
+    }, 'TF~mccaw~~~* should be removed from TF index ', 100000)
+    runs(function () {
+      expect(this.value).toEqual('[warning] key not found');
+    });
+  });
+
+  it('verifies recalibration after delete', function () {
+    runs(function() {
+      this.value = '';
+      var that = this;
+      si.indexValue('TF~1987~~~*', function(value) {
+        that.value = value;
+      });
+    });
+    waitsFor(function() {
+      return this.value != '';
+    }, 'TF~mccaw~~~* should have a value of 999 in TF index ', 100000)
+    runs(function () {
+      expect(this.value).toEqual(999);
+    });
+  });
+
+
 
   it('deleted document is not appearing in results', function () {    
     runs(function () {
@@ -444,6 +477,39 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[3].id).toEqual('287');
     });
   });
+
+  it('verifies recalibration after document is added again', function () {
+    runs(function() {
+      this.value = '';
+      var that = this;
+      si.indexValue('TF~mccaw~~~*', function(value) {
+        that.value = value;
+      });
+    });
+    waitsFor(function() {
+      return this.value != '';
+    }, 'TF~mccaw~~~* should be present in TF index ', 100000)
+    runs(function () {
+      expect(this.value).toEqual(1);
+    });
+  });
+
+  it('verifies recalibration after document is added again', function () {
+    runs(function() {
+      this.value = '';
+      var that = this;
+      si.indexValue('TF~1987~~~*', function(value) {
+        that.value = value;
+      });
+    });
+    waitsFor(function() {
+      return this.value != '';
+    }, 'TF~1987~~~* should have a value of 1000 in TF index ', 100000)
+    runs(function () {
+      expect(this.value).toEqual(1000);
+    });
+  });
+
 
 });
 
