@@ -282,7 +282,7 @@ describe('indexing and search', function () {
     runs(function () {
       this.indexDataResponse = '';
       var that = this;
-      si.indexData(function(indexDataResponse) {
+      si.getIndexMetadata(function(indexDataResponse) {
         that.indexDataResponse = indexDataResponse;
       });
     });
