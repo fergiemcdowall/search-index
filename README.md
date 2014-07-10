@@ -212,8 +212,9 @@ si.generateMatcher(function(msg) {
 
 A matcher is a service that generates a dictionary of words based on
 the contents of the index, and then returns appropriate sets based on
-substrings. The matcher is used by calling `si.matcher`. For example,
-"lon" might return ['London', 'longing', 'longitude'].
+substrings. For example, once the matcher is generated, a `beginsWith`
+of "lon" might return ['London', 'longing', 'longitude'] depending on
+the contents of the index.
 
 ```javascript
 si.matcher(beginsWith, function(suggestion) {
