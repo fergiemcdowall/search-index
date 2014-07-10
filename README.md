@@ -193,6 +193,34 @@ info):
 ```
 
 
+##si.generateMatcher([callback])
+
+Creates a matcher suitable for typeahead or autosuggest boxes. A
+matcher is a service that generates a dictionary of words based on the
+contents of the index, and then returns appropriate sets based on
+substrings. The matcher is used by calling `si.matcher`. For example,
+"lon" might return ['London', 'longing', 'longitude'].
+
+```javascript
+si.generateMatcher(function(msg) {
+  console.log(msg);
+});
+```
+
+##si.matcher(beginsWith, [callback])
+
+A matcher is a service that generates a dictionary of words based on
+the contents of the index, and then returns appropriate sets based on
+substrings. The matcher is used by calling `si.matcher`. For example,
+"lon" might return ['London', 'longing', 'longitude'].
+
+```javascript
+si.matcher(beginsWith, function(suggestion) {
+  console.log(suggestions);
+});
+```
+
+
 ##si.getIndexMetadata([,callback])
 
 Returns metadata about the state of the index.
