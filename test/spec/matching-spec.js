@@ -3,6 +3,7 @@ var si = require('../../lib/search-index.js');
 
 describe('generation and operation of matcher', function () {
 
+
   it('generate matcher', function () {
     runs(function() {
       this.matchingMsg = '';
