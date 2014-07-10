@@ -7,6 +7,7 @@
 - [Usage](#user-content-usage)
 - [API](#user-content-api)
 	- [si.add(batch, batchName, filters, [,callback])](#user-content-siaddbatch-batchname-filters-callback)
+	- [si.del(docID [,callback])](#user-content-sideldocid-callback)
 	- [si.get(docID [,callback])](#user-content-sigetdocid-callback)
 	- [si.search(query, [,callback])](#user-content-sisearchquery-callback)
 	- [si.generateMatcher([callback])](#user-content-sigeneratematchercallback)
