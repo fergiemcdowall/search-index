@@ -9,7 +9,7 @@ describe('indexing and search', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
-      si.addDoc(data, 'reuters-000.json', ['places'], function(indexingMsg) {
+      si.add(data, 'reuters-000.json', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;  
       });  
     });
@@ -278,7 +278,7 @@ describe('indexing and search', function () {
     runs(function () {
       this.res = '';
       var that = this;
-      si.getDoc(747, function(res) {
+      si.get(747, function(res) {
         that.res = res;
       });
     });
@@ -306,7 +306,7 @@ describe('indexing and search', function () {
     runs(function () {
       this.res = '';
       var that = this;
-      si.deleteDoc(747, function(res) {
+      si.del(747, function(res) {
         that.res = res;
       });
     });
@@ -324,7 +324,7 @@ describe('indexing and search', function () {
     runs(function () {
       this.res = '';
       var that = this;
-      si.getDoc(747, function(res) {
+      si.get(747, function(res) {
         that.res = res;
       });
     });
@@ -416,7 +416,7 @@ describe('indexing and search', function () {
       singleDoc['747'] = JSON.parse(data)['747'];
       var stringifiedSingleDoc = JSON.stringify(singleDoc);
       console.log(stringifiedSingleDoc);
-      si.addDoc(stringifiedSingleDoc, 'justOneDoc', ['places'], function(indexingMsg) {
+      si.add(stringifiedSingleDoc, 'justOneDoc', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;
       });  
     });

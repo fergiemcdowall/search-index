@@ -6,9 +6,9 @@
 - [Installation](#user-content-installation)
 - [Usage](#user-content-usage)
 - [API](#user-content-api)
-	- [si.addDoc(batch, batchName, filters, [,callback])](#user-content-siadddocbatch-batchname-filters-callback)
-	- [si.deleteDoc(docID [,callback])](#user-content-sideletedocdocid-callback)
-	- [si.getDoc(docID [,callback])](#user-content-sigetdocdocid-callback)
+	- [si.add(batch, batchName, filters, [,callback])](#user-content-siadddocbatch-batchname-filters-callback)
+	- [si.del(docID [,callback])](#user-content-sideletedocdocid-callback)
+	- [si.get(docID [,callback])](#user-content-sigetdocdocid-callback)
 	- [si.search(query, [,callback])](#user-content-sisearchquery-callback)
 	- [si.getIndexMetadata([,callback])](#user-content-sigetindexmetadatacallback)
 - [Query Parameters](#user-content-query-parameters)
@@ -99,13 +99,13 @@ Documents are then searchable with ```si.search```.
 #API
 
 
-##si.addDoc(batch, batchName, filters, [,callback])
+##si.add(batch, batchName, filters, [,callback])
 
 Insets document into the index
 
 
 ```javascript
-si.addDoc(batch, batchName, filters, function(msg) {
+si.add(batch, batchName, filters, function(msg) {
   res.send(msg);
 });
 ```
@@ -134,22 +134,22 @@ field must always be an array of single String tokens, for example
 ```['metadata','places']```
 
 
-##si.deleteDoc(docID [,callback])
+##si.del(docID [,callback])
 
 Delete the document and all associated index entries.
 
 ```javascript
-si.deleteDoc(docID, function(msg) {
+si.del(docID, function(msg) {
   console.log(msg);
 });
 ```
 
-##si.getDoc(docID [,callback])
+##si.get(docID [,callback])
 
 Get the document and all associated index entries.
 
 ```javascript
-si.getDoc(docID, function(msg) {
+si.get(docID, function(msg) {
   console.log(msg);
 });
 ```
