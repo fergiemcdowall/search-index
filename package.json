@@ -15,6 +15,9 @@
     "natural": "0.1.25",
     "search-context": "0.1.0"
   },
+  "devDependencies": {
+    "jasmine-node": "1.14.2"
+  },
   "author": {
     "name": "Fergus McDowall",
     "email": "fergusmcdowall@gmail.com"
