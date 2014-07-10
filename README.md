@@ -6,10 +6,11 @@
 - [Installation](#user-content-installation)
 - [Usage](#user-content-usage)
 - [API](#user-content-api)
-	- [si.add(batch, batchName, filters, [,callback])](#user-content-siadddocbatch-batchname-filters-callback)
-	- [si.del(docID [,callback])](#user-content-sideletedocdocid-callback)
-	- [si.get(docID [,callback])](#user-content-sigetdocdocid-callback)
+	- [si.add(batch, batchName, filters, [,callback])](#user-content-siaddbatch-batchname-filters-callback)
+	- [si.get(docID [,callback])](#user-content-sigetdocid-callback)
 	- [si.search(query, [,callback])](#user-content-sisearchquery-callback)
+	- [si.generateMatcher([callback])](#user-content-sigeneratematchercallback)
+	- [si.matcher(beginsWith, [callback])](#user-content-simatcherbeginswith-callback)
 	- [si.getIndexMetadata([,callback])](#user-content-sigetindexmetadatacallback)
 - [Query Parameters](#user-content-query-parameters)
 	- [query](#user-content-query)
@@ -20,7 +21,6 @@
 	- [weight](#user-content-weight)
 	- [filter](#user-content-filter)
 - [License](#user-content-license)
-
 
 Search-index
 ============
