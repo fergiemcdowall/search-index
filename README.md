@@ -131,7 +131,7 @@ one or more documents in a format similar to:
 ...and `filters` is an array of field names that may be contained
 in the document that the index will use for building filters. A filter
 field must always be an array of single String tokens, for example
-`['metadata','places']`
+```['metadata','places']```.
 
 
 ##si.del(docID [,callback])
