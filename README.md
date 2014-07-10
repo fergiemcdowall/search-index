@@ -91,9 +91,9 @@ at the top of your app.
 
 #Usage
 
-To make a searchable index, you must first add documents with ```si.add```.
+To make a searchable index, you must first add documents with `si.add`.
 
-Documents are then searchable with ```si.search```.
+Documents are then searchable with `si.search`.
 
 
 #API
@@ -110,7 +110,7 @@ si.add(batch, batchName, filters, function(msg) {
 });
 ```
 
-Where ```batch``` is a JSON sequence named ```batchName``` containing
+Where `batch` is a JSON sequence named `batchName` containing
 one or more documents in a format similar to:
 
 ```javascript
@@ -128,10 +128,10 @@ one or more documents in a format similar to:
 }
 ```
 
-...and ```filters``` is an array of field names that may be contained
+...and `filters` is an array of field names that may be contained
 in the document that the index will use for building filters. A filter
 field must always be an array of single String tokens, for example
-```['metadata','places']```
+`['metadata','places']`
 
 
 ##si.del(docID [,callback])
@@ -236,7 +236,7 @@ si.indexData(function(msg) {
 
 ##query
 
-A free text string containing one or many tokens. ```*``` is
+A free text string containing one or many tokens. `*` is
 equivalent to 'search all fields'
 
 ```javascript
@@ -265,7 +265,7 @@ for paging
 ##pageSize
 
 The maximum number of results in the resultset that can be
-returned. Counted from ```offset```
+returned. Counted from `offset`
 
 ```javascript
     "pageSize": 20
@@ -274,7 +274,7 @@ returned. Counted from ```offset```
 ##facets
 
 Allows faceted navigation, the parameter is an array of fields. If no
-```facets``` is sent, all possible facets are returned.
+`facets` is sent, all possible facets are returned.
 
 ```javascript
     "facets": [
@@ -287,7 +287,7 @@ Allows faceted navigation, the parameter is an array of fields. If no
 
 Creates a field that shows where the search terms exist in the given
 field. For example, a teaser field could be generated from the
-document field ```body```
+document field `body`
 
 ```javascript
     "teaser": "body"
