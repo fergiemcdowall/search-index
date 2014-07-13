@@ -175,7 +175,7 @@ describe('indexing and search', function () {
     });
   });
 
-
+//ignore this comment
   it('should be able to filter search results', function () {    
     runs(function () {
       this.searchResults = '';
