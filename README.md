@@ -10,7 +10,6 @@
 	- [si.del(docID [,callback])](#user-content-sideldocid-callback)
 	- [si.get(docID [,callback])](#user-content-sigetdocid-callback)
 	- [si.search(query, [,callback])](#user-content-sisearchquery-callback)
-	- [si.generateMatcher([callback])](#user-content-sigeneratematchercallback)
 	- [si.matcher(beginsWith, [callback])](#user-content-simatcherbeginswith-callback)
 	- [si.getIndexMetadata([,callback])](#user-content-sigetindexmetadatacallback)
 - [Query Parameters](#user-content-query-parameters)
@@ -194,27 +193,14 @@ info):
 ```
 
 
-##si.generateMatcher([callback])
-
-Creates a matcher suitable for typeahead or autosuggest boxes. A
-matcher is a service that generates a dictionary of words based on the
-contents of the index, and then returns appropriate sets based on
-substrings. The matcher is used by calling `si.matcher`. For example,
-"lon" might return ['London', 'longing', 'longitude'].
-
-```javascript
-si.generateMatcher(function(msg) {
-  console.log(msg);
-});
-```
-
 ##si.matcher(beginsWith, [callback])
 
 A matcher is a service that generates a dictionary of words based on
 the contents of the index, and then returns appropriate sets based on
 substrings. For example, once the matcher is generated, a `beginsWith`
 of "lon" might return ['London', 'longing', 'longitude'] depending on
-the contents of the index.
+the contents of the index. Terms are ordered by total occurances in
+index.
 
 ```javascript
 si.matcher(beginsWith, function(suggestion) {
