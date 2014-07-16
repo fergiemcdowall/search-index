@@ -5,6 +5,26 @@ describe('indexing and search', function () {
 
   var data = fs.readFileSync('test/testdata/reuters-000.json');
 
+  it('should index one file of test data in object form', function () {
+    runs(function() {
+      this.indexingMsg = '';
+      var that = this;
+      si.add(JSON.parse(data), 'reuters-000.json-object', ['places'], 
+        function(indexingMsg) {
+          that.indexingMsg = indexingMsg;  
+        }
+      );
+    });
+    waitsFor(function() {
+      return this.indexingMsg != '';
+    }, 'indexingMsg not to be empty (search results returned)', 100000)
+    runs(function () {
+      expect(this.indexingMsg).toEqual(
+        '[success] indexed batch: reuters-000.json-object\n'
+      );
+    });
+  });
+
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
