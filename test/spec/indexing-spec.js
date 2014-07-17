@@ -1,4 +1,5 @@
 var fs = require('fs');
+var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
@@ -17,7 +18,7 @@ describe('indexing and search', function () {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 100000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json\n');
+      expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json');
     });
   });
 
@@ -47,7 +48,7 @@ describe('indexing and search', function () {
           '*': ['usa']
         }
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -76,7 +77,7 @@ describe('indexing and search', function () {
         },
         'offset': 5
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -102,7 +103,7 @@ describe('indexing and search', function () {
         },
         'pageSize': 5
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -128,7 +129,7 @@ describe('indexing and search', function () {
         'offset': 5,
         'pageSize': 5
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -154,8 +155,8 @@ describe('indexing and search', function () {
         },
         'facets': ['places'],
       }, function(searchResults) {
-//        console.log(JSON.stringify(searchResults));
-        console.log(searchResults);
+//        logger.debug(JSON.stringify(searchResults));
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -189,7 +190,7 @@ describe('indexing and search', function () {
           'places': ['japan']
         }
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -197,7 +198,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 5000)
     runs(function() {
-      console.log(this.searchResults);
+      logger.debug(this.searchResults);
       expect(this.searchResults.hits.length).toEqual(1);
       expect(this.searchResults.hits[0].id).toEqual('287');
     });
@@ -216,8 +217,8 @@ describe('indexing and search', function () {
           'body': '20'
         }
       }, function(searchResults) {
-//        console.log(JSON.stringify(searchResults));
-        console.log(searchResults);
+//        logger.debug(JSON.stringify(searchResults));
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -243,7 +244,7 @@ describe('indexing and search', function () {
         },
         'teaser': 'title'
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -315,7 +316,7 @@ describe('indexing and search', function () {
       return this.res != '';
     }, 'waiting for indexData response', 5000)
     runs(function() {
-      console.log(this.res);
+      logger.debug(this.res);
       expect(true).toEqual(true);
     });
   });
@@ -391,7 +392,7 @@ describe('indexing and search', function () {
           '*': ['usa']
         }
       }, function(searchResults) {
-        console.log(searchResults);
+        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -414,7 +415,7 @@ describe('indexing and search', function () {
       var that = this;
       var singleDoc = {};
       singleDoc['747'] = data['747'];      
-      console.log(singleDoc);
+      logger.debug(singleDoc);
       si.add(singleDoc, 'justOneDoc', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;
       });  
@@ -423,7 +424,7 @@ describe('indexing and search', function () {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 100000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: justOneDoc\n');
+      expect(this.indexingMsg).toEqual('[success] indexed batch: justOneDoc');
     });
   });
 
