@@ -110,8 +110,9 @@ si.add(batch, batchName, filters, function(msg) {
 });
 ```
 
-Where `batch` is a JSON sequence named `batchName` containing
-one or more documents in a format similar to:
+Where `batch` is a javascript object named `batchName` containing one
+or more documents in a format similar to:
+
 
 ```javascript
 {
@@ -131,7 +132,9 @@ one or more documents in a format similar to:
 ...and `filters` is an array of field names that may be contained
 in the document that the index will use for building filters. A filter
 field must always be an array of single String tokens, for example
-`['metadata','places']`.
+`['metadata','places']`. 'search-index' wont accept strings, so
+remember to wrap home-rolled JSON with 'JSON.parse' to turn it into an
+object.
 
 
 ##si.del(docID [,callback])
