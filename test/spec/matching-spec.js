@@ -7,7 +7,7 @@ describe('generation and operation of matcher', function () {
     runs(function() {
       this.matchingMsg = '';
       var that = this;
-      si.matcher('lon', function(matchingMsg) {
+      si.match('lon', function(matchingMsg) {
         that.matchingMsg = matchingMsg;  
       });
     });

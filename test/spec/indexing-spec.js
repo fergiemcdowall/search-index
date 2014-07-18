@@ -88,7 +88,7 @@ describe('indexing and search', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(43);
-      expect(this.searchResults.hits[0].id).toEqual('272');
+      expect(this.searchResults.hits[0].id).toEqual('991');
     });
   });
 
@@ -117,7 +117,6 @@ describe('indexing and search', function () {
     });
   });
 
-
   it('should be able to page (set offset and page size)', function () {    
     runs(function () {
       this.searchResults = '';
@@ -137,10 +136,11 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 5000)
     runs(function() {
+      console.log(this.searchResults);
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(5);
-      expect(this.searchResults.hits[0].id).toEqual('272');
+      expect(this.searchResults.hits[0].id).toEqual('991');
     });
   });
 
@@ -259,17 +259,17 @@ describe('indexing and search', function () {
 
   it('should be able to display information about the index', function () {    
     runs(function () {
-      this.indexDataResponse = '';
+      this.tellMeAboutMySearchIndexResponse = '';
       var that = this;
-      si.getIndexMetadata(function(indexDataResponse) {
-        that.indexDataResponse = indexDataResponse;
+      si.tellMeAboutMySearchIndex(function(tellMeAboutMySearchIndexResponse) {
+        that.tellMeAboutMySearchIndexResponse = tellMeAboutMySearchIndexResponse;
       });
     });
     waitsFor(function() {
-      return this.indexDataResponse != '';
+      return this.tellMeAboutMySearchIndexResponse != '';
     }, 'waiting for indexData response', 5000)
     runs(function() {
-      expect(this.indexDataResponse.totalDocs).toEqual(1000);
+      expect(this.tellMeAboutMySearchIndexResponse.totalDocs).toEqual(1000);
     });
   });
 
@@ -449,9 +449,9 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(4);
       expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('510');
-      expect(this.searchResults.hits[2].id).toEqual('287');
-      expect(this.searchResults.hits[3].id).toEqual('747');
+      expect(this.searchResults.hits[1].id).toEqual('747');
+      expect(this.searchResults.hits[2].id).toEqual('510');
+      expect(this.searchResults.hits[3].id).toEqual('287');
     });
   });
 
@@ -486,7 +486,6 @@ describe('indexing and search', function () {
       expect(this.value).toEqual(1000);
     });
   });
-
 
 });
 

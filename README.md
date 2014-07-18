@@ -196,7 +196,7 @@ info):
 ```
 
 
-##si.matcher(beginsWith, [callback])
+##si.match(beginsWith, [callback])
 
 A matcher is a service that generates a dictionary of words based on
 the contents of the index, and then returns appropriate sets based on
@@ -212,12 +212,12 @@ si.matcher(beginsWith, function(suggestion) {
 ```
 
 
-##si.getIndexMetadata([,callback])
+##si.tellMeAboutMySearchIndex([,callback])
 
 Returns metadata about the state of the index.
 
 ```javascript
-si.indexData(function(msg) {
+si.tellMeAboutMySearchIndex(function(msg) {
   console.log(msg);
 });
 ```
