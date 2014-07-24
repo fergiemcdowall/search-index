@@ -33,7 +33,7 @@ http://npm-stat.vorba.ch/charts.html?package=search-index
 
 [![Build Status](https://secure.travis-ci.org/fergiemcdowall/search-index.png)](http://travis-ci.org/fergiemcdowall/search-index)
 
-Search-index is a search index module for Node.js. Think "node version
+Search-index is a text search module for Node.js. Think "node version
 of Lucene, but much simpler".
 
 Search-index allows you to perform free-text search over structured or
