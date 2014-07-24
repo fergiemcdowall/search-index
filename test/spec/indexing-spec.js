@@ -2,6 +2,7 @@ var fs = require('fs');
 var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 
+
 describe('indexing and search', function () {
 
   var data = JSON.parse(fs.readFileSync('test/testdata/reuters-000.json'));
@@ -34,10 +35,9 @@ describe('indexing and search', function () {
       return this.value != '';
     }, 'TF~1987~~~* should have a value of 1000 in TF index ', 100000)
     runs(function () {
-      expect(this.value).toEqual(1000);
+      expect(this.value.length).toEqual(1000);
     });
   });
-
 
   it('should be able to search in indexed data', function () {    
     runs(function () {
@@ -67,7 +67,7 @@ describe('indexing and search', function () {
   });
 
 
-  it('should be able to offset', function () {    
+  it('should be able to offset', function () {
     runs(function () {
       this.searchResults = '';
       var that = this;
@@ -274,8 +274,6 @@ describe('indexing and search', function () {
   });
 
 
-
-
   it('should be able to get documents from index', function () {    
     runs(function () {
       this.res = '';
@@ -377,7 +375,7 @@ describe('indexing and search', function () {
       return this.value != '';
     }, 'TF~mccaw~~~* should have a value of 999 in TF index ', 100000)
     runs(function () {
-      expect(this.value).toEqual(999);
+      expect(this.value.length).toEqual(999);
     });
   });
 
@@ -467,7 +465,7 @@ describe('indexing and search', function () {
       return this.value != '';
     }, 'TF~mccaw~~~* should be present in TF index ', 100000)
     runs(function () {
-      expect(this.value).toEqual(1);
+      expect(this.value[0]).toEqual('747');
     });
   });
 
@@ -483,7 +481,7 @@ describe('indexing and search', function () {
       return this.value != '';
     }, 'TF~1987~~~* should have a value of 1000 in TF index ', 100000)
     runs(function () {
-      expect(this.value).toEqual(1000);
+      expect(this.value.length).toEqual(1000);
     });
   });
 
