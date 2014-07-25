@@ -23,6 +23,7 @@ describe('indexing and search', function () {
     });
   });
 
+
   it('verifies calibration after batch is indexed', function () {
     runs(function() {
       this.value = '';
