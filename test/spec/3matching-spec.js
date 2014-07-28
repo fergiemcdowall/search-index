@@ -1,7 +1,7 @@
 var fs = require('fs');
 var si = require('../../lib/search-index.js');
 
-describe('generation and operation of matcher', function () {
+describe('matching', function () {
 
   it('matches stuff', function () {
     runs(function() {
@@ -19,6 +19,5 @@ describe('generation and operation of matcher', function () {
       expect(this.matchingMsg).toEqual(['long','london','longer','longrange','longstanding','longtime']);
     });
   });
-
 
 })
