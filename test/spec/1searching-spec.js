@@ -139,7 +139,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[2].id).toEqual('510');
       expect(this.searchResults.hits[3].id).toEqual('287');
       expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({places:{usa:4,japan:1}}));
+        .toEqual(JSON.stringify({'places':[{'key':'usa','value':4},{'key':'japan','value':1}]}));
     });
   });
 
