@@ -170,7 +170,7 @@ describe('deleting and reindexing', function () {
       return this.value != '';
     }, 'TF~*~mccaw~~ should be present in TF index ', 100000)
     runs(function () {
-      expect(this.value[0]).toEqual('747');
+      expect(this.value[0][0]).toEqual('747');
     });
   });
 

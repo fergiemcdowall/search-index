@@ -36,6 +36,7 @@ describe('indexing and search', function () {
       return this.value != '';
     }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 100000)
     runs(function () {
+      console.log(this.value);
       expect(this.value.length).toEqual(1000);
     });
   });
