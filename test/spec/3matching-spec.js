@@ -15,7 +15,6 @@ describe('matching', function () {
       return this.matchingMsg != '';
     }, 'matchingMsg not to be empty', 100000)
     runs(function () {
-      console.log('boomy');
       expect(this.matchingMsg).toEqual(['long','london','longer','longrange','longstanding','longtime']);
     });
   });
@@ -32,7 +31,6 @@ describe('matching', function () {
       return this.matchingMsg != undefined;
     }, 'matchingMsg to be empty', 100000)
     runs(function () {
-      console.log(this.matchingMsg.length);
       expect(this.matchingMsg).toEqual([]);
     });
   });
