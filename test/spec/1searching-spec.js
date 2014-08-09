@@ -34,6 +34,52 @@ describe('indexing and search', function () {
     });
   });
 
+  it('should be able to handle 0 results', function () {
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['asdijasdjasdadssadmakesnosense']
+        }
+      }, function(searchResults) {
+        logger.debug(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBe(0);
+    });
+  });
+
+  it('should be able to handle multi word searches', function () {
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['reuter', '1987']
+        }
+      }, function(searchResults) {
+        logger.debug(searchResults);
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBe(100);
+      expect(this.searchResults.totalHits).toBe(922);
+    });
+  });
+
+
   it('should be able to offset', function () {
     runs(function () {
       this.searchResults = '';

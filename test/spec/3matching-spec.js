@@ -15,9 +15,27 @@ describe('matching', function () {
       return this.matchingMsg != '';
     }, 'matchingMsg not to be empty', 100000)
     runs(function () {
-      console.log(this.matchingMsg);
+      console.log('boomy');
       expect(this.matchingMsg).toEqual(['long','london','longer','longrange','longstanding','longtime']);
     });
   });
+
+  it('handles match strings that are below threshold', function () {
+    runs(function() {
+      this.matchingMsg = undefined;
+      var that = this;
+      si.match('lo', function(matchingMsg) {
+        that.matchingMsg = matchingMsg;  
+      });
+    });
+    waitsFor(function() {
+      return this.matchingMsg != undefined;
+    }, 'matchingMsg to be empty', 100000)
+    runs(function () {
+      console.log(this.matchingMsg.length);
+      expect(this.matchingMsg).toEqual([]);
+    });
+  });
+
 
 })
