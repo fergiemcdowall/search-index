@@ -274,6 +274,31 @@ Allows faceted navigation, the parameter is an array of fields. If no
     ]
 ```
 
+##facetLength
+Defines the amount of entries per facet category. Defaults to 10.
+
+```javascript
+    "facets": [
+      "topics",
+      "places"
+    ],
+    "facetLength": 50
+```
+
+
+##facetSort
+Defines the sort order of facets. Facets can be sorted on keys or values in an ascending or descening order. Possible values for `facetSort` are `keyAsc`, `keyDesc`, `valueAsc`, and `valueDesc`. The default sort is equivalent to `valueDesc`.
+
+```javascript
+    "facets": [
+      "topics",
+      "places"
+    ],
+    "facetLength": 50,
+    "facetSort": "keyAsc"
+```
+
+
 ##teaser
 
 Creates a field that shows where the search terms exist in the given
