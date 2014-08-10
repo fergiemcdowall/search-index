@@ -17,10 +17,13 @@
 	- [offset](#user-content-offset)
 	- [pageSize](#user-content-pagesize)
 	- [facets](#user-content-facets)
+	- [facetLength](#user-content-facetlength)
+	- [facetSort](#user-content-facetsort)
 	- [teaser](#user-content-teaser)
 	- [weight](#user-content-weight)
 	- [filter](#user-content-filter)
 - [License](#user-content-license)
+
 
 Search-index
 ============
