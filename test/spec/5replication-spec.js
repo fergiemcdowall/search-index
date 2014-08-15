@@ -6,12 +6,11 @@ var newindexes = level('newsi', {valueEncoding: 'json'});
 
 
 describe('replication', function () {
-
   it('should be able to create a readStream', function () {    
     runs(function () {
       this.indexPiped = false;
       var that = this;
-      si.createReadStream(function(rs) {
+      si.createSnapShot(function(rs) {
         var ws = newindexes.createWriteStream();
         rs.pipe(ws).on('close', function(){
           console.log('index piped');
