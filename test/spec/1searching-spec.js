@@ -5,7 +5,6 @@ var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
 
-  var data = JSON.parse(fs.readFileSync('test/testdata/reuters-000.json'));
 
   it('should be able to search in indexed data', function () {    
     runs(function () {

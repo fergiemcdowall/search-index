@@ -7,17 +7,37 @@ describe('indexing and search', function () {
 
   var data = JSON.parse(fs.readFileSync('test/testdata/reuters-000.json'));
 
+
+  it('should open index', function () {
+    runs(function() {
+      this.openingMsg = '';
+      var that = this;
+      si.open('si', function(openingMsg) {
+        that.openingMsg = openingMsg;  
+      });  
+    });
+    waitsFor(function() {
+      return this.openingMsg != '';
+    }, 'message returned from search-index', 100000)
+    runs(function () {
+      expect(this.openingMsg).toEqual('index opened');
+    });
+  });
+
+  
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
+      console.log('also in here');
       si.add(data, 'reuters-000.json', ['places'], function(indexingMsg) {
+        console.log('in here');
         that.indexingMsg = indexingMsg;  
       });  
     });
     waitsFor(function() {
       return this.indexingMsg != '';
-    }, 'indexingMsg not to be empty (search results returned)', 100000)
+    }, 'indexingMsg not to be empty (search results returned)', 30000)
     runs(function () {
       expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json');
     });
