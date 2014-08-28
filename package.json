@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "async": "0.2.9",
+    "JSONStream": "*",
+    "rimraf": "*",
     "bloomfilter": "0.0.14",
     "colors": "0.6.2",
     "level": "0.18.0",

@@ -8,23 +8,6 @@ describe('indexing and search', function () {
   var data = JSON.parse(fs.readFileSync('test/testdata/reuters-000.json'));
 
 
-  it('should open index', function () {
-    runs(function() {
-      this.openingMsg = '';
-      var that = this;
-      si.open('si', function(openingMsg) {
-        that.openingMsg = openingMsg;  
-      });  
-    });
-    waitsFor(function() {
-      return this.openingMsg != '';
-    }, 'message returned from search-index', 100000)
-    runs(function () {
-      expect(this.openingMsg).toEqual('index opened');
-    });
-  });
-
-  
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
