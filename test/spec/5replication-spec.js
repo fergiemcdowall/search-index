@@ -39,7 +39,6 @@ describe('replication', function () {
     });
   });
 
-
   it('should empty the index', function () {    
     runs(function () {
       this.completed = false;
