@@ -28,7 +28,12 @@ describe('replication', function () {
       this.completed = false;
       var that = this;
       si.createSnapShot(function(rs) {
-        that.completed = true;
+        rs.pipe(fs.createWriteStream('backup.json'))
+          .on('close', function() {
+            zip.addLocalFile('backup.json');
+            zip.writeZip('backup.json.zip');
+            that.completed = true;
+          });
       });
     });
     waitsFor(function() {
@@ -55,6 +60,7 @@ describe('replication', function () {
     });
   });
 
+
   it('should be able to refeed from a snapshot', function () {    
     runs(function () {
       this.completed = false;
@@ -70,7 +76,6 @@ describe('replication', function () {
       expect(this.completed).toEqual(true);
     });
   });
-
 
 });
 
