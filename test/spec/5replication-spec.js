@@ -2,6 +2,8 @@ var fs = require('fs');
 var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 var level = require('level');
+var AdmZip = require('adm-zip');
+var zip = new AdmZip();
 
 describe('replication', function () {
   var data = JSON.parse(fs.readFileSync('test/testdata/justOne.json'));
@@ -54,7 +56,7 @@ describe('replication', function () {
     });
     waitsFor(function() {
       return this.completed;
-    }, 'waiting for response...', 60000)
+    }, 'waiting for response...', 5000)
     runs(function() {
       expect(this.completed).toEqual(true);
     });
@@ -65,7 +67,9 @@ describe('replication', function () {
     runs(function () {
       this.completed = false;
       var that = this;
-      si.replicate(function(msg){
+      var zip = new AdmZip('backup.json.zip');
+      zip.extractAllTo('./');
+      si.replicate(fs.createReadStream('backup.json'), function(msg){
         that.completed = true;
       });
     });
