@@ -27,7 +27,7 @@ describe('replication', function () {
     runs(function () {
       this.completed = false;
       var that = this;
-      si.createSnapShot(function(rs) {
+      si.snapShot(function(rs) {
         rs.pipe(fs.createWriteStream('backup.gz'))
           .on('close', function() {
             that.completed = true;
