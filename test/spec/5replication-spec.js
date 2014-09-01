@@ -2,8 +2,6 @@ var fs = require('fs');
 var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 var level = require('level');
-var AdmZip = require('adm-zip');
-var zip = new AdmZip();
 
 describe('replication', function () {
   var data = JSON.parse(fs.readFileSync('test/testdata/justOne.json'));
@@ -30,10 +28,8 @@ describe('replication', function () {
       this.completed = false;
       var that = this;
       si.createSnapShot(function(rs) {
-        rs.pipe(fs.createWriteStream('backup.json'))
+        rs.pipe(fs.createWriteStream('backup.gz'))
           .on('close', function() {
-            zip.addLocalFile('backup.json');
-            zip.writeZip('backup.json.zip');
             that.completed = true;
           });
       });
@@ -62,14 +58,11 @@ describe('replication', function () {
     });
   });
 
-
   it('should be able to refeed from a snapshot', function () {    
     runs(function () {
       this.completed = false;
       var that = this;
-      var zip = new AdmZip('backup.json.zip');
-      zip.extractAllTo('./');
-      si.replicate(fs.createReadStream('backup.json'), function(msg){
+      si.replicate(fs.createReadStream('backup.gz'), function(msg){
         that.completed = true;
       });
     });
