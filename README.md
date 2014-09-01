@@ -6,15 +6,15 @@
 - [Installation](#user-content-installation)
 - [Usage](#user-content-usage)
 - [API](#user-content-api)
-	- [si.add(batch, batchName, filters, callback(msg))](#user-content-siaddbatch-batchname-filters-callbackmsg)
-	- [si.del(docID, callback(msg))](#user-content-sideldocid-callbackmsg)
-	- [si.get(docID, callback(msg))](#user-content-sigetdocid-callbackmsg)
-	- [si.search(query, callback(msg))](#user-content-sisearchquery-callbackmsg)
-	- [si.match(beginsWith, callback(suggestion))](#user-content-simatchbeginswith-callbacksuggestion)
-	- [si.tellMeAboutMySearchIndex(callback(msg))](#user-content-sitellmeaboutmysearchindexcallbackmsg)
-	- [si.empty(callback(msg))](#user-content-siemptycallbackmsg)
-	- [si.snapshot(callback(readStream))](#user-content-sisnapshotcallbackreadstream)
-	- [si.replicate(readStream, callback(msg))](#user-content-sireplicatereadstream-callbackmsg)
+	- [si.add](#user-content-siadd)
+	- [si.del](#user-content-sidel)
+	- [si.get](#user-content-siget)
+	- [si.search](#user-content-sisearch)
+	- [si.match](#user-content-simatch)
+	- [si.tellMeAboutMySearchIndex](#user-content-sitellmeaboutmysearchindex)
+	- [si.empty](#user-content-siempty)
+	- [si.snapshot](#user-content-sisnapshot)
+	- [si.replicate](#user-content-sireplicate)
 - [Query Parameters](#user-content-query-parameters)
 	- [query](#user-content-query)
 	- [offset](#user-content-offset)
@@ -26,6 +26,8 @@
 	- [weight](#user-content-weight)
 	- [filter](#user-content-filter)
 - [License](#user-content-license)
+
+
 
 Search-index
 ============
