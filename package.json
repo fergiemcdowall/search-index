@@ -43,6 +43,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/.git"
+    "url": "https://github.com/fergiemcdowall/search-index.git"
   }
 }
