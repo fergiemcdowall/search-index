@@ -1,7 +1,7 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Search-index](#user-content-search-index)
-- [The Forage Search Engine](#user-content-the-forage-search-engine)
+- [The Norch Search Engine](#user-content-the-norch-search-engine)
 - [Features](#user-content-features)
 - [Installation](#user-content-installation)
 - [Usage](#user-content-usage)
@@ -62,10 +62,10 @@ challenging. Query-result is robust. See known issues and performance
 tips below.
 
 
-#The Forage Search Engine
+#The Norch Search Engine
 
-Search-index is currently the index powering the [Forage search
-engine](https://github.com/fergiemcdowall/forage).
+Search-index is currently the index powering the [Norch search
+engine](https://github.com/fergiemcdowall/norch).
 
 
 #Features
