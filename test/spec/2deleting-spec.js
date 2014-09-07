@@ -5,7 +5,7 @@ var si = require('../../lib/search-index.js');
 
 describe('deleting and reindexing', function () {
 
-  var data = JSON.parse(fs.readFileSync('test/testdata/reuters-000.json'));
+  var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/reuters-000.json'));
 
 
   it('should be able to delete documents from index', function () {    

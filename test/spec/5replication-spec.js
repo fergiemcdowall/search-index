@@ -4,14 +4,14 @@ var si = require('../../lib/search-index.js');
 var level = require('level');
 
 describe('replication', function () {
-  var data = JSON.parse(fs.readFileSync('test/testdata/justOne.json'));
+  var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justOne.json'));
 
 //should jeust overwrite if test is being run as part of a full suite
   it('should index one file of test data', function () {
     runs(function() {
       this.indexingMsg = '';
       var that = this;
-      si.add(data, 'reuters-000.json', ['places'], function(indexingMsg) {
+      si.add(data, 'justOne.json', ['places'], function(indexingMsg) {
         that.indexingMsg = indexingMsg;  
       });  
     });
@@ -19,7 +19,7 @@ describe('replication', function () {
       return this.indexingMsg != '';
     }, 'indexingMsg not to be empty (search results returned)', 30000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json');
+      expect(this.indexingMsg).toEqual('[success] indexed batch: justOne.json');
     });
   });
 
