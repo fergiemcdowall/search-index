@@ -40,7 +40,7 @@
     }
   ],
   "scripts": {
-    "test": "rm -rf si && NODE_ENV=test jasmine-node --verbose test/spec/*-spec.js"
+    "test": "rm -rf si && rm -rf si2 && NODE_ENV=test jasmine-node --verbose test/spec/*-spec.js"
   },
   "repository": {
     "type": "git",
