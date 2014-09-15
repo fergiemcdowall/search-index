@@ -14,6 +14,7 @@
     "level": "0.18.0",
     "level-multiply": "0.0.1",
     "natural": "0.1.25",
+    "rimraf": "2.2.8",
     "search-context": "0.1.0"
   },
   "devDependencies": {
