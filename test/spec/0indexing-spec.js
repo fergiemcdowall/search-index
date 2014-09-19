@@ -7,39 +7,41 @@ describe('indexing and search', function () {
 
   var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/reuters-000.json'));
 
-
   it('should index one file of test data', function () {
     runs(function() {
-      this.indexingMsg = '';
+      this.err = undefined;
       var that = this;
-      console.log('also in here');
-      si.add(data, 'reuters-000.json', ['places'], function(indexingMsg) {
-        console.log('in here');
-        that.indexingMsg = indexingMsg;  
-      });  
+      var options = {};
+      options['batchString'] = data;
+      options['batchName'] = 'reuters-000.json';
+      options['filters'] = ['places'];
+      si.add(options,function(err) {
+        that.err = err;
+      });
     });
     waitsFor(function() {
-      return this.indexingMsg != '';
-    }, 'indexingMsg not to be empty (search results returned)', 30000)
+      return this.err != undefined;
+    }, 'err not to be empty (search err returned)', 30000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: reuters-000.json');
+      expect(this.err).toEqual(false);
     });
   });
 
 
   it('verifies calibration after batch is indexed', function () {
     runs(function() {
-      this.value = '';
+      this.value = undefined;
+      this.err = undefined;
       var that = this;
-      si.indexValue('TF~*~1987~~', function(value) {
+      si.indexValue({key:'TF~*~1987~~'}, function(err, value) {
+        that.err = err;
         that.value = value;
       });
     });
     waitsFor(function() {
-      return this.value != '';
-    }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 100000)
+      return this.value != undefined;
+    }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 30000)
     runs(function () {
-      console.log(this.value);
       expect(this.value.length).toEqual(1000);
     });
   });
