@@ -55,20 +55,40 @@ describe('deleting and reindexing', function () {
 
   it('verifies recalibration after delete', function () {
     runs(function() {
-      this.value = '';
+      this.value = undefined;
+      this.err = undefined;
       var that = this;
-      si.indexValue('TF~*~mccaw~~', function(value) {
+      si.indexValue({key:'TF~*~mccaw~~'}, function(err, value) {
+        that.value = value;
+        that.err = err;
+      });
+    });
+    waitsFor(function() {
+      return this.err != undefined;
+    }, 'TF~*~mccaw~~ should be removed from TF index ', 2000)
+    runs(function () {
+      expect(this.err).toEqual(true);
+    });
+  });
+
+  it('verifies recalibration after delete', function () {
+    runs(function() {
+      this.value = undefined;
+      this.err = undefined;
+      var that = this;
+      si.indexValue({key:'TF~*~1987~~'}, function(err, value) {
         that.value = value;
       });
     });
     waitsFor(function() {
-      return this.value != '';
-    }, 'TF~*~mccaw~~ should be removed from TF index ', 100000)
+      return this.value != undefined;
+    }, 'TF~*~1987~~ should have a value of 999 in TF index ', 2000)
     runs(function () {
-      expect(this.value).toEqual('[warning] key not found');
+      expect(this.value.length).toEqual(999);
     });
   });
 
+  /*
   it('verifies recalibration after delete', function () {
     runs(function() {
       this.value = '';
@@ -84,7 +104,7 @@ describe('deleting and reindexing', function () {
       expect(this.value.length).toEqual(999);
     });
   });
-
+  */
 
   it('deleted document is not appearing in results', function () {    
     runs(function () {
@@ -114,20 +134,27 @@ describe('deleting and reindexing', function () {
 
   it('should reindex deleted document', function () {
     runs(function() {
-      this.indexingMsg = '';
+      this.err = undefined;
       var that = this;
       var singleDoc = {};
       singleDoc['747'] = data['747'];      
       logger.debug(singleDoc);
-      si.add(singleDoc, 'justOneDoc', ['places'], function(indexingMsg) {
-        that.indexingMsg = indexingMsg;
+
+      var options = {};
+      options['batchString'] = singleDoc;
+      options['batchName'] = 'justOneDoc';
+      options['filters'] = ['places'];
+
+      //      si.add(singleDoc, 'justOneDoc', ['places'], function(err) {
+      si.add(options, function(err) {
+        that.err = err;
       });  
     });
     waitsFor(function() {
-      return this.indexingMsg != '';
-    }, 'indexingMsg not to be empty (search results returned)', 100000)
+      return this.err != undefined;
+    }, 'err not to be true', 5000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: justOneDoc');
+      expect(this.err).toEqual(false);
     });
   });
 
@@ -160,15 +187,16 @@ describe('deleting and reindexing', function () {
 
   it('verifies recalibration after document is added again', function () {
     runs(function() {
-      this.value = '';
+      this.err = undefined;
+      this.value = undefined;
       var that = this;
-      si.indexValue('TF~*~mccaw~~', function(value) {
+      si.indexValue({key:'TF~*~mccaw~~'}, function(err, value) {
         that.value = value;
       });
     });
     waitsFor(function() {
-      return this.value != '';
-    }, 'TF~*~mccaw~~ should be present in TF index ', 100000)
+      return this.value != undefined;
+    }, 'TF~*~mccaw~~ should be present in TF index ', 2000)
     runs(function () {
       expect(this.value[0]).toEqual('747');
     });
@@ -176,15 +204,16 @@ describe('deleting and reindexing', function () {
 
   it('verifies recalibration after document is added again', function () {
     runs(function() {
-      this.value = '';
+      this.err = undefined;
+      this.value = undefined;
       var that = this;
-      si.indexValue('TF~*~1987~~', function(value) {
+      si.indexValue({key:'TF~*~1987~~'}, function(err, value) {
         that.value = value;
       });
     });
     waitsFor(function() {
-      return this.value != '';
-    }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 100000)
+      return this.value != undefined;
+    }, 'TF~*~1987~~ should have a length of 1000 in TF index ', 2000)
     runs(function () {
       expect(this.value.length).toEqual(1000);
     });

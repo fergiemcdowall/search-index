@@ -9,19 +9,29 @@ describe('replication', function () {
 //should jeust overwrite if test is being run as part of a full suite
   it('should index one file of test data', function () {
     runs(function() {
-      this.indexingMsg = '';
+      this.err = 'NOTSET';
       var that = this;
-      si.add(data, 'justOne.json', ['places'], function(indexingMsg) {
-        that.indexingMsg = indexingMsg;  
-      });  
+      var options = {};
+      options['batchString'] = data;
+      options['batchName'] = 'justOne.json';
+      options['filters'] = ['places'];
+      si.add(options,function(err) {
+        that.err = err;
+      });
+
+      //      si.add(data, 'justOne.json', ['places'], function(err) {
+      //  that.err = err;  
+      //});  
     });
     waitsFor(function() {
-      return this.indexingMsg != '';
-    }, 'indexingMsg not to be empty (search results returned)', 30000)
+      return this.err != 'NOTSET';
+    }, 'err not to be empty (search results returned)', 5000)
     runs(function () {
-      expect(this.indexingMsg).toEqual('[success] indexed batch: justOne.json');
+      expect(this.err).toEqual(false);
     });
   });
+
+
 
   it('should be able to create a snapshot', function () {    
     runs(function () {
