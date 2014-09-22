@@ -12,10 +12,9 @@ describe('replication', function () {
       this.err = 'NOTSET';
       var that = this;
       var options = {};
-      options['batchString'] = data;
       options['batchName'] = 'justOne.json';
       options['filters'] = ['places'];
-      si.add(options,function(err) {
+      si.add(options, data, function(err) {
         that.err = err;
       });
 

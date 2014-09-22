@@ -11,11 +11,7 @@ describe('indexing and search', function () {
     runs(function() {
       this.err = undefined;
       var that = this;
-      var options = {};
-      options['batchString'] = data;
-      options['batchName'] = 'reuters-000.json';
-      options['filters'] = ['places'];
-      si.add(options,function(err) {
+      si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
         that.err = err;
       });
     });

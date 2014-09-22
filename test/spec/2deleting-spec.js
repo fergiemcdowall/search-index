@@ -146,7 +146,7 @@ describe('deleting and reindexing', function () {
       options['filters'] = ['places'];
 
       //      si.add(singleDoc, 'justOneDoc', ['places'], function(err) {
-      si.add(options, function(err) {
+      si.add({'batchName': 'justOneDoc', 'filters': ['places']}, singleDoc, function(err) {
         that.err = err;
       });  
     });
