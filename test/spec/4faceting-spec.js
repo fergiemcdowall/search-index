@@ -14,9 +14,7 @@ describe('facetting', function () {
           '*': ['usa']
         },
         'facets': ['places'],
-      }, function(searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
@@ -46,9 +44,7 @@ describe('facetting', function () {
         },
         'facetSort' : 'valueAsc',
         'facets': ['places'],
-      }, function(searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
@@ -76,9 +72,7 @@ describe('facetting', function () {
         },
         'facetSort' : 'valueDesc',
         'facets': ['places'],
-      }, function(searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
@@ -106,9 +100,7 @@ describe('facetting', function () {
         },
         'facetSort' : 'keyAsc',
         'facets': ['places'],
-      }, function(searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
@@ -136,7 +128,7 @@ describe('facetting', function () {
         },
         'facetSort' : 'keyDesc',
         'facets': ['places'],
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
@@ -165,9 +157,7 @@ describe('facetting', function () {
         'facetSort' : 'keyDesc',
         'facetLength' : 20,
         'facets': ['places'],
-      }, function(searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });

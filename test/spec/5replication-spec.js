@@ -17,10 +17,6 @@ describe('replication', function () {
       si.add(options, data, function(err) {
         that.err = err;
       });
-
-      //      si.add(data, 'justOne.json', ['places'], function(err) {
-      //  that.err = err;  
-      //});  
     });
     waitsFor(function() {
       return this.err != 'NOTSET';
@@ -35,11 +31,15 @@ describe('replication', function () {
   it('should be able to create a snapshot', function () {    
     runs(function () {
       this.completed = false;
+      this.error = false;
       var that = this;
       si.snapShot(function(rs) {
         rs.pipe(fs.createWriteStream('backup.gz'))
           .on('close', function() {
             that.completed = true;
+          })
+          .on('error', function() {
+            that.error = true;
           });
       });
     });
@@ -48,15 +48,18 @@ describe('replication', function () {
     }, 'waiting for search results', 60000)
     runs(function() {
       expect(this.completed).toEqual(true);
+      expect(this.error).toEqual(false);
     });
   });
 
   it('should empty the index', function () {    
     runs(function () {
       this.completed = false;
+      this.error = false;
       var that = this;
-      si.empty(function(msg){
+      si.empty(function(err){
         that.completed = true;
+        that.error = err;
       });
     });
     waitsFor(function() {
@@ -64,6 +67,7 @@ describe('replication', function () {
     }, 'waiting for response...', 5000)
     runs(function() {
       expect(this.completed).toEqual(true);
+      expect(this.error).toEqual(false);
     });
   });
 

@@ -290,7 +290,7 @@ describe('indexing and search', function () {
     runs(function () {
       this.res = '';
       var that = this;
-      si.get(747, function(res) {
+      si.get(747, function(err, res) {
         that.res = res;
       });
     });
