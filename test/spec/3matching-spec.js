@@ -7,13 +7,13 @@ describe('matching', function () {
     runs(function() {
       this.matchingMsg = '';
       var that = this;
-      si.match('lon', function(matchingMsg) {
+      si.match('lon', function(err, matchingMsg) {
         that.matchingMsg = matchingMsg;  
       });
     });
     waitsFor(function() {
       return this.matchingMsg != '';
-    }, 'matchingMsg not to be empty', 100000)
+    }, 'matchingMsg not to be empty', 1000)
     runs(function () {
       expect(this.matchingMsg).toEqual(['long','london','longer','longrange','longstanding','longtime']);
     });
@@ -23,13 +23,13 @@ describe('matching', function () {
     runs(function() {
       this.matchingMsg = undefined;
       var that = this;
-      si.match('lo', function(matchingMsg) {
+      si.match('lo', function(err, matchingMsg) {
         that.matchingMsg = matchingMsg;  
       });
     });
     waitsFor(function() {
       return this.matchingMsg != undefined;
-    }, 'matchingMsg to be empty', 100000)
+    }, 'matchingMsg to be empty', 1000)
     runs(function () {
       expect(this.matchingMsg).toEqual([]);
     });
