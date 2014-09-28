@@ -4,7 +4,7 @@ var si = require('../../lib/search-index.js');
 var level = require('level');
 
 describe('replication', function () {
-  var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justOne.json'));
+  var data = JSON.parse(fs.readFileSync('justTen.json'));
 
 //should jeust overwrite if test is being run as part of a full suite
   it('should index one file of test data', function () {
