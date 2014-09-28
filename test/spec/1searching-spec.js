@@ -14,14 +14,14 @@ describe('indexing and search', function () {
         'query': {
           '*': ['usa']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -41,7 +41,7 @@ describe('indexing and search', function () {
         'query': {
           '*': ['asdijasdjasdadssadmakesnosense']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
@@ -63,14 +63,14 @@ describe('indexing and search', function () {
         'query': {
           '*': ['reuter', '1987']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBe(100);
@@ -88,14 +88,14 @@ describe('indexing and search', function () {
           '*': ['japan']
         },
         'offset': 5
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -114,14 +114,14 @@ describe('indexing and search', function () {
           '*': ['japan']
         },
         'pageSize': 5
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -139,14 +139,14 @@ describe('indexing and search', function () {
         },
         'offset': 5,
         'pageSize': 5
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       console.log(this.searchResults);
       expect(this.searchResults).toBeDefined();
@@ -166,7 +166,7 @@ describe('indexing and search', function () {
           '*': ['usa']
         },
         'facets': ['places'],
-      }, function(searchResults) {
+      }, function(err, searchResults) {
 //        logger.debug(JSON.stringify(searchResults));
         logger.debug(searchResults);
         that.searchResults = searchResults;
@@ -174,7 +174,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -201,14 +201,14 @@ describe('indexing and search', function () {
         'filter': {
           'places': ['japan']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       logger.debug(this.searchResults);
       expect(this.searchResults.hits.length).toEqual(1);
@@ -228,7 +228,7 @@ describe('indexing and search', function () {
         'weight': {
           'body': '20'
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
 //        logger.debug(JSON.stringify(searchResults));
         logger.debug(searchResults);
         that.searchResults = searchResults;
@@ -236,7 +236,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults.hits[0].id).toEqual('747');
       expect(this.searchResults.hits[1].id).toEqual('510');
@@ -255,14 +255,14 @@ describe('indexing and search', function () {
           '*': ['usa']
         },
         'teaser': 'title'
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(JSON.stringify(this.searchResults.hits[0].document.teaser)).toEqual('"LIBERTY ALL-STAR <<span class=\\"sc-em\\">usa</span>> SETS INITIAL PAYOUT"');
     });
@@ -279,7 +279,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.tellMeAboutMySearchIndexResponse != '';
-    }, 'waiting for indexData response', 5000)
+    }, 'waiting for indexData response', 1000)
     runs(function() {
       expect(this.tellMeAboutMySearchIndexResponse.totalDocs).toEqual(1000);
     });
@@ -296,7 +296,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.res != '';
-    }, 'waiting for response', 5000)
+    }, 'waiting for response', 1000)
     runs(function() {
       expect(this.res['DELETE-DOCUMENT~747~*']).toBeDefined();
       expect(this.res['DELETE-DOCUMENT~747~body']).toBeDefined();

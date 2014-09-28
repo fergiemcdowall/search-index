@@ -10,17 +10,17 @@ describe('deleting and reindexing', function () {
 
   it('should be able to delete documents from index', function () {    
     runs(function () {
-      this.res = '';
+      this.err = undefined;
       var that = this;
-      si.del(747, function(res) {
-        that.res = res;
+      si.del(747, function(err) {
+        that.err = err;
       });
     });
     waitsFor(function() {
-      return this.res != '';
-    }, 'waiting for indexData response', 5000)
+      return this.err != undefined;
+    }, 'waiting for indexData response', 1000)
     runs(function() {
-      logger.debug(this.res);
+      logger.debug(this.err);
       expect(true).toEqual(true);
     });
   });
@@ -28,28 +28,29 @@ describe('deleting and reindexing', function () {
 
   it('should verify delete', function () {    
     runs(function () {
-      this.res = '';
+      this.err = undefined;
       var that = this;
-      si.get(747, function(res) {
-        that.res = res;
+      si.get(747, function(err, doc) {
+        that.err = err;
       });
     });
     waitsFor(function() {
-      return this.res != '';
-    }, 'waiting for response', 5000)
+      return this.err != undefined;
+    }, 'waiting for response', 1000)
     runs(function() {
-      expect(this.res['DELETE-DOCUMENT~747~*']).toBeUndefined();
-      expect(this.res['DELETE-DOCUMENT~747~body']).toBeUndefined();
-      expect(this.res['DELETE-DOCUMENT~747~date']).toBeUndefined();
-      expect(this.res['DELETE-DOCUMENT~747~places']).toBeUndefined();
-      expect(this.res['DELETE-DOCUMENT~747~title']).toBeUndefined();
-      expect(this.res['VECTOR~*~747~']).toBeUndefined();
-      expect(this.res['VECTOR~body~747~']).toBeUndefined();
-      expect(this.res['VECTOR~date~747~']).toBeUndefined();
-      expect(this.res['VECTOR~places~747~']).toBeUndefined();
-      expect(this.res['VECTOR~title~747~']).toBeUndefined();
-      expect(this.res['VECTOR~*fielded~747~']).toBeUndefined();
-      expect(this.res['DOCUMENT~747~']).toBeUndefined();
+      console.log('BOOM!: ' + this.err);
+      expect(this.err['DELETE-DOCUMENT~747~*']).toBeUndefined();
+      expect(this.err['DELETE-DOCUMENT~747~body']).toBeUndefined();
+      expect(this.err['DELETE-DOCUMENT~747~date']).toBeUndefined();
+      expect(this.err['DELETE-DOCUMENT~747~places']).toBeUndefined();
+      expect(this.err['DELETE-DOCUMENT~747~title']).toBeUndefined();
+      expect(this.err['VECTOR~*~747~']).toBeUndefined();
+      expect(this.err['VECTOR~body~747~']).toBeUndefined();
+      expect(this.err['VECTOR~date~747~']).toBeUndefined();
+      expect(this.err['VECTOR~places~747~']).toBeUndefined();
+      expect(this.err['VECTOR~title~747~']).toBeUndefined();
+      expect(this.err['VECTOR~*fielded~747~']).toBeUndefined();
+      expect(this.err['DOCUMENT~747~']).toBeUndefined();
     });
   });
 
@@ -108,20 +109,20 @@ describe('deleting and reindexing', function () {
 
   it('deleted document is not appearing in results', function () {    
     runs(function () {
-      this.searchResults = '';
+      this.searchResults = undefined;
       var that = this;
       si.search({
         'query': {
           '*': ['usa']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
-      return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+      return this.searchResults != undefined;
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -152,7 +153,7 @@ describe('deleting and reindexing', function () {
     });
     waitsFor(function() {
       return this.err != undefined;
-    }, 'err not to be true', 5000)
+    }, 'err not to be true', 1000)
     runs(function () {
       expect(this.err).toEqual(false);
     });
@@ -161,19 +162,19 @@ describe('deleting and reindexing', function () {
 
   it('document reappears in search', function () {    
     runs(function () {
-      this.searchResults = '';
+      this.searchResults = undefined;
       var that = this;
       si.search({
         'query': {
           '*': ['usa']
         }
-      }, function(searchResults) {
+      }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
     });
     waitsFor(function() {
-      return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+      return this.searchResults != undefined;
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
