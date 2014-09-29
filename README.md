@@ -102,9 +102,17 @@ To make a searchable index, you must first add documents with `si.add`.
 
 Documents are then searchable with `si.search`.
 
+#Initialization
+
+`search-index` is called with `require` like so:
+
+    si = require('search-index');
+    
+To specify a location for the index, initialize `search-index` like so:
+
+    si = require('search-index')({ indexPath: 'si2' })
 
 #API
-
 
 ##si.add
 
