@@ -150,6 +150,28 @@ field must always be an array of single String tokens, for example
 remember to wrap home-rolled JSON with 'JSON.parse' to turn it into an
 object.
 
+Example:
+```javascript
+var batch = {
+  'doc1':{
+    'title':'A really interesting document',
+    'body':'This is a really interesting document',
+    'metadata':['red', 'potato']
+  },
+  'doc2':{
+    'title':'Another interesting document',
+    'body':'This is another really interesting document that is a bit different',
+    'metadata':['yellow', 'potato']
+  }
+};
+var batchName = 'twoDocs';
+var filters = ['metadata'];
+
+si.add({'batchName': batchName, 'filters': filters}, data, function(err) {
+  if (!err) console.log('indexed!');
+});
+```
+
 
 ##si.del
 
