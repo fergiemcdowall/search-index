@@ -243,8 +243,8 @@ the contents of the index. Terms are ordered by total occurances in
 index.
 
 ```javascript
-si.matcher(beginsWith, function(suggestion) {
-  console.log(suggestions);
+si.matcher(beginsWith, function(err, matches) {
+  if (!err) console.log(matches);
 });
 ```
 
@@ -265,8 +265,8 @@ si.tellMeAboutMySearchIndex(function(msg) {
 Empties the search index, can be used in conjunction with replication.
 
 ```javascript
-si.empty(function(msg) {
-  console.log("Emptied! Search-index now contains no documents- please refeed or replicate");
+si.empty(function(err) {
+  if (!err) console.log("Emptied! Search-index now contains no documents- please refeed or replicate");
 });
 ```
 
