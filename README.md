@@ -188,8 +188,8 @@ si.del(docID, function(err) {
 Get the document and all associated index entries.
 
 ```javascript
-si.get(docID, function(err, document) {
-  if (!err) console.log(document);
+si.get(docID, function(err, doc) {
+  if (!err) console.log(doc);
 });
 ```
 
