@@ -5,6 +5,7 @@
 - [Features](#user-content-features)
 - [Installation](#user-content-installation)
 - [Usage](#user-content-usage)
+- [Initialization](#user-content-initialization)
 - [API](#user-content-api)
 	- [si.add](#user-content-siadd)
 	- [si.del](#user-content-sidel)
