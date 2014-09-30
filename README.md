@@ -120,10 +120,7 @@ Inserts document into the index
 
 
 ```javascript
-si.add({
-	'batchName': batchName,
-	'filters': filters
-       }, data, function(err) {
+si.add({'batchName': batchName, 'filters': filters}, data, function(err) {
   if (!err) console.log('indexed!');
 });
 ```
