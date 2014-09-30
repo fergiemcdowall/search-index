@@ -199,8 +199,9 @@ si.get(docID, function(msg) {
 Queries the search index
 
 ```javascript
-si.search(query, function(msg) {
-  res.send(msg);
+si.search(query, function(err, results) {
+  //check for errors and do something with search results, for example this:
+  if (!err) console.log(results)
 });
 ```
 
