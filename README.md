@@ -178,8 +178,8 @@ si.add({'batchName': batchName, 'filters': filters}, data, function(err) {
 Delete the document and all associated index entries.
 
 ```javascript
-si.del(docID, function(msg) {
-  console.log(msg);
+si.del(docID, function(err) {
+  if (!err) console.log('success!');
 });
 ```
 
