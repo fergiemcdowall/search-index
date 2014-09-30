@@ -32,7 +32,7 @@
 Search-index
 ============
 
-[![NPM](https://nodei.co/npm/search-index.png?stars&downloads)](https://nodei.co/npm/search-index/)
+[![NPM](https://nodei.co/npm/search-index.png?stars&downloads&downloadRank)](https://nodei.co/npm/search-index/)
 
 [![NPM](https://nodei.co/npm-dl/search-index.png)](https://nodei.co/npm/search-index/)
 
