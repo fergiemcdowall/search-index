@@ -116,17 +116,19 @@ To specify a location for the index, initialize `search-index` like so:
 
 ##si.add
 
-Insets document into the index
+Inserts document into the index
 
 
 ```javascript
-si.add(batch, batchName, filters, function(msg) {
-  res.send(msg);
+si.add({
+	'batchName': batchName,
+	'filters': filters
+       }, data, function(err) {
+  if (!err) console.log('indexed!');
 });
 ```
 
-Where `batch` is a javascript object named `batchName` containing one
-or more documents in a format similar to:
+Where `batchName` is any name to tag the batch, and `filters` tells the index which fields can be filtered and agregated on, and `data` is an object containing one or more documents in a format similar to:
 
 
 ```javascript
