@@ -30,11 +30,15 @@ describe('indexing and search', function () {
       this.err = undefined;
       var that = this;
       si.indexValue({key:'TF~*~1987~~'}, function(err, value) {
-        that.err = err;
-        that.value = value;
+        if (err) {console.log('BIG FAT ERROR!!!' + e)}
+        else {
+          that.err = err;
+          that.value = value;
+        }
       });
     });
     waitsFor(function() {
+      console.log("this.value is " + this.value);
       return this.value != undefined;
     }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 30000)
     runs(function () {

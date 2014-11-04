@@ -7,6 +7,7 @@ describe('replication', function () {
   var data = JSON.parse(fs.readFileSync('justTen.json'));
 
 //should jeust overwrite if test is being run as part of a full suite
+/*
   it('should index one file of test data', function () {
     runs(function() {
       this.err = 'NOTSET';
@@ -25,7 +26,7 @@ describe('replication', function () {
       expect(this.err).toEqual(false);
     });
   });
-
+*/
 
 
   it('should be able to create a snapshot', function () {    
