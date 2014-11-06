@@ -30,7 +30,7 @@ describe('facetting', function () {
       expect(this.searchResults.hits[2].id).toEqual('510');
       expect(this.searchResults.hits[3].id).toEqual('287');
       expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({'places':[{'key':'japan','value':1},{'key':'usa','value':5}]}));
+        .toEqual(JSON.stringify({'places':[{'key':'japan','value':1},{'key':'usa','value':4}]}));
     });
   });
 
@@ -82,7 +82,7 @@ describe('facetting', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.facets.places[0].key).toEqual('usa');
-      expect(this.searchResults.facets.places[0].value).toEqual(525);
+      expect(this.searchResults.facets.places[0].value).toEqual(524);
       expect(this.searchResults.facets.places[1].key).toEqual('uk');
       expect(this.searchResults.facets.places[1].value).toEqual(85);
       expect(this.searchResults.facets.places[2].key).toEqual('japan');

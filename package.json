@@ -41,7 +41,7 @@
     }
   ],
   "scripts": {
-    "test": "rm -rf si && rm -rf si2 && NODE_ENV=test jasmine-node --verbose test/spec/*-spec.js"
+    "test": "rm -rf si si2 backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/1searching-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js"
   },
   "repository": {
     "type": "git",
