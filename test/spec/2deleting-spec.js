@@ -26,6 +26,7 @@ describe('deleting and reindexing', function () {
   });
 
 
+
   it('should verify delete', function () {    
     runs(function () {
       this.err = undefined;
@@ -38,7 +39,6 @@ describe('deleting and reindexing', function () {
       return this.err != undefined;
     }, 'waiting for response', 1000)
     runs(function() {
-      console.log('BOOM!: ' + this.err);
       expect(this.err['DELETE-DOCUMENT~747~*']).toBeUndefined();
       expect(this.err['DELETE-DOCUMENT~747~body']).toBeUndefined();
       expect(this.err['DELETE-DOCUMENT~747~date']).toBeUndefined();
@@ -53,6 +53,8 @@ describe('deleting and reindexing', function () {
       expect(this.err['DOCUMENT~747~']).toBeUndefined();
     });
   });
+
+
 
   it('verifies recalibration after delete', function () {
     runs(function() {
@@ -72,6 +74,8 @@ describe('deleting and reindexing', function () {
     });
   });
 
+
+
   it('verifies recalibration after delete', function () {
     runs(function() {
       this.value = undefined;
@@ -89,23 +93,6 @@ describe('deleting and reindexing', function () {
     });
   });
 
-  /*
-  it('verifies recalibration after delete', function () {
-    runs(function() {
-      this.value = '';
-      var that = this;
-      si.indexValue('TF~*~1987~~', function(value) {
-        that.value = value;
-      });
-    });
-    waitsFor(function() {
-      return this.value != '';
-    }, 'TF~*~1987~~ should have a value of 999 in TF index ', 100000)
-    runs(function () {
-      expect(this.value.length).toEqual(999);
-    });
-  });
-  */
 
   it('deleted document is not appearing in results', function () {    
     runs(function () {
@@ -132,6 +119,7 @@ describe('deleting and reindexing', function () {
       expect(this.searchResults.hits[2].id).toEqual('287');
     });
   });
+
 
   it('should reindex deleted document', function () {
     runs(function() {
@@ -185,6 +173,7 @@ describe('deleting and reindexing', function () {
       expect(this.searchResults.hits[3].id).toEqual('287');
     });
   });
+
 
   it('verifies recalibration after document is added again', function () {
     runs(function() {

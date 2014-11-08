@@ -5,6 +5,7 @@ var si = require('../../lib/search-index.js');
 
 describe('indexing and search', function () {
 
+
   var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/reuters-000.json'));
 
   it('should index one file of test data', function () {
@@ -26,21 +27,20 @@ describe('indexing and search', function () {
 
   it('verifies calibration after batch is indexed', function () {
     runs(function() {
-      this.value = undefined;
-      this.err = undefined;
+      this.msg = undefined;
       var that = this;
-      si.indexValue({key:'TF~*~1987~~'}, function(err, value) {
-        that.err = err;
-        that.value = value;
+      si.tellMeAboutMySearchIndex(function(msg) {
+        return that.msg = msg;
       });
     });
     waitsFor(function() {
-      return this.value != undefined;
+      return this.msg != undefined;
     }, 'TF~*~1987~~ should have a value of 1000 in TF index ', 30000)
     runs(function () {
-      expect(this.value.length).toEqual(1000);
+      expect(this.msg.totalDocs).toEqual(1000);
     });
   });
+
 
 });
 
