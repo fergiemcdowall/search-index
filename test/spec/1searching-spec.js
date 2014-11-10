@@ -55,6 +55,7 @@ describe('indexing and search', function () {
     });
   });
 
+
   it('should be able to handle multi word searches', function () {
     runs(function () {
       this.searchResults = '';
