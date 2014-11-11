@@ -6,7 +6,7 @@ var si = require('../../lib/search-index.js');
 describe('indexing and search', function () {
 
 
-  var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/reuters-000.json'));
+  var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
 
   it('should index one file of test data', function () {
     runs(function() {
