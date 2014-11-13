@@ -125,16 +125,12 @@ describe('deleting and reindexing', function () {
     runs(function() {
       this.err = undefined;
       var that = this;
-      var singleDoc = {};
-      singleDoc['747'] = data['747'];      
-      logger.debug(singleDoc);
-
+      var singleDoc = [];
+      singleDoc.push(data['746']);      
       var options = {};
       options['batchString'] = singleDoc;
       options['batchName'] = 'justOneDoc';
       options['filters'] = ['places'];
-
-      //      si.add(singleDoc, 'justOneDoc', ['places'], function(err) {
       si.add({'batchName': 'justOneDoc', 'filters': ['places']}, singleDoc, function(err) {
         that.err = err;
       });  
