@@ -153,18 +153,20 @@ object.
 
 Example:
 ```javascript
-var batch = {
-  'doc1':{
+var batch = [
+  {
+    'id':'doc'
     'title':'A really interesting document',
     'body':'This is a really interesting document',
     'metadata':['red', 'potato']
   },
-  'doc2':{
+  {
+    'id':'doc2'
     'title':'Another interesting document',
     'body':'This is another really interesting document that is a bit different',
     'metadata':['yellow', 'potato']
   }
-};
+];
 var batchName = 'twoDocs';
 var filters = ['metadata'];
 
@@ -173,6 +175,7 @@ si.add({'batchName': batchName, 'filters': filters}, data, function(err) {
 });
 ```
 
+Note: if you dont specify an id field, ```search-index``` will specify one for you.
 
 ##si.del
 
