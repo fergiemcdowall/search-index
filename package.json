@@ -14,11 +14,12 @@
     "level": "0.18.0",
     "level-multiply": "0.0.1",
     "natural": "0.1.25",
+    "object-hash": "0.3.0",
     "rimraf": "2.2.8",
     "search-context": "0.1.0"
   },
   "devDependencies": {
-    "reuters-21578-json" : "0.0.3",
+    "reuters-21578-json" : "0.0.4",
     "jasmine-node": "1.14.2"
   },
   "author": {
@@ -41,7 +42,7 @@
     }
   ],
   "scripts": {
-    "test": "rm -rf si si2 backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/1searching-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js"
+    "test": "rm -rf si si2 backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/1searching-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js && jasmine-node --verbose test/spec/7indexing-without-ids-spec.js"
   },
   "repository": {
     "type": "git",
