@@ -1,6 +1,6 @@
 var fs = require('fs');
 var logger = require('../../lib/logger.js');
-var si = require('../../lib/search-index.js')({ indexPath: 'si3' });
+var si3 = require('../../lib/search-index.js')({ indexPath: 'si3' });
 
 
 describe('indexing and search without ids', function () {
@@ -12,7 +12,7 @@ describe('indexing and search without ids', function () {
       this.err = undefined;
       var that = this;
       console.log('hello');
-      si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
+      si3.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
         that.err = err;
       });
     });
@@ -23,13 +23,37 @@ describe('indexing and search without ids', function () {
       expect(this.err).toEqual(false);
     });
   });
-
+/*
+  it('should be able to create a snapshot', function () {    
+    runs(function () {
+      this.completed = false;
+      this.error = false;
+      var that = this;
+      si3.snapShot(function(rs) {
+        rs.pipe(fs.createWriteStream('backup2.gz'))
+          .on('close', function() {
+            that.completed = true;
+          })
+          .on('error', function() {
+            that.error = true;
+          });
+      });
+    });
+    waitsFor(function() {
+      return this.completed;
+    }, 'waiting for search results', 60000)
+    runs(function() {
+      expect(this.completed).toEqual(true);
+      expect(this.error).toEqual(false);
+    });
+  });
+*/
 
   it('verifies calibration after batch is indexed', function () {
     runs(function() {
       this.msg = undefined;
       var that = this;
-      si.tellMeAboutMySearchIndex(function(msg) {
+      si3.tellMeAboutMySearchIndex(function(msg) {
         return that.msg = msg;
       });
     });
@@ -45,7 +69,7 @@ describe('indexing and search without ids', function () {
     runs(function () {
       this.searchResults = '';
       var that = this;
-      si.search({
+      si3.search({
         'query': {
           '*': ['usa']
         }
@@ -68,7 +92,7 @@ describe('indexing and search without ids', function () {
     runs(function () {
       this.searchResults = '';
       var that = this;
-      si.search({
+      si3.search({
         'query': {
           '*': ['reuter', '1987']
         }
