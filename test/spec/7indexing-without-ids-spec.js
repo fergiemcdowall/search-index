@@ -22,31 +22,7 @@ describe('indexing and search without ids', function () {
       expect(this.err).toEqual(false);
     });
   });
-/*
-  it('should be able to create a snapshot', function () {    
-    runs(function () {
-      this.completed = false;
-      this.error = false;
-      var that = this;
-      si3.snapShot(function(rs) {
-        rs.pipe(fs.createWriteStream('backup2.gz'))
-          .on('close', function() {
-            that.completed = true;
-          })
-          .on('error', function() {
-            that.error = true;
-          });
-      });
-    });
-    waitsFor(function() {
-      return this.completed;
-    }, 'waiting for search results', 60000)
-    runs(function() {
-      expect(this.completed).toEqual(true);
-      expect(this.error).toEqual(false);
-    });
-  });
-*/
+
 
   it('verifies calibration after batch is indexed', function () {
     runs(function() {
