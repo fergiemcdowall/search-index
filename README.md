@@ -109,9 +109,15 @@ Documents are then searchable with `si.search`.
 
     si = require('search-index');
     
-To specify a location for the index, initialize `search-index` like so:
+`search-index` can be initialized with `options` like so:
 
-    si = require('search-index')({ indexPath: 'si2' })
+    var options = { indexPath: 'si2', logLevel: 'error' }
+    si = require('search-index')(options)
+
+**Available options**
+
+* **indexPath** The physical location of the index on the filesystem. Default is `si`
+* **logLevel** A winston log level like `info`, `debug` (lots of logs) or `error` (nearly silent). Default is `info`
 
 #API
 
