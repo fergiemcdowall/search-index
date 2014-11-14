@@ -141,7 +141,6 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      console.log(this.searchResults);
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(5);
