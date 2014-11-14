@@ -174,7 +174,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[2].id).toEqual('510');
       expect(this.searchResults.hits[3].id).toEqual('287');
       expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({'places':[{'key':'japan','value':1},{'key':'usa','value':4}]}));
+        .toEqual(JSON.stringify({'places':[{'key':'usa','value':4},{'key':'japan','value':1}]}));
     });
   });
 
