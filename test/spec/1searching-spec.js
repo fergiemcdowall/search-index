@@ -31,6 +31,7 @@ describe('indexing and search', function () {
     });
   });
 
+
   it('should be able to handle 0 results', function () {
     runs(function () {
       this.searchResults = '';
@@ -72,6 +73,28 @@ describe('indexing and search', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBe(100);
       expect(this.searchResults.totalHits).toBe(922);
+    });
+  });
+
+
+  it('should be able to handle multi word searches where some words are not present in index', function () {
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['reuter', 'yorkxxxxxxx']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toEqual(0);
     });
   });
 
