@@ -108,14 +108,14 @@ Documents are then searchable with `si.search`.
 `search-index` is called with `require` like so:
 
 ```javascript
-    si = require('search-index');
+var si = require('search-index');
 ```
 
 `search-index` can be initialized with `options` like so:
 
 ```javascript
 var options = { indexPath: 'si2', logLevel: 'error' }
-si = require('search-index')(options)
+var si = require('search-index')(options)
 ```
 **Available options**
 
