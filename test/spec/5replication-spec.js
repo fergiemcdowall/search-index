@@ -1,5 +1,4 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 var level = require('level');
 

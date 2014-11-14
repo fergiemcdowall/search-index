@@ -1,5 +1,4 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 
 
@@ -20,7 +19,6 @@ describe('deleting and reindexing', function () {
       return this.err != undefined;
     }, 'waiting for indexData response', 1000)
     runs(function() {
-      logger.debug(this.err);
       expect(true).toEqual(true);
     });
   });
@@ -103,7 +101,6 @@ describe('deleting and reindexing', function () {
           '*': ['usa']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });

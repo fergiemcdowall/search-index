@@ -16,7 +16,8 @@
     "natural": "0.1.25",
     "object-hash": "0.3.0",
     "rimraf": "2.2.8",
-    "search-context": "0.1.0"
+    "search-context": "0.1.0",
+    "winston":"0.8.3"
   },
   "devDependencies": {
     "reuters-21578-json" : "0.0.4",

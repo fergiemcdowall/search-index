@@ -1,5 +1,4 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 
 describe('configuration', function () {
   it('should accept configuration', function () {

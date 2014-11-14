@@ -1,5 +1,4 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 
 
@@ -15,7 +14,6 @@ describe('indexing and search', function () {
           '*': ['usa']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -42,7 +40,6 @@ describe('indexing and search', function () {
           '*': ['asdijasdjasdadssadmakesnosense']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -65,7 +62,6 @@ describe('indexing and search', function () {
           '*': ['reuter', '1987']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -90,7 +86,6 @@ describe('indexing and search', function () {
         },
         'offset': 5
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -115,7 +110,6 @@ describe('indexing and search', function () {
         },
         'pageSize': 5
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -140,7 +134,6 @@ describe('indexing and search', function () {
         'offset': 5,
         'pageSize': 5
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -167,8 +160,6 @@ describe('indexing and search', function () {
         },
         'facets': ['places'],
       }, function(err, searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -202,7 +193,6 @@ describe('indexing and search', function () {
           'places': ['japan']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -210,7 +200,6 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      logger.debug(this.searchResults);
       expect(this.searchResults.hits.length).toEqual(1);
       expect(this.searchResults.hits[0].id).toEqual('287');
     });
@@ -230,8 +219,6 @@ describe('indexing and search', function () {
           'body': '20'
         }
       }, function(err, searchResults) {
-//        logger.debug(JSON.stringify(searchResults));
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -258,7 +245,6 @@ describe('indexing and search', function () {
         },
         'teaser': 'title'
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });

@@ -1,10 +1,8 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 var si = require('../../lib/search-index.js');
 
 
 describe('indexing and search', function () {
-
 
   var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
 

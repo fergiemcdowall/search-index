@@ -1,5 +1,4 @@
 var fs = require('fs');
-var logger = require('../../lib/logger.js');
 var si3 = require('../../lib/search-index.js')({ indexPath: 'si3' });
 
 
@@ -74,7 +73,6 @@ describe('indexing and search without ids', function () {
           '*': ['usa']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
@@ -97,7 +95,6 @@ describe('indexing and search without ids', function () {
           '*': ['reuter', '1987']
         }
       }, function(err, searchResults) {
-        logger.debug(searchResults);
         that.searchResults = searchResults;
       });
     });
