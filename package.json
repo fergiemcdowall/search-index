@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "JSONStream": "0.9.0",
-    "async": "0.2.9",
+    "async": "0.9.0",
     "colors": "0.6.2",
     "level": "0.18.0",
     "level-multiply": "0.0.1",
-    "natural": "0.1.25",
+    "natural": "0.1.28",
     "object-hash": "0.3.0",
     "rimraf": "2.2.8",
     "search-context": "0.1.0",
