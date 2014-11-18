@@ -114,13 +114,14 @@ var si = require('search-index');
 `search-index` can be initialized with `options` like so:
 
 ```javascript
-var options = { indexPath: 'si2', logLevel: 'error' }
+var options = { indexPath: 'si2', logLevel: 'error', logSilent: false }
 var si = require('search-index')(options)
 ```
 **Available options**
 
 * **indexPath** The physical location of the index on the filesystem. Default is `si`
 * **logLevel** A winston log level like `info`, `debug` (lots of logs) or `error` (nearly silent). Default is `info`
+* **logSilent** Set to true to suppress any log the search-index might do
 
 #API
 
