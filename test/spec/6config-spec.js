@@ -17,4 +17,16 @@ describe('configuration', function () {
       return fs.existsSync('si2');
     }, 5000);
   });
+
+  it('should accept logSilent in configuration', function () {
+     var si;
+
+     runs(function () {
+         si = require('../../lib/search-index.js')({ logSilent: true });
+     });
+
+     waitsFor(function() {
+         return searchIndexLogger.transports.console.silent;
+     }, 5000);
+  });
 });
