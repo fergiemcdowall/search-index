@@ -321,14 +321,14 @@ A free text string containing one or many tokens. `*` is
 equivalent to 'search all fields'
 
 ```javascript
-    "query": {'*':["usa"]}
+    "query": {"*":["usa"]}
 ```
 
 You can also specify named fields like so :
 
 ```javascript
     "query": {
-      "title":["usa, reagan"]
+      "title":["usa", "reagan"]
     }
 ```
 
