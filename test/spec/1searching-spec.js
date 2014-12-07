@@ -296,33 +296,5 @@ describe('indexing and search', function () {
     });
   });
 
-  it('should be able to get documents from index', function () {    
-    runs(function () {
-      this.res = '';
-      var that = this;
-      si.get(747, function(err, res) {
-        that.res = res;
-      });
-    });
-    waitsFor(function() {
-      return this.res != '';
-    }, 'waiting for response', 1000)
-    runs(function() {
-      expect(this.res['DELETE-DOCUMENT~747~*']).toBeDefined();
-      expect(this.res['DELETE-DOCUMENT~747~body']).toBeDefined();
-      expect(this.res['DELETE-DOCUMENT~747~date']).toBeDefined();
-      expect(this.res['DELETE-DOCUMENT~747~places']).toBeDefined();
-      expect(this.res['DELETE-DOCUMENT~747~title']).toBeDefined();
-//      expect(this.res['VECTOR~*~747~']).toBeDefined();
-//      expect(this.res['VECTOR~body~747~']).toBeDefined();
-//      expect(this.res['VECTOR~date~747~']).toBeDefined();
-//      expect(this.res['VECTOR~places~747~']).toBeDefined();
-//      expect(this.res['VECTOR~title~747~']).toBeDefined();
-//      expect(this.res['VECTOR~*fielded~747~']).toBeDefined();
-//      expect(this.res['DOCUMENT~747~']).toBeDefined();
-    });
-  });
-
-
 });
 
