@@ -460,5 +460,5 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [npm-downloads-image]: http://img.shields.io/npm/dm/search-index.svg?style=flat
 
 [travis-url]: http://travis-ci.org/fergiemcdowall/search-index
-[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index/develop.svg?style=flat
+[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat
 
