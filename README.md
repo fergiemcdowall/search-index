@@ -1,3 +1,5 @@
+[![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
+
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Search-index](#user-content-search-index)
@@ -38,8 +40,6 @@ Search-index
 [![NPM](https://nodei.co/npm-dl/search-index.png)](https://nodei.co/npm/search-index/)
 
 http://npm-stat.vorba.ch/charts.html?package=search-index
-
-[![Build Status](https://secure.travis-ci.org/fergiemcdowall/search-index.png)](http://travis-ci.org/fergiemcdowall/search-index)
 
 Search-index is a text search module for Node.js. Think "node version
 of Lucene, but much simpler".
@@ -452,5 +452,13 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-url]: LICENSE
 
+[npm-url]: https://npmjs.org/package/search-index
+[npm-version-image]: http://img.shields.io/npm/v/search-index.svg?style=flat
+[npm-downloads-image]: http://img.shields.io/npm/dm/search-index.svg?style=flat
+
+[travis-url]: http://travis-ci.org/fergiemcdowall/search-index
+[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index/develop.svg?style=flat
 
