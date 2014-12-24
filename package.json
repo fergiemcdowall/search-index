@@ -36,7 +36,8 @@
     "index",
     "lucene"
   ],
-  "main": "./lib/search-index.js",
+  "main": "./index.js",
+  "browser": "./browser.js",
   "maintainers": [
     {
       "name": "Fergus McDowall",

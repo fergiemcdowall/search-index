@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../lib/search-index.js')({logLevel:'info'});
+var si = require('../../')({logLevel:'info'});
 
 
 describe('indexing and search', function () {
@@ -61,4 +61,3 @@ describe('indexing and search', function () {
 
 
 });
-
