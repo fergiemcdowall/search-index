@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../lib/search-index.js');
+var si = require('../../');
 
 
 describe('deleting and reindexing', function () {

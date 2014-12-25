@@ -1,4 +1,4 @@
-var winston = require('winston');
+winston = require('winston');
 
 //global <- is there a better way of doing this
 searchIndexLogger = new (winston.Logger)({
