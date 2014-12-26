@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si3 = require('../../lib/search-index.js')({ indexPath: 'si3' });
+var si3 = require('../../')({ indexPath: 'si3' });
 
 
 describe('indexing and search without ids', function () {

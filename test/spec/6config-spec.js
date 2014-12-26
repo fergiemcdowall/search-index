@@ -2,7 +2,7 @@ var fs = require('fs');
 
 describe('configuration', function () {
   it('should accept configuration', function () {
-    si = require('../../lib/search-index.js')({ indexPath: 'si2' });
+    si = require('../../')({ indexPath: 'si2' });
     expect(si).toBeDefined();
   });
 
@@ -10,7 +10,7 @@ describe('configuration', function () {
     var si;
 
     runs(function() {
-      si = require('../../lib/search-index.js')({ indexPath: 'si2' });
+      si = require('../../')({ indexPath: 'si2' });
     });
 
     waitsFor(function () {
@@ -22,7 +22,7 @@ describe('configuration', function () {
      var si;
 
      runs(function () {
-         si = require('../../lib/search-index.js')({ logSilent: true });
+         si = require('../../')({ logSilent: true });
      });
 
      waitsFor(function() {

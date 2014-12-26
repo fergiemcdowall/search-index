@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../lib/search-index.js');
+var si = require('../../');
 
 
 describe('indexing and search', function () {

@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../lib/search-index.js');
+var si = require('../../');
 var should = require('should');
 
 describe('get-ting', function () {

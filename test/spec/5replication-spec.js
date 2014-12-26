@@ -1,6 +1,6 @@
 var fs = require('fs');
-var si = require('../../lib/search-index.js');
-var level = require('level');
+var si = require('../../');
+var level = require('levelup');
 
 describe('replication', function () {
   var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
@@ -88,4 +88,3 @@ describe('replication', function () {
   });
 
 });
-
