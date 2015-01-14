@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({logLevel:'info'});
+var si = require('../../')({logSilent: true});
 
 
 describe('indexing and search', function () {
@@ -10,16 +10,18 @@ describe('indexing and search', function () {
   it('should index one file of test data', function () {
     runs(function() {
       this.err = undefined;
+      this.done = false;
       var that = this;
       si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
         that.err = err;
+        that.done = true;
       });
     });
     waitsFor(function() {
-      return this.err != undefined;
+      return this.done != false;
     }, 'err not to be empty (search err returned)', 30000)
     runs(function () {
-      expect(this.err).toEqual(false);
+      expect(this.err).toEqual(null);
     });
   });
 
@@ -36,9 +38,9 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.err != undefined;
-    }, 'err to be true', 30000)
+    }, 'err to be Malformed document', 30000)
     runs(function () {
-      expect(this.err).toEqual(true);
+      expect(this.err.message).toEqual('Malformed document');
     });
   });
 

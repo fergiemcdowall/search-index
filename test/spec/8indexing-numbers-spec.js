@@ -9,17 +9,18 @@ describe('indexing and search without ids', function () {
   it('should index one file of test data that doesnt contain IDs', function () {
     runs(function() {
       this.err = undefined;
+      this.done = false;
       var that = this;
-      console.log('hello');
       si4.add({'batchName': 'justTen', 'filters': ['places']}, data, function(err) {
         that.err = err;
+        that.done = true;
       });
     });
     waitsFor(function() {
-      return this.err != undefined;
+      return this.done != false;
     }, 'err not to be empty (search err returned)', 30000)
     runs(function () {
-      expect(this.err).toEqual(false);
+      expect(this.err).toEqual(null);
     });
   });
 
