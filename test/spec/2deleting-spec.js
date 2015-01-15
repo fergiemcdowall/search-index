@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../');
+var si = require('../../')({logLevel:false});
 
 
 describe('deleting and reindexing', function () {
@@ -10,13 +10,15 @@ describe('deleting and reindexing', function () {
   it('should be able to delete documents from index', function () {    
     runs(function () {
       this.err = undefined;
+      this.done = false;
       var that = this;
       si.del(747, function(err) {
         that.err = err;
+        that.done = true;
       });
     });
     waitsFor(function() {
-      return this.err != undefined;
+      return this.done;
     }, 'waiting for indexData response', 1000)
     runs(function() {
       expect(true).toEqual(true);
@@ -65,10 +67,10 @@ describe('deleting and reindexing', function () {
       });
     });
     waitsFor(function() {
-      return this.err != undefined;
+      return this.value != undefined;
     }, 'TF~*~mccaw~~ should be removed from TF index ', 2000)
     runs(function () {
-      expect(this.err).toEqual(true);
+      expect(this.err).toEqual(null);
     });
   });
 
@@ -121,6 +123,7 @@ describe('deleting and reindexing', function () {
   it('should reindex deleted document', function () {
     runs(function() {
       this.err = undefined;
+      this.done = false;
       var that = this;
       var singleDoc = [];
       singleDoc.push(data['746']);      
@@ -130,13 +133,14 @@ describe('deleting and reindexing', function () {
       options['filters'] = ['places'];
       si.add({'batchName': 'justOneDoc', 'filters': ['places']}, singleDoc, function(err) {
         that.err = err;
+        that.done = true;
       });  
     });
     waitsFor(function() {
-      return this.err != undefined;
+      return this.done != false;
     }, 'err not to be true', 1000)
     runs(function () {
-      expect(this.err).toEqual(false);
+      expect(this.err).toEqual(null);
     });
   });
 

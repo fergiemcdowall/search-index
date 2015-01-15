@@ -1,6 +1,6 @@
 var fs = require('fs');
-var si = require('../../');
-var should = require('should');
+var si = require('../../')({logSilent: false});
+//var should = require('should');
 
 describe('get-ting', function () {
   it('should be able to retreive a document by its id', function () {    
