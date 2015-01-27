@@ -67,7 +67,7 @@ describe('replication', function () {
     }, 'waiting for response...', 5000)
     runs(function() {
       expect(this.completed).toEqual(true);
-      expect(this.error).toEqual(false);
+      expect(this.error).toEqual(null);
     });
   });
 

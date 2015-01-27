@@ -21,15 +21,14 @@ describe('configuration', function () {
   });
 
   it('should accept logSilent in configuration', function () {
-     var si;
+    var si;
 
-     runs(function () {
-       si = require('../../')({ logSilent: true });
-     });
-
-     waitsFor(function() {
-       console.log('boom');
-       return searchIndexLogger.transports.console.silent;
-     }, 5000);
+    runs(function () {
+      si = require('../../')({ logSilent: true });
+    });
+    
+    waitsFor(function() {
+      return searchIndexLogger.transports.console.silent;
+    }, 5000);
   });
 });
