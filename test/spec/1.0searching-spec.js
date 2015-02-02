@@ -23,11 +23,11 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('747');
-      expect(this.searchResults.hits[2].id).toEqual('510');
-      expect(this.searchResults.hits[3].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(100);
+      expect(this.searchResults.hits[3].id).toEqual('417');
+      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[13].id).toEqual('31');
+      expect(this.searchResults.hits[16].id).toEqual('77');
     });
   });
 
@@ -118,8 +118,8 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(43);
-      expect(this.searchResults.hits[0].id).toEqual('991');
+      expect(this.searchResults.hits.length).toEqual(51);
+      expect(this.searchResults.hits[0].id).toEqual('271');
     });
   });
 
@@ -167,7 +167,7 @@ describe('indexing and search', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(5);
-      expect(this.searchResults.hits[0].id).toEqual('991');
+      expect(this.searchResults.hits[0].id).toEqual('271');
     });
   });
 
@@ -191,13 +191,13 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('747');
-      expect(this.searchResults.hits[2].id).toEqual('510');
-      expect(this.searchResults.hits[3].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(100);
+      expect(this.searchResults.hits[3].id).toEqual('417');
+      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[13].id).toEqual('31');
+      expect(this.searchResults.hits[16].id).toEqual('77');
       expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({'places':[{'key':'usa','value':4},{'key':'japan','value':1}]}));
+        .toEqual(JSON.stringify({'places':[{'key':'usa','value':546},{'key':'japan','value':16},{"key":"uk","value":15},{"key":"brazil","value":9},{"key":"taiwan","value":5},{"key":"china","value":4},{"key":"ussr","value":4},{"key":"australia","value":4},{"key":"west-germany","value":3},{"key":"france","value":3}]}));
     });
   });
 
@@ -222,8 +222,8 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.hits.length).toEqual(1);
-      expect(this.searchResults.hits[0].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(16);
+      expect(this.searchResults.hits[0].id).toEqual('676');
     });
   });
 
@@ -263,7 +263,7 @@ describe('indexing and search', function () {
       var that = this;
       si.search({
         'query': {
-          '*': ['usa']
+          '*': ['advertising']
         },
         'teaser': 'title'
       }, function(err, searchResults) {
@@ -274,7 +274,8 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(JSON.stringify(this.searchResults.hits[0].document.teaser)).toEqual('"LIBERTY ALL-STAR <<span class=\\"sc-em\\">usa</span>> SETS INITIAL PAYOUT"');
+      expect(JSON.stringify(this.searchResults.hits[0].document.teaser))
+        .toEqual('"GREY <span class=\\"sc-em\\">advertising</span> <GREY> FORMS NEW DIVISION"');
     });
   });
 

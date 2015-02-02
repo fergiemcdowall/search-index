@@ -23,13 +23,13 @@ describe('faceting', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('747');
-      expect(this.searchResults.hits[2].id).toEqual('510');
-      expect(this.searchResults.hits[3].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(100);
+      expect(this.searchResults.hits[3].id).toEqual('417');
+      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[13].id).toEqual('31');
+      expect(this.searchResults.hits[16].id).toEqual('77');
       expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({'places':[{'key':'usa','value':4},{'key':'japan','value':1}]}));
+        .toEqual(JSON.stringify({"places":[{"key":"usa","value":546},{"key":"japan","value":16},{"key":"uk","value":15},{"key":"brazil","value":9},{"key":"taiwan","value":5},{"key":"china","value":4},{"key":"ussr","value":4},{"key":"australia","value":4},{"key":"west-germany","value":3},{"key":"france","value":3}]}));
     });
   });
 

@@ -112,10 +112,11 @@ describe('deleting and reindexing', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(3);
-      expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('510');
-      expect(this.searchResults.hits[2].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(100);
+      expect(this.searchResults.hits[3].id).toEqual('417');
+      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[13].id).toEqual('31');
+      expect(this.searchResults.hits[16].id).toEqual('77');
     });
   });
 
@@ -163,11 +164,11 @@ describe('deleting and reindexing', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('113');
-      expect(this.searchResults.hits[1].id).toEqual('747');
-      expect(this.searchResults.hits[2].id).toEqual('510');
-      expect(this.searchResults.hits[3].id).toEqual('287');
+      expect(this.searchResults.hits.length).toEqual(100);
+      expect(this.searchResults.hits[3].id).toEqual('417');
+      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[13].id).toEqual('31');
+      expect(this.searchResults.hits[16].id).toEqual('77');
     });
   });
 

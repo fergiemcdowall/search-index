@@ -60,7 +60,7 @@ describe('indexing and search without ids', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.hits.length).toEqual(100);
     });
   });
 

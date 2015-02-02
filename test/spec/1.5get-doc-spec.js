@@ -16,7 +16,9 @@ describe('get-ting', function () {
     }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.result).toBeDefined();
-      expect(this.result).toEqual('{"title":"CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT","body":"Champion Products Inc said its\\nboard of directors approved a two-for-one stock split of its\\ncommon shares for shareholders of record as of April 1, 1987.\\n    The company also said its board voted to recommend to\\nshareholders at the annual meeting April 23 an increase in the\\nauthorized capital stock from five mln to 25 mln shares.\\n Reuter\\n\\u0003","date":"26-FEB-1987 15:17:11.20","topics":["earn"],"places":["usa"],"id":"9","*":"CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT Champion Products Inc said its\\nboard of directors approved a two-for-one stock split of its\\ncommon shares for shareholders of record as of April 1, 1987.\\n    The company also said its board voted to recommend to\\nshareholders at the annual meeting April 23 an increase in the\\nauthorized capital stock from five mln to 25 mln shares.\\n Reuter\\n\\u0003 26-FEB-1987 15:17:11.20 9 "}');
+      expect(JSON.parse(this.result).id).toEqual('9');
+      expect(JSON.parse(this.result).title).toEqual('CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT');
+      expect(JSON.parse(this.result).date).toEqual('26-FEB-1987 15:17:11.20');
     });
   });
 
