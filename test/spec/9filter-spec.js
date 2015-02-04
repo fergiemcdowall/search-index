@@ -102,8 +102,6 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults.hits.length).toEqual(5);
       expect(this.searchResults.hits[0].id).toEqual('3VKiNd');
-      expect(this.searchResults.hits[1].id).toEqual('TEWP');
-      expect(this.searchResults.hits[2].id).toEqual('4bU7P5');
       expect(this.searchResults.hits[3].id).toEqual('3swrN');
       expect(this.searchResults.hits[4].id).toEqual('2PHH0R');
     });
