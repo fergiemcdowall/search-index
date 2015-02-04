@@ -332,7 +332,14 @@ You can also specify named fields like so :
     }
 ```
 
-note: currently you can only limit to one field
+and so:
+
+```javascript
+    "query": {
+      "title": ["reagan"],
+      "body": ["intelligence", "agency", "contra"]
+    }
+```
 
 ##offset
 
