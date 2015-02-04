@@ -228,6 +228,127 @@ describe('indexing and search', function () {
   });
 
 
+  it('should be able to search on all fields', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['reagan']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults.totalDocs).toEqual(20);
+      expect(this.searchResults.hits[0].id).toEqual('796');
+      expect(this.searchResults.hits[1].id).toEqual('790');
+      expect(this.searchResults.hits[2].id).toEqual('801');
+      expect(this.searchResults.hits[3].id).toEqual('231');
+    });
+  });
+
+
+  it('should be able to search on one field', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          'title': ['reagan']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults.totalDocs).toEqual(10);
+      expect(this.searchResults.hits[8].id).toEqual('796');
+    });
+  });
+
+
+  it('should be able to search on one field for two terms', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          'title': ['reagan', 'baker']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults.totalDocs).toEqual(4);
+      expect(this.searchResults.hits[0].id).toEqual('386');
+      expect(this.searchResults.hits[1].id).toEqual('804');
+      expect(this.searchResults.hits[2].id).toEqual('796');
+      expect(this.searchResults.hits[3].id).toEqual('790');
+    });
+  });
+
+
+  it('should be able to search on on two fields for seperate terms', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          'title': ['reagan'],
+          'body': ['intelligence']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults.totalDocs).toEqual(4);
+      expect(this.searchResults.hits[0].id).toEqual('801');
+      expect(this.searchResults.hits[1].id).toEqual('386');
+      expect(this.searchResults.hits[2].id).toEqual('28');
+      expect(this.searchResults.hits[3].id).toEqual('869');
+    });
+  });
+
+  it('should be able to search on on two fields for multiple', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          'title': ['reagan'],
+          'body': ['intelligence', 'agency', 'contra']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults.totalDocs).toEqual(2);
+      expect(this.searchResults.hits[0].id).toEqual('386');
+      expect(this.searchResults.hits[1].id).toEqual('869');
+    });
+  });
+
+
   it('should be able to weight search results', function () {    
     runs(function () {
       this.searchResults = '';
