@@ -169,6 +169,76 @@ describe('faceting', function () {
     });
   });
 
+  it('should be able to mark a facet as active', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['reuter']
+        },
+        'filter': {
+          'places': ['zaire']
+        },
+        'facetSort' : 'keyDesc',
+        'facetLength' : 20,
+        'facets': ['places'],
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.facets.places[0].key).toEqual('zaire');
+      expect(this.searchResults.facets.places[0].value).toEqual(2);
+      expect(this.searchResults.facets.places[0].active).toEqual(true);
+      expect(this.searchResults.facets.places[1].key).toEqual('thailand');
+      expect(this.searchResults.facets.places[1].value).toEqual(1);
+      expect(this.searchResults.facets.places[1].active).toBeUndefined();
+    });
+  });
+
+
+  it('should be able to mark multiple facets as active', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['reuter']
+        },
+        'filter': {
+          'places': ['usa', 'japan']
+        },
+        'facetSort' : 'valueDesc',
+        'facetLength' : 20,
+        'facets': ['places'],
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.facets.places[0].key).toEqual('japan');
+      expect(this.searchResults.facets.places[0].value).toEqual(16);
+      expect(this.searchResults.facets.places[0].active).toEqual(true);
+      expect(this.searchResults.facets.places[1].key).toEqual('usa');
+      expect(this.searchResults.facets.places[1].value).toEqual(16);
+      expect(this.searchResults.facets.places[1].active).toEqual(true);
+      expect(this.searchResults.facets.places[2].key).toEqual('uk');
+      expect(this.searchResults.facets.places[2].value).toEqual(4);
+      expect(this.searchResults.facets.places[2].active).toBeUndefined();
+    });
+  });
+
+//TODO: Add more examples of active facet tagging
+
 
 
 });
