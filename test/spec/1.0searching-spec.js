@@ -77,6 +77,28 @@ describe('indexing and search', function () {
   });
 
 
+  it('should be able to return all results by doing a wildcard (*) search', function () {
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['*']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.totalHits).toBe(1000);
+    });
+  });
+
+
   it('should be able to handle multi word searches where some words are not present in index', function () {
     runs(function () {
       this.searchResults = '';
@@ -371,8 +393,8 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults.hits[0].id).toEqual('231');
       expect(this.searchResults.hits[1].id).toEqual('804');
-      expect(this.searchResults.hits[2].id).toEqual('801');
-      expect(this.searchResults.hits[3].id).toEqual('869');
+      expect(this.searchResults.hits[2].id).toEqual('869');
+      expect(this.searchResults.hits[5].id).toEqual('801');
     });
   });
 
