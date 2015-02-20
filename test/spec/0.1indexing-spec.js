@@ -30,7 +30,7 @@ describe('indexing and search', function () {
       this.done = false;
       var that = this;
       si.add({'batchName': 'world-bank-projects.json',
-              'filters': ['mjtheme', 'totalamt']},
+              'filters': ['mjtheme']},
              _.map(data, processDoc), function(err) {
         that.err = err;
         that.done = true;
@@ -44,6 +44,31 @@ describe('indexing and search', function () {
     });
   });
 
+  it('should be able to create a snapshot', function () {    
+    runs(function () {
+      this.completed = false;
+      this.error = false;
+      var that = this;
+      si.snapShot(function(rs) {
+        rs.pipe(fs.createWriteStream('backup.gz'))
+          .on('close', function() {
+            that.completed = true;
+          })
+          .on('error', function() {
+            that.error = true;
+          });
+      });
+    });
+    waitsFor(function() {
+      return this.completed;
+    }, 'waiting for search results', 60000)
+    runs(function() {
+      expect(this.completed).toEqual(true);
+      expect(this.error).toEqual(false);
+    });
+  });
+
+
   it('should be able to search in indexed data', function () {    
     runs(function () {
       this.searchResults = '';
@@ -51,7 +76,8 @@ describe('indexing and search', function () {
       si.search({
         'query': {
           '*': ['ethiopia']
-        }
+        },
+        'facets': ['mjtheme']
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -62,6 +88,10 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.facets.mjtheme).toBeDefined();
+      expect(this.searchResults.facets.mjtheme[0].key).toEqual('Human development');
+      expect(this.searchResults.facets.mjtheme[0].value).toEqual(2);
+      expect(this.searchResults.facets.mjtheme.length).toEqual(7);
       expect(this.searchResults.hits[0].id).toEqual('P129828');
       expect(this.searchResults.hits[1].id).toEqual('P123531');
       expect(this.searchResults.hits[2].id).toEqual('P117731');
