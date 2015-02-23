@@ -4,6 +4,9 @@ var _ = require('lodash');
 
 describe('indexing and search', function () {
 
+  var padInt = function(intIn) {
+    return ("000000000000000" + intIn).slice(-15);
+  }
 
   var data = JSON.parse(fs.readFileSync('node_modules/world-bank-dataset/world-bank-projects.json'));
 
@@ -19,7 +22,7 @@ describe('indexing and search', function () {
     delete datum.sector1;
     delete datum.sector2;
     delete datum.theme_namecode;
-//    datum.totalamt = [datum.totalamt];
+    datum.totalamt = [padInt(datum.totalamt)];
     return datum;
   };
 
@@ -94,16 +97,17 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
+      console.log(this.searchResults.facets);
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(4);
       expect(this.searchResults.facets.totalamt).toBeDefined();
-      expect(this.searchResults.facets.totalamt[0].key).toEqual('100000000');
+      expect(this.searchResults.facets.totalamt[0].key).toEqual(padInt('100000000'));
       expect(this.searchResults.facets.totalamt[0].value).toEqual(1);
-      expect(this.searchResults.facets.totalamt[1].key).toEqual('130000000');
+      expect(this.searchResults.facets.totalamt[1].key).toEqual(padInt('130000000'));
       expect(this.searchResults.facets.totalamt[1].value).toEqual(1);
-      expect(this.searchResults.facets.totalamt[2].key).toEqual('415000000');
+      expect(this.searchResults.facets.totalamt[2].key).toEqual(padInt('415000000'));
       expect(this.searchResults.facets.totalamt[2].value).toEqual(1);
-      expect(this.searchResults.facets.totalamt[3].key).toEqual('600000000');
+      expect(this.searchResults.facets.totalamt[3].key).toEqual(padInt('600000000'));
       expect(this.searchResults.facets.totalamt[3].value).toEqual(1);
       expect(this.searchResults.facets.totalamt.length).toEqual(4);
     });
