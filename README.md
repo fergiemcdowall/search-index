@@ -259,7 +259,7 @@ the contents of the index. Terms are ordered by total occurances in
 index.
 
 ```javascript
-si.matcher(beginsWith, function(err, matches) {
+si.match(beginsWith, function(err, matches) {
   if (!err) console.log(matches);
 });
 ```
