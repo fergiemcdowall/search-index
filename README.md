@@ -182,7 +182,7 @@ var batch = [
 var batchName = 'twoDocs';
 var filters = ['metadata'];
 
-si.add({'batchName': batchName, 'filters': filters}, data, function(err) {
+si.add({'batchName': batchName, 'filters': filters}, batch, function(err) {
   if (!err) console.log('indexed!');
 });
 ```
