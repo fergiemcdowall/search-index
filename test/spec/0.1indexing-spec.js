@@ -28,6 +28,7 @@ describe('indexing and search', function () {
 
 //  console.log(_.map(data, processDoc));
 
+
   it('should index one file of test data', function () {
     runs(function() {
       this.err = undefined;
@@ -112,6 +113,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets.totalamt.length).toEqual(4);
     });
   });
+
 
 
 });
