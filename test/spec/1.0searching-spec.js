@@ -4,7 +4,6 @@ var si = require('../../')({logLevel:false});
 
 describe('indexing and search', function () {
 
-
   it('should be able to search in indexed data', function () {    
     runs(function () {
       this.searchResults = '';
@@ -76,7 +75,6 @@ describe('indexing and search', function () {
     });
   });
 
-
   it('should be able to return all results by doing a wildcard (*) search', function () {
     runs(function () {
       this.searchResults = '';
@@ -119,7 +117,6 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits.length).toEqual(0);
     });
   });
-
 
   it('should be able to offset', function () {
     runs(function () {
@@ -266,7 +263,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.totalDocs).toEqual(20);
+      expect(this.searchResults.totalHits).toEqual(20);
       expect(this.searchResults.hits[0].id).toEqual('796');
       expect(this.searchResults.hits[1].id).toEqual('790');
       expect(this.searchResults.hits[2].id).toEqual('801');
@@ -291,7 +288,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.totalDocs).toEqual(10);
+      expect(this.searchResults.totalHits).toEqual(10);
       expect(this.searchResults.hits[8].id).toEqual('796');
     });
   });
@@ -313,7 +310,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.totalDocs).toEqual(4);
+      expect(this.searchResults.totalHits).toEqual(4);
       expect(this.searchResults.hits[0].id).toEqual('386');
       expect(this.searchResults.hits[1].id).toEqual('804');
       expect(this.searchResults.hits[2].id).toEqual('796');
@@ -339,7 +336,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.totalDocs).toEqual(4);
+      expect(this.searchResults.totalHits).toEqual(4);
       expect(this.searchResults.hits[0].id).toEqual('801');
       expect(this.searchResults.hits[1].id).toEqual('386');
       expect(this.searchResults.hits[2].id).toEqual('28');
@@ -364,7 +361,7 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      expect(this.searchResults.totalDocs).toEqual(2);
+      expect(this.searchResults.totalHits).toEqual(2);
       expect(this.searchResults.hits[0].id).toEqual('386');
       expect(this.searchResults.hits[1].id).toEqual('869');
     });
