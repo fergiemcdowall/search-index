@@ -57,19 +57,19 @@ describe('faceting', function () {
       expect(this.searchResults.facets.totalamt[0].value).toEqual(76);
       expect(this.searchResults.facets.mjtheme[0].key).toEqual("Economic management");
       expect(this.searchResults.facets.mjtheme[0].value).toEqual(13);
-      expect(this.searchResults.facetRanges.totalamt[0].key).toEqual("000000000000000-000000006000000");
-      expect(this.searchResults.facetRanges.totalamt[0].value).toEqual(85);
-      expect(this.searchResults.facetRanges.totalamt[1].key).toEqual("000000006000001-010000000000000");
-      expect(this.searchResults.facetRanges.totalamt[1].value).toEqual(121);
-      expect(this.searchResults.facetRanges.mjtheme[0].key).toEqual("A-J");
-      expect(this.searchResults.facetRanges.mjtheme[0].value).toEqual(135);
-      expect(this.searchResults.facetRanges.mjtheme[1].key).toEqual("K-Z");
-      expect(this.searchResults.facetRanges.mjtheme[1].value).toEqual(161);      
+      expect(this.searchResults.facetRanges[0].value[0].key).toEqual("000000000000000-000000006000000");
+      expect(this.searchResults.facetRanges[0].value[0].value).toEqual(85);
+      expect(this.searchResults.facetRanges[0].value[1].key).toEqual("000000006000001-010000000000000");
+      expect(this.searchResults.facetRanges[0].value[1].value).toEqual(121);
+      expect(this.searchResults.facetRanges[1].value[0].key).toEqual("A-J");
+      expect(this.searchResults.facetRanges[1].value[0].value).toEqual(135);
+      expect(this.searchResults.facetRanges[1].value[1].key).toEqual("K-Z");
+      expect(this.searchResults.facetRanges[1].value[1].value).toEqual(161);      
     });
   });
 
 
-
+/*
   it('should be able to search for more than 1 word and show facetranges', function () {    
     runs(function () {
       this.searchResults = '';
@@ -263,6 +263,6 @@ describe('faceting', function () {
     });
   });
 
-
+*/
 
 })
