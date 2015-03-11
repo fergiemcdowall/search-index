@@ -184,4 +184,85 @@ describe('faceting', function () {
   });
 
 
+  it('should be able to search for more than 1 word and no ranges (experiment)', function () { 
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*": [
+            "africa", "bank"
+          ]
+        },
+        "facetRanges": {
+          "totalamt": {"sort":"valueDesc"},
+          "mjtheme": {"sort":"valueAsc"}
+        },
+        "offset": 0,
+        "pageSize": 100,
+        "facets": [
+          "totalamt",
+          "mjtheme"
+        ],
+        "facetSort": "keyAsc",
+        "facetLength": 10}, function(err, searchResults) {
+          that.searchResults = searchResults;
+        });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+//      console.log(JSON.stringify(this.searchResults.facetRanges, null, 2));
+      expect(this.searchResults).toBeDefined();
+    });
+  });
+
+
+  it('should be able to search for more than 1 word with a mix of ranged and unranged facets', function () { 
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*": [
+            "africa", "bank"
+          ]
+        },
+        "facetRanges": {
+          "totalamt": {"sort":"valueDesc"},
+          "mjtheme": {
+            "ranges": [
+              [
+                "A",
+                "J"
+              ],
+              [
+                "K",
+                "Z"
+              ]
+            ]}
+        },
+        "offset": 0,
+        "pageSize": 100,
+        "facets": [
+          "totalamt",
+          "mjtheme"
+        ],
+        "facetSort": "keyAsc",
+        "facetLength": 10}, function(err, searchResults) {
+          that.searchResults = searchResults;
+        });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+//      console.log(JSON.stringify(this.searchResults.facetRanges, null, 2));
+      expect(this.searchResults).toBeDefined();
+    });
+  });
+
+
+
 })
