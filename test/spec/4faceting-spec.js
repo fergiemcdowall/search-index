@@ -12,7 +12,7 @@ describe('faceting', function () {
         'query': {
           '*': ['usa']
         },
-        'facets': ['places'],
+        'facets': {'places':{}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -28,8 +28,16 @@ describe('faceting', function () {
       expect(this.searchResults.hits[12].id).toEqual('455');
       expect(this.searchResults.hits[13].id).toEqual('31');
       expect(this.searchResults.hits[16].id).toEqual('77');
-      expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({"places":[{"key":"usa","value":546},{"key":"japan","value":16},{"key":"uk","value":15},{"key":"brazil","value":9},{"key":"taiwan","value":5},{"key":"china","value":4},{"key":"ussr","value":4},{"key":"australia","value":4},{"key":"west-germany","value":3},{"key":"france","value":3}]}));
+      expect(this.searchResults.facets[0].value.length).toEqual(39);
+      expect(this.searchResults.facets[0].key).toEqual('places')
+      expect(this.searchResults.facets[0].value[0].key).toEqual('usa')
+      expect(this.searchResults.facets[0].value[0].value).toEqual(546)
+      expect(this.searchResults.facets[0].value[1].key).toEqual('japan')
+      expect(this.searchResults.facets[0].value[1].value).toEqual(16)
+      expect(this.searchResults.facets[0].value[2].key).toEqual('uk')
+      expect(this.searchResults.facets[0].value[2].value).toEqual(15)
+      expect(this.searchResults.facets[0].value[3].key).toEqual('brazil')
+      expect(this.searchResults.facets[0].value[3].value).toEqual(9)
     });
   });
 
@@ -41,8 +49,7 @@ describe('faceting', function () {
         'query': {
           '*': ['reuter']
         },
-        'facetSort' : 'valueAsc',
-        'facets': ['places'],
+        'facets': {'places':{'sort': 'valueAsc'}}
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -52,12 +59,12 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('mexico');
-      expect(this.searchResults.facets.places[0].value).toEqual(1);
-      expect(this.searchResults.facets.places[1].key).toEqual('algeria');
-      expect(this.searchResults.facets.places[1].value).toEqual(1);
-      expect(this.searchResults.facets.places[2].key).toEqual('yemen-demo-republic');
-      expect(this.searchResults.facets.places[2].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[0].key).toEqual('mexico');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('algeria');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('yemen-demo-republic');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(1);
     });
   });
 
@@ -69,8 +76,7 @@ describe('faceting', function () {
         'query': {
           '*': ['reuter']
         },
-        'facetSort' : 'valueDesc',
-        'facets': ['places'],
+        'facets': {'places':{'sort':'valueDesc'}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -80,12 +86,12 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('usa');
-      expect(this.searchResults.facets.places[0].value).toEqual(524);
-      expect(this.searchResults.facets.places[1].key).toEqual('uk');
-      expect(this.searchResults.facets.places[1].value).toEqual(85);
-      expect(this.searchResults.facets.places[2].key).toEqual('japan');
-      expect(this.searchResults.facets.places[2].value).toEqual(47);
+      expect(this.searchResults.facets[0].value[0].key).toEqual('usa');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(524);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('uk');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(85);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('japan');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(47);
     });
   });
 
@@ -97,8 +103,7 @@ describe('faceting', function () {
         'query': {
           '*': ['reuter']
         },
-        'facetSort' : 'keyAsc',
-        'facets': ['places'],
+        'facets': {'places':{'sort': 'keyAsc'}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -108,12 +113,12 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('algeria');
-      expect(this.searchResults.facets.places[0].value).toEqual(1);
-      expect(this.searchResults.facets.places[1].key).toEqual('argentina');
-      expect(this.searchResults.facets.places[1].value).toEqual(5);
-      expect(this.searchResults.facets.places[2].key).toEqual('australia');
-      expect(this.searchResults.facets.places[2].value).toEqual(17);
+      expect(this.searchResults.facets[0].value[0].key).toEqual('algeria');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('argentina');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(5);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('australia');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(17);
     });
   });
 
@@ -125,8 +130,7 @@ describe('faceting', function () {
         'query': {
           '*': ['reuter']
         },
-        'facetSort' : 'keyDesc',
-        'facets': ['places'],
+        'facets': {'places':{'sort':'keyDesc'}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -136,12 +140,12 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('zambia');
-      expect(this.searchResults.facets.places[0].value).toEqual(1);
-      expect(this.searchResults.facets.places[1].key).toEqual('zaire');
-      expect(this.searchResults.facets.places[1].value).toEqual(2);
-      expect(this.searchResults.facets.places[2].key).toEqual('yemen-demo-republic');
-      expect(this.searchResults.facets.places[2].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[0].key).toEqual('zambia');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('zaire');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(2);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('yemen-demo-republic');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(1);
     });
   });
 
@@ -153,9 +157,7 @@ describe('faceting', function () {
         'query': {
           '*': ['reuter']
         },
-        'facetSort' : 'keyDesc',
-        'facetLength' : 20,
-        'facets': ['places'],
+        'facets': {'places':{'sort':'keyDesc','limit':20}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -165,7 +167,7 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places.length).toEqual(20);
+      expect(this.searchResults.facets[0].value.length).toEqual(20);
     });
   });
 
@@ -175,14 +177,17 @@ describe('faceting', function () {
       var that = this;
       si.search({
         'query': {
-          '*': ['reuter']
+          '*': ['reuter', '1987']
         },
         'filter': {
           'places': ['zaire']
         },
-        'facetSort' : 'keyDesc',
-        'facetLength' : 20,
-        'facets': ['places'],
+        'facets':{
+          'places':{
+            'sort':'keyDesc',
+            'facetLength' : 20
+          }
+        },
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -191,13 +196,14 @@ describe('faceting', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 5000)
     runs(function() {
+//      console.log(JSON.stringify(this.searchResults, null, 2));
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('zaire');
-      expect(this.searchResults.facets.places[0].value).toEqual(2);
-      expect(this.searchResults.facets.places[0].active).toEqual(true);
-      expect(this.searchResults.facets.places[1].key).toEqual('thailand');
-      expect(this.searchResults.facets.places[1].value).toEqual(1);
-      expect(this.searchResults.facets.places[1].active).toBeUndefined();
+      expect(this.searchResults.facets[0].value[0].key).toEqual('zaire');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(2);
+      expect(this.searchResults.facets[0].value[0].active).toEqual(true);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('thailand');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(1);
+      expect(this.searchResults.facets[0].value[1].active).toBeUndefined();
     });
   });
 
@@ -213,9 +219,12 @@ describe('faceting', function () {
         'filter': {
           'places': ['usa', 'japan']
         },
-        'facetSort' : 'valueDesc',
-        'facetLength' : 20,
-        'facets': ['places'],
+        'facets': {
+          'places': {
+            'sort':'valueDesc',
+            'limit':20
+          }
+        },
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -225,21 +234,18 @@ describe('faceting', function () {
     }, 'waiting for search results', 5000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.places[0].key).toEqual('japan');
-      expect(this.searchResults.facets.places[0].value).toEqual(16);
-      expect(this.searchResults.facets.places[0].active).toEqual(true);
-      expect(this.searchResults.facets.places[1].key).toEqual('usa');
-      expect(this.searchResults.facets.places[1].value).toEqual(16);
-      expect(this.searchResults.facets.places[1].active).toEqual(true);
-      expect(this.searchResults.facets.places[2].key).toEqual('uk');
-      expect(this.searchResults.facets.places[2].value).toEqual(4);
-      expect(this.searchResults.facets.places[2].active).toBeUndefined();
+      expect(this.searchResults.facets[0].value[0].key).toEqual('japan');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(16);
+      expect(this.searchResults.facets[0].value[0].active).toEqual(true);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('usa');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(16);
+      expect(this.searchResults.facets[0].value[1].active).toEqual(true);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('uk');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(4);
+      expect(this.searchResults.facets[0].value[2].active).toBeUndefined();
     });
   });
 
 //TODO: Add more examples of active facet tagging
-
-
-
 });
 

@@ -199,7 +199,7 @@ describe('indexing and search', function () {
         'query': {
           '*': ['usa']
         },
-        'facets': ['places'],
+        'facets': {'places':{}},
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -215,8 +215,16 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[12].id).toEqual('455');
       expect(this.searchResults.hits[13].id).toEqual('31');
       expect(this.searchResults.hits[16].id).toEqual('77');
-      expect(JSON.stringify(this.searchResults.facets))
-        .toEqual(JSON.stringify({'places':[{'key':'usa','value':546},{'key':'japan','value':16},{"key":"uk","value":15},{"key":"brazil","value":9},{"key":"taiwan","value":5},{"key":"china","value":4},{"key":"ussr","value":4},{"key":"australia","value":4},{"key":"west-germany","value":3},{"key":"france","value":3}]}));
+      expect(this.searchResults.facets[0].value.length).toEqual(39);
+      expect(this.searchResults.facets[0].key).toEqual('places')
+      expect(this.searchResults.facets[0].value[0].key).toEqual('usa')
+      expect(this.searchResults.facets[0].value[0].value).toEqual(546)
+      expect(this.searchResults.facets[0].value[1].key).toEqual('japan')
+      expect(this.searchResults.facets[0].value[1].value).toEqual(16)
+      expect(this.searchResults.facets[0].value[2].key).toEqual('uk')
+      expect(this.searchResults.facets[0].value[2].value).toEqual(15)
+      expect(this.searchResults.facets[0].value[3].key).toEqual('brazil')
+      expect(this.searchResults.facets[0].value[3].value).toEqual(9)
     });
   });
 
@@ -229,7 +237,7 @@ describe('indexing and search', function () {
         'query': {
           '*': ['usa']
         },
-        'facets': ['places'],
+        'facets': {'places':{}},
         'filter': {
           'places': ['japan']
         }

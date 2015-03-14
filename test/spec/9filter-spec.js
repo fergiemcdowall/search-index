@@ -12,7 +12,8 @@ describe('indexing and search', function () {
       this.err = undefined;
       this.done = false;
       var that = this;
-      si.add({'batchName': 'twitter-tweets.json', 'filters': ['tags', 'user']}, data, function(err) {
+      si.add({'batchName': 'twitter-tweets.json',
+              'filters': ['tags', 'user']}, data, function(err) {
         that.err = err;
         that.done = true;
       });
@@ -30,10 +31,13 @@ describe('indexing and search', function () {
       this.searchResults = '';
       var that = this;
       si.search({
-        'query': {
-          '*': ['search']
+        "query": {
+          "*": ["search"]
         },
-        'facets': ['user','tags']
+        "facets": {
+          "user":{},
+          "tags":{}
+        }
       }, function(err, searchResults) {
         that.searchResults = searchResults;
       });
@@ -43,10 +47,11 @@ describe('indexing and search', function () {
     }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
-      expect(this.searchResults.facets.user[0]).toBeDefined();
-      expect(this.searchResults.facets.user[0].key).toEqual('eklem');
-      expect(this.searchResults.facets.user[1]).toBeDefined();
-      expect(this.searchResults.facets.user[1].key).toEqual('GoogleforWork');
+      expect(this.searchResults.facets[0]).toBeDefined();
+      expect(this.searchResults.facets[0].key).toEqual('user');
+      expect(this.searchResults.facets[0].value[0].key).toEqual('eklem');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(8);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('GoogleforWork');
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(8);
       expect(this.searchResults.hits[0].id).toEqual('3VKiNd');
