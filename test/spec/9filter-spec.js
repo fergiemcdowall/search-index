@@ -60,6 +60,7 @@ describe('indexing and search', function () {
     });
   });
 
+
   it('should be able to filter search results by user', function () {    
     runs(function () {
       this.searchResults = '';
@@ -70,7 +71,7 @@ describe('indexing and search', function () {
         },
         'facets': ['user','tags'],
         'filter': {
-          'user': ['GoogleforWork']
+          'user': [['GoogleforWork', 'GoogleforWork']]
         }
       }, function(err, searchResults) {
         that.searchResults = searchResults;
@@ -95,7 +96,7 @@ describe('indexing and search', function () {
         },
         'facets': ['user','tags'],
         'filter': {
-          'tags': ['search']
+          'tags': [['search', 'search']]
         }
       }, function(err, searchResults) {
         that.searchResults = searchResults;

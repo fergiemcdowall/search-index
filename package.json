@@ -54,7 +54,7 @@
     }
   ],
   "scripts": {
-    "test": "rm -rf si* backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/0.1indexing-spec.js && jasmine-node --verbose test/spec/1.0searching-spec.js && jasmine-node --verbose test/spec/1.5get-doc-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/4.5range-facet-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js && jasmine-node --verbose test/spec/7indexing-without-ids-spec.js && jasmine-node --verbose test/spec/8indexing-numbers-spec.js && jasmine-node --verbose test/spec/9filter-spec.js"
+    "test": "rm -rf si* backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/0.1indexing-spec.js && jasmine-node --verbose test/spec/1.0searching-spec.js && jasmine-node --verbose test/spec/1.5get-doc-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/4.5range-facet-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js && jasmine-node --verbose test/spec/7indexing-without-ids-spec.js && jasmine-node --verbose test/spec/8indexing-numbers-spec.js && jasmine-node --verbose test/spec/9filter-spec.js && jasmine-node --verbose test/spec/9.1range-filter-spec.js"
   },
   "repository": {
     "type": "git",

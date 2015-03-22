@@ -151,8 +151,8 @@ describe('faceting', function () {
       expect(this.searchResults.facets[0].value[2].value).toEqual(1);
       expect(this.searchResults.facets[0].value[3].value).toEqual(1);
       expect(this.searchResults.facets[1].value.length).toEqual(8);
-      expect(this.searchResults.facets[1].value[0].value).toEqual(6);
-      expect(this.searchResults.facets[1].value[1].value).toEqual(6);
+      expect(this.searchResults.facets[1].value[0].value).toEqual(5);
+      expect(this.searchResults.facets[1].value[1].value).toEqual(4);
     });
   });
 
@@ -188,8 +188,8 @@ describe('faceting', function () {
       expect(this.searchResults.facets[0].value[2].value).toEqual(1);
       expect(this.searchResults.facets[0].value[3].value).toEqual(1);
       expect(this.searchResults.facets[1].value.length).toEqual(8);
-      expect(this.searchResults.facets[1].value[0].value).toEqual(6);
-      expect(this.searchResults.facets[1].value[1].value).toEqual(6);
+      expect(this.searchResults.facets[1].value[0].value).toEqual(5);
+      expect(this.searchResults.facets[1].value[1].value).toEqual(4);
     });
   });
 

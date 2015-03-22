@@ -4,6 +4,7 @@ var si = require('../../')({logLevel:false});
 
 describe('indexing and search', function () {
 
+
   it('should be able to search in indexed data', function () {    
     runs(function () {
       this.searchResults = '';
@@ -222,7 +223,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[0].value[1].key).toEqual('japan')
       expect(this.searchResults.facets[0].value[1].value).toEqual(16)
       expect(this.searchResults.facets[0].value[2].key).toEqual('uk')
-      expect(this.searchResults.facets[0].value[2].value).toEqual(15)
+      expect(this.searchResults.facets[0].value[2].value).toEqual(14)
       expect(this.searchResults.facets[0].value[3].key).toEqual('brazil')
       expect(this.searchResults.facets[0].value[3].value).toEqual(9)
     });
@@ -239,7 +240,7 @@ describe('indexing and search', function () {
         },
         'facets': {'places':{}},
         'filter': {
-          'places': ['japan']
+          'places': [['japan', 'japan']]
         }
       }, function(err, searchResults) {
         that.searchResults = searchResults;
@@ -375,7 +376,7 @@ describe('indexing and search', function () {
     });
   });
 
-
+/*
   it('should be able to weight search results', function () {    
     runs(function () {
       this.searchResults = '';
@@ -402,7 +403,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[5].id).toEqual('801');
     });
   });
-
+*/
 
 
   it('should be able to generate teasers', function () {    
@@ -444,6 +445,7 @@ describe('indexing and search', function () {
       expect(this.tellMeAboutMySearchIndexResponse.totalDocs).toEqual(1000);
     });
   });
+
 
 });
 

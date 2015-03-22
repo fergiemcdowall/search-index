@@ -4,6 +4,7 @@ var si = require('../../');
 
 describe('faceting', function () {
 
+
   it('should be able to search in indexed data with faceting', function () {    
     runs(function () {
       this.searchResults = '';
@@ -35,7 +36,7 @@ describe('faceting', function () {
       expect(this.searchResults.facets[0].value[1].key).toEqual('japan')
       expect(this.searchResults.facets[0].value[1].value).toEqual(16)
       expect(this.searchResults.facets[0].value[2].key).toEqual('uk')
-      expect(this.searchResults.facets[0].value[2].value).toEqual(15)
+      expect(this.searchResults.facets[0].value[2].value).toEqual(14)
       expect(this.searchResults.facets[0].value[3].key).toEqual('brazil')
       expect(this.searchResults.facets[0].value[3].value).toEqual(9)
     });
@@ -89,7 +90,7 @@ describe('faceting', function () {
       expect(this.searchResults.facets[0].value[0].key).toEqual('usa');
       expect(this.searchResults.facets[0].value[0].value).toEqual(524);
       expect(this.searchResults.facets[0].value[1].key).toEqual('uk');
-      expect(this.searchResults.facets[0].value[1].value).toEqual(85);
+      expect(this.searchResults.facets[0].value[1].value).toEqual(84);
       expect(this.searchResults.facets[0].value[2].key).toEqual('japan');
       expect(this.searchResults.facets[0].value[2].value).toEqual(47);
     });
@@ -171,6 +172,7 @@ describe('faceting', function () {
     });
   });
 
+
   it('should be able to mark a facet as active', function () {    
     runs(function () {
       this.searchResults = '';
@@ -180,7 +182,7 @@ describe('faceting', function () {
           '*': ['reuter', '1987']
         },
         'filter': {
-          'places': ['zaire']
+          'places': [['zaire', 'zaire']]
         },
         'facets':{
           'places':{
@@ -196,7 +198,6 @@ describe('faceting', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 5000)
     runs(function() {
-//      console.log(JSON.stringify(this.searchResults, null, 2));
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.facets[0].value[0].key).toEqual('zaire');
       expect(this.searchResults.facets[0].value[0].value).toEqual(2);
@@ -217,7 +218,7 @@ describe('faceting', function () {
           '*': ['reuter']
         },
         'filter': {
-          'places': ['usa', 'japan']
+          'places': [['usa', 'usa'], ['japan', 'japan']]
         },
         'facets': {
           'places': {
