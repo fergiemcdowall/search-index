@@ -376,7 +376,7 @@ describe('indexing and search', function () {
     });
   });
 
-/*
+
   it('should be able to weight search results', function () {    
     runs(function () {
       this.searchResults = '';
@@ -403,7 +403,8 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits[5].id).toEqual('801');
     });
   });
-*/
+
+
 
 
   it('should be able to generate teasers', function () {    
