@@ -28,7 +28,7 @@ describe('configuration', function () {
     });
     
     waitsFor(function() {
-      return searchIndexLogger.transports.console.silent;
+      return si.searchIndexLogger.transports.console.silent;
     }, 5000);
   });
 });

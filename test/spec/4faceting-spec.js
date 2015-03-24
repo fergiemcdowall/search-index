@@ -1,9 +1,8 @@
 var fs = require('fs');
-var si = require('../../');
+var si = require('../../')({});
 
 
 describe('faceting', function () {
-
 
   it('should be able to search in indexed data with faceting', function () {    
     runs(function () {
@@ -20,7 +19,7 @@ describe('faceting', function () {
     });
     waitsFor(function() {
       return this.searchResults != '';
-    }, 'waiting for search results', 5000)
+    }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
@@ -41,6 +40,7 @@ describe('faceting', function () {
       expect(this.searchResults.facets[0].value[3].value).toEqual(9)
     });
   });
+
 
   it('should be able to sort facets by value ascending', function () {    
     runs(function () {
