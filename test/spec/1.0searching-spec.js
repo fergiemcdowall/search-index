@@ -399,7 +399,7 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults.hits[0].id).toEqual('231');
       expect(this.searchResults.hits[1].id).toEqual('804');
-      expect(this.searchResults.hits[2].id).toEqual('869');
+      expect(this.searchResults.hits[2].id).toEqual('877');
       expect(this.searchResults.hits[5].id).toEqual('801');
     });
   });

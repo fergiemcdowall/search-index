@@ -19,6 +19,7 @@
     "object-hash": "0.3.0",
     "rimraf": "2.2.8",
     "search-context": "0.1.0",
+    "term-vector": "0.0.2",
     "winston": "0.8.3"
   },
   "devDependencies": {
@@ -54,7 +55,7 @@
     }
   ],
   "scripts": {
-    "test": "rm -rf si* backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/0.1indexing-spec.js && jasmine-node --verbose test/spec/1.0searching-spec.js && jasmine-node --verbose test/spec/1.5get-doc-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/4.5range-facet-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js && jasmine-node --verbose test/spec/7indexing-without-ids-spec.js && jasmine-node --verbose test/spec/8indexing-numbers-spec.js && jasmine-node --verbose test/spec/9filter-spec.js && jasmine-node --verbose test/spec/9.1range-filter-spec.js && jasmine-node --verbose test/spec/9.6instantiation-spec.js"
+    "test": "rm -rf si* backup.gz && NODE_ENV=test jasmine-node --verbose test/spec/0indexing-spec.js && jasmine-node --verbose test/spec/0.1indexing-spec.js && jasmine-node --verbose test/spec/1.0searching-spec.js && jasmine-node --verbose test/spec/1.5get-doc-spec.js && jasmine-node --verbose test/spec/2deleting-spec.js && jasmine-node --verbose test/spec/4faceting-spec.js && jasmine-node --verbose test/spec/4.5range-facet-spec.js && jasmine-node --verbose test/spec/5replication-spec.js && jasmine-node --verbose test/spec/6config-spec.js && jasmine-node --verbose test/spec/7indexing-without-ids-spec.js && jasmine-node --verbose test/spec/8indexing-numbers-spec.js && jasmine-node --verbose test/spec/9filter-spec.js && jasmine-node --verbose test/spec/9.1range-filter-spec.js && jasmine-node --verbose test/spec/9.6instantiation-spec.js && jasmine-node --verbose test/spec/9.7nonasciichar-spec.js"
   },
   "repository": {
     "type": "git",

@@ -166,9 +166,9 @@ describe('deleting and reindexing', function () {
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(100);
       expect(this.searchResults.hits[3].id).toEqual('417');
-      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[12].id).toEqual('92');
       expect(this.searchResults.hits[13].id).toEqual('31');
-      expect(this.searchResults.hits[16].id).toEqual('77');
+      expect(this.searchResults.hits[16].id).toEqual('76');
     });
   });
 

@@ -73,10 +73,10 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[0].value[0].key).toEqual('Human development');
       expect(this.searchResults.facets[0].value[0].value).toEqual(2);
       expect(this.searchResults.facets[0].value.length).toEqual(7);
-      expect(this.searchResults.hits[0].id).toEqual('P129828');
-      expect(this.searchResults.hits[1].id).toEqual('P123531');
-      expect(this.searchResults.hits[2].id).toEqual('P117731');
-      expect(this.searchResults.hits[3].id).toEqual('P128891');
+      expect(this.searchResults.hits[0].id).toEqual('P123531');
+      expect(this.searchResults.hits[1].id).toEqual('P129828');
+      expect(this.searchResults.hits[2].id).toEqual('P128891');
+      expect(this.searchResults.hits[3].id).toEqual('P117731');
     });
   });
 

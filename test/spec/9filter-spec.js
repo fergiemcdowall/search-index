@@ -54,9 +54,9 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[0].value[1].key).toEqual('GoogleforWork');
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(8);
-      expect(this.searchResults.hits[0].id).toEqual('3VKiNd');
-      expect(this.searchResults.hits[3].id).toEqual('1NsXUW');
-      expect(this.searchResults.hits[4].id).toEqual('3swrN');
+      expect(this.searchResults.hits[0].id).toEqual('1NsXUW');
+      expect(this.searchResults.hits[3].id).toEqual('4bU7P5');
+      expect(this.searchResults.hits[4].id).toEqual('3VKiNd');
     });
   });
 
@@ -107,7 +107,7 @@ describe('indexing and search', function () {
     }, 'waiting for search results', 1000)
     runs(function() {
       expect(this.searchResults.hits.length).toEqual(5);
-      expect(this.searchResults.hits[0].id).toEqual('3VKiNd');
+      expect(this.searchResults.hits[0].id).toEqual('TEWP');
       expect(this.searchResults.hits[3].id).toEqual('3swrN');
       expect(this.searchResults.hits[4].id).toEqual('2PHH0R');
     });
@@ -131,10 +131,11 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
+//      console.log(this.searchResults);
       expect(this.searchResults.hits.length).toEqual(64);
-      expect(this.searchResults.hits[0].id).toEqual('tLl7B');
-      expect(this.searchResults.hits[7].id).toEqual('4B0dV8');
-      expect(this.searchResults.hits[8].id).toEqual('cwHKO');
+//      expect(this.searchResults.hits[0].id).toEqual('Vd7wZ');
+      expect(this.searchResults.hits[7].id).toEqual('3UzzHA');
+      expect(this.searchResults.hits[8].id).toEqual('42nRz7');
     });
   });
 
