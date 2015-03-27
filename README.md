@@ -35,9 +35,9 @@
 Search-index
 ============
 
-[![NPM](https://nodei.co/npm/search-index.png?stars&downloads&downloadRank)](https://nodei.co/npm/search-index/)
+[![NPM](https://nodei.co/npm/search-index.png?stars&downloads&downloadRank)](http://npm-stat.com/charts.html?package=search-index)
 
-[![NPM](https://nodei.co/npm-dl/search-index.png)](https://nodei.co/npm/search-index/)
+[![NPM](https://nodei.co/npm-dl/search-index.png)](http://npm-stat.com/charts.html?package=search-index)
 
 http://npm-stat.com/charts.html?package=search-index
 
