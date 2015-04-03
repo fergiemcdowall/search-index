@@ -55,8 +55,8 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(8);
       expect(this.searchResults.hits[0].id).toEqual('1NsXUW');
-      expect(this.searchResults.hits[3].id).toEqual('4bU7P5');
-      expect(this.searchResults.hits[4].id).toEqual('3VKiNd');
+      expect(this.searchResults.hits[5].id).toEqual('3FceLy');
+      expect(this.searchResults.hits[6].id).toEqual('3swrN');
     });
   });
 

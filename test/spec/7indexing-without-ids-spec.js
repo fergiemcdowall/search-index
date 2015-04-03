@@ -19,7 +19,7 @@ describe('indexing and search without ids', function () {
     });
     waitsFor(function() {
       return this.done != false;
-    }, 'err not to be empty (search err returned)', 30000)
+    }, 'err not to be empty (search err returned)', 120000)
     runs(function () {
       expect(this.err).toEqual(null);
     });

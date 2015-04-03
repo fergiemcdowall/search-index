@@ -87,8 +87,8 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(2);
-      expect(this.searchResults.hits[0].id).toEqual('1');
-      expect(this.searchResults.hits[1].id).toEqual('2');
+      expect(this.searchResults.hits[0].id).toEqual('2');
+      expect(this.searchResults.hits[1].id).toEqual('1');
     });
   });
 
@@ -110,8 +110,8 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(2);
-      expect(this.searchResults.hits[0].id).toEqual('3');
-      expect(this.searchResults.hits[1].id).toEqual('4');
+      expect(this.searchResults.hits[0].id).toEqual('4');
+      expect(this.searchResults.hits[1].id).toEqual('3');
     });
   });
 

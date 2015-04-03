@@ -1,10 +1,39 @@
 var fs = require('fs');
 var si = require('../../')({logLevel:false});
-
+var _ = require('lodash');
 
 describe('deleting and reindexing', function () {
 
   var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
+  var singleDoc = [];
+  singleDoc.push(data['746']);
+  var sdID = singleDoc[0].id;
+
+
+  it('document is present in search', function () {    
+    runs(function () {
+      this.searchResults = undefined;
+      var that = this;
+      si.search({
+        'query': {
+          '*': ['western']
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != undefined;
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toBeGreaterThan(1);
+      expect(this.searchResults.hits.length).toEqual(14);
+      expect(_.find(this.searchResults.hits, function(obj) {
+        return obj.id == sdID })).toBeDefined();
+    });
+  });
+
 
 
   it('should be able to delete documents from index', function () {    
@@ -12,7 +41,7 @@ describe('deleting and reindexing', function () {
       this.err = undefined;
       this.done = false;
       var that = this;
-      si.del(747, function(err) {
+      si.del(sdID, function(err) {
         that.err = err;
         that.done = true;
       });
@@ -31,7 +60,7 @@ describe('deleting and reindexing', function () {
     runs(function () {
       this.err = undefined;
       var that = this;
-      si.get(747, function(err, doc) {
+      si.get(sdID, function(err, doc) {
         that.err = err;
       });
     });
@@ -100,7 +129,7 @@ describe('deleting and reindexing', function () {
       var that = this;
       si.search({
         'query': {
-          '*': ['usa']
+          '*': ['western']
         }
       }, function(err, searchResults) {
         that.searchResults = searchResults;
@@ -112,11 +141,9 @@ describe('deleting and reindexing', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(100);
-      expect(this.searchResults.hits[3].id).toEqual('417');
-      expect(this.searchResults.hits[12].id).toEqual('455');
-      expect(this.searchResults.hits[13].id).toEqual('31');
-      expect(this.searchResults.hits[16].id).toEqual('77');
+      expect(this.searchResults.hits.length).toEqual(13);
+      expect(_.find(this.searchResults.hits, function(obj) {
+        return obj.id == sdID })).not.toBeDefined();
     });
   });
 
@@ -126,8 +153,6 @@ describe('deleting and reindexing', function () {
       this.err = undefined;
       this.done = false;
       var that = this;
-      var singleDoc = [];
-      singleDoc.push(data['746']);      
       var options = {};
       options['batchString'] = singleDoc;
       options['batchName'] = 'justOneDoc';
@@ -152,7 +177,7 @@ describe('deleting and reindexing', function () {
       var that = this;
       si.search({
         'query': {
-          '*': ['usa']
+          '*': ['western']
         }
       }, function(err, searchResults) {
         that.searchResults = searchResults;
@@ -164,11 +189,9 @@ describe('deleting and reindexing', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
-      expect(this.searchResults.hits.length).toEqual(100);
-      expect(this.searchResults.hits[3].id).toEqual('417');
-      expect(this.searchResults.hits[12].id).toEqual('92');
-      expect(this.searchResults.hits[13].id).toEqual('31');
-      expect(this.searchResults.hits[16].id).toEqual('76');
+      expect(this.searchResults.hits.length).toEqual(14);
+      expect(_.find(this.searchResults.hits, function(obj) {
+        return obj.id == sdID })).toBeDefined();
     });
   });
 
@@ -186,7 +209,7 @@ describe('deleting and reindexing', function () {
       return this.value != undefined;
     }, 'TF~*~mccaw~~ should be present in TF index ', 2000)
     runs(function () {
-      expect(this.value[0]).toEqual('747');
+      expect(this.value[0]).toEqual(sdID);
     });
   });
 

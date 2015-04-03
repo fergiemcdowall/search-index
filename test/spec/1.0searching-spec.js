@@ -25,9 +25,9 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(100);
       expect(this.searchResults.hits[3].id).toEqual('417');
-      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[10].id).toEqual('972');
       expect(this.searchResults.hits[13].id).toEqual('31');
-      expect(this.searchResults.hits[16].id).toEqual('77');
+      expect(this.searchResults.hits[14].id).toEqual('171');
     });
   });
 
@@ -213,9 +213,9 @@ describe('indexing and search', function () {
       expect(this.searchResults.hits.length).toBeGreaterThan(1);
       expect(this.searchResults.hits.length).toEqual(100);
       expect(this.searchResults.hits[3].id).toEqual('417');
-      expect(this.searchResults.hits[12].id).toEqual('455');
+      expect(this.searchResults.hits[10].id).toEqual('972');
       expect(this.searchResults.hits[13].id).toEqual('31');
-      expect(this.searchResults.hits[16].id).toEqual('77');
+      expect(this.searchResults.hits[14].id).toEqual('171');
       expect(this.searchResults.facets[0].value.length).toEqual(39);
       expect(this.searchResults.facets[0].key).toEqual('places')
       expect(this.searchResults.facets[0].value[0].key).toEqual('usa')
@@ -399,7 +399,7 @@ describe('indexing and search', function () {
     runs(function() {
       expect(this.searchResults.hits[0].id).toEqual('231');
       expect(this.searchResults.hits[1].id).toEqual('804');
-      expect(this.searchResults.hits[2].id).toEqual('877');
+      expect(this.searchResults.hits[4].id).toEqual('869');
       expect(this.searchResults.hits[5].id).toEqual('801');
     });
   });
