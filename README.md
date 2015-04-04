@@ -396,11 +396,9 @@ for building custom relevancy models
 Used to return a resultset on a facet.
 
 ```javascript
-    "filter": {
-      "places": [
-        "ussr"
-      ]
-    }
+'filter': {
+  'user': [['eklem', 'eklem']]
+}
 ```
 
 
