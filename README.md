@@ -254,27 +254,30 @@ si.search(query, function(err, results) {
 info):
 
 ```javascript
-    {
-    "query": {
-      "*": ["usa"]
-    },
-    "offset": "0",
-    "pageSize": "20",
-    "facets": [
-      "places",
-      "organisations"
-    ],
-    "weight": {
-      "title": [
-        "10"
+
+{
+  "query": {
+    "*": [
+      "africa", "bank"
+    ]
+  },
+  "facets": {
+    "totalamt": {
+      "ranges":[
+        ["000000000000000","000000050000000"],
+        ["000000050000001","100000000000000"]
       ]
     },
-    "filter": {
-      "places": [
-        "usa"
+    "mjtheme": {
+      "ranges": [
+        ["A","J"],
+        ["K","Z"]
       ]
     }
-  }
+  },
+  "offset": 0,
+  "pageSize": 100
+}
 ```
 
 
