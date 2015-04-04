@@ -294,38 +294,73 @@ returned. Counted from `offset`
 
 ### facets
 
-Allows faceted navigation, the parameter is an array of fields. If no
-`facets` is sent, all possible facets are returned.
+Allows faceted navigation.
 
 ```javascript
-    "facets": [
-      "topics",
-      "places"
-    ]
+"facets": {
+  "totalamt": {"sort":"keyDesc"},
+  "price": {}
+}
+  
 ```
 
-### facetLength
+#### limit
 Defines the amount of entries per facet category. Defaults to 10.
 
 ```javascript
-    "facets": [
-      "topics",
-      "places"
-    ],
-    "facetLength": 50
+"facets": {"places":{"sort":"keyDesc","limit":20}}
+```
+
+#### ranges
+Defines "buckets" or "ranges" of values. `ranges` comprises an array of tuplet arrays, where each tuplet consists of a start and end (inclusive) of the range.
+
+```javascript
+"facets": {
+  "totalamt": {
+  "ranges": [
+      [
+        "000000000000000",
+        "000000006000000"
+      ],
+      [
+        "000000006000001",
+        "010000000000000"
+      ]
+    ]},
+  "mjtheme": {
+    "ranges": [
+      [
+        "A",
+        "J"
+      ],
+      [
+        "K",
+        "Z"
+      ]
+    ]}
 ```
 
 
-### facetSort
+#### sort
 Defines the sort order of facets. Facets can be sorted on keys or values in an ascending or descening order. Possible values for `facetSort` are `keyAsc`, `keyDesc`, `valueAsc`, and `valueDesc`. The default sort is equivalent to `valueDesc`.
 
 ```javascript
-    "facets": [
-      "topics",
-      "places"
-    ],
-    "facetLength": 50,
-    "facetSort": "keyAsc"
+"facets": {
+  "totalamt": {"sort":"keyDesc"},
+  "mjtheme": {
+    "sort": "keyAsc",
+    "ranges": [
+      [
+        "A",
+        "J"
+      ],
+      [
+        "K",
+        "Z"
+      ]
+    ]
+  }
+}
 ```
 
 
