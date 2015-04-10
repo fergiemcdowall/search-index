@@ -168,13 +168,13 @@ Example:
 ```javascript
 var batch = [
   {
-    'id':'1'
+    'id':'1',
     'title':'A really interesting document',
     'body':'This is a really interesting document',
     'metadata':['red', 'potato']
   },
   {
-    'id':'2'
+    'id':'2',
     'title':'Another interesting document',
     'body':'This is another really interesting document that is a bit different',
     'metadata':['yellow', 'potato']
