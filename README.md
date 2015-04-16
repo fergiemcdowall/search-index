@@ -94,7 +94,7 @@ The easiest way to include search-index in your project is by using npm
     
 The module can then be initialised by including the line
 
-    si = require('search-index');
+    si = require('search-index')();
     
 at the top of your app.
 
@@ -109,7 +109,7 @@ Documents are then searchable with `si.search`.
 `search-index` is called with `require` like so:
 
 ```javascript
-var si = require('search-index');
+var si = require('search-index')();
 ```
 
 `search-index` can be initialized with `options` like so:
