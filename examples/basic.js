@@ -1,4 +1,5 @@
-var si = require('../')({indexPath: 'si-example'});
+var si = searchIndex();
+console.log('boom');
 
 // grab "documents" from the DOM.
 var docs = Array.prototype.map.call(document.querySelectorAll('.document'),
