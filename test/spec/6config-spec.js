@@ -20,6 +20,7 @@ describe('configuration', function () {
     }, 5000);
   });
 
+/*
   it('should accept logSilent in configuration', function () {
     var si;
 
@@ -31,4 +32,5 @@ describe('configuration', function () {
       return si.searchIndexLogger.transports.console.silent;
     }, 5000);
   });
+*/
 });
