@@ -118,7 +118,7 @@ describe('replication', function () {
     });
     waitsFor(function() {
       return this.completed;
-    }, 'waiting for search results', 30000)
+    }, 'waiting for search results', 10000)
     runs(function() {
       expect(this.completed).toEqual(true);
     });
