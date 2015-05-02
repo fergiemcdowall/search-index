@@ -38,7 +38,7 @@ describe('indexing and search', function () {
     });
     waitsFor(function() {
       return this.err != undefined;
-    }, 'err to be Malformed document', 30000)
+    }, 'err to be Malformed document', 5000)
     runs(function () {
       expect(this.err.message).toEqual('Malformed document');
     });

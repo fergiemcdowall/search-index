@@ -86,12 +86,9 @@ describe('deleting', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
+//      console.log(this.searchResults);
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('4');
-      expect(this.searchResults.hits[1].id).toEqual('3');
-      expect(this.searchResults.hits[2].id).toEqual('2');
-      expect(this.searchResults.hits[3].id).toEqual('1');
     });
   });
 
@@ -113,6 +110,7 @@ describe('deleting', function () {
   });
 
 
+
   it('should be able to return all documents in index, with one document deleted', function () {
     runs(function () {
       this.searchResults = '';
@@ -132,9 +130,9 @@ describe('deleting', function () {
 //      console.log(this.searchResults)
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(3);
-      expect(this.searchResults.hits[0].id).toEqual('4');
+      expect(this.searchResults.hits[0].id).toEqual('1');
       expect(this.searchResults.hits[1].id).toEqual('3');
-      expect(this.searchResults.hits[2].id).toEqual('1');
+      expect(this.searchResults.hits[2].id).toEqual('4');
     });
   });
 
@@ -156,6 +154,7 @@ describe('deleting', function () {
     });
   });
 
+
   it('should return 3 docs, since the previously indexed doc is a duplicate', function () {
     runs(function () {
       this.searchResults = '';
@@ -176,8 +175,8 @@ describe('deleting', function () {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(3);
       expect(this.searchResults.hits[0].id).toEqual('1');
-      expect(this.searchResults.hits[1].id).toEqual('4');
-      expect(this.searchResults.hits[2].id).toEqual('3');
+      expect(this.searchResults.hits[1].id).toEqual('3');
+      expect(this.searchResults.hits[2].id).toEqual('4');
     });
   });
 
@@ -220,9 +219,9 @@ describe('deleting', function () {
 //      console.log(this.searchResults)
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(4);
-      expect(this.searchResults.hits[0].id).toEqual('4');
+      expect(this.searchResults.hits[0].id).toEqual('2');
       expect(this.searchResults.hits[1].id).toEqual('3');
-      expect(this.searchResults.hits[2].id).toEqual('2');
+      expect(this.searchResults.hits[2].id).toEqual('4');
       expect(this.searchResults.hits[3].id).toEqual('1');
     });
   });
