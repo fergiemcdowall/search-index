@@ -156,8 +156,7 @@ describe('deleting', function () {
     });
   });
 
-
-  it('should be able to return all documents in corpus, since reindexing all documents should reinstate the deleted doc, yet not add any extra docs', function () {
+  it('should return 3 docs, since the previously indexed doc is a duplicate', function () {
     runs(function () {
       this.searchResults = '';
       var that = this;
@@ -181,6 +180,7 @@ describe('deleting', function () {
       expect(this.searchResults.hits[2].id).toEqual('3');
     });
   });
+
 
   it('should index duplicate test data into the index', function () {
     runs(function() {

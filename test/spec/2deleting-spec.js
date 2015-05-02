@@ -9,6 +9,25 @@ describe('deleting and reindexing', function () {
   singleDoc.push(data['746']);
   var sdID = singleDoc[0].id;
 
+/*
+  it('should index one file of test data', function () {
+    runs(function() {
+      this.err = undefined;
+      this.done = false;
+      var that = this;
+      si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
+        that.err = err;
+        that.done = true;
+      });
+    });
+    waitsFor(function() {
+      return this.done != false;
+    }, 'err not to be empty (search err returned)', 60000)
+    runs(function () {
+      expect(this.err).toEqual(null);
+    });
+  });
+*/
 
   it('document is present in search', function () {    
     runs(function () {
@@ -36,7 +55,7 @@ describe('deleting and reindexing', function () {
 
 
 
-  it('should be able to delete documents from index', function () {    
+  it('should be able to delete documents from index (' + sdID + ')', function () {    
     runs(function () {
       this.err = undefined;
       this.done = false;
@@ -53,7 +72,6 @@ describe('deleting and reindexing', function () {
       expect(true).toEqual(true);
     });
   });
-
 
 
   it('should verify delete', function () {    
@@ -121,7 +139,6 @@ describe('deleting and reindexing', function () {
       expect(this.value.length).toEqual(999);
     });
   });
-
 
   it('deleted document is not appearing in results', function () {    
     runs(function () {
