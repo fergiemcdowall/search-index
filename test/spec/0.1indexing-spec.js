@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({indexPath:'si-world-bank'});
+var si = require('../../')({indexPath:'si-world-bank', logLevel: 'info'});
 var _ = require('lodash');
 
 describe('indexing and search', function () {

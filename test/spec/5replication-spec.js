@@ -1,5 +1,5 @@
 var fs = require('fs');
-var siJustten = require('../../')({indexPath:'justTen', logLevel:false});
+var siJustten = require('../../')({indexPath:'justTen', logLevel:'info'});
 var level = require('levelup');
 
 describe('replication', function () {

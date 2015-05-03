@@ -1,5 +1,5 @@
 var fs = require('fs');
-var sidel = require('../../')({logLevel:false, indexPath: 'sideleting'});
+var sidel = require('../../')({logLevel:'info', indexPath: 'sideleting'});
 
 describe('deleting', function () {
 

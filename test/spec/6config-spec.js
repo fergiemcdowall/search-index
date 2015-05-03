@@ -20,6 +20,9 @@ describe('configuration', function () {
     }, 5000);
   });
 
+//add in some bunyanny tests here
+
+
 /*
   it('should accept logSilent in configuration', function () {
     var si;

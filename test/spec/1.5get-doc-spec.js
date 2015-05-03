@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({logSilent: false});
+var si = require('../../')({logLevel:'info'});
 //var should = require('should');
 
 describe('get-ting', function () {

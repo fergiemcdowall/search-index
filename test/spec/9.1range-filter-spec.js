@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({indexPath: 'si-world-bank', logSilent: false});
+var si = require('../../')({indexPath: 'si-world-bank'});
 
 
 describe('indexing and search', function () {

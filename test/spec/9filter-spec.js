@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({indexPath: 'sifiltering', logSilent: false});
+var si = require('../../')({indexPath: 'sifiltering', logSilent: 'info'});
 
 
 describe('indexing and search', function () {

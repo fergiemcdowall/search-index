@@ -1,5 +1,5 @@
 var fs = require('fs');
-var si = require('../../')({logLevel:false});
+var si = require('../../')({logLevel:'info'});
 
 
 describe('indexing and search', function () {

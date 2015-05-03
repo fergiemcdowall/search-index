@@ -2,7 +2,7 @@
 
 
 var fs = require('fs');
-var sione = require('../../')({indexPath:'sione', logLevel:false});
+var sione = require('../../')({indexPath:'sione', logLevel:'info'});
 
 
 describe('indexing and search', function () {
