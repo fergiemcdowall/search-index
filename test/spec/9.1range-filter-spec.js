@@ -32,6 +32,9 @@ describe('indexing and search', function () {
 */
 
 
+
+
+/*
   it('should be able to search for more than 1 word and show facetranges', function () {    
     runs(function () {
       this.searchResults = '';
@@ -157,6 +160,175 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[1].value[0].value).toEqual(8);      
       expect(this.searchResults.facets[1].value[1].key).toEqual("A-J");
       expect(this.searchResults.facets[1].value[1].value).toEqual(6);
+    });
+  });
+
+
+
+  it('should be able to show facets', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*": [
+            "africa", "bank"
+          ]
+        },
+        "facets": {
+          "totalamt": {
+            "ranges":[
+              [
+                "000000000000000",
+                "000000050000000"
+              ],
+              [
+                "000000050000001",
+                "100000000000000"
+              ]
+            ]
+          },
+          "mjtheme": {
+            "ranges": [
+              ["A","F"],
+              ["G","N"],
+              ["O","Z"]
+            ]
+          }
+        },
+        "offset": 0,
+        "pageSize": 100
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+//      console.log(JSON.stringify(this.searchResults.facets, null, 2));
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.facets[1].value[0].key).toEqual("O-Z");
+      expect(this.searchResults.facets[1].value[0].value).toEqual(9);      
+      expect(this.searchResults.facets[1].value[1].key).toEqual("A-F");
+      expect(this.searchResults.facets[1].value[1].value).toEqual(7);      
+      expect(this.searchResults.facets[1].value[2].key).toEqual("G-N");
+      expect(this.searchResults.facets[1].value[2].value).toEqual(1);
+    });
+  });
+*/
+
+
+  it('should be able to filter on a chosen facetrange and drill down on two values in same filter', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*": [
+            "africa", "bank"
+          ]
+        },
+        "filter": {
+          "mjtheme": [
+            ["O","Z"],
+            ["A","F"]
+          ]
+        },
+        "facets": {
+          "mjtheme": {
+            "ranges": [
+              ["A","F"],
+              ["G","N"],
+              ["O","Z"]
+            ]
+          }
+        },
+        "offset": 0,
+        "pageSize": 100
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.totalHits).toEqual(4);
+      expect(this.searchResults.hits.length).toEqual(4);
+      expect(this.searchResults.facets[0].value[0].key).toEqual("A-F");
+      expect(this.searchResults.facets[0].value[0].value).toEqual(4);
+      expect(this.searchResults.facets[0].value[1].key).toEqual("O-Z");
+      expect(this.searchResults.facets[0].value[1].value).toEqual(4);      
+      expect(this.searchResults.facets[0].value[2].key).toEqual("G-N");
+      expect(this.searchResults.facets[0].value[2].value).toEqual(0);
+    });
+  });
+
+  it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*": [
+            "africa", "bank"
+          ]
+        },
+        "filter": {
+          "totalamt":[
+            ["000000000000000", "000000050000000"]
+          ],
+          "mjtheme": [
+            ["O","Z"],
+            ["A","F"]
+          ]
+        },
+        "facets": {
+          "totalamt": {
+            "ranges":[
+              [
+                "000000000000000",
+                "000000050000000"
+              ],
+              [
+                "000000050000001",
+                "100000000000000"
+              ]
+            ]
+          },
+          "mjtheme": {
+            "ranges": [
+              ["A","F"],
+              ["G","N"],
+              ["O","Z"]
+            ]
+          }
+        },
+        "offset": 0,
+        "pageSize": 100
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.totalHits).toEqual(3);
+      expect(this.searchResults.hits.length).toEqual(3);
+      expect(this.searchResults.facets[0].value[0].key).toEqual("000000000000000-000000050000000");
+      expect(this.searchResults.facets[0].value[0].value).toEqual(3);
+      expect(this.searchResults.facets[0].value[1].key).toEqual("000000050000001-100000000000000");
+      expect(this.searchResults.facets[0].value[1].value).toEqual(0);      
+      expect(this.searchResults.facets[0].value[0].key).toEqual("000000000000000-000000050000000");
+      expect(this.searchResults.facets[1].value[0].value).toEqual(3);
+      expect(this.searchResults.facets[1].value[1].key).toEqual("O-Z");
+      expect(this.searchResults.facets[1].value[1].value).toEqual(3);      
+      expect(this.searchResults.facets[1].value[2].key).toEqual("G-N");
+      expect(this.searchResults.facets[1].value[2].value).toEqual(0);
     });
   });
 
