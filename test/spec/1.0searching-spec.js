@@ -448,5 +448,51 @@ describe('indexing and search', function () {
   });
 
 
+  it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      var q = {};
+      q["query"] = {"*":["reuter"]};
+      q["facets"] = {"topics":{},"places":{},"organisations":{}};
+      q["filter"] = {"places":[["usa","usa"],["japan","japan"]]};
+      si.search(q, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.totalHits).toEqual(16);
+      expect(this.searchResults.hits.length).toEqual(16);
+    });
+  });
+
+  it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function () {    
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      var q = {};
+      q["query"] = {"*":["reuter"]};
+      q["facets"] = {"topics":{},"places":{},"organisations":{}};
+      q["filter"] = {"topics":[["earn","earn"],["alum","alum"]]};
+      si.search(q, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 5000)
+    runs(function() {
+      console.log(JSON.stringify(this.searchResults, null, 2))
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.totalHits).toEqual(2);
+      expect(this.searchResults.hits.length).toEqual(2);
+    });
+  });
+
+
 });
 

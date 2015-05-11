@@ -12,7 +12,7 @@ describe('indexing and search', function () {
       this.err = undefined;
       this.done = false;
       var that = this;
-      si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
+      si.add({'batchName': 'reuters-000.json', 'filters': ['places','topics']}, data, function(err) {
         that.err = err;
         that.done = true;
       });

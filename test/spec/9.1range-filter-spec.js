@@ -34,7 +34,7 @@ describe('indexing and search', function () {
 
 
 
-/*
+
   it('should be able to search for more than 1 word and show facetranges', function () {    
     runs(function () {
       this.searchResults = '';
@@ -216,7 +216,7 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[1].value[2].value).toEqual(1);
     });
   });
-*/
+
 
 
   it('should be able to filter on a chosen facetrange and drill down on two values in same filter', function () {    
@@ -331,7 +331,6 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[1].value[2].value).toEqual(0);
     });
   });
-
 
 });
 
