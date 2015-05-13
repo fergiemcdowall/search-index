@@ -48,12 +48,20 @@ describe('faceting', function () {
     runs(function() {
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.facets[0].value[0].key).toEqual("000000006000001-010000000000000");
+      expect(this.searchResults.facets[0].value[0].gte).toEqual("000000006000001");
+      expect(this.searchResults.facets[0].value[0].lte).toEqual("010000000000000");
       expect(this.searchResults.facets[0].value[0].value).toEqual(121);
       expect(this.searchResults.facets[0].value[1].key).toEqual("000000000000000-000000006000000");
+      expect(this.searchResults.facets[0].value[1].gte).toEqual("000000000000000");
+      expect(this.searchResults.facets[0].value[1].lte).toEqual("000000006000000");
       expect(this.searchResults.facets[0].value[1].value).toEqual(85);
       expect(this.searchResults.facets[1].value[0].key).toEqual("K-Z");
+      expect(this.searchResults.facets[1].value[0].gte).toEqual("K");
+      expect(this.searchResults.facets[1].value[0].lte).toEqual("Z");
       expect(this.searchResults.facets[1].value[0].value).toEqual(161);      
       expect(this.searchResults.facets[1].value[1].key).toEqual("A-J");
+      expect(this.searchResults.facets[1].value[1].gte).toEqual("A");
+      expect(this.searchResults.facets[1].value[1].lte).toEqual("J");
       expect(this.searchResults.facets[1].value[1].value).toEqual(135);
     });
   });

@@ -29,15 +29,23 @@ describe('faceting', function () {
       expect(this.searchResults.hits[13].id).toEqual('31');
       expect(this.searchResults.hits[14].id).toEqual('171');
       expect(this.searchResults.facets[0].value.length).toEqual(39);
-      expect(this.searchResults.facets[0].key).toEqual('places')
-      expect(this.searchResults.facets[0].value[0].key).toEqual('usa')
-      expect(this.searchResults.facets[0].value[0].value).toEqual(546)
-      expect(this.searchResults.facets[0].value[1].key).toEqual('japan')
-      expect(this.searchResults.facets[0].value[1].value).toEqual(16)
-      expect(this.searchResults.facets[0].value[2].key).toEqual('uk')
-      expect(this.searchResults.facets[0].value[2].value).toEqual(14)
-      expect(this.searchResults.facets[0].value[3].key).toEqual('brazil')
-      expect(this.searchResults.facets[0].value[3].value).toEqual(9)
+      expect(this.searchResults.facets[0].key).toEqual('places');
+      expect(this.searchResults.facets[0].value[0].key).toEqual('usa');
+      expect(this.searchResults.facets[0].value[0].gte).toEqual('usa');
+      expect(this.searchResults.facets[0].value[0].lte).toEqual('usa');
+      expect(this.searchResults.facets[0].value[0].value).toEqual(546);
+      expect(this.searchResults.facets[0].value[1].key).toEqual('japan');
+      expect(this.searchResults.facets[0].value[1].gte).toEqual('japan');
+      expect(this.searchResults.facets[0].value[1].lte).toEqual('japan');
+      expect(this.searchResults.facets[0].value[1].value).toEqual(16);
+      expect(this.searchResults.facets[0].value[2].key).toEqual('uk');
+      expect(this.searchResults.facets[0].value[2].gte).toEqual('uk');
+      expect(this.searchResults.facets[0].value[2].lte).toEqual('uk');
+      expect(this.searchResults.facets[0].value[2].value).toEqual(14);
+      expect(this.searchResults.facets[0].value[3].key).toEqual('brazil');
+      expect(this.searchResults.facets[0].value[3].gte).toEqual('brazil');
+      expect(this.searchResults.facets[0].value[3].lte).toEqual('brazil');
+      expect(this.searchResults.facets[0].value[3].value).toEqual(9);
     });
   });
 
