@@ -50,6 +50,7 @@ describe('indexing and search', function () {
   });
 
 
+
   it('should be able to search in indexed data', function () {    
     runs(function () {
       this.searchResults = '';
@@ -98,7 +99,6 @@ describe('indexing and search', function () {
       return this.searchResults != '';
     }, 'waiting for search results', 1000)
     runs(function() {
-      console.log(this.searchResults.facets);
       expect(this.searchResults).toBeDefined();
       expect(this.searchResults.hits.length).toEqual(4);
       expect(this.searchResults.facets[0].value).toBeDefined();
@@ -113,5 +113,31 @@ describe('indexing and search', function () {
       expect(this.searchResults.facets[0].value.length).toEqual(4);
     });
   });
+
+  it('can search in fields that are only one token long', function () {
+    runs(function () {
+      this.searchResults = '';
+      var that = this;
+      si.search({
+        "query": {
+          "*":["ethiopia"],
+          "approvalfy":["2013"]
+        }
+      }, function(err, searchResults) {
+        that.searchResults = searchResults;
+      });
+    });
+    waitsFor(function() {
+      return this.searchResults != '';
+    }, 'waiting for search results', 1000)
+    runs(function() {
+      expect(this.searchResults).toBeDefined();
+      expect(this.searchResults.hits.length).toEqual(3);
+      expect(this.searchResults.hits[0].id).toEqual("P123531");
+      expect(this.searchResults.hits[1].id).toEqual("P128891");
+      expect(this.searchResults.hits[2].id).toEqual("P117731");
+    });
+  });
+
 
 });
