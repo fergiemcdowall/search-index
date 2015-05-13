@@ -1,8 +1,6 @@
 [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+Table of Contents generated with [DocToc](http://doctoc.herokuapp.com/)
 
 - [Search-index](#search-index)
 - [The Norch Search Engine](#the-norch-search-engine)
@@ -32,7 +30,6 @@
   - [tellMeAboutMySearchIndex](#tellmeaboutmysearchindex)
 - [License](#license)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
 Search-index
