@@ -20,6 +20,15 @@ describe('configuration', function () {
     }, 5000);
   });
 
+  it('does not leak variables', function () {
+
+    runs(function() {
+      expect(typeof countDocuments).toEqual('undefined');
+      expect(typeof _).toEqual('undefined');
+    });
+
+  });
+
 //add in some bunyanny tests here
 
 
@@ -30,7 +39,7 @@ describe('configuration', function () {
     runs(function () {
       si = require('../../')({ logSilent: true });
     });
-    
+
     waitsFor(function() {
       return si.searchIndexLogger.transports.console.silent;
     }, 5000);
