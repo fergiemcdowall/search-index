@@ -27,7 +27,8 @@
     "jscs": "~1.13.1",
     "jshint": "~2.7.0",
     "reuters-21578-json": "0.0.5",
-    "world-bank-dataset": "0.0.1"
+    "world-bank-dataset": "0.0.1",
+    "mocha": "*"
   },
   "author": {
     "name": "Fergus McDowall",
