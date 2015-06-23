@@ -100,6 +100,17 @@ describe('Searching', function(){
         searchResults.hits.length.should.be.exactly(5);
         searchResults.hits[0].id.should.be.exactly('271');
         done();
+      }),
+    it('should be able to search in indexed data with faceting', function(done) {
+      var q = {};
+      q.query = {'*': ['usa']};
+      q.facets = {places: {}}
+      si.search(q, function(err, searchResults) {
+        should.exist(searchResults);
+        (err === null).should.be.true;
+        searchResults.hits.length.should.be.exactly(5);
+        searchResults.hits[0].id.should.be.exactly('271');
+        done();
       });
     });
   });
