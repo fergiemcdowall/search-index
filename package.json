@@ -23,7 +23,7 @@
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "10.1.1",
-    "should": "6.0.3",
+    "should": "*",
     "jasmine-node": "1.14.5",
     "jscs": "~1.13.1",
     "jshint": "~2.7.0",
