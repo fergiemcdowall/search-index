@@ -5,8 +5,8 @@ describe('Searching', function(){
   describe('searching reuters-000.json', function() {
     var data = [];
     var sandboxPath = 'test/sandbox';
-    var si = require('../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'error'});
     it('should search on all fields and get results', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['usa']};  //TODO: add error message if this is
                                  //      not an array
@@ -19,20 +19,22 @@ describe('Searching', function(){
         searchResults.hits[10].id.should.be.exactly('972');
         searchResults.hits[13].id.should.be.exactly('31');
         searchResults.hits[14].id.should.be.exactly('171');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should search on all fields and get no results for a valid, yet absent keyword', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['usaasdadadlkjadj']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(0);
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to handle multiword searches', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['reuter', '1987']};
       si.search(q, function(err, searchResults) {
@@ -40,10 +42,11 @@ describe('Searching', function(){
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(922);
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to return all results by doing a wildcard (*) search', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['*']};
       si.search(q, function(err, searchResults) {
@@ -51,10 +54,11 @@ describe('Searching', function(){
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(1000);
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to handle multi word searches where some words are not present in index', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['reuter', 'yorkxxxxxxx']};
       si.search(q, function(err, searchResults) {
@@ -63,10 +67,11 @@ describe('Searching', function(){
         searchResults.hits.length.should.be.exactly(0);
 //TODO: make this return a full resultset
 //        searchResults.totalHits.should.be.exactly(0);
-        done();
+                si.close(function(err){done();})
       });
     }),
     it('should be able to offset', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['japan']};
       q.offset = 5;
@@ -76,10 +81,11 @@ describe('Searching', function(){
         searchResults.hits.length.should.be.exactly(51);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits[0].id.should.be.exactly('271');
-        done();
+                si.close(function(err){done();})
       });
     }),
     it('should be able to set page size (limit results)', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['japan']};
       q.pageSize = 5;
@@ -87,10 +93,11 @@ describe('Searching', function(){
         should.exist(searchResults);
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(5);
-        done();
+                si.close(function(err){done();})
       });
     }),
     it('should be able to page (set offset and page size)', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['japan']};
       q.offset = 5;
@@ -100,10 +107,11 @@ describe('Searching', function(){
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(5);
         searchResults.hits[0].id.should.be.exactly('271');
-        done();
+                si.close(function(err){done();})
       })
     }),
     it('should be able to search in indexed data with faceting', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['usa']};
       q.facets = {places: {}}
@@ -125,10 +133,11 @@ describe('Searching', function(){
         searchResults.facets[0].value[2].value.should.be.exactly(14)
         searchResults.facets[0].value[3].key.should.be.exactly('brazil')
         searchResults.facets[0].value[3].value.should.be.exactly(9)
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to filter search results', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: this test generates an empty facetRanges object which
       //should be removed
       var q = {};
@@ -140,10 +149,11 @@ describe('Searching', function(){
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(16);
         searchResults.hits[0].id.should.be.exactly('676');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to search on all fields', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['reagan']};
       si.search(q, function(err, searchResults) {
@@ -154,10 +164,11 @@ describe('Searching', function(){
         searchResults.hits[1].id.should.be.exactly('790');
         searchResults.hits[2].id.should.be.exactly('801');
         searchResults.hits[3].id.should.be.exactly('231');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to search on one field', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {title: ['reagan']};
       si.search(q, function(err, searchResults) {
@@ -165,10 +176,11 @@ describe('Searching', function(){
         (err === null).should.be.true;
         searchResults.hits.length.should.be.exactly(10);
         searchResults.hits[8].id.should.be.exactly('796');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to search on one field for two terms', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {title: ['reagan', 'baker']};
       si.search(q, function(err, searchResults) {
@@ -179,10 +191,11 @@ describe('Searching', function(){
         searchResults.hits[1].id.should.be.exactly('804');
         searchResults.hits[2].id.should.be.exactly('796');
         searchResults.hits[3].id.should.be.exactly('790');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to search on on two fields for seperate terms', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {
         title: ['reagan'],
@@ -196,10 +209,11 @@ describe('Searching', function(){
         searchResults.hits[1].id.should.be.exactly('386');
         searchResults.hits[2].id.should.be.exactly('28');
         searchResults.hits[3].id.should.be.exactly('869');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to search on on two fields for multiple terms', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {
         title: ['reagan'],
@@ -211,10 +225,11 @@ describe('Searching', function(){
         searchResults.hits.length.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('386');
         searchResults.hits[1].id.should.be.exactly('869');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to weight search results', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {
         title: ['reagan'],
@@ -229,10 +244,11 @@ describe('Searching', function(){
         searchResults.hits[1].id.should.be.exactly('804');
         searchResults.hits[4].id.should.be.exactly('869');
         searchResults.hits[5].id.should.be.exactly('801');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to generate teasers', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['advertising']};
       q.teaser = 'title';
@@ -242,18 +258,20 @@ describe('Searching', function(){
         searchResults.hits.length.should.be.exactly(3);
         searchResults.hits[0].document.teaser.should.be
           .exactly('GREY <span class=\"sc-em\">advertising</span> <GREY> FORMS NEW DIVISION');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to display information about the index', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: there should probably be an error object in this function
       si.tellMeAboutMySearchIndex(function(info) {
         should.exist(info);
         info.totalDocs.should.be.exactly(1000);
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['reuter']};
       q.facets = {topics:{}, places: {}, organisations: {}};
@@ -267,18 +285,20 @@ describe('Searching', function(){
         searchResults.hits[1].id.should.be.exactly('753');
         searchResults.hits[2].id.should.be.exactly('287');
         searchResults.hits[3].id.should.be.exactly('333');
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to display information about the index', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: there should probably be an error object in this function
       si.tellMeAboutMySearchIndex(function(info) {
         should.exist(info);
         info.totalDocs.should.be.exactly(1000);
-        done();
+        si.close(function(err){done();})
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function(done) {
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['reuter']};
       q.facets = {topics: {}, places: {}, organisations: {}};
@@ -290,7 +310,7 @@ describe('Searching', function(){
         searchResults.totalHits.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('938');
         searchResults.hits[1].id.should.be.exactly('921');
-        done();
+        si.close(function(err){done();})
       });
     })
   });

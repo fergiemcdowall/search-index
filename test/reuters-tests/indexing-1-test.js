@@ -1,50 +1,58 @@
 var assert = require("assert");
 var should = require('should');
 var fs = require('fs');
-var rimraf = require('rimraf');
 var _ = require('lodash');
 
 
-describe('Indexing', function(){
+describe('Indexing Reuters', function(){
   describe('indexing reuters-000.json', function() {
     var data = [];
     var sandboxPath = 'test/sandbox';
-    var si = null;
-    try {rimraf.sync(sandboxPath);}catch(e){};
-    try {fs.mkdirSync(sandboxPath, 0755);}catch(e){};
-    it('should find the data and set up a sandbox', function(){
+    it('should find the data and set up a sandbox', function(done){
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
+                                  logLevel: 'error'});
       data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
       assert.equal(data.length, 1000);
       assert.equal(data[0].id, '1');
       try {
         stats = fs.lstatSync(sandboxPath);
-        si = require('../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'error'});
         assert(stats.isDirectory());
       }
       catch (e) {
         console.log(e);
         assert(false);
       }
+      si.close(function(err){
+        done();
+      })
     }),
     it('should index the data', function(done) {
       this.timeout(60000);
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
+                                  logLevel: 'error'});
       var opt = {};
       opt.batchName = 'reuters';
       opt.filters = ['places', 'topics'];
       si.add(opt, data, function(err) {
         (err === null).should.be.true;
-        done();
+        si.close(function(err){
+          done();
+        })
       });
     }),
     it('should verify indexing', function(done) {
       var opt = {};
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
+                                  logLevel: 'error'});
       opt.batchName = 'reuters';
       opt.filters = ['places', 'topics'];
       si.tellMeAboutMySearchIndex(function(info) {
         should.exist(info);
         (info.totalDocs).should.be.exactly(1000);
-        done();
+        si.close(function(err){
+          done();
+        })
       });
-    });
+    })
   });
 });
