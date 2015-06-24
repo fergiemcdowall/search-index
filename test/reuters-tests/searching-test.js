@@ -6,7 +6,8 @@ describe('Searching Reuters: ', function(){
     var data = [];
     var sandboxPath = 'test/sandbox';
     it('should search on all fields and get results', function(done) {
-      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
+      var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
+                                  logLevel: 'warn'});
       var q = {};
       q.query = {'*': ['usa']};  //TODO: add error message if this is
                                  //      not an array
