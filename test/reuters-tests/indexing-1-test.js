@@ -4,7 +4,7 @@ var fs = require('fs');
 var _ = require('lodash');
 
 
-describe('Indexing Reuters', function(){
+describe('Indexing Reuters: ', function(){
   describe('indexing reuters-000.json', function() {
     var data = [];
     var sandboxPath = 'test/sandbox';

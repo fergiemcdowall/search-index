@@ -4,7 +4,7 @@ var fs = require('fs');
 var _ = require('lodash');
 
 
-describe('Indexing', function(){
+describe('Indexing World Bank: ', function(){
   describe('indexing the world bank dataset', function() {
     var data = [];
     var sandboxPath = 'test/sandbox';
