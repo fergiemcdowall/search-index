@@ -8,7 +8,7 @@ describe('deleting a batch: ', function() {
                                 logLevel: 'error'});
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
     si.add({'batchName': 'reuters-000.json', 'filters': ['places']}, data, function(err) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       si.close(function(err){done();})
     });
   });
@@ -17,7 +17,7 @@ describe('deleting a batch: ', function() {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
     si.deleteBatch(['7', '10', '5', '1', '3'], function(err) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       si.close(function(err){done();})
     });
   }),
@@ -26,7 +26,7 @@ describe('deleting a batch: ', function() {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
     si.search({query: {'*': ['*']}}, function(err, result) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       result.totalHits.should.be.exactly(5);
       result.hits.length.should.be.exactly(5);
       result.hits[0].id.should.be.exactly('9');

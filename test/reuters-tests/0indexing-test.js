@@ -34,7 +34,7 @@ describe('Indexing Reuters: ', function(){
       opt.batchName = 'reuters';
       opt.filters = ['places', 'topics'];
       si.add(opt, data, function(err) {
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         si.close(function(err){
           done();
         })

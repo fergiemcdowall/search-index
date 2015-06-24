@@ -13,7 +13,7 @@ describe('Searching Reuters: ', function(){
                                  //      not an array
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.hits[3].id.should.be.exactly('417');
@@ -29,7 +29,7 @@ describe('Searching Reuters: ', function(){
       q.query = {'*': ['usaasdadadlkjadj']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(0);
         si.close(function(err){done();})
       });
@@ -40,7 +40,7 @@ describe('Searching Reuters: ', function(){
       q.query = {'*': ['reuter', '1987']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(922);
         si.close(function(err){done();})
@@ -52,7 +52,7 @@ describe('Searching Reuters: ', function(){
       q.query = {'*': ['*']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(1000);
         si.close(function(err){done();})
@@ -64,7 +64,7 @@ describe('Searching Reuters: ', function(){
       q.query = {'*': ['reuter', 'yorkxxxxxxx']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(0);
 //TODO: make this return a full resultset
 //        searchResults.totalHits.should.be.exactly(0);
@@ -78,7 +78,7 @@ describe('Searching Reuters: ', function(){
       q.offset = 5;
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(51);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits[0].id.should.be.exactly('271');
@@ -92,7 +92,7 @@ describe('Searching Reuters: ', function(){
       q.pageSize = 5;
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
                 si.close(function(err){done();})
       });
@@ -105,7 +105,7 @@ describe('Searching Reuters: ', function(){
       q.pageSize = 5;
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
         searchResults.hits[0].id.should.be.exactly('271');
                 si.close(function(err){done();})
@@ -118,7 +118,7 @@ describe('Searching Reuters: ', function(){
       q.facets = {places: {}}
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.hits[3].id.should.be.exactly('417');
         searchResults.hits[10].id.should.be.exactly('972');
@@ -147,7 +147,7 @@ describe('Searching Reuters: ', function(){
       q.filter = {places: [['japan', 'japan']]}
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(16);
         searchResults.hits[0].id.should.be.exactly('676');
         si.close(function(err){done();})
@@ -159,7 +159,7 @@ describe('Searching Reuters: ', function(){
       q.query = {'*': ['reagan']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(20);
         searchResults.hits[0].id.should.be.exactly('796');
         searchResults.hits[1].id.should.be.exactly('790');
@@ -174,7 +174,7 @@ describe('Searching Reuters: ', function(){
       q.query = {title: ['reagan']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(10);
         searchResults.hits[8].id.should.be.exactly('796');
         si.close(function(err){done();})
@@ -186,7 +186,7 @@ describe('Searching Reuters: ', function(){
       q.query = {title: ['reagan', 'baker']};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(4);
         searchResults.hits[0].id.should.be.exactly('386');
         searchResults.hits[1].id.should.be.exactly('804');
@@ -204,7 +204,7 @@ describe('Searching Reuters: ', function(){
       };
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(4);
         searchResults.hits[0].id.should.be.exactly('801');
         searchResults.hits[1].id.should.be.exactly('386');
@@ -222,7 +222,7 @@ describe('Searching Reuters: ', function(){
       };
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('386');
         searchResults.hits[1].id.should.be.exactly('869');
@@ -239,7 +239,7 @@ describe('Searching Reuters: ', function(){
       q.weight = {body: 20}
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(8);
         searchResults.hits[0].id.should.be.exactly('231');
         searchResults.hits[1].id.should.be.exactly('804');
@@ -255,7 +255,7 @@ describe('Searching Reuters: ', function(){
       q.teaser = 'title';
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(3);
         searchResults.hits[0].document.teaser.should.be
           .exactly('GREY <span class=\"sc-em\">advertising</span> <GREY> FORMS NEW DIVISION');
@@ -279,7 +279,7 @@ describe('Searching Reuters: ', function(){
       q.filter = {places:[["usa","usa"],["japan","japan"]]};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(16);
         searchResults.totalHits.should.be.exactly(16);
         searchResults.hits[0].id.should.be.exactly('676');
@@ -306,7 +306,7 @@ describe('Searching Reuters: ', function(){
       q.filter = {topics:[["earn","earn"], ["alum","alum"]]};
       si.search(q, function(err, searchResults) {
         should.exist(searchResults);
-        (err === null).should.be.true;
+        (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(2);
         searchResults.totalHits.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('938');

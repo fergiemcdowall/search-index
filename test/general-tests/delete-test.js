@@ -31,7 +31,7 @@ describe('deleting: ', function() {
     var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
                                 logLevel: 'error'});
     si.add({'batchName': 'data1'}, data1, function(err) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       si.close(function(err){done();})
     });
   }),
@@ -43,7 +43,7 @@ describe('deleting: ', function() {
     q.query = {'*': ['*']};
     si.search(q, function(err, searchResults) {
       should.exist(searchResults);
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(4);
       searchResults.totalHits.should.be.exactly(4);
       si.close(function(err){done();})
@@ -54,7 +54,7 @@ describe('deleting: ', function() {
     var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
                                 logLevel: 'error'});
     si.del('2' , function(err) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       si.close(function(err){done();})    
     });
   }),
@@ -66,7 +66,7 @@ describe('deleting: ', function() {
     q.query = {'*': ['*']};
     si.search(q, function(err, searchResults) {
       should.exist(searchResults);
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(3);
       searchResults.totalHits.should.be.exactly(3);
       searchResults.hits[0].id.should.be.exactly('1');
@@ -87,7 +87,7 @@ describe('deleting: ', function() {
       }
     ];
     si.add({'batchName': 'data2'}, data2, function(err) {
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       si.close(function(err){done();})
     });
   }),
@@ -99,7 +99,7 @@ describe('deleting: ', function() {
     q.query = {'*': ['*']};
     si.search(q, function(err, searchResults) {
       should.exist(searchResults);
-      (err === null).should.be.true;
+      (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(3);
       searchResults.totalHits.should.be.exactly(3);
       searchResults.hits[0].id.should.be.exactly('1');
