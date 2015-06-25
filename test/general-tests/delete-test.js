@@ -106,20 +106,5 @@ describe('deleting: ', function() {
       searchResults.hits[2].id.should.be.exactly('4');
       si.close(function(err){done();})
     });
-  }),
-  it('should be able to create a snapshot', function (done) {
-    var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: 'error'});
-    si.snapShot(function(rs) {
-      rs.pipe(fs.createWriteStream('backup.gz'))
-        .on('close', function() {
-          true.should.be.true;
-          si.close(function(err){done();})
-        })
-        .on('error', function() {
-          false.should.be.true;
-        });
-    });
-  });;
+  });
 });
