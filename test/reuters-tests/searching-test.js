@@ -1,10 +1,9 @@
-var assert = require("assert");
 var should = require('should');
+var sandboxPath = 'test/sandbox';
 
 describe('Searching Reuters: ', function(){
   describe('searching reuters-000.json', function() {
     var data = [];
-    var sandboxPath = 'test/sandbox';
     it('should search on all fields and get results', function(done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});

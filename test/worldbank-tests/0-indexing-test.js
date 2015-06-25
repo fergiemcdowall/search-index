@@ -1,24 +1,22 @@
-var assert = require("assert");
 var should = require('should');
 var fs = require('fs');
+var sandboxPath = 'test/sandbox';
 var _ = require('lodash');
 
 
 describe('Indexing World Bank: ', function(){
   describe('indexing the world bank dataset', function() {
     var data = [];
-    var sandboxPath = 'test/sandbox';
     it('should find the data and set up a sandbox', function(){
       data = JSON.parse(fs.readFileSync('node_modules/world-bank-dataset/world-bank-projects.json'));
-      assert.equal(data.length, 500);
-      assert.equal(data[0].id, 'P129828');
+      data.length.should.be.exactly(500);
+      data[0].id.should.be.exactly('P129828');
       try {
-        stats = fs.lstatSync(sandboxPath);
-        assert(stats.isDirectory());
+        fs.lstatSync(sandboxPath).isDirectory().should.be.exactly(true);
       }
       catch (e) {
         console.log(e);
-        assert(false);
+        true.should.be.exactly(false)
       }
     }),
     it('should throw an error when indexing an empty batch', function(done) {
@@ -31,7 +29,7 @@ describe('Indexing World Bank: ', function(){
       });
     }),
     it('should index the data', function(done) {
-      var si = require('../../')({indexPath:'si-world-bank',
+      var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'error'});
       this.timeout(60000);
       var padInt = function(intIn) {
