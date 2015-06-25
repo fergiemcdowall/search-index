@@ -1,4 +1,3 @@
-//var assert = require("fs");
 var fs = require('fs');
 var should = require('should');
 var _ = require('lodash');
