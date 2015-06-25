@@ -6,7 +6,7 @@ describe('Indexing numeric fields, Reuters: ', function(){
   it('should index one file of test data', function(done) {
     this.timeout(5000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
+    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'warn'});
     var opt = {};
     opt.batchName = 'reuters';
@@ -17,7 +17,7 @@ describe('Indexing numeric fields, Reuters: ', function(){
     });
   }),
   it('verifies calibration of number after batch is indexed', function(done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
+    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'error'});
     si.indexValue({key:'TF~randomNumber~2749~~'}, function(err, value) {
       (err === null).should.be.exactly(true);
@@ -26,7 +26,7 @@ describe('Indexing numeric fields, Reuters: ', function(){
     });
   }),
   it('should verify indexing', function(done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
+    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'error'});
     si.tellMeAboutMySearchIndex(function(info) {
       should.exist(info);
@@ -37,7 +37,7 @@ describe('Indexing numeric fields, Reuters: ', function(){
     });
   }),
   it('should be able to search number fields in indexed datas', function(done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
+    var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'warn'});
     var q = {};
     q.query = {randomNumber: [2749]};
