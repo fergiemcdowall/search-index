@@ -41,11 +41,8 @@ describe('Indexing Reuters: ', function(){
       });
     }),
     it('should verify indexing', function(done) {
-      var opt = {};
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'error'});
-      opt.batchName = 'reuters';
-      opt.filters = ['places', 'topics'];
       si.tellMeAboutMySearchIndex(function(info) {
         should.exist(info);
         (info.totalDocs).should.be.exactly(1000);
