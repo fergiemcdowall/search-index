@@ -27,7 +27,7 @@ describe('Indexing Reuters: ', function(){
       })
     }),
     it('should index the data', function(done) {
-      this.timeout(60000);
+      this.timeout(120000);
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'error'});
       var opt = {};
