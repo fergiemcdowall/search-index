@@ -4,7 +4,7 @@ var fs = require('fs');
 
 describe('Indexing numeric fields, Reuters: ', function(){
   it('should index one file of test data', function(done) {
-    this.timeout(5000);
+    this.timeout(20000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'warn'});
