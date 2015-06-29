@@ -1,3 +1,6 @@
+/* global it */
+/* global describe */
+
 var should = require('should');
 var fs = require('fs');
 var sandboxPath = 'test/sandbox';
@@ -32,9 +35,7 @@ describe('Instantiation: ', function () {
                                   logLevel: 'error'});
       si.add({}, data1, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {
-          done();
-        })
+        si.close(function (err) {done();});
       });
     }),
     it('should index test data into the second index', function (done) {
@@ -42,9 +43,7 @@ describe('Instantiation: ', function () {
                                   logLevel: 'error'});
       si.add({}, data2, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {
-          done();
-        })
+        si.close(function (err) {done();});
       });
     }),
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
@@ -59,7 +58,7 @@ describe('Instantiation: ', function () {
         results.totalHits.should.be.exactly(2);
         results.hits[0].id.should.be.exactly('1');
         results.hits[1].id.should.be.exactly('2');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     }),
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
@@ -74,7 +73,7 @@ describe('Instantiation: ', function () {
         results.totalHits.should.be.exactly(2);
         results.hits[0].id.should.be.exactly('3');
         results.hits[1].id.should.be.exactly('4');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     });
   });

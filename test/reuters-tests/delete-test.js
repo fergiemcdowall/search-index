@@ -1,3 +1,6 @@
+/* global it */
+/* global describe */
+
 var should = require('should');
 var fs = require('fs');
 
@@ -13,7 +16,7 @@ describe('deleting and reindexing: ', function () {
     opt.filters = ['places', 'topics'];
     si.add(opt, singleDoc, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('document is present in search', function (done) {
@@ -26,7 +29,7 @@ describe('deleting and reindexing: ', function () {
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
       result.hits[4].id.should.be.exactly('747');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('should be able to delete documents from index (747)', function (done) {
@@ -35,7 +38,7 @@ describe('deleting and reindexing: ', function () {
                                 logLevel: 'error'});
     si.del('747', function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('should verify delete', function (done) {
@@ -45,7 +48,7 @@ describe('deleting and reindexing: ', function () {
     si.get('747', function (err, doc) {
       (err === null).should.be.exactly(false);
       err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT~747~]');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('verifies recalibration after delete', function (done) {
@@ -55,7 +58,7 @@ describe('deleting and reindexing: ', function () {
     si.indexValue({key:'TF~*~mccaw~~'}, function (err, value) {
       (err === null).should.be.exactly(false);
       err.toString().should.be.exactly('NotFoundError: Key not found in database [TF~*~mccaw~~]');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('verifies recalibration after delete', function (done) {
@@ -65,7 +68,7 @@ describe('deleting and reindexing: ', function () {
     si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(999);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('deleted document is not appearing in results', function (done) {
@@ -79,7 +82,7 @@ describe('deleting and reindexing: ', function () {
       result.hits.length.should.be.exactly(13);
       for (var i = 0; i < result.hits.length; i++)
         result.hits[i].id.should.not.be.exactly('747');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('should reindex deleted document', function (done) {
@@ -93,7 +96,7 @@ describe('deleting and reindexing: ', function () {
     opt.filters = ['places', 'topics'];
     si.add(opt, singleDoc, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('document reappears in search', function (done) {
@@ -106,7 +109,7 @@ describe('deleting and reindexing: ', function () {
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
       result.hits[4].id.should.be.exactly('747');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('verifies recalibration after document is REadded', function (done) {
@@ -117,7 +120,7 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true);
       value.should.have.lengthOf(1);
       value[0].should.be.exactly('747');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('verifies recalibration after document is REadded', function (done) {
@@ -127,7 +130,7 @@ describe('deleting and reindexing: ', function () {
     si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(1000);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
-  })
+  });
 });

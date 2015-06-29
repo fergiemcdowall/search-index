@@ -1,4 +1,7 @@
-var assert = require("assert");
+/* global it */
+/* global describe */
+
+var assert = require('assert');
 var should = require('should');
 var fs = require('fs');
 var _ = require('lodash');
@@ -14,7 +17,7 @@ describe('Indexing Reuters: ', function () {
       assert.equal(data.length, 1000);
       assert.equal(data[0].id, '1');
       try {
-        stats = fs.lstatSync(sandboxPath);
+        var stats = fs.lstatSync(sandboxPath);
         assert(stats.isDirectory());
       }
       catch (e) {
@@ -23,7 +26,7 @@ describe('Indexing Reuters: ', function () {
       }
       si.close(function (err) {
         done();
-      })
+      });
     }),
     it('should index the data', function (done) {
       this.timeout(120000);
@@ -36,7 +39,7 @@ describe('Indexing Reuters: ', function () {
         (err === null).should.be.exactly(true);
         si.close(function (err) {
           done();
-        })
+        });
       });
     }),
     it('should verify indexing', function (done) {
@@ -47,8 +50,8 @@ describe('Indexing Reuters: ', function () {
         (info.totalDocs).should.be.exactly(1000);
         si.close(function (err) {
           done();
-        })
+        });
       });
-    })
+    });
   });
 });

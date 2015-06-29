@@ -1,3 +1,6 @@
+/* global it */
+/* global describe */
+
 var should = require('should');
 var sandboxPath = 'test/sandbox';
 var fs = require('fs');
@@ -14,7 +17,7 @@ describe('Filters: ', function () {
       opt.filters = ['tags', 'user'];
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     });
   }),
@@ -45,7 +48,7 @@ describe('Filters: ', function () {
         results.hits[0].id.should.be.exactly('1NsXUW');
         results.hits[5].id.should.be.exactly('3FceLy');
         results.hits[6].id.should.be.exactly('3swrN');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     }),
     it('should be able to filter by user', function (done) {
@@ -57,7 +60,7 @@ describe('Filters: ', function () {
         user: {},
         tags: {}
       };
-      q.filter = {user: [['GoogleforWork', 'GoogleforWork']]}
+      q.filter = {user: [['GoogleforWork', 'GoogleforWork']]};
       q.pageSize = 100;
       si.search(q, function (err, results) {
         should.exist(results);
@@ -66,7 +69,7 @@ describe('Filters: ', function () {
         results.totalHits.should.be.exactly(1);
         should.exist(results.facets[0]);
         results.hits[0].id.should.be.exactly('4EaEkI');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     }),
     it('should be able to filter by tag', function (done) {
@@ -78,7 +81,7 @@ describe('Filters: ', function () {
         user: {},
         tags: {}
       };
-      q.filter = {tags: [['search', 'search']]}
+      q.filter = {tags: [['search', 'search']]};
       q.pageSize = 100;
       si.search(q, function (err, results) {
         should.exist(results);
@@ -89,7 +92,7 @@ describe('Filters: ', function () {
         results.hits[0].id.should.be.exactly('TEWP');
         results.hits[3].id.should.be.exactly('3swrN');
         results.hits[4].id.should.be.exactly('2PHH0R');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     }),
     it('should be able to search on tokens that are only found in metadata', function (done) {
@@ -110,8 +113,8 @@ describe('Filters: ', function () {
         should.exist(results.facets[0]);
         results.hits[7].id.should.be.exactly('3UzzHA');
         results.hits[8].id.should.be.exactly('42nRz7');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
-    })
-  })
-})
+    });
+  });
+});

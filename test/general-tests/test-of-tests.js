@@ -1,6 +1,9 @@
-var assert = require("assert");
+/* global it */
+/* global describe */
+
+var assert = require('assert');
 describe('a random test', function () {
   it('should be true', function () {
     assert(true);
-  })
+  });
 });

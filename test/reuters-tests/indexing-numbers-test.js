@@ -1,3 +1,6 @@
+/* global it */
+/* global describe */
+
 var should = require('should');
 var sandboxPath = 'test/sandbox';
 var fs = require('fs');
@@ -13,7 +16,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
     opt.filters = ['places', 'topics'];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('verifies calibration of number after batch is indexed', function (done) {
@@ -22,7 +25,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
     si.indexValue({key:'TF~randomNumber~2749~~'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(1);
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
   }),
   it('should verify indexing', function (done) {
@@ -33,7 +36,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
       (info.totalDocs).should.be.exactly(10);
       si.close(function (err) {
         done();
-      })
+      });
     });
   }),
   it('should be able to search number fields in indexed datas', function (done) {
@@ -46,7 +49,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
       (err === null).should.be.exactly(true);
       results.hits.length.should.be.exactly(1);
       results.hits[0].id.should.be.exactly('9');
-      si.close(function (err) {done();})
+      si.close(function (err) {done();});
     });
-  })
-})
+  });
+});

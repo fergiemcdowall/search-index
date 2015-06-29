@@ -1,3 +1,6 @@
+/* global it */
+/* global describe */
+
 var should = require('should');
 var fs = require('fs');
 var sandboxPath = 'test/sandbox';
@@ -12,10 +15,9 @@ describe('Indexing World Bank: ', function () {
       data[0].id.should.be.exactly('P129828');
       try {
         fs.lstatSync(sandboxPath).isDirectory().should.be.exactly(true);
-      }
-      catch (e) {
+      } catch (e) {
         console.log(e);
-        true.should.be.exactly(false)
+        true.should.be.exactly(false);
       }
     }),
     it('should throw an error when indexing an empty batch', function (done) {
@@ -24,7 +26,7 @@ describe('Indexing World Bank: ', function () {
       si.add({}, [], function (err) {
         err.should.be.an.Error;
         err.toString().should.equal('Error: No docs to add');
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     }),
     it('should index the data', function (done) {
@@ -32,8 +34,8 @@ describe('Indexing World Bank: ', function () {
                                   logLevel: 'error'});
       this.timeout(60000);
       var padInt = function (intIn) {
-        return ("000000000000000" + intIn).slice(-15);
-      }
+        return ('000000000000000' + intIn).slice(-15);
+      };
       var processDoc = function (datum) {
         delete datum._id;
         delete datum.projectdocs;
@@ -54,7 +56,7 @@ describe('Indexing World Bank: ', function () {
       opt.filters = ['mjtheme', 'totalamt'];
       si.add(opt, _.map(data, processDoc), function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {done();})
+        si.close(function (err) {done();});
       });
     });
   });
