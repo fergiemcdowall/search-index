@@ -2,8 +2,8 @@ var should = require('should');
 var sandboxPath = 'test/sandbox';
 var fs = require('fs');
 
-describe('Indexing numeric fields, Reuters: ', function(){
-  it('should index one file of test data', function(done) {
+describe('Indexing numeric fields, Reuters: ', function () {
+  it('should index one file of test data', function (done) {
     this.timeout(20000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
@@ -11,42 +11,42 @@ describe('Indexing numeric fields, Reuters: ', function(){
     var opt = {};
     opt.batchName = 'reuters';
     opt.filters = ['places', 'topics'];
-    si.add(opt, data, function(err) {
+    si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function(err){done();})
+      si.close(function (err) {done();})
     });
   }),
-  it('verifies calibration of number after batch is indexed', function(done) {
+  it('verifies calibration of number after batch is indexed', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'error'});
-    si.indexValue({key:'TF~randomNumber~2749~~'}, function(err, value) {
+    si.indexValue({key:'TF~randomNumber~2749~~'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(1);
-      si.close(function(err){done();})
+      si.close(function (err) {done();})
     });
   }),
-  it('should verify indexing', function(done) {
+  it('should verify indexing', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'error'});
-    si.tellMeAboutMySearchIndex(function(info) {
+    si.tellMeAboutMySearchIndex(function (info) {
       should.exist(info);
       (info.totalDocs).should.be.exactly(10);
-      si.close(function(err){
+      si.close(function (err) {
         done();
       })
     });
   }),
-  it('should be able to search number fields in indexed datas', function(done) {
+  it('should be able to search number fields in indexed datas', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
                                 logLevel: 'warn'});
     var q = {};
     q.query = {randomNumber: [2749]};
-    si.search(q, function(err, results) {
+    si.search(q, function (err, results) {
       should.exist(results);
       (err === null).should.be.exactly(true);
       results.hits.length.should.be.exactly(1);
       results.hits[0].id.should.be.exactly('9');
-      si.close(function(err){done();})
+      si.close(function (err) {done();})
     });
   })
 })

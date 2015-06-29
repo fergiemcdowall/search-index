@@ -1,9 +1,9 @@
 var should = require('should');
 var sandboxPath = 'test/sandbox';
 
-describe('Searching World Bank and Checking Faceting: ', function(){
-  describe('searching world bank dataset', function() {
-    it('should be able to search and do facet ranges', function(done) {
+describe('Searching World Bank and Checking Faceting: ', function () {
+  describe('searching world bank dataset', function () {
+    it('should be able to search and do facet ranges', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'warn'});
       var q = {};
@@ -35,7 +35,7 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         }
       };
       q.pageSize = 10;
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(10);
@@ -56,10 +56,10 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         results.facets[1].value[1].gte.should.be.exactly("A");
         results.facets[1].value[1].lte.should.be.exactly("J");
         results.facets[1].value[1].value.should.be.exactly(135);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should be able to search for more than 1 word and show facetranges', function(done) {
+    it('should be able to search for more than 1 word and show facetranges', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'warn'});
       var q = {};
@@ -89,7 +89,7 @@ describe('Searching World Bank and Checking Faceting: ', function(){
           ]}
       };
       q.pageSize = 100;
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(12);
@@ -102,10 +102,10 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         results.facets[1].value[0].value.should.be.exactly(9);      
         results.facets[1].value[1].key.should.be.exactly("A-J");
         results.facets[1].value[1].value.should.be.exactly(8);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should be able to search for more than 1 word and no ranges (experiment)', function(done) {
+    it('should be able to search for more than 1 word and no ranges (experiment)', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'warn'});
       var q = {};
@@ -115,7 +115,7 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         mjtheme: {}
       };
       q.pageSize = 100;
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(12);
@@ -128,10 +128,10 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         results.facets[1].value.length.should.be.exactly(8);
         results.facets[1].value[0].value.should.be.exactly(5);
         results.facets[1].value[1].value.should.be.exactly(4);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should be able to limit facet length', function(done) {
+    it('should be able to limit facet length', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'warn'});
       var q = {};
@@ -141,17 +141,17 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         mjtheme: {sort:"valueDesc", "limit": 3}
       };
       q.pageSize = 100;
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(12);
         results.totalHits.should.be.exactly(12);
         results.facets[0].value.length.should.be.exactly(2);
         results.facets[1].value.length.should.be.exactly(3);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should be able to search for more than 1 word with a mix of ranged and unranged facets', function(done) {
+    it('should be able to search for more than 1 word with a mix of ranged and unranged facets', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'warn'});
       var q = {};
@@ -173,7 +173,7 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         }
       };
       q.pageSize = 100;
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(12);
@@ -192,7 +192,7 @@ describe('Searching World Bank and Checking Faceting: ', function(){
         results.facets[1].value[0].value.should.be.exactly(8);
         results.facets[1].value[1].key.should.be.exactly('K-Z');
         results.facets[1].value[1].value.should.be.exactly(9);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     });
   });

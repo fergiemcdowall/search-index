@@ -3,11 +3,10 @@ var fs = require('fs');
 var sandboxPath = 'test/sandbox';
 var _ = require('lodash');
 
-
-describe('Indexing World Bank: ', function(){
-  describe('indexing the world bank dataset', function() {
+describe('Indexing World Bank: ', function () {
+  describe('indexing the world bank dataset', function () {
     var data = [];
-    it('should find the data and set up a sandbox', function(){
+    it('should find the data and set up a sandbox', function () {
       data = JSON.parse(fs.readFileSync('node_modules/world-bank-dataset/world-bank-projects.json'));
       data.length.should.be.exactly(500);
       data[0].id.should.be.exactly('P129828');
@@ -19,23 +18,23 @@ describe('Indexing World Bank: ', function(){
         true.should.be.exactly(false)
       }
     }),
-    it('should throw an error when indexing an empty batch', function(done) {
+    it('should throw an error when indexing an empty batch', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-empty',
                                   logLevel: 'error'});
-      si.add({}, [], function(err) {
+      si.add({}, [], function (err) {
         err.should.be.an.Error;
         err.toString().should.equal('Error: No docs to add');
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should index the data', function(done) {
+    it('should index the data', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                   logLevel: 'error'});
       this.timeout(60000);
-      var padInt = function(intIn) {
+      var padInt = function (intIn) {
         return ("000000000000000" + intIn).slice(-15);
       }
-      var processDoc = function(datum) {
+      var processDoc = function (datum) {
         delete datum._id;
         delete datum.projectdocs;
         delete datum.theme1;
@@ -53,9 +52,9 @@ describe('Indexing World Bank: ', function(){
       var opt = {};
       opt.batchName = 'world-bank-projects.json';
       opt.filters = ['mjtheme', 'totalamt'];
-      si.add(opt, _.map(data, processDoc), function(err) {
+      si.add(opt, _.map(data, processDoc), function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     });
   });

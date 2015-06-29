@@ -2,9 +2,9 @@ var should = require('should');
 var fs = require('fs');
 var sandboxPath = 'test/sandbox';
 
-describe('Instantiation: ', function(){
-  describe('setting up different indexes with no pollution', function() {
-  var data1 = [
+describe('Instantiation: ', function () {
+  describe('setting up different indexes with no pollution', function () {
+    var data1 = [
     {
       id: 1,
       name: 'The First Doc',
@@ -16,7 +16,7 @@ describe('Instantiation: ', function(){
       test: 'this is the second doc'
     }];
 
-  var data2 = [
+    var data2 = [
     {
       id: 3,
       name: 'The Third Doc',
@@ -27,54 +27,54 @@ describe('Instantiation: ', function(){
       name: 'The Fourth Doc',
       test: 'this is the fourth doc'
     }];
-    it('should index test data into the first index', function(done){
+    it('should index test data into the first index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-one',
                                   logLevel: 'error'});
-      si.add({}, data1, function(err) {
+      si.add({}, data1, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function(err) {
+        si.close(function (err) {
           done();
         })
       });
     }),
-    it('should index test data into the second index', function(done){
+    it('should index test data into the second index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-two',
                                   logLevel: 'error'});
-      si.add({}, data2, function(err) {
+      si.add({}, data2, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function(err) {
+        si.close(function (err) {
           done();
         })
       });
     }),
-    it('should be able to search in si-init-one without pollution from si-init-two', function(done){
+    it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-one',
                                   logLevel: 'error'});
       var q = {};
       q.query = {'*': ['*']};
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(2);
         results.totalHits.should.be.exactly(2);
         results.hits[0].id.should.be.exactly('1');
         results.hits[1].id.should.be.exactly('2');
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     }),
-    it('should be able to search in si-init-two without pollution from si-init-one', function(done){
+    it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-two',
                                   logLevel: 'error'});
       var q = {};
       q.query = {'*': ['*']};
-      si.search(q, function(err, results) {
+      si.search(q, function (err, results) {
         should.exist(results);
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(2);
         results.totalHits.should.be.exactly(2);
         results.hits[0].id.should.be.exactly('3');
         results.hits[1].id.should.be.exactly('4');
-        si.close(function(err){done();})
+        si.close(function (err) {done();})
       });
     });
   });
