@@ -6,7 +6,6 @@ var sandboxPath = 'test/sandbox';
 
 describe('Searching Reuters: ', function () {
   describe('searching reuters-000.json', function () {
-    var data = [];
     it('should search on all fields and get results', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -22,7 +21,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[10].id.should.be.exactly('972');
         searchResults.hits[13].id.should.be.exactly('31');
         searchResults.hits[14].id.should.be.exactly('171');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should search on all fields and get no results for a valid, yet absent keyword', function (done) {
@@ -33,7 +32,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(0);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to handle multiword searches', function (done) {
@@ -45,7 +44,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(922);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to return all results by doing a wildcard (*) search', function (done) {
@@ -57,7 +56,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(1000);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to handle multi word searches where some words are not present in index', function (done) {
@@ -70,7 +69,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.exactly(0);
         //TODO: make this return a full resultset
         //        searchResults.totalHits.should.be.exactly(0);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to offset', function (done) {
@@ -84,7 +83,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.exactly(51);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits[0].id.should.be.exactly('271');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to set page size (limit results)', function (done) {
@@ -96,7 +95,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to page (set offset and page size)', function (done) {
@@ -110,7 +109,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
         searchResults.hits[0].id.should.be.exactly('271');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search in indexed data with faceting', function (done) {
@@ -136,7 +135,7 @@ describe('Searching Reuters: ', function () {
         searchResults.facets[0].value[2].value.should.be.exactly(14);
         searchResults.facets[0].value[3].key.should.be.exactly('brazil');
         searchResults.facets[0].value[3].value.should.be.exactly(9);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to filter search results', function (done) {
@@ -152,7 +151,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(16);
         searchResults.hits[0].id.should.be.exactly('676');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search on all fields', function (done) {
@@ -167,7 +166,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[1].id.should.be.exactly('790');
         searchResults.hits[2].id.should.be.exactly('801');
         searchResults.hits[3].id.should.be.exactly('231');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search on one field', function (done) {
@@ -179,7 +178,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(10);
         searchResults.hits[8].id.should.be.exactly('796');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search on one field for two terms', function (done) {
@@ -194,7 +193,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[1].id.should.be.exactly('804');
         searchResults.hits[2].id.should.be.exactly('796');
         searchResults.hits[3].id.should.be.exactly('790');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search on on two fields for seperate terms', function (done) {
@@ -212,7 +211,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[1].id.should.be.exactly('386');
         searchResults.hits[2].id.should.be.exactly('28');
         searchResults.hits[3].id.should.be.exactly('869');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search on on two fields for multiple terms', function (done) {
@@ -228,7 +227,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('386');
         searchResults.hits[1].id.should.be.exactly('869');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to weight search results', function (done) {
@@ -247,7 +246,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[1].id.should.be.exactly('804');
         searchResults.hits[4].id.should.be.exactly('869');
         searchResults.hits[5].id.should.be.exactly('801');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to generate teasers', function (done) {
@@ -261,7 +260,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.exactly(3);
         searchResults.hits[0].document.teaser.should.be
           .exactly('GREY <span class=\"sc-em\">advertising</span> <GREY> FORMS NEW DIVISION');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to display information about the index', function (done) {
@@ -270,7 +269,7 @@ describe('Searching Reuters: ', function () {
       si.tellMeAboutMySearchIndex(function (info) {
         should.exist(info);
         info.totalDocs.should.be.exactly(1000);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
@@ -288,7 +287,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[1].id.should.be.exactly('753');
         searchResults.hits[2].id.should.be.exactly('287');
         searchResults.hits[3].id.should.be.exactly('333');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to display information about the index', function (done) {
@@ -297,7 +296,7 @@ describe('Searching Reuters: ', function () {
       si.tellMeAboutMySearchIndex(function (info) {
         should.exist(info);
         info.totalDocs.should.be.exactly(1000);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
@@ -313,7 +312,7 @@ describe('Searching Reuters: ', function () {
         searchResults.totalHits.should.be.exactly(2);
         searchResults.hits[0].id.should.be.exactly('938');
         searchResults.hits[1].id.should.be.exactly('921');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     });
   });

@@ -1,12 +1,10 @@
 /* global it */
 /* global describe */
 
-var fs = require('fs');
 var should = require('should');
-var _ = require('lodash');
 
 describe('deleting: ', function () {
-  it('should index test data into the inde', function (done) {
+  it('should index test data into the index', function (done) {
     var data1 = [
       {
         id: 1,
@@ -33,7 +31,7 @@ describe('deleting: ', function () {
                                 logLevel: 'error'});
     si.add({batchName: 'data1'}, data1, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should be able to return all documents in index', function (done) {
@@ -47,7 +45,7 @@ describe('deleting: ', function () {
       (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(4);
       searchResults.totalHits.should.be.exactly(4);
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should be able to delete a document without throwing errorness', function (done) {
@@ -56,7 +54,7 @@ describe('deleting: ', function () {
                                 logLevel: 'error'});
     si.del('2', function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should be able to return all documents in index, with one document deleted', function (done) {
@@ -73,7 +71,7 @@ describe('deleting: ', function () {
       searchResults.hits[0].id.should.be.exactly('1');
       searchResults.hits[1].id.should.be.exactly('3');
       searchResults.hits[2].id.should.be.exactly('4');
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should index duplicate test data into the index', function (done) {
@@ -89,7 +87,7 @@ describe('deleting: ', function () {
     ];
     si.add({batchName: 'data2'}, data2, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
@@ -106,7 +104,7 @@ describe('deleting: ', function () {
       searchResults.hits[0].id.should.be.exactly('1');
       searchResults.hits[1].id.should.be.exactly('3');
       searchResults.hits[2].id.should.be.exactly('4');
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   });
 });

@@ -20,7 +20,7 @@ describe('Matching Reuters: ', function () {
         matches[3].should.be.exactly('longrange');
         matches[4].should.be.exactly('longstanding');
         matches[5].should.be.exactly('longtime');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('handles match strings that are below threshold', function (done) {
@@ -32,7 +32,7 @@ describe('Matching Reuters: ', function () {
         matches.length.should.be.exactly(0);
         (err instanceof Error).should.be.exactly(true);
         err.toString().should.be.exactly('Error: string below threshold length (3)');
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     });
   });

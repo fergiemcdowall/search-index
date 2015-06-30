@@ -2,7 +2,6 @@
 /* global describe */
 
 var should = require('should');
-var fs = require('fs');
 var sandboxPath = 'test/sandbox';
 
 describe('Indexing and searching non-ascii characters: ', function () {
@@ -22,9 +21,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
                                 logLevel: 'error'});
     si.add({}, data, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {
-        done();
-      });
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should be able to search in test data', function (done) {
@@ -38,7 +35,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
       results.hits.length.should.be.exactly(1);
       results.totalHits.should.be.exactly(1);
       results.hits[0].id.should.be.exactly('1');
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   }),
   it('should be able to search in test data', function (done) {
@@ -52,7 +49,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
       results.hits.length.should.be.exactly(1);
       results.totalHits.should.be.exactly(1);
       results.hits[0].id.should.be.exactly('2');
-      si.close(function (err) {done();});
+      si.close(function (err) {if (err) false.should.eql(true);done();});
     });
   });
 });

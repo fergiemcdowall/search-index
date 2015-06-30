@@ -51,5 +51,6 @@
     //"anotherCoolGlobal",
     //"iLoveDouglas"
   ],
-  "indent"        : 4         // Specify indentation spacing
+  "indent"        : 4,         // Specify indentation spacing
+  "unused"        : true      // warn about unused variables?
 }

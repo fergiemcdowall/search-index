@@ -1,9 +1,9 @@
 /* global it */
 /* global describe */
 
-var assert = require('assert');
+var should = require('should');
 describe('a random test', function () {
   it('should be true', function () {
-    assert(true);
+    should(false).eql(false);
   });
 });

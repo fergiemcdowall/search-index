@@ -59,7 +59,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[1].gte.should.be.exactly('A');
         results.facets[1].value[1].lte.should.be.exactly('J');
         results.facets[1].value[1].value.should.be.exactly(135);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search for more than 1 word and show facetranges', function (done) {
@@ -105,7 +105,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[0].value.should.be.exactly(9);
         results.facets[1].value[1].key.should.be.exactly('A-J');
         results.facets[1].value[1].value.should.be.exactly(8);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search for more than 1 word and no ranges (experiment)', function (done) {
@@ -131,7 +131,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value.length.should.be.exactly(8);
         results.facets[1].value[0].value.should.be.exactly(5);
         results.facets[1].value[1].value.should.be.exactly(4);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to limit facet length', function (done) {
@@ -151,7 +151,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.totalHits.should.be.exactly(12);
         results.facets[0].value.length.should.be.exactly(2);
         results.facets[1].value.length.should.be.exactly(3);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     }),
     it('should be able to search for more than 1 word with a mix of ranged and unranged facets', function (done) {
@@ -195,7 +195,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[0].value.should.be.exactly(8);
         results.facets[1].value[1].key.should.be.exactly('K-Z');
         results.facets[1].value[1].value.should.be.exactly(9);
-        si.close(function (err) {done();});
+        si.close(function (err) {if (err) false.should.eql(true);done();});
       });
     });
   });
