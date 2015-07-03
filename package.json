@@ -19,7 +19,7 @@
     "lodash": "3.8.0",
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
-    "term-vector": "0.0.8"
+    "term-vector": "0.0.11"
   },
   "devDependencies": {
     "brfs": "1.4.0",
