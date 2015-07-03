@@ -186,6 +186,16 @@ si.add({'batchName': batchName, 'filters': filters}, batch, function(err) {
 
 Note: if you dont specify an id field, ```search-index``` will specify one for you.
 
+## close
+
+Closes the index (an index can't be in use by two processes)
+
+```javascript
+si.close(function (err) {
+  // ...index is now closed and can be opened by another process
+});
+```
+
 ## del
 
 Delete the document and all associated index entries.
