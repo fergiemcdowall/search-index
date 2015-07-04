@@ -119,6 +119,7 @@ var si = require('search-index')(options)
 
 * **indexPath** The physical location of the index on the filesystem. Default is `si`
 * **logLevel** A [bunyan log level](https://github.com/trentm/node-bunyan#levels) like `info`, `debug` (lots of logs) or `error` (nearly silent). Default is `warn`
+* **stopwords** An `Array` of words in that will not be indexed and that will be exluded from queries. You can easily get and modify stopword lists using the [stopword](https://www.npmjs.com/package/stopword) module
 
 # API
 
