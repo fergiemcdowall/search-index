@@ -22,7 +22,9 @@ describe('Indexing Reuters without IDs: ', function () {
         console.log(e);
         true.should.be.exactly(false);
       }
-      si.close(function (err) {if (err) false.should.eql(true);done();});
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
     }),
     it('should index one file of test data that doesnt contain IDs', function (done) {
       this.timeout(60000);
@@ -32,7 +34,9 @@ describe('Indexing Reuters without IDs: ', function () {
       opt.batchName = 'reuters no ids';
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should verify indexing', function (done) {
@@ -41,7 +45,9 @@ describe('Indexing Reuters without IDs: ', function () {
       si.tellMeAboutMySearchIndex(function (info) {
         should.exist(info);
         (info.totalDocs).should.be.exactly(1000);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('verifies recalibration', function (done) {
@@ -50,7 +56,9 @@ describe('Indexing Reuters without IDs: ', function () {
       si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
         (err === null).should.be.exactly(true);
         value.length.should.be.exactly(1000);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should search on all fields and get results', function (done) {
@@ -64,7 +72,9 @@ describe('Indexing Reuters without IDs: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits.length.should.be.exactly(100);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to handle multiword searches', function (done) {
@@ -76,7 +86,9 @@ describe('Indexing Reuters without IDs: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.totalHits.should.be.exactly(922);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     });
   });

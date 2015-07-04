@@ -26,7 +26,9 @@ describe('Indexing World Bank: ', function () {
       should.exist(err);
       err.should.be.an.Error;
       err.toString().should.equal('Error: No docs to add');
-      si.close(function (err) {if (err) false.should.eql(true);done();});
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
     });
   }),
   it('should index the data', function (done) {
@@ -56,7 +58,9 @@ describe('Indexing World Bank: ', function () {
     opt.filters = ['mjtheme', 'totalamt'];
     si.add(opt, _.map(data, processDoc), function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {if (err) false.should.eql(true);done();});
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
     });
   });
 });

@@ -40,7 +40,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[3].gte.should.be.exactly('brazil');
         results.facets[0].value[3].lte.should.be.exactly('brazil');
         results.facets[0].value[3].value.should.be.exactly(9);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to sort facets by value ascending', function (done) {
@@ -61,7 +63,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[1].value.should.be.exactly(1);
         results.facets[0].value[2].key.should.be.exactly('yemen-demo-republic');
         results.facets[0].value[2].value.should.be.exactly(1);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to sort facets by key ascending', function (done) {
@@ -83,7 +87,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[1].value.should.be.exactly(5);
         results.facets[0].value[2].key.should.be.exactly('australia');
         results.facets[0].value[2].value.should.be.exactly(17);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to sort facets by key descending', function (done) {
@@ -104,7 +110,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[1].value.should.be.exactly(2);
         results.facets[0].value[2].key.should.be.exactly('yemen-demo-republic');
         results.facets[0].value[2].value.should.be.exactly(1);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to limit facet length', function (done) {
@@ -121,7 +129,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.totalHits.should.be.exactly(922);
         results.hits.length.should.be.exactly(100);
         results.facets[0].value.length.should.be.exactly(20);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to mark a facet as active', function (done) {
@@ -143,7 +153,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[1].key.should.be.exactly('thailand');
         results.facets[0].value[1].value.should.be.exactly(1);
         (results.facets[0].value[1].active === undefined).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to mark multiple facets as active', function (done) {
@@ -168,7 +180,9 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         results.facets[0].value[2].key.should.be.exactly('uk');
         results.facets[0].value[2].value.should.be.exactly(4);
         (results.facets[0].value[2].active === undefined).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     });
   });

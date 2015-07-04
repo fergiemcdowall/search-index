@@ -19,18 +19,19 @@
     "lodash": "3.8.0",
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
+    "stopword": "0.0.3",
     "term-vector": "0.0.11"
   },
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "10.1.1",
-    "should": "7.0.1",
     "jasmine-node": "1.14.5",
     "jscs": "~1.13.1",
     "jshint": "~2.7.0",
+    "mocha": "2.2.5",
     "reuters-21578-json": "0.0.5",
-    "world-bank-dataset": "0.0.1",
-    "mocha": "2.2.5"
+    "should": "7.0.1",
+    "world-bank-dataset": "0.0.1"
   },
   "author": {
     "name": "Fergus McDowall",
