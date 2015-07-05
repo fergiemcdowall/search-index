@@ -17,7 +17,9 @@ describe('Replication, Reuters: ', function () {
       opt.filters = ['places', 'topics'];
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to create a snapshot', function (done) {
@@ -28,7 +30,9 @@ describe('Replication, Reuters: ', function () {
         rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
           .on('close', function () {
             (true).should.be.exactly(true);
-            si.close(function (err) {if (err) false.should.eql(true);done();});
+            si.close(function (err) {
+              if (err) false.should.eql(true);done();
+            });
           })
           .on('error', function (err) {
             (err === null).should.be.exactly(true);
@@ -41,7 +45,9 @@ describe('Replication, Reuters: ', function () {
       si.empty(function (err) {
         //Is this a bug in levelUP? Should undefined be null?
         (err === undefined).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to display information about the index (index is empty)', function (done) {
@@ -49,7 +55,9 @@ describe('Replication, Reuters: ', function () {
                                   logLevel: 'error'});
       si.tellMeAboutMySearchIndex(function (result) {
         result.totalDocs.should.be.exactly(0);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to refeed from a snapshot', function (done) {
@@ -58,7 +66,9 @@ describe('Replication, Reuters: ', function () {
                                   logLevel: 'error'});
       si.replicate(fs.createReadStream(sandboxPath + '/backup.gz'), function (err) {
         (err === undefined).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to display information about the index (index has 10 docs)', function (done) {
@@ -67,7 +77,9 @@ describe('Replication, Reuters: ', function () {
       si.tellMeAboutMySearchIndex(function (result) {
         should.exist(result);
         result.totalDocs.should.be.exactly(10);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     });
   });

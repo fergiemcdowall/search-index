@@ -20,12 +20,12 @@
     "lodash": "3.8.0",
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
-    "term-vector": "0.0.8"
+    "stopword": "0.0.3",
+    "term-vector": "0.0.11"
   },
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "10.1.1",
-    "jasmine-node": "1.14.5",
     "jscs": "~1.13.1",
     "jshint": "~2.7.0",
     "mocha": "2.2.5",
@@ -60,7 +60,7 @@
   ],
   "scripts": {
     "lint": " jshint lib test index.js || true && jscs lib test index.js || true",
-    "test": "date && rm -rf test/sandbox/* && mocha --recursive"
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive"
   },
   "repository": {
     "type": "git",

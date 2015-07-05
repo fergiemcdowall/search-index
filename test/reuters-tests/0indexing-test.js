@@ -23,7 +23,9 @@ describe('Indexing Reuters: ', function () {
         console.log(e);
         assert(false);
       }
-      si.close(function (err) {if (err) false.should.eql(true);done();});
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
     }),
     it('should index the data', function (done) {
       this.timeout(120000);
@@ -34,7 +36,9 @@ describe('Indexing Reuters: ', function () {
       opt.filters = ['places', 'topics'];
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should verify indexing', function (done) {
@@ -43,7 +47,9 @@ describe('Indexing Reuters: ', function () {
       si.tellMeAboutMySearchIndex(function (info) {
         should.exist(info);
         (info.totalDocs).should.be.exactly(1000);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     });
   });

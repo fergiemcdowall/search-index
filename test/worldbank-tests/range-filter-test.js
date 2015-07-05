@@ -51,7 +51,9 @@ describe('Range Filters: ', function () {
         results.facets[1].value[0].value.should.be.exactly(9);
         results.facets[1].value[1].key.should.be.exactly('A-J');
         results.facets[1].value[1].value.should.be.exactly(8);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to filter on a chosen facetrange', function (done) {
@@ -107,7 +109,9 @@ describe('Range Filters: ', function () {
         results.facets[1].value[0].value.should.be.exactly(8);
         results.facets[1].value[1].key.should.be.exactly('A-J');
         results.facets[1].value[1].value.should.be.exactly(6);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to show facets', function (done) {
@@ -152,7 +156,9 @@ describe('Range Filters: ', function () {
         results.facets[1].value[1].value.should.be.exactly(7);
         results.facets[1].value[2].key.should.be.exactly('G-N');
         results.facets[1].value[2].value.should.be.exactly(1);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in same filter', function (done) {
@@ -203,7 +209,9 @@ describe('Range Filters: ', function () {
         results.facets[1].value[1].value.should.be.exactly(4);
         results.facets[1].value[2].key.should.be.exactly('G-N');
         results.facets[1].value[2].value.should.be.exactly(0);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     }),
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
@@ -272,7 +280,9 @@ describe('Range Filters: ', function () {
         results.facets[1].value[2].lte.should.be.exactly('N');
         should.not.exist(results.facets[1].value[2].active);
         results.facets[1].value[2].value.should.be.exactly(0);
-        si.close(function (err) {if (err) false.should.eql(true);done();});
+        si.close(function (err) {
+          if (err) false.should.eql(true);done();
+        });
       });
     });
   });
