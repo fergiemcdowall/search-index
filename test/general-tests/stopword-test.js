@@ -38,7 +38,8 @@ describe('stopwords: ', function () {
       name: 'Danskebåten',
       test: 'Ta en tur til Køben- dette blir stas!'
     }];
-  it('should index test data into the index', function (done) {
+
+  it('should index test data into the index with default (english) stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-en',
                                 logLevel: logLevel});
@@ -49,7 +50,8 @@ describe('stopwords: ', function () {
       });
     });
   }),
-  it('should be able to return all documents in index', function (done) {
+
+  it('should be able to return all documents that contain "dette" if indexing with english stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-en',
                                 logLevel: logLevel});
@@ -65,7 +67,8 @@ describe('stopwords: ', function () {
       });
     });
   }),
-  it('should index test data into the index', function (done) {
+
+  it('should index test data into the index with norwegian stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
     var sw = require('stopword');
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
@@ -94,10 +97,11 @@ describe('stopwords: ', function () {
       });
     });
   }),
-  it('should be able to return all documents in index', function (done) {
+  it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
-                                logLevel: logLevel});
+                                logLevel: logLevel
+                               });
     var q = {};
     q.query = {'*': ['dette']};
     si.search(q, function (err, searchResults) {

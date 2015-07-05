@@ -34,7 +34,8 @@ describe('deleting: ', function () {
     si.add({batchName: 'data1'}, data1, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
-        if (err) false.should.eql(true);done();
+        if (err) false.should.eql(true);
+        done();
       });
     });
   }),
