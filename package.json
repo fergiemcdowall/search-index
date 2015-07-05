@@ -60,7 +60,7 @@
   ],
   "scripts": {
     "lint": " jshint lib test index.js || true && jscs lib test index.js || true",
-    "test": "date && rm -rf test/sandbox/* && mocha --recursive"
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive"
   },
   "repository": {
     "type": "git",
