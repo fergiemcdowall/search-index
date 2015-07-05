@@ -11,6 +11,7 @@
     "JSONStream": "0.10.0",
     "async": "0.9.0",
     "bunyan": "1.3.5",
+    "bunyan-shadower": "^1.0.1",
     "colors": "1.1.0",
     "level-js": "2.1.6",
     "level-multiply": "0.0.1",
@@ -24,24 +25,24 @@
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "10.1.1",
-    "should": "7.0.1",
     "jasmine-node": "1.14.5",
     "jscs": "~1.13.1",
     "jshint": "~2.7.0",
+    "mocha": "2.2.5",
     "reuters-21578-json": "0.0.5",
-    "world-bank-dataset": "0.0.1",
-    "mocha": "2.2.5"
+    "should": "7.0.1",
+    "world-bank-dataset": "0.0.1"
   },
   "author": {
-    "name": "Fergus McDowall",
-    "email": "fergusmcdowall@gmail.com"
+    "email": "fergusmcdowall@gmail.com",
+    "name": "Fergus McDowall"
   },
   "keywords": [
-    "natural",
-    "language",
-    "search",
     "index",
-    "lucene"
+    "language",
+    "lucene",
+    "natural",
+    "search"
   ],
   "main": "./index.js",
   "browser": "./browser.js",
