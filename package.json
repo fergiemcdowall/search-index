@@ -21,7 +21,7 @@
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
     "stopword": "0.0.3",
-    "term-vector": "0.0.11"
+    "term-vector": "0.0.12"
   },
   "devDependencies": {
     "brfs": "1.4.0",
