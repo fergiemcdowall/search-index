@@ -4,7 +4,6 @@
 var logLevel = 'error';
 if (process.env.NODE_ENV == 'TEST') logLevel = 'info';
 var should = require('should');
-var fs = require('fs');
 
 describe('ngrams (phrase search): ', function () {
   var sandboxPath = 'test/sandbox';
@@ -70,7 +69,6 @@ describe('ngrams (phrase search): ', function () {
       });
     });
   });
-
 
   it('should be able to get hits for documents of ngram length 1', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -189,6 +187,5 @@ describe('ngrams (phrase search): ', function () {
       });
     });
   });
-
 
 });
