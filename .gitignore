@@ -4,3 +4,4 @@ node_modules
 si*
 backup.gz
 *.swp
+.idea
