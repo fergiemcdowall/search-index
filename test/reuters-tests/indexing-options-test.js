@@ -9,23 +9,27 @@ if (process.env.NODE_ENV == 'TEST') logLevel = 'info';
 
 describe('indexing options: ', function () {
   var siOps1 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-1',
-               fieldedSearchOnAllFieldsByDefault: false,
+               fieldedSearch: false,
                logLevel: logLevel};
 
   var siOps2 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-2',
-                fieldedSearchOnAllFieldsByDefault: true,
+                fieldedSearch: true,
                 logLevel: logLevel};
 
   var siOps3 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-3',
-                fieldedSearchOnAllFieldsByDefault: true,
+                fieldedSearch: true,
                 logLevel: logLevel};
 
   var siOps4 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-4',
-                fieldedSearchOnAllFieldsByDefault: false,
+                fieldedSearch: false,
                 logLevel: logLevel};
 
   var siOps5 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-5',
-                fieldedSearchOnAllFieldsByDefault: false,
+                fieldedSearch: false,
+                logLevel: logLevel};
+
+  var siOps6 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-6',
+                fieldedSearch: false,
                 logLevel: logLevel};
 
   it('should index one file of test data and set canDoFieldedSearchOn to "title"', function (done) {
@@ -34,8 +38,11 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps1);
     var opt = {};
     opt.batchName = 'reuters';
-    opt.canDoFieldedSearchOn = ['title'];
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'title', fieldedSearch: true},
+      {fieldName: 'places', filter: true},
+      {fieldName: 'topics', filter: true}
+    ];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -110,8 +117,11 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps2);
     var opt = {};
     opt.batchName = 'reuters';
-    opt.canDoFieldedSearchOn = ['title'];
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'title', canDoFieldedSearchOn: true},
+      {fieldName: 'places', filter: true},
+      {fieldName: 'topics', filter: true}
+    ];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -166,8 +176,9 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps3);
     var opt = {};
     opt.batchName = 'reuters';
-    opt.nonSearchableFields = ['body'];
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'body', searchable: false}
+    ];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -210,7 +221,10 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps4);
     var opt = {};
     opt.batchName = 'reuters';
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'places', filter: true},
+      {fieldName: 'topics', filter: true}
+    ];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -253,7 +267,9 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps5);
     var opt = {};
     opt.batchName = 'reuters';
-    opt.nonSearchableFields = ['body'];
+    opt.fieldOptions = [
+      {fieldName: 'body', searchable: false}
+    ];
     si.add(opt, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -303,5 +319,41 @@ describe('indexing options: ', function () {
       });
     });
   });
+
+  it('should index one file of test data and weight the body field', function (done) {
+    this.timeout(5000);
+    var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
+    var si = require('../../')(siOps6);
+    var opt = {};
+    opt.batchName = 'reuters';
+    opt.fieldOptions = [
+//      {fieldName: 'title', weight: 5},
+    ];
+    si.add(opt, data, function (err) {
+      (err === null).should.be.exactly(true);
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('SHOULD be able to do search on the composite field for tokens present in the title field', function (done) {
+    var si = require('../../')(siOps6);
+    var q = {};
+    q.query = {'*': ['stock']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(4);
+      searchResults.hits[0].id.should.be.exactly('9');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('10');
+      searchResults.hits[3].id.should.be.exactly('8');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
 
 });

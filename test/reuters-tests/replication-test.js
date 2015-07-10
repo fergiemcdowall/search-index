@@ -15,7 +15,6 @@ describe('Replication, Reuters: ', function () {
                                   logLevel: 'error'});
       var opt = {};
       opt.batchName = 'reuters';
-      opt.filters = ['places', 'topics'];
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
         si.close(function (err) {

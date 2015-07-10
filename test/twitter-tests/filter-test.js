@@ -14,7 +14,10 @@ describe('Filters: ', function () {
                                   logLevel: 'error'});
       var opt = {};
       opt.batchName = 'tweetz';
-      opt.filters = ['tags', 'user'];
+      opt.fieldOptions = [
+        {fieldName: 'tags', filter: true},
+        {fieldName: 'user', filter: true}
+      ];
       si.add(opt, data, function (err) {
         (err === null).should.be.exactly(true);
         si.close(function (err) {
@@ -47,9 +50,9 @@ describe('Filters: ', function () {
         results.facets[0].value[1].key.should.be.exactly('GoogleforWork');
         (results.hits.length > 1).should.be.exactly(true);
         results.hits.length.should.be.exactly(8);
-        results.hits[0].id.should.be.exactly('1NsXUW');
-        results.hits[5].id.should.be.exactly('3FceLy');
-        results.hits[6].id.should.be.exactly('3swrN');
+        results.hits[0].id.should.be.exactly('4EaEkI');
+        results.hits[5].id.should.be.exactly('3swrN');
+        results.hits[6].id.should.be.exactly('4bU7P5');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -96,8 +99,8 @@ describe('Filters: ', function () {
         results.totalHits.should.be.exactly(5);
         should.exist(results.facets[0]);
         results.hits[0].id.should.be.exactly('TEWP');
-        results.hits[3].id.should.be.exactly('3swrN');
-        results.hits[4].id.should.be.exactly('2PHH0R');
+        results.hits[3].id.should.be.exactly('4bU7P5');
+        results.hits[4].id.should.be.exactly('3VKiNd');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -119,8 +122,8 @@ describe('Filters: ', function () {
         results.hits.length.should.be.exactly(64);
         results.totalHits.should.be.exactly(64);
         should.exist(results.facets[0]);
-        results.hits[7].id.should.be.exactly('3UzzHA');
-        results.hits[8].id.should.be.exactly('42nRz7');
+        results.hits[7].id.should.be.exactly('3bv9Ry');
+        results.hits[8].id.should.be.exactly('4wpSkT');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });

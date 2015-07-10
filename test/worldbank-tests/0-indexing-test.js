@@ -55,7 +55,10 @@ describe('Indexing World Bank: ', function () {
     };
     var opt = {};
     opt.batchName = 'world-bank-projects.json';
-    opt.filters = ['mjtheme', 'totalamt'];
+    opt.fieldOptions = [
+      {fieldName: 'mjtheme', filter: true},
+      {fieldName: 'totalamt', filter: true}
+    ];
     si.add(opt, _.map(data, processDoc), function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {

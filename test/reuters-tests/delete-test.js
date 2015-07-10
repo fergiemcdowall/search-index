@@ -5,7 +5,8 @@ var should = require('should');
 var fs = require('fs');
 
 describe('deleting and reindexing: ', function () {
-  it('should reindex deleted document', function (done) {
+  it('should index documents', function (done) {
+    this.timeout(10000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
     var singleDoc = [];
     singleDoc.push(data['746']);
@@ -13,7 +14,10 @@ describe('deleting and reindexing: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
     var opt = {batchName: 'document 747'};
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'places', filter: true},
+      {fieldName: 'topics', filter: true}
+    ];
     si.add(opt, singleDoc, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -30,7 +34,7 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true);
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
-      result.hits[4].id.should.be.exactly('747');
+      result.hits[5].id.should.be.exactly('747');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
@@ -110,7 +114,10 @@ describe('deleting and reindexing: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
     var opt = {batchName: 'document 747'};
-    opt.filters = ['places', 'topics'];
+    opt.fieldOptions = [
+      {fieldName: 'places', filter: true},
+      {fieldName: 'topics', filter: true}
+    ];
     si.add(opt, singleDoc, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -127,7 +134,7 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true);
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
-      result.hits[4].id.should.be.exactly('747');
+      result.hits[5].id.should.be.exactly('747');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });

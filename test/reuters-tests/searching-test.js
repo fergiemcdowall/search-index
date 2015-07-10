@@ -17,10 +17,10 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits.length.should.be.exactly(100);
-        searchResults.hits[3].id.should.be.exactly('417');
-        searchResults.hits[10].id.should.be.exactly('972');
-        searchResults.hits[13].id.should.be.exactly('31');
-        searchResults.hits[14].id.should.be.exactly('171');
+        searchResults.hits[3].id.should.be.exactly('760');
+        searchResults.hits[10].id.should.be.exactly('102');
+        searchResults.hits[13].id.should.be.exactly('99');
+        searchResults.hits[14].id.should.be.exactly('33');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -92,7 +92,7 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(51);
         searchResults.hits.length.should.be.above(1);
-        searchResults.hits[0].id.should.be.exactly('271');
+        searchResults.hits[0].id.should.be.exactly('287');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -122,7 +122,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
-        searchResults.hits[0].id.should.be.exactly('271');
+        searchResults.hits[0].id.should.be.exactly('287');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -137,10 +137,10 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
-        searchResults.hits[3].id.should.be.exactly('417');
-        searchResults.hits[10].id.should.be.exactly('972');
-        searchResults.hits[13].id.should.be.exactly('31');
-        searchResults.hits[14].id.should.be.exactly('171');
+        searchResults.hits[3].id.should.be.exactly('760');
+        searchResults.hits[10].id.should.be.exactly('102');
+        searchResults.hits[13].id.should.be.exactly('99');
+        searchResults.hits[14].id.should.be.exactly('33');
         searchResults.facets[0].value.length.should.be.exactly(39);
         searchResults.facets[0].key.should.be.exactly('places');
         searchResults.facets[0].value[0].key.should.be.exactly('usa');
@@ -168,7 +168,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(16);
-        searchResults.hits[0].id.should.be.exactly('676');
+        searchResults.hits[0].id.should.be.exactly('287');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -182,10 +182,10 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(20);
-        searchResults.hits[0].id.should.be.exactly('796');
-        searchResults.hits[1].id.should.be.exactly('790');
-        searchResults.hits[2].id.should.be.exactly('801');
-        searchResults.hits[3].id.should.be.exactly('231');
+        searchResults.hits[0].id.should.be.exactly('28');
+        searchResults.hits[1].id.should.be.exactly('804');
+        searchResults.hits[2].id.should.be.exactly('231');
+        searchResults.hits[3].id.should.be.exactly('386');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -199,7 +199,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(10);
-        searchResults.hits[8].id.should.be.exactly('796');
+        searchResults.hits[8].id.should.be.exactly('877');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -214,9 +214,9 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(4);
         searchResults.hits[0].id.should.be.exactly('386');
-        searchResults.hits[1].id.should.be.exactly('804');
+        searchResults.hits[1].id.should.be.exactly('790');
         searchResults.hits[2].id.should.be.exactly('796');
-        searchResults.hits[3].id.should.be.exactly('790');
+        searchResults.hits[3].id.should.be.exactly('804');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -234,9 +234,9 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(4);
         searchResults.hits[0].id.should.be.exactly('801');
-        searchResults.hits[1].id.should.be.exactly('386');
-        searchResults.hits[2].id.should.be.exactly('28');
-        searchResults.hits[3].id.should.be.exactly('869');
+        searchResults.hits[1].id.should.be.exactly('869');
+        searchResults.hits[2].id.should.be.exactly('386');
+        searchResults.hits[3].id.should.be.exactly('28');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -253,8 +253,8 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(2);
-        searchResults.hits[0].id.should.be.exactly('386');
-        searchResults.hits[1].id.should.be.exactly('869');
+        searchResults.hits[0].id.should.be.exactly('869');
+        searchResults.hits[1].id.should.be.exactly('386');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -272,10 +272,10 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(8);
-        searchResults.hits[0].id.should.be.exactly('231');
-        searchResults.hits[1].id.should.be.exactly('804');
+        searchResults.hits[0].id.should.be.exactly('28');
+        searchResults.hits[1].id.should.be.exactly('231');
         searchResults.hits[4].id.should.be.exactly('869');
-        searchResults.hits[5].id.should.be.exactly('801');
+        searchResults.hits[5].id.should.be.exactly('877');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
@@ -290,6 +290,7 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(3);
+        console.log(searchResults.hits)
         searchResults.hits[0].document.teaser.should.be
           .exactly('GREY <span class=\"sc-em\">advertising</span> <GREY> FORMS NEW DIVISION');
         si.close(function (err) {
