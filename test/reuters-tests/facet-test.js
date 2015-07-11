@@ -18,10 +18,10 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(100);
         results.totalHits.should.be.exactly(546);
-        results.hits[3].id.should.be.exactly('417');
-        results.hits[10].id.should.be.exactly('972');
-        results.hits[13].id.should.be.exactly('31');
-        results.hits[14].id.should.be.exactly('171');
+        results.hits[3].id.should.be.exactly('760');
+        results.hits[10].id.should.be.exactly('133');
+        results.hits[13].id.should.be.exactly('101');
+        results.hits[14].id.should.be.exactly('33');
         results.facets[0].value.length.should.be.exactly(39);
         results.facets[0].key.should.be.exactly('places');
         results.facets[0].value[0].key.should.be.exactly('usa');

@@ -18,8 +18,8 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.above(1);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.hits[3].id.should.be.exactly('760');
-        searchResults.hits[10].id.should.be.exactly('102');
-        searchResults.hits[13].id.should.be.exactly('99');
+        searchResults.hits[10].id.should.be.exactly('133');
+        searchResults.hits[13].id.should.be.exactly('101');
         searchResults.hits[14].id.should.be.exactly('33');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
@@ -138,8 +138,8 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
         searchResults.hits[3].id.should.be.exactly('760');
-        searchResults.hits[10].id.should.be.exactly('102');
-        searchResults.hits[13].id.should.be.exactly('99');
+        searchResults.hits[10].id.should.be.exactly('133');
+        searchResults.hits[13].id.should.be.exactly('101');
         searchResults.hits[14].id.should.be.exactly('33');
         searchResults.facets[0].value.length.should.be.exactly(39);
         searchResults.facets[0].key.should.be.exactly('places');
@@ -290,7 +290,6 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(3);
-        console.log(searchResults.hits)
         searchResults.hits[0].document.teaser.should.be
           .exactly('GREY <span class=\"sc-em\">advertising</span> <GREY> FORMS NEW DIVISION');
         si.close(function (err) {
@@ -323,7 +322,7 @@ describe('Searching Reuters: ', function () {
         searchResults.hits[0].id.should.be.exactly('676');
         searchResults.hits[1].id.should.be.exactly('753');
         searchResults.hits[2].id.should.be.exactly('287');
-        searchResults.hits[3].id.should.be.exactly('333');
+        searchResults.hits[3].id.should.be.exactly('893');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
