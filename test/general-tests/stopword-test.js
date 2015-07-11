@@ -110,7 +110,7 @@ describe('stopwords: ', function () {
     q.query = {'*': ['dette']};
     si.search(q, function (err, searchResults) {
       should.exist(searchResults);
-//      (err === null).should.be.exactly(true);
+      //      (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(0);
       //TODO: the next line should work
       //      searchResults.totalHits.should.be.exactly(0);

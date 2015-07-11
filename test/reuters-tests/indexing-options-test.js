@@ -355,5 +355,4 @@ describe('indexing options: ', function () {
     });
   });
 
-
 });
