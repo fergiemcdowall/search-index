@@ -32,6 +32,11 @@ describe('indexing options: ', function () {
                 fieldedSearch: false,
                 logLevel: logLevel};
 
+  var siOps7 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-7',
+                fieldedSearch: false,
+                deletable: false,
+                logLevel: logLevel};
+
   it('should index one file of test data and set canDoFieldedSearchOn to "title"', function (done) {
     this.timeout(5000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
@@ -339,6 +344,68 @@ describe('indexing options: ', function () {
 
   it('SHOULD be able to do search on the composite field for tokens present in the title field', function (done) {
     var si = require('../../')(siOps6);
+    var q = {};
+    q.query = {'*': ['stock']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(4);
+      searchResults.hits[0].id.should.be.exactly('9');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('10');
+      searchResults.hits[3].id.should.be.exactly('8');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+
+  it('should index one file of test data non-deletably', function (done) {
+    this.timeout(5000);
+    var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
+    var si = require('../../')(siOps7);
+    var opt = {};
+    opt.batchName = 'reuters';
+    si.add(opt, data, function (err) {
+      (err === null).should.be.exactly(true);
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('SHOULD be able to do a search', function (done) {
+    var si = require('../../')(siOps7);
+    var q = {};
+    q.query = {'*': ['stock']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(4);
+      searchResults.hits[0].id.should.be.exactly('9');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('10');
+      searchResults.hits[3].id.should.be.exactly('8');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('SHOULD NOT be able to delete a doc', function (done) {
+    var si = require('../../')(siOps7);
+    si.del('4', function (err) {
+      should.exist(err);
+      err.toString().should.be.exactly('Error: this index is non-deleteable- set "deletable: true" in startup options');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('doc should still be present in index', function (done) {
+    var si = require('../../')(siOps7);
     var q = {};
     q.query = {'*': ['stock']};
     si.search(q, function (err, searchResults) {

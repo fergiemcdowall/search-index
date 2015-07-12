@@ -29,6 +29,7 @@ describe('Instantiation: ', function () {
       name: 'The Fourth Doc',
       test: 'this is the fourth doc'
     }];
+
     it('should index test data into the first index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-one',
                                   logLevel: 'error'});
@@ -38,7 +39,8 @@ describe('Instantiation: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should index test data into the second index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-two',
                                   logLevel: 'error'});
@@ -48,7 +50,8 @@ describe('Instantiation: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-one',
                                   logLevel: 'error'});
@@ -65,7 +68,8 @@ describe('Instantiation: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-two',
                                   logLevel: 'error'});

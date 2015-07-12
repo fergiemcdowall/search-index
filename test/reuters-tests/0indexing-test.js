@@ -54,7 +54,8 @@ describe('Indexing Reuters: ', function () {
         should.exist(info);
         (info.totalDocs).should.be.exactly(1000);
         (info.options).should.eql(
-          { indexPath: 'test/sandbox/si-reuters',
+          { deletable: true,
+            indexPath: 'test/sandbox/si-reuters',
             logLevel: 'error',
             nGramLength: 1,
             stopwords:
