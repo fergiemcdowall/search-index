@@ -56,6 +56,7 @@ describe('Indexing Reuters: ', function () {
         (info.options).should.eql(
           { indexPath: 'test/sandbox/si-reuters',
             logLevel: 'error',
+            nGramLength: 1,
             stopwords:
             [ '$',
               '0',
