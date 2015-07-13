@@ -37,6 +37,17 @@ describe('indexing options: ', function () {
                 deletable: false,
                 logLevel: logLevel};
 
+  var siOps8 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-8',
+                fieldedSearch: false,
+                deletable: false,
+                logLevel: logLevel};
+
+  var siOps9 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-9',
+                fieldedSearch: false,
+                deletable: false,
+                logLevel: logLevel};
+
+
   it('should index one file of test data and set canDoFieldedSearchOn to "title"', function (done) {
     this.timeout(5000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
@@ -421,5 +432,79 @@ describe('indexing options: ', function () {
       });
     });
   });
+
+  it('should index one file of test data and only store id and title (but allow all other fields to be searchable)', function (done) {
+    this.timeout(5000);
+    var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
+    var si = require('../../')(siOps8);
+    var opt = {};
+    opt.fieldsToStore = ['id', 'title'];
+    opt.batchName = 'reuters';
+    si.add(opt, data, function (err) {
+      (err === null).should.be.exactly(true);
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('doc should still be present in index', function (done) {
+    var si = require('../../')(siOps8);
+    var q = {};
+    q.query = {'*': ['stock']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(4);
+      searchResults.hits[0].id.should.be.exactly('9');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('10');
+      searchResults.hits[3].id.should.be.exactly('8');
+      searchResults.hits[0].document.should.eql({
+        id: '9',
+        title: 'CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT'
+      });
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('should index one file of test data and only store title (but allow all other fields to be searchable)', function (done) {
+    this.timeout(5000);
+    var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
+    var si = require('../../')(siOps9);
+    var opt = {};
+    opt.fieldsToStore = ['title'];
+    opt.batchName = 'reuters';
+    si.add(opt, data, function (err) {
+      (err === null).should.be.exactly(true);
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
+  it('doc should still be present in index', function (done) {
+    var si = require('../../')(siOps9);
+    var q = {};
+    q.query = {'*': ['stock']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(4);
+      searchResults.hits[0].id.should.be.exactly('9');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('10');
+      searchResults.hits[3].id.should.be.exactly('8');
+      searchResults.hits[0].document.should.eql({
+        title: 'CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT'
+      });
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
 
 });
