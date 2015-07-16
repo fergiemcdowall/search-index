@@ -11,7 +11,7 @@
     "JSONStream": "0.10.0",
     "async": "0.9.0",
     "bunyan": "1.3.5",
-    "bunyan-shadower": "^1.0.1",
+    "log-skeleton": "^1.0.1",
     "colors": "1.1.0",
     "level-js": "2.1.6",
     "level-multiply": "0.0.1",
