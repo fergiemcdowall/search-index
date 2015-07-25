@@ -8,12 +8,21 @@ You can also generate search indexes and easily share them- you could for exampl
 
 Find out how to use the `search-index` module here:
 
- * [Quickstart](./doc/quickstart.md) (for the impatient...)
+### For the impatient
+ * [Quickstart](./doc/quickstart.md)
+
+### User Documentation
  * [Create an index](./doc/create.md)
  * [Add documents to an index](./doc/add.md)
  * [Search in an index](./doc/search.md)
  * [Matchers and autosuggest](./doc/autosuggest.md)
  * [Replicate an index](./doc/replicate.md)
+
+### Examples
+ * [Examples](doc/examples)
+
+### API reference
+
  * [API reference](./doc/API.md)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat

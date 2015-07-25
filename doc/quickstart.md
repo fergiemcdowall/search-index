@@ -15,7 +15,7 @@ Initialize a search index and add the data
 
 ```javascript
 var si = require('search-index');
-
+var data = require('path/to/data/file');
 si.add(opt, data, function (err) {
   if (err) console.log('oops! ' + err);
   else console.log('success!');
