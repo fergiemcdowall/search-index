@@ -6,14 +6,14 @@
 
 You can also generate search indexes and easily share them- you could for example make an index available on bittorrent, or you could push an index out to a browser. It is really easy to move indexes around, and create decentralised search engines.
 
-Find out how to use the `search-index` module:
+Find out how to use the `search-index` module here:
 
  * [Quickstart](./doc/quickstart.md) (for the impatient...)
  * [Create an index](./doc/create.md)
- * [Add documents to an index](./doc/quickstart.md)
+ * [Add documents to an index](./doc/add.md)
  * [Search in an index](./doc/search.md)
  * [Matchers and autosuggest](./doc/autosuggest.md)
- * [Replicate an index](./doc/replication.md)
+ * [Replicate an index](./doc/replicate.md)
  * [API reference](./doc/API.md)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
