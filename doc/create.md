@@ -4,7 +4,7 @@ Search indexes are created by `require`-ing `search-index` and passing it startu
 
 ```javascript
 var options = {} //put the startup options you want here
-var si = require('../../')(options);
+var si = require('search-index')(options);
 ```
 
 ## Startup options
