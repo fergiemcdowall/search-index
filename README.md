@@ -23,7 +23,7 @@ Find out how to use the `search-index` module here:
 
 ### API reference
 
- * [API reference](./doc/api/module-search-index.html)
+ * [API reference](https://cdn.rawgit.com/fergiemcdowall/search-index/better_docs/doc/api/module-search-index.html)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
 [license-url]: LICENSE
