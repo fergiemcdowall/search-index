@@ -7,6 +7,25 @@ read-only.
 Indexing options can be set at a batch and a document level.
 
 
+### Adding
+
+The syntax for adding is a batch of documents is:
+
+```javascript
+//options (can be left empty)
+var batchOptions = {};
+batchOptions.fieldOptions = [
+  {fieldName: 'field1', ...},
+  {fieldName: 'field2', ...},
+  ...
+];
+
+//add
+si.add(batchOptions, data, function (err) {
+  if (!err) console.log('success!');
+});
+```
+
 ### Default batch options
 
 Default batch options are equivalent to:
@@ -72,18 +91,3 @@ no id field id present, then one will be generated. [example batch here](https:/
 ]
 ```
 
-### Adding
-
-The syntax for adding is a batch of documents is:
-
-```javascript
-var batchOptions = {};
-batchOptions.fieldOptions = [
-  {fieldName: 'field1', ...},
-  {fieldName: 'field2', ...},
-  ...
-];
-si.add(batchOptions, data, function (err) {
-  if (!err) console.log('success!');
-});
-```
