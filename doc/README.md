@@ -1,3 +1,1 @@
-placeholder
-
-*Boom*
+See [README](../README.md)
