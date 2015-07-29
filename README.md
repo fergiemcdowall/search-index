@@ -1,6 +1,16 @@
 [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
 
+```javascript
+var si = require('search-index');
 
+si.add(opt, data, function (err) {
+  //add stuff to index
+});
+
+si.search(q, function (err, searchResults) {
+  //search in index
+});
+```
 
 `search-index` is a freetext search library for JavaScript. You can use it to drop kick-ass search functionality into your node.js, HTML, OSX and Android applications.
 
