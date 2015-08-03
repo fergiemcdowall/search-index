@@ -4,12 +4,12 @@ Documents can be added and deleted in batches of size 1-n. If the
 index is initialized with `deletable` set to `false` then the index is
 read-only.
 
-Indexing options can be set at a batch and a document level.
+Indexing options can be set at a batch and at document level.
 
 
 ### Adding
 
-The syntax for adding is a batch of documents is:
+The syntax for adding a batch of documents is:
 
 ```javascript
 //options (can be left empty)
@@ -41,7 +41,7 @@ Default batch options are equivalent to:
 
 ### Default field options
 
-Default field options are equivalent to
+Default field options are equivalent to:
 
 ```javascript
 {
@@ -55,7 +55,7 @@ Default field options are equivalent to
 
 #### filter
 
-Set this to `true` in order to be able to do facting and filtering on
+Set this to `true` in order to be able to do faceting and filtering on
 this field
 
 #### nGramLength
