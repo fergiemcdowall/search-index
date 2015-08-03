@@ -81,7 +81,7 @@ Is it possible to search on only this field?
 ### Batch format
 
 Batches are arrays of objects that may or may not have an id field. If
-no id field id present, then one will be generated. [example batch here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/full/reuters-000.json)
+no id field is present, then one will be generated. [example batch here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/full/reuters-000.json)
 
 ```javascript
 [
