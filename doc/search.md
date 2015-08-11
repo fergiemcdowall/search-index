@@ -157,10 +157,11 @@ q.offset = 100;
 q.pageSize = 50;
 ```
 
-### Teasers
+### Teasers and Search Term Highlighting
 
 Search-index can generate a simple content preview in the search
-results (teasers). Simply specify the field to generate the teaser on:
+results (teasers). The teaser will contain highlighted search terms.
+Simply specify the field to generate the teaser on like so:
 
 ```javascript
 q.query = {
