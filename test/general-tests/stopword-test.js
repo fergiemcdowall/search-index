@@ -101,10 +101,10 @@ describe('stopwords: ', function () {
 
   it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
-    var sw = require('stopword');
+    var stopwordList = require('stopword').getStopwords('no');
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
                                 logLevel: logLevel,
-                                stopwords: sw.getStopwords('no')
+                                stopwords: stopwordList
                                });
     var q = {};
     q.query = {'*': ['dette']};
