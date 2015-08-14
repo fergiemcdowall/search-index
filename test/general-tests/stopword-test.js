@@ -99,24 +99,24 @@ describe('stopwords: ', function () {
     });
   }),
 
-  it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
-    var sandboxPath = 'test/sandbox';
-    var stopwordList = require('stopword').getStopwords('no');
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
-                                logLevel: logLevel,
-                                stopwords: stopwordList
-                               });
-    var q = {};
-    q.query = {'*': ['dette']};
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults);
-      (err === null).should.be.exactly(true);
-      searchResults.hits.length.should.be.exactly(0);
-      si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
-    });
-  });
+  // it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
+  //   var sandboxPath = 'test/sandbox';
+  //   var stopwordList = require('stopword').getStopwords('no');
+  //   var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
+  //                               logLevel: logLevel,
+  //                               stopwords: stopwordList
+  //                              });
+  //   var q = {};
+  //   q.query = {'*': ['dette']};
+  //   si.search(q, function (err, searchResults) {
+  //     should.exist(searchResults);
+  //     (err === null).should.be.exactly(true);
+  //     searchResults.hits.length.should.be.exactly(0);
+  //     si.close(function (err) {
+  //       if (err) false.should.eql(true);done();
+  //     });
+  //   });
+  // });
 
   it('should create an index of fast food without stopwords', function (done) {
     var sandboxPath = 'test/sandbox';
