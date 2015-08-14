@@ -99,6 +99,8 @@ describe('stopwords: ', function () {
     });
   }),
 
+//14th Aug 2015 - This test seems to run fine locally, but Travis complains...
+
   // it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
   //   var sandboxPath = 'test/sandbox';
   //   var stopwordList = require('stopword').getStopwords('no');
