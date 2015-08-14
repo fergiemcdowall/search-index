@@ -13,22 +13,28 @@ describe('Matching epub: ', function () {
       {
         "title": "Accessible EPUB 3",
         "body": "EPUB  is great.",
-        "spineItemPath": "../node_modules/epub3-samples/accessible_epub_3/EPUB/index1.xhtml"
+        "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s06.xhtml"
       },
       {
         "title": "Even More Accessible EPUB 3",
         "body": "EPUB is epubtastic",
-        "spineItemPath": "../node_modules/epub3-samples/accessible_epub_3/EPUB/index2.xhtml"
+        "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s07.xhtml"
       },
       {
         "title": "EPUB 3 FTW",
         "body": "EPUB is fantabulous",
-        "spineItemPath": "../node_modules/epub3-samples/accessible_epub_3/EPUB/index3.xhtml"
+        "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s08.xhtml"
       }
     ];
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
                                 logLevel: logLevel});
-    si.add({batchName: 'epubdata'}, data, function (err) {
+    si.add({
+      batchName: 'epubdata',
+      fieldOptions: [{
+        fieldName: 'spineItemPath',
+        searchable: false
+      }]
+    }, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);
@@ -43,6 +49,7 @@ describe('Matching epub: ', function () {
                                 logLevel: logLevel});
     var str = 'epub';
     si.match(str, function (err, matches) {
+      console.log(matches);
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
