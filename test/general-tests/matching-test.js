@@ -49,7 +49,6 @@ describe('Matching epub: ', function () {
                                 logLevel: logLevel});
     var str = 'epub';
     si.match(str, function (err, matches) {
-      console.log(matches);
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
