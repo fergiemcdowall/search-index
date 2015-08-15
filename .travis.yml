@@ -5,5 +5,3 @@ node_js:
   - "iojs"
 notifications:
   slack: norch:wLsHiXjnAH5BdtTq3qtAqGp7
-before_install: 
-  - case ${TRAVIS_NODE_VERSION} in 0.12*) npm update -g npm ;; esac
