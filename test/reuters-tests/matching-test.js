@@ -24,20 +24,6 @@ describe('Matching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
-    it('handles match strings that are below threshold', function (done) {
-      var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-                                  logLevel: 'warn'});
-      var str = 'lo';
-      si.match(str, function (err, matches) {
-        should.exist(matches);
-        matches.length.should.be.exactly(0);
-        (err instanceof Error).should.be.exactly(true);
-        err.toString().should.be.exactly('Error: string below threshold length (3)');
-        si.close(function (err) {
-          if (err) false.should.eql(true);done();
-        });
-      });
-    });
+    })
   });
 });
