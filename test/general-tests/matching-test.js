@@ -82,15 +82,15 @@ describe('Matching epub: ', function () {
     });
   });
 
-  it('handles match strings that are below threshold', function (done) {
+  it('handles match strings that are empty', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
                                 logLevel: logLevel});
-    var str = 'lo';
+    var str = '';
     si.match(str, function (err, matches) {
       should.exist(matches);
       matches.length.should.be.exactly(0);
       (err instanceof Error).should.be.exactly(true);
-      err.toString().should.be.exactly('Error: string below threshold length (3)');
+      err.toString().should.be.exactly('Error: match string can not be empty');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
