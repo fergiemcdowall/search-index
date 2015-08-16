@@ -24,6 +24,11 @@ describe('Matching epub: ', function () {
         "title": "EPUB 3 FTW",
         "body": "EPUB is fantabulous",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s08.xhtml"
+      },
+      {
+        "title": "中文的标题",
+        "body": "中文的字符",
+        "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s09.xhtml"
       }
     ];
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
@@ -41,8 +46,7 @@ describe('Matching epub: ', function () {
         done();
       });
     });
-  })
-
+  });
 
   it('should search on all fields and get results', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
@@ -59,8 +63,25 @@ describe('Matching epub: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
-  
+  });
+
+  it('should work for Unicode', function (done) {
+    var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
+      logLevel: logLevel});
+    var str = '中文的';
+    si.match(str, function (err, matches) {
+      console.log(matches);
+      should.exist(matches);
+      (err === null).should.be.exactly(true);
+      matches.length.should.be.exactly(2);
+      matches.should.containEql('中文的标题');
+      matches.should.containEql('中文的字符');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
+
   it('handles match strings that are below threshold', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
                                 logLevel: logLevel});
