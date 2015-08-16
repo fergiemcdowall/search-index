@@ -11,21 +11,25 @@ describe('Matching epub: ', function () {
   it('should index test data into the index', function (done) {
     var data = [
       {
+        "id": "doc101",
         "title": "Accessible EPUB 3",
         "body": "EPUB  is great.",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s06.xhtml"
       },
       {
+        "id": "doc102",
         "title": "Even More Accessible EPUB 3",
         "body": "EPUB is epubtastic",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s07.xhtml"
       },
       {
+        "id": "doc103",
         "title": "EPUB 3 FTW",
         "body": "EPUB is fantabulous",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s08.xhtml"
       },
       {
+        "id": "doc104",
         "title": "中文的标题",
         "body": "中文的字符",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s09.xhtml"
@@ -36,6 +40,9 @@ describe('Matching epub: ', function () {
     si.add({
       batchName: 'epubdata',
       fieldOptions: [{
+        fieldName: 'id',
+        searchable: false
+      }, {
         fieldName: 'spineItemPath',
         searchable: false
       }]
