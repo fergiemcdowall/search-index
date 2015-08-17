@@ -58,7 +58,7 @@ describe('deleting and reindexing: ', function () {
     si.get('747', function (err, doc) {
       (err === null).should.be.exactly(false);
       (doc === null).should.be.exactly(true);
-      err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT~747~]');
+      err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT￮747￮]');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
@@ -68,10 +68,10 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
-    si.indexValue({key:'TF~*~mccaw~~'}, function (err, value) {
+    si.indexValue({key:'TF￮*￮mccaw￮￮'}, function (err, value) {
       (err === null).should.be.exactly(false);
       (value === null).should.be.exactly(true);
-      err.toString().should.be.exactly('NotFoundError: Key not found in database [TF~*~mccaw~~]');
+      err.toString().should.be.exactly('NotFoundError: Key not found in database [TF￮*￮mccaw￮￮]');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
@@ -81,7 +81,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
-    si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
+    si.indexValue({key:'TF￮*￮1987￮￮'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(999);
       si.close(function (err) {
@@ -144,7 +144,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
-    si.indexValue({key:'TF~*~mccaw~~'}, function (err, value) {
+    si.indexValue({key:'TF￮*￮mccaw￮￮'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.should.have.lengthOf(1);
       value[0].should.be.exactly('747');
@@ -157,7 +157,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                 logLevel: 'error'});
-    si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
+    si.indexValue({key:'TF￮*￮1987￮￮'}, function (err, value) {
       (err === null).should.be.exactly(true);
       value.length.should.be.exactly(1000);
       si.close(function (err) {

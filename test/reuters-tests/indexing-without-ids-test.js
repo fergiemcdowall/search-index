@@ -53,7 +53,7 @@ describe('Indexing Reuters without IDs: ', function () {
     it('verifies recalibration', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
                                   logLevel: 'error'});
-      si.indexValue({key:'TF~*~1987~~'}, function (err, value) {
+      si.indexValue({key:'TF￮*￮1987￮￮'}, function (err, value) {
         (err === null).should.be.exactly(true);
         value.length.should.be.exactly(1000);
         si.close(function (err) {

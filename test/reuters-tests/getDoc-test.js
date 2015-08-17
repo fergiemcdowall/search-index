@@ -26,7 +26,7 @@ describe('get-ting on the reuters dataset: ', function () {
       should.exist(err);
       (err === null).should.be.exactly(false);
       (result === null).should.be.exactly(true);
-      err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT~92827382~]');
+      err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT￮92827382￮]');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });

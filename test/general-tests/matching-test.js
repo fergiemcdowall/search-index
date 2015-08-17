@@ -40,8 +40,8 @@ describe('Matching epub: ', function () {
     si.add({
       batchName: 'epubdata',
       fieldOptions: [{
-        fieldName: 'id',
-        searchable: false
+//        fieldName: 'id',
+//        searchable: false
       }, {
         fieldName: 'spineItemPath',
         searchable: false
@@ -55,12 +55,12 @@ describe('Matching epub: ', function () {
     });
   });
 
+
   it('should search on all fields and get results', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
                                 logLevel: logLevel});
     var str = 'epub';
     si.match(str, function (err, matches) {
-      console.log(matches);
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
@@ -77,7 +77,6 @@ describe('Matching epub: ', function () {
       logLevel: logLevel});
     var str = '中文的';
     si.match(str, function (err, matches) {
-      console.log(matches);
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
