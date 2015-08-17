@@ -14,24 +14,28 @@ describe('Matching epub: ', function () {
         "id": "doc101",
         "title": "Accessible EPUB 3",
         "body": "EPUB  is great.",
+        "epubTitle":"Accessible EPUB 3",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s06.xhtml"
       },
       {
         "id": "doc102",
         "title": "Even More Accessible EPUB 3",
         "body": "EPUB is epubtastic",
+        "epubTitle":"Accessible EPUB 3",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s07.xhtml"
       },
       {
         "id": "doc103",
         "title": "EPUB 3 FTW",
         "body": "EPUB is fantabulous",
+        "epubTitle":"Accessible EPUB 3",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s08.xhtml"
       },
       {
         "id": "doc104",
         "title": "中文的标题",
         "body": "中文的字符",
+        "epubTitle":"Accessible EPUB 3",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s09.xhtml"
       }
     ];
@@ -39,13 +43,17 @@ describe('Matching epub: ', function () {
                                 logLevel: logLevel});
     si.add({
       batchName: 'epubdata',
-      fieldOptions: [{
-//        fieldName: 'id',
-//        searchable: false
-      }, {
+      fieldOptions: [/*{
+        fieldName: 'id',
+        searchable: false
+      }, */{
         fieldName: 'spineItemPath',
         searchable: false
-      }]
+      }, {
+        fieldName: 'epubTitle',
+        searchable: false
+      }
+      ]
     }, data, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -61,6 +69,7 @@ describe('Matching epub: ', function () {
                                 logLevel: logLevel});
     var str = 'epub';
     si.match(str, function (err, matches) {
+      console.log(matches);
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
