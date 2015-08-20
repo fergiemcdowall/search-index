@@ -9,8 +9,7 @@ describe('Matching Reuters: ', function () {
     it('should search on all fields and get results', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
-      var str = 'lon';
-      si.match(str, function (err, matches) {
+      si.match({beginsWith: 'lon'}, function (err, matches) {
         should.exist(matches);
         (err === null).should.be.exactly(true);
         matches.length.should.be.exactly(6);
