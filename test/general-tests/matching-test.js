@@ -15,19 +15,19 @@ describe('Matching epub: ', function () {
       {
         "id": "doc101",
         "title": "Accessible EPUB 3",
-        "body": "EPUB  is great.",
+        "body": "EPUB is great. epubxhighestsort",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s06.xhtml"
       },
       {
         "id": "doc102",
         "title": "Even More Accessible EPUBulation 3",
-        "body": "EPUB is epubtastic",
+        "body": "EPUB is epubtastic, epubxhighestsort",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s07.xhtml"
       },
       {
         "id": "doc103",
         "title": "EPUB 3 FTW",
-        "body": "EPUB is fantabulous",
+        "body": "EPUB is fantabulous, epubxhighestsort",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s08.xhtml"
       },
       {
@@ -35,6 +35,12 @@ describe('Matching epub: ', function () {
         "title": "中文的标题",
         "body": "中文的字符",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s09.xhtml"
+      },
+      {
+        "id": "doc105",
+        "title": "another doc",
+        "body": "make epubxhighestsort the most common TF term",
+        "spineItemPath": "epub_content/accessible_epub_4/EPUB/ch03s09.xhtml"
       }
     ];
     si.add({
@@ -58,10 +64,11 @@ describe('Matching epub: ', function () {
     si.match({beginsWith: str}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
-      matches.length.should.be.exactly(3);
-      matches[0].should.be.exactly('epub');
-      matches[1].should.be.exactly('epubtastic');
-      matches[2].should.be.exactly('epubulation');
+      matches.length.should.be.exactly(4);
+      matches[0].should.be.exactly('epubxhighestsort');
+      matches[1].should.be.exactly('epub');
+      matches[2].should.be.exactly('epubtastic');
+      matches[3].should.be.exactly('epubulation');
       done();
     });
   });
@@ -71,9 +78,10 @@ describe('Matching epub: ', function () {
     si.match({beginsWith: str, field: 'body'}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
-      matches.length.should.be.exactly(2);
-      matches[0].should.be.exactly('epub');
-      matches[1].should.be.exactly('epubtastic');
+      matches.length.should.be.exactly(3);
+      matches[0].should.be.exactly('epubxhighestsort');
+      matches[1].should.be.exactly('epub');
+      matches[2].should.be.exactly('epubtastic');
       done();
     });
   });
@@ -140,9 +148,9 @@ describe('Matching epub: ', function () {
     var str = 'ep';
     si.match({beginsWith: str, threshold: 1}, function (err, matches) {
       should.exist(matches);
-      matches.length.should.be.exactly(3);
+      matches.length.should.be.exactly(4);
       (err instanceof Error).should.be.exactly(false);
-      matches.should.eql([ 'epub', 'epubtastic', 'epubulation' ]);
+      matches.should.eql([ 'epubxhighestsort', 'epub', 'epubtastic', 'epubulation' ]);
       done();
     });
   });
