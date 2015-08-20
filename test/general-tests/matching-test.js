@@ -7,6 +7,8 @@ var should = require('should');
 var sandboxPath = 'test/sandbox';
 
 describe('Matching epub: ', function () {
+  var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
+                              logLevel: logLevel});
 
   it('should index test data into the index', function (done) {
     var data = [
@@ -18,7 +20,7 @@ describe('Matching epub: ', function () {
       },
       {
         "id": "doc102",
-        "title": "Even More Accessible EPUB 3",
+        "title": "Even More Accessible EPUBulation 3",
         "body": "EPUB is epubtastic",
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s07.xhtml"
       },
@@ -35,12 +37,10 @@ describe('Matching epub: ', function () {
         "spineItemPath": "epub_content/accessible_epub_3/EPUB/ch03s09.xhtml"
       }
     ];
-    var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
-                                logLevel: logLevel});
     si.add({
       batchName: 'epubdata',
       fieldOptions: [{
-//        fieldName: 'id',
+//        fieldName: 'id',         <-- non-searchable ID field should be made to work
 //        searchable: false
       }, {
         fieldName: 'spineItemPath',
@@ -48,59 +48,104 @@ describe('Matching epub: ', function () {
       }]
     }, data, function (err) {
       (err === null).should.be.exactly(true);
-      si.close(function (err) {
-        if (err) false.should.eql(true);
-        done();
-      });
+      done();
     });
   });
 
 
-  it('should search on all fields and get results', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
-                                logLevel: logLevel});
+  it('should match on all fields and get results', function (done) {
     var str = 'epub';
-    si.match(str, function (err, matches) {
+    si.match({beginsWith: str}, function (err, matches) {
+      should.exist(matches);
+      (err === null).should.be.exactly(true);
+      matches.length.should.be.exactly(3);
+      matches[0].should.be.exactly('epub');
+      matches[1].should.be.exactly('epubtastic');
+      matches[2].should.be.exactly('epubulation');
+      done();
+    });
+  });
+
+  it('should match on body field and get results', function (done) {
+    var str = 'epub';
+    si.match({beginsWith: str, field: 'body'}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
       matches[0].should.be.exactly('epub');
       matches[1].should.be.exactly('epubtastic');
-      si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
+      done();
     });
   });
 
+  it('should match on title field and get results', function (done) {
+    var str = 'epub';
+    si.match({beginsWith: str, field: 'title'}, function (err, matches) {
+      should.exist(matches);
+      (err === null).should.be.exactly(true);
+      matches.length.should.be.exactly(2);
+      matches[0].should.be.exactly('epub');
+      matches[1].should.be.exactly('epubulation');
+      done();
+    });
+  });
+
+
   it('should work for Unicode', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
-      logLevel: logLevel});
     var str = '中文的';
-    si.match(str, function (err, matches) {
+    si.match({beginsWith: str}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
       matches.should.containEql('中文的标题');
       matches.should.containEql('中文的字符');
-      si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
+      done();
     });
   });
 
   it('handles match strings that are empty', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
-                                logLevel: logLevel});
     var str = '';
-    si.match(str, function (err, matches) {
+    si.match({beginsWith: str}, function (err, matches) {
       should.exist(matches);
       matches.length.should.be.exactly(0);
       (err instanceof Error).should.be.exactly(true);
       err.toString().should.be.exactly('Error: match string can not be empty');
-      si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
+      done();
     });
   });
+
+  it('handles malformed options object', function (done) {
+    var str = 'this string should be an object';
+    si.match(str, function (err, matches) {
+      should.exist(matches);
+      matches.length.should.be.exactly(0);
+      (err instanceof Error).should.be.exactly(true);
+      err.toString().should.be.exactly('Error: Options should be an object');
+      done();
+    });
+  });
+
+  it('Throws error if below threshold', function (done) {
+    var str = 'ep';
+    si.match({beginsWith: str}, function (err, matches) {
+      should.exist(matches);
+      matches.length.should.be.exactly(0);
+      (err instanceof Error).should.be.exactly(true);
+      err.toString().should.be.exactly('Error: match string must be longer than threshold (3)');
+      done();
+    });
+  });
+
+  it('Can reduce threshold', function (done) {
+    var str = 'ep';
+    si.match({beginsWith: str, threshold: 1}, function (err, matches) {
+      should.exist(matches);
+      matches.length.should.be.exactly(3);
+      (err instanceof Error).should.be.exactly(false);
+      matches.should.eql([ 'epub', 'epubtastic', 'epubulation' ]);
+      done();
+    });
+  });
+
   
 });
