@@ -43,7 +43,7 @@ describe('Configuration: ', function () {
       
       //throwing an error here- need to investigate
 
-//      (err === null).should.be.exactly(true);
+      //      (err === null).should.be.exactly(true);
       myStream.size().should.be.above(0);
       done();
     });
