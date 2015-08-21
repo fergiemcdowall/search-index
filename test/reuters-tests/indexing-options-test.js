@@ -47,7 +47,6 @@ describe('indexing options: ', function () {
                 deletable: false,
                 logLevel: logLevel};
 
-
   it('should index one file of test data and set canDoFieldedSearchOn to "title"', function (done) {
     this.timeout(5000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
@@ -371,7 +370,6 @@ describe('indexing options: ', function () {
     });
   });
 
-
   it('should index one file of test data non-deletably', function (done) {
     this.timeout(5000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
@@ -505,6 +503,5 @@ describe('indexing options: ', function () {
       });
     });
   });
-
 
 });

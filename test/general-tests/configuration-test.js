@@ -5,7 +5,6 @@ var fs = require('fs');
 var assert = require('assert');
 var should = require('should');
 var sandboxPath = 'test/sandbox';
-var bunyan = require('bunyan');
 
 describe('Configuration: ', function () {
   it('should accept configuration', function () {
@@ -27,7 +26,7 @@ describe('Configuration: ', function () {
       name: 'test-log',
       stream: myStream
     });
-    assert.equal(myStream.size(), 0)
+    assert.equal(myStream.size(), 0);
     var si = require('../../')({
       indexPath: sandboxPath + '/test-log-index',
       log: log,
@@ -40,7 +39,12 @@ describe('Configuration: ', function () {
       name: 'The First Doc',
       test: 'this is the first doc'
     }, function (err) {
-      myStream.size().should.be.above(0)
+      console.log(err);
+      
+      //throwing an error here- need to investigate
+
+//      (err === null).should.be.exactly(true);
+      myStream.size().should.be.above(0);
       done();
     });
   });

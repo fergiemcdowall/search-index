@@ -24,7 +24,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('document is present in search', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -40,7 +40,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('should be able to delete documents from index (747)', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -52,7 +52,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('should verify delete', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -66,7 +66,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('verifies recalibration after delete', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -80,7 +80,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('verifies recalibration after delete', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -93,7 +93,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('deleted document is not appearing in results', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -110,7 +110,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('should reindex deleted document', function (done) {
     this.timeout(10000);
@@ -131,7 +131,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('document reappears in search', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -147,7 +147,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('verifies recalibration after document is REadded', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -161,7 +161,7 @@ describe('deleting and reindexing: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('verifies recalibration after document is REadded', function (done) {
     var sandboxPath = 'test/sandbox';
