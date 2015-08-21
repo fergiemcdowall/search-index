@@ -102,9 +102,9 @@ describe('Matching epub: ', function () {
     });
   });
 
-  it('should match on all fields and get results, and set maxMatches', function (done) {
+  it('should match on all fields and get results, and set limit', function (done) {
     var str = 'epub';
-    si.match({beginsWith: str, maxMatches: 1}, function (err, matches) {
+    si.match({beginsWith: str, limit: 1}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(1);
