@@ -46,8 +46,8 @@ describe('Matching epub: ', function () {
     si.add({
       batchName: 'epubdata',
       fieldOptions: [{
-//        fieldName: 'id',         <-- non-searchable ID field should be made to work
-//        searchable: false
+        fieldName: 'id',
+        searchable: false
       }, {
         fieldName: 'spineItemPath',
         searchable: false
