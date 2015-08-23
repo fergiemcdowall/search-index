@@ -40,7 +40,7 @@ describe('Configuration: ', function () {
       test: 'this is the first doc'
     }, function (err) {
       console.log(err);
-      
+
       //throwing an error here- need to investigate
 
       //      (err === null).should.be.exactly(true);
