@@ -74,61 +74,7 @@ describe('Matching epub: ', function () {
 
   it('should match on all fields and return IDs', function (done) {
     var str = 'epub';
-    si.match({beginsWith: str, type: 'ID'}, function (err, matches) {
-      should.exist(matches);
-      (err === null).should.be.exactly(true);
-      matches.should.eql(
-        [ [ 'epubxhighestsort', [ 'doc101', 'doc102', 'doc103', 'doc105' ] ],
-          [ 'epub', [ 'doc101', 'doc102', 'doc103' ] ],
-          [ 'epubtastic', [ 'doc102' ] ],
-          [ 'epubulation', [ 'doc102' ] ] ]
-      );
-      done();
-    });
-  });
-
-  it('should match on all fields and return IDs', function (done) {
-    var str = 'epub';
-    si.match({beginsWith: str, type: 'count'}, function (err, matches) {
-      should.exist(matches);
-      (err === null).should.be.exactly(true);
-      matches.should.eql(
-        [ [ 'epubxhighestsort', 4 ],
-          [ 'epub', 3 ],
-          [ 'epubtastic', 1 ],
-          [ 'epubulation', 1 ] ]
-      );
-      done();
-    });
-  });
-
-  it('should match on all fields and get results, and set limit', function (done) {
-    var str = 'epub';
-    si.match({beginsWith: str, limit: 1}, function (err, matches) {
-      should.exist(matches);
-      (err === null).should.be.exactly(true);
-      matches.length.should.be.exactly(1);
-      matches[0].should.be.exactly('epubxhighestsort');
-      done();
-    });
-  });
-
-  it('should match on body field and get results', function (done) {
-    var str = 'epub';
-    si.match({beginsWith: str, field: 'body'}, function (err, matches) {
-      should.exist(matches);
-      (err === null).should.be.exactly(true);
-      matches.length.should.be.exactly(3);
-      matches[0].should.be.exactly('epubxhighestsort');
-      matches[1].should.be.exactly('epub');
-      matches[2].should.be.exactly('epubtastic');
-      done();
-    });
-  });
-
-  it('should match on title field and get results', function (done) {
-    var str = 'epub';
-    si.match({beginsWith: str, field: 'title'}, function (err, matches) {
+    si.match(str, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
       matches.length.should.be.exactly(2);
