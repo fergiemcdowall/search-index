@@ -1,6 +1,24 @@
-language: node_js
 sudo: false
+
+language: node_js
+
+env:
+  - CXX=g++-4.8
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
+before_install: 
+  - export JOBS=max
+  - export prebuild_compile=true
+
 node_js:
   - "0.12"
+  - "3.0"
+
 notifications:
   slack: norch:wLsHiXjnAH5BdtTq3qtAqGp7

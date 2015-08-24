@@ -17,7 +17,7 @@
     "level-multiply": "0.0.1",
     "level-transactions": "^1.2.0",
     "level-ws": "0.0.0",
-    "leveldown": "1.3.0",
+    "leveldown": "1.4.1",
     "levelup": "1.2.1",
     "lodash": "3.8.0",
     "log-skeleton": "^1.1.0",
