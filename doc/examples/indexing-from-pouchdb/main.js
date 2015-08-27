@@ -1,4 +1,5 @@
-var si = require('../../')({indexPath:'reutersFromPouch'});
+var si = require('../../../')({indexPath:'reutersFromPouch'});
+var _ = require('../../../node_modules/lodash');
 
 //Set up a pouchDB
 var dataset = require('./justTenPouchFormat.json');
