@@ -1,6 +1,6 @@
 
-var si = require('../../')({indexPath: 'testindex'});
-var dataset = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json');
+var si = require('../../../')({indexPath: 'testindex'});
+var dataset = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
 
 si.add({'batchName': 'reuters'}, dataset, function(err) {
   if (!err) console.log('indexed!');
