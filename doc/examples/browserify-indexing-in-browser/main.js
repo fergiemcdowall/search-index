@@ -2,8 +2,8 @@
 //compile with:
 //../../node_modules/browserify/bin/cmd.js main.js -o bundle.js
 
-var si = require('../../')({indexPath:'reutersindex'});
-var dataset = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json');
+var si = require('../../../')({indexPath:'reutersindex'});
+var dataset = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
 
 
 si.add({'batchName': 'reuters'}, dataset, function(err) {
