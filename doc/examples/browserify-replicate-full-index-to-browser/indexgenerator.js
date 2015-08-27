@@ -1,6 +1,6 @@
-var dataset = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json');
+var dataset = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
 var fs = require('fs');
-var si = require('../../')({indexPath: 'testindex2'});
+var si = require('../../../')({indexPath: 'testindex2'});
 
 si.add({'batchName': 'reuters'}, dataset, function(err) {
   console.log('creating snapshot...');

@@ -1,8 +1,7 @@
 var fs = require('fs');
-var si = require('../../')({indexPath: 'testindex2'});
+var si = require('../../../')({indexPath: 'testindex2'});
 
 var serializedDB = JSON.parse(fs.readFileSync('backup', 'utf8'));
-//console.log(beep);
 
 si.replicateBatch(serializedDB, function(callback){
   console.log('db serialized');
