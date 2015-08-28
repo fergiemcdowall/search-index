@@ -51,7 +51,6 @@
     "search"
   ],
   "main": "./index.js",
-  "browser": "./browser.js",
   "browserify": {
     "transform": [
       "brfs"

@@ -5,3 +5,4 @@ si*
 backup.gz
 *.swp
 .idea
+bundle.js
