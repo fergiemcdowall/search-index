@@ -1,9 +1,5 @@
 var localstorage = require('localstorage-down');
-
-
-
 var si = require('../../../')({db: localstorage});
-
 var dataset = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
 
 si.add({'batchName': 'reuters'}, dataset, function(err) {
