@@ -43,19 +43,21 @@ describe('Matching epub: ', function () {
         spineItemPath: 'epub_content/accessible_epub_4/EPUB/ch03s09.xhtml'
       }
     ];
-    si.add({
-      batchName: 'epubdata',
-      fieldOptions: [{
-        fieldName: 'id',
-        searchable: false
-      }, {
-        fieldName: 'spineItemPath',
-        searchable: false
-      }]
-    }, data, function (err) {
-      (err === null).should.be.exactly(true);
-      done();
-    });
+    si.add(
+      data,
+      {
+        batchName: 'epubdata',
+        fieldOptions: [{
+          fieldName: 'id',
+          searchable: false
+        }, {
+          fieldName: 'spineItemPath',
+          searchable: false
+        }]
+      }, function (err) {
+        (err === null).should.be.exactly(true);
+        done();
+      });
   });
 
   it('should match on all fields and get results', function (done) {

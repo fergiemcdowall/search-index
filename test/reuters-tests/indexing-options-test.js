@@ -58,7 +58,7 @@ describe('indexing options: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -137,7 +137,7 @@ describe('indexing options: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -194,7 +194,7 @@ describe('indexing options: ', function () {
     opt.fieldOptions = [
       {fieldName: 'body', searchable: false}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -240,7 +240,7 @@ describe('indexing options: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -285,7 +285,7 @@ describe('indexing options: ', function () {
     opt.fieldOptions = [
       {fieldName: 'body', searchable: false}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -344,7 +344,7 @@ describe('indexing options: ', function () {
     opt.fieldOptions = [
 //      {fieldName: 'title', weight: 5},
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -376,7 +376,7 @@ describe('indexing options: ', function () {
     var si = require('../../')(siOps7);
     var opt = {};
     opt.batchName = 'reuters';
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -438,7 +438,7 @@ describe('indexing options: ', function () {
     var opt = {};
     opt.fieldsToStore = ['id', 'title'];
     opt.batchName = 'reuters';
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -475,7 +475,7 @@ describe('indexing options: ', function () {
     var opt = {};
     opt.fieldsToStore = ['title'];
     opt.batchName = 'reuters';
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

@@ -22,7 +22,7 @@ describe('Indexing World Bank: ', function () {
   it('should throw an error when indexing an empty batch', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-empty',
                                 logLevel: 'error'});
-    si.add({}, [], function (err) {
+    si.add([], {}, function (err) {
       should.exist(err);
       err.should.be.an.Error;
       err.toString().should.equal('Error: No docs to add');
@@ -59,7 +59,7 @@ describe('Indexing World Bank: ', function () {
       {fieldName: 'mjtheme', filter: true},
       {fieldName: 'totalamt', filter: true}
     ];
-    si.add(opt, _.map(data, processDoc), function (err) {
+    si.add(_.map(data, processDoc), opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

@@ -19,7 +19,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
   it('should index test data', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-non-ascii',
                                 logLevel: 'error'});
-    si.add({}, data, function (err) {
+    si.add(data, {}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

@@ -11,7 +11,7 @@ describe('deleting a batch: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
-    si.add({batchName: 'reuters-000.json'}, data, function (err) {
+    si.add(data, {batchName: 'reuters-000.json'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

@@ -43,7 +43,7 @@ describe('stopwords: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-en',
                                 logLevel: logLevel});
-    si.add({batchName: 'data1'}, data, function (err) {
+    si.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -74,7 +74,7 @@ describe('stopwords: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
                                 logLevel: logLevel,
                                 stopwords: sw.getStopwords('no')});
-    si.add({batchName: 'data1'}, data, function (err) {
+    si.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -125,7 +125,7 @@ describe('stopwords: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
                                 logLevel: logLevel,
                                 stopwords: []});
-    si.add({batchName: 'data1'}, food, function (err) {
+    si.add(food, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -170,7 +170,7 @@ describe('stopwords: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food-2',
                                 logLevel: logLevel});
-    si.add({batchName: 'food'}, food, function (err) {
+    si.add(food, {batchName: 'food'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

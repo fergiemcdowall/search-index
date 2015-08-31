@@ -24,7 +24,7 @@ describe('ngrams (phrase search): ', function () {
                                 logLevel: logLevel,
                                 stopwords: [],
                                 nGramLength: {gte: 1, lte: 3}});
-    si.add({}, food, function (err) {
+    si.add(food, {}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -109,7 +109,7 @@ describe('ngrams (phrase search): ', function () {
                                 logLevel: logLevel,
                                 stopwords: [],
                                nGramLength: [1, 5]});
-    si.add({}, food, function (err) {
+    si.add(food, {}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -194,7 +194,7 @@ describe('ngrams (phrase search): ', function () {
       {fieldName: 'name', nGramLength: {gte: 1, lte: 3}},
       {fieldName: 'body', nGramLength: 1}
     ];
-    si.add(ops, food, function (err) {
+    si.add(food, ops, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

@@ -32,7 +32,7 @@ describe('Indexing Reuters without IDs: ', function () {
                                   logLevel: 'error'});
       var opt = {};
       opt.batchName = 'reuters no ids';
-      si.add(opt, data, function (err) {
+      si.add(data, opt, function (err) {
         (err === null).should.be.exactly(true);
         si.close(function (err) {
           if (err) false.should.eql(true);done();

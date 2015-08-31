@@ -3,7 +3,7 @@
 ```javascript
 var si = require('search-index');
 
-si.add(opt, data, function (err) {
+si.add(data, opt, function (err) {
   //add stuff to index
 });
 

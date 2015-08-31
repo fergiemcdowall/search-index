@@ -38,7 +38,7 @@ describe('Indexing Reuters reuters-000.json: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, data, function (err) {
+    si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

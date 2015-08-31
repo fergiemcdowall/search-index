@@ -33,7 +33,7 @@ describe('Instantiation: ', function () {
     it('should index test data into the first index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-one',
                                   logLevel: 'error'});
-      si.add({}, data1, function (err) {
+      si.add(data1, {}, function (err) {
         (err === null).should.be.exactly(true);
         si.close(function (err) {
           if (err) false.should.eql(true);done();
@@ -44,7 +44,7 @@ describe('Instantiation: ', function () {
     it('should index test data into the second index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-init-two',
                                   logLevel: 'error'});
-      si.add({}, data2, function (err) {
+      si.add(data2, {}, function (err) {
         (err === null).should.be.exactly(true);
         si.close(function (err) {
           if (err) false.should.eql(true);done();

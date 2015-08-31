@@ -18,7 +18,7 @@ describe('deleting and reindexing: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, singleDoc, function (err) {
+    si.add(singleDoc, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
@@ -125,7 +125,7 @@ describe('deleting and reindexing: ', function () {
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
     ];
-    si.add(opt, singleDoc, function (err) {
+    si.add(singleDoc, opt, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

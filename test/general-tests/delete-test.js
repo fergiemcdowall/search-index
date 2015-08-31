@@ -31,7 +31,7 @@ describe('deleting: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
                                 logLevel: logLevel});
-    si.add({batchName: 'data1'}, data1, function (err) {
+    si.add(data1, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);
@@ -96,7 +96,7 @@ describe('deleting: ', function () {
         test: 'this is the first doc'
       }
     ];
-    si.add({batchName: 'data2'}, data2, function (err) {
+    si.add(data2, {batchName: 'data2'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();
