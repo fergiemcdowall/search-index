@@ -61,12 +61,18 @@
       "name": "Fergus McDowall",
       "email": "fergusmcdowall@gmail.com",
       "url": "https://github.com/fergiemcdowall"
+    },
+    {
+      "name": "Mats Julian Olsen",
+      "email": "mats@plysjbyen.net",
+      "url": "https://github.com/mewwts"
     }
   ],
   "scripts": {
     "lint": " jshint lib test index.js || true && jscs --fix lib test index.js || true",
-    "test": "rm -rf test/sandbox && npm run lint && npm run doc && mkdir test/sandbox && date && mocha --recursive",
-    "doc": "rm -rf doc/api && jsdoc -d doc/api lib/search-index.js"
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive",
+    "doc": "rm -rf doc/api && jsdoc -d doc/api lib/search-index.js",
+    "all": "npm run lint && npm run doc && npm test"
   },
   "repository": {
     "type": "git",
