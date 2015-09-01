@@ -15,8 +15,9 @@ var doc = {
 
 describe('Indexing API', function () {
   var si = require('../../')({indexPath: sandboxPath + '/indexing-test', logLevel: 'error'});
-  it('should allow indexing with undefined options object', function (done)  {
-    si.add([_.assign(doc, {id: 1})], undefined, function (err) {
+
+  it('should allow indexing a plain object (as opposed to an array)', function (done)  {
+    si.add(_.assign(doc, {id: 1}), {}, function (err) {
       assert.equal(err, null);
       si.get(1, function (err, res) {
         assert(_.isEqual(res, doc));
@@ -24,10 +25,20 @@ describe('Indexing API', function () {
       });
     });
   });
-  it('should allow indexing with options object omitted', function (done)  {
-    si.add([_.assign(doc, {id: 2})], function (err) {
+
+  it('should allow indexing with undefined options object', function (done)  {
+    si.add([_.assign(doc, {id: 2})], undefined, function (err) {
       assert.equal(err, null);
       si.get(2, function (err, res) {
+        assert(_.isEqual(res, doc));
+        done();
+      });
+    });
+  });
+  it('should allow indexing with options object omitted', function (done)  {
+    si.add([_.assign(doc, {id: 3})], function (err) {
+      assert.equal(err, null);
+      si.get(3, function (err, res) {
         assert(_.isEqual(res, doc));
         done();
       });
