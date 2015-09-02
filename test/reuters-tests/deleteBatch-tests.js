@@ -7,6 +7,7 @@ var fs = require('fs');
 describe('deleting a batch: ', function () {
 
   it('should index one file of test data', function (done) {
+    this.timeout(10000);
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
@@ -20,6 +21,7 @@ describe('deleting a batch: ', function () {
   });
 
   it('it should delete documents 1, 3, 5, 7, 10', function (done) {
+    this.timeout(10000);
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
@@ -32,6 +34,7 @@ describe('deleting a batch: ', function () {
   });
 
   it('should be able verify that docs are deleted', function (done) {
+    this.timeout(10000);
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
