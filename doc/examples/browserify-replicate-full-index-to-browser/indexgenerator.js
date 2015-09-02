@@ -1,4 +1,4 @@
-var dataset = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
+var dataset = require('../../../../../node_modules/reuters-21578-json/data/justTen/justTen.json');
 var fs = require('fs');
 var si = require('../../../')({indexPath: 'testindex2'});
 
