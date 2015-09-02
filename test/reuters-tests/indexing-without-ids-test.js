@@ -40,6 +40,7 @@ describe('Indexing Reuters without IDs: ', function () {
       });
     }),
     it('should verify indexing', function (done) {
+      this.timeout(10000);
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
                                   logLevel: 'error'});
       si.tellMeAboutMySearchIndex(function (info) {
