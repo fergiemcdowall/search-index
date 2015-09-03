@@ -2,7 +2,7 @@
 
 This folder contains examples of how you can use `search-index` to make cool apps.
 
-[browserify-indexing-in-browser](browserify-indexing-in-browser) indexes data from the browser, into the browser.
+[search-index-indexing-in-browser](https://github.com/fergiemcdowall/search-index-indexing-in-browser) indexes data from the browser, into the browser.
 
 [browserify-replicate-full-index-to-browser](browserify-replicate-full-index-to-browser) replicates and entire index to the browser
 
