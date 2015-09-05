@@ -36,8 +36,7 @@
     "reuters-21578-json": "0.0.6",
     "should": "7.0.1",
     "stream-buffers": "^2.2.0",
-    "world-bank-dataset": "0.0.1",
-    "webworkify": "1.0.2"
+    "world-bank-dataset": "0.0.1"
   },
   "author": {
     "email": "fergusmcdowall@gmail.com",
