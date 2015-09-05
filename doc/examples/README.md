@@ -4,6 +4,8 @@ This folder contains examples of how you can use `search-index` to make cool app
 
 [search-index-indexing-in-browser](https://github.com/fergiemcdowall/search-index-indexing-in-browser) indexes data from the browser, into the browser.
 
+[search-index-localstorage-example](https://github.com/mewwts/search-index-localstorage-example) stores data in localstorage in a browser.
+
 [search-index-replicate-index-to-browser-example](https://github.com/fergiemcdowall/search-index-replicate-index-to-browser-example) replicates and entire index to the browser
 
 [browserify-index-and-search-in-webworker](browserify-index-and-search-in-webworker) indexes and performs search in a web wroker.
