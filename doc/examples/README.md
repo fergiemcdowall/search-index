@@ -8,7 +8,7 @@ This folder contains examples of how you can use `search-index` to make cool app
 
 [search-index-replicate-index-to-browser-example](https://github.com/fergiemcdowall/search-index-replicate-index-to-browser-example) replicates and entire index to the browser
 
-[browserify-index-and-search-in-webworker](browserify-index-and-search-in-webworker) indexes and performs search in a web wroker.
+[browserify-index-and-search-in-webworker](https://github.com/mewwts/search-index-webworker-example) indexes and performs search in a web wroker.
 
 [indexing-from-pouchdb](https://github.com/fergiemcdowall/search-index-indexing-from-pouchdb-example) indexes data from browser based database [pouchdb](http://pouchdb.com/) into a browser based search-index
 
