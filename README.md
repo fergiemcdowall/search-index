@@ -1,7 +1,7 @@
 [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
 
 ```javascript
-var si = require('search-index');
+var si = require('search-index')(options);
 
 si.add(data, opt, function (err) {
   //add stuff to index
