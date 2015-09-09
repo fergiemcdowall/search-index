@@ -53,7 +53,7 @@ searchable phrases.
 
 ### stopwords
 
-Words that are not indexed. The default is index, but you can choose
+Words that are not indexed. The default is english (en), but you can choose
 any common and meaningless words for your language or domain.
 
 ### fieldsToStore
