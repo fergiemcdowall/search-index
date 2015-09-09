@@ -57,11 +57,11 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(100);
         results.totalHits.should.be.exactly(922);
-        results.facets[0].value[0].key.should.be.exactly('mexico');
+        results.facets[0].value[0].key.should.be.exactly('algeria');
         results.facets[0].value[0].value.should.be.exactly(1);
-        results.facets[0].value[1].key.should.be.exactly('algeria');
+        results.facets[0].value[1].key.should.be.exactly('austria');
         results.facets[0].value[1].value.should.be.exactly(1);
-        results.facets[0].value[2].key.should.be.exactly('yemen-demo-republic');
+        results.facets[0].value[2].key.should.be.exactly('bhutan');
         results.facets[0].value[2].value.should.be.exactly(1);
         si.close(function (err) {
           if (err) false.should.eql(true);done();
@@ -171,10 +171,10 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(16);
         results.totalHits.should.be.exactly(16);
-        results.facets[0].value[0].key.should.be.exactly('japan');
+        results.facets[0].value[0].key.should.be.exactly('usa');
         results.facets[0].value[0].value.should.be.exactly(16);
         results.facets[0].value[0].active.should.be.exactly(true);
-        results.facets[0].value[1].key.should.be.exactly('usa');
+        results.facets[0].value[1].key.should.be.exactly('japan');
         results.facets[0].value[1].value.should.be.exactly(16);
         results.facets[0].value[1].active.should.be.exactly(true);
         results.facets[0].value[2].key.should.be.exactly('uk');
