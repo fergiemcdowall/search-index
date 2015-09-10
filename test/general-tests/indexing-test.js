@@ -2,8 +2,6 @@
 /* global describe */
 
 var assert = require('assert');
-var should = require('should');
-var fs = require('fs');
 var _ = require('lodash');
 var sandboxPath = 'test/sandbox';
 
