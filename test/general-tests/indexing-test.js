@@ -2,8 +2,6 @@
 /* global describe */
 
 var assert = require('assert');
-var should = require('should');
-var fs = require('fs');
 var _ = require('lodash');
 var sandboxPath = 'test/sandbox';
 
@@ -35,6 +33,7 @@ describe('Indexing API', function () {
       });
     });
   });
+
   it('should allow indexing with options object omitted', function (done)  {
     si.add([_.assign(doc, {id: 3})], function (err) {
       assert.equal(err, null);
@@ -44,4 +43,21 @@ describe('Indexing API', function () {
       });
     });
   });
+
+  it('should allow indexing with a custom separator', function (done)  {
+    si.add([{
+      id: 'testing',
+      content: 'Nexion Smart ERP 14.2.1.0\n\nRelease de ejemplo'
+    }], {
+      separator:/[ (\n)]+/
+    }, function (err) {
+      assert.equal(err, null);
+      si.search({query: {'*': ['14.2.1.0']}}, function (err, res) {
+        assert(res.totalHits == 1)
+        done();
+      });
+    });
+  });
+
+
 });

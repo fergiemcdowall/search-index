@@ -127,7 +127,7 @@ describe('indexing options: ', function () {
   });
 
   it('should index one file of test data into an index with fielded search turned on', function (done) {
-    this.timeout(5000);
+    this.timeout(25000);
     var data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/justTen/justTen.json'));
     var si = require('../../')(siOps2);
     var opt = {};
@@ -169,16 +169,16 @@ describe('indexing options: ', function () {
       (err === null).should.be.exactly(true);
       searchResults.hits.length.should.be.exactly(10);
       searchResults.facets[0].key.should.be.exactly('places');
-      searchResults.facets[0].value.should.eql([
-        { key: 'usa', gte: 'usa', lte: 'usa', value: 9 },
-        { key: 'argentina', gte: 'argentina', lte: 'argentina', value: 1 },
-        { key: 'brazil', gte: 'brazil', lte: 'brazil', value: 1 },
-        { key: 'el-salvador',
-          gte: 'el-salvador',
-          lte: 'el-salvador',
-          value: 1 },
-        { key: 'uruguay', gte: 'uruguay', lte: 'uruguay', value: 1 }
-      ]);
+      searchResults.facets[0].value.should.eql(
+        [ { key: 'usa', gte: 'usa', lte: 'usa', value: 9 },
+          { key: 'uruguay', gte: 'uruguay', lte: 'uruguay', value: 1 },
+          { key: 'el-salvador',
+            gte: 'el-salvador',
+            lte: 'el-salvador',
+            value: 1 },
+          { key: 'brazil', gte: 'brazil', lte: 'brazil', value: 1 },
+          { key: 'argentina', gte: 'argentina', lte: 'argentina', value: 1 } ]
+      );
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });

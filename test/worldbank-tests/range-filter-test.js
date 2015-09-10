@@ -203,9 +203,9 @@ describe('Range Filters: ', function () {
         results.facets[0].value[0].value.should.be.exactly(3);
         results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000');
         results.facets[0].value[1].value.should.be.exactly(1);
-        results.facets[1].value[0].key.should.be.exactly('A-F');
+        results.facets[1].value[0].key.should.be.exactly('O-Z');
         results.facets[1].value[0].value.should.be.exactly(4);
-        results.facets[1].value[1].key.should.be.exactly('O-Z');
+        results.facets[1].value[1].key.should.be.exactly('A-F');
         results.facets[1].value[1].value.should.be.exactly(4);
         results.facets[1].value[2].key.should.be.exactly('G-N');
         results.facets[1].value[2].value.should.be.exactly(0);
@@ -270,9 +270,9 @@ describe('Range Filters: ', function () {
         results.facets[0].value[0].lte.should.be.exactly('000000050000000');
         results.facets[0].value[0].active.should.be.exactly(true);
         results.facets[1].value[0].value.should.be.exactly(3);
-        results.facets[1].value[1].key.should.be.exactly('O-Z');
-        results.facets[1].value[1].gte.should.be.exactly('O');
-        results.facets[1].value[1].lte.should.be.exactly('Z');
+        results.facets[1].value[1].key.should.be.exactly('A-F');
+        results.facets[1].value[1].gte.should.be.exactly('A');
+        results.facets[1].value[1].lte.should.be.exactly('F');
         results.facets[1].value[1].active.should.be.exactly(true);
         results.facets[1].value[1].value.should.be.exactly(3);
         results.facets[1].value[2].key.should.be.exactly('G-N');
