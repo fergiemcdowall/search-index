@@ -69,7 +69,7 @@
   ],
   "scripts": {
     "lint": " jshint lib test index.js || true && jscs --fix lib test index.js || true",
-    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive",
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000",
     "doc": "rm -rf doc/api && jsdoc -d doc/api lib/search-index.js",
     "all": "npm run lint && npm run doc && npm test"
   },
