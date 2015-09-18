@@ -53,6 +53,7 @@ describe('Indexing API', function () {
     }, function (err) {
       assert.equal(err, null);
       si.search({query: {'*': ['14.2.1.0']}}, function (err, res) {
+        console.log(res.totalHits)
         assert(res.totalHits == 1)
         done();
       });
