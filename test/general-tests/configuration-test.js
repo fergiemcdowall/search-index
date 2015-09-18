@@ -34,16 +34,12 @@ describe('Configuration: ', function () {
     });
     should.exist(si.log);
 
-    si.add('yolo', {
+    si.add({
       id: 1,
       name: 'The First Doc',
       test: 'this is the first doc'
     }, function (err) {
-      console.log(err);
-
-      //throwing an error here- need to investigate
-
-      //      (err === null).should.be.exactly(true);
+      should(err).be.undefined;
       myStream.size().should.be.above(0);
       done();
     });
