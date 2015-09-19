@@ -65,11 +65,16 @@ describe('Matching epub: ', function () {
     si.match({beginsWith: str}, function (err, matches) {
       should.exist(matches);
       (err === null).should.be.exactly(true);
-      matches.length.should.be.exactly(4);
-      matches[0].should.be.exactly('epubxhighestsort');
-      matches[1].should.be.exactly('epub');
-      matches[2].should.be.exactly('epubtastic');
-      matches[3].should.be.exactly('epubulation');
+      matches.should.eql(
+        [ 'epubxhighestsort',
+          'epub',
+          'epub_content/accessible_epub_3/epub/ch03s06',
+          'epub_content/accessible_epub_3/epub/ch03s07',
+          'epub_content/accessible_epub_3/epub/ch03s08',
+          'epub_content/accessible_epub_3/epub/ch03s09',
+          'epub_content/accessible_epub_4/epub/ch03s09',
+          'epubtastic',
+          'epubulation' ]);
       done();
     });
   });
@@ -82,6 +87,11 @@ describe('Matching epub: ', function () {
       matches.should.eql(
         [ [ 'epubxhighestsort', [ 'doc101', 'doc102', 'doc103', 'doc105' ] ],
           [ 'epub', [ 'doc101', 'doc102', 'doc103' ] ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s06', [ 'doc101' ] ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s07', [ 'doc102' ] ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s08', [ 'doc103' ] ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s09', [ 'doc104' ] ],
+          [ 'epub_content/accessible_epub_4/epub/ch03s09', [ 'doc105' ] ],
           [ 'epubtastic', [ 'doc102' ] ],
           [ 'epubulation', [ 'doc102' ] ] ]
       );
@@ -89,7 +99,7 @@ describe('Matching epub: ', function () {
     });
   });
 
-  it('should match on all fields and return IDs', function (done) {
+  it('should match on all fields and return IDs and counts', function (done) {
     var str = 'epub';
     si.match({beginsWith: str, type: 'count'}, function (err, matches) {
       should.exist(matches);
@@ -97,6 +107,11 @@ describe('Matching epub: ', function () {
       matches.should.eql(
         [ [ 'epubxhighestsort', 4 ],
           [ 'epub', 3 ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s06', 1 ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s07', 1 ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s08', 1 ],
+          [ 'epub_content/accessible_epub_3/epub/ch03s09', 1 ],
+          [ 'epub_content/accessible_epub_4/epub/ch03s09', 1 ],
           [ 'epubtastic', 1 ],
           [ 'epubulation', 1 ] ]
       );
@@ -189,9 +204,18 @@ describe('Matching epub: ', function () {
     var str = 'ep';
     si.match({beginsWith: str, threshold: 1}, function (err, matches) {
       should.exist(matches);
-      matches.length.should.be.exactly(4);
+      matches.length.should.be.exactly(9);
       (err instanceof Error).should.be.exactly(false);
-      matches.should.eql([ 'epubxhighestsort', 'epub', 'epubtastic', 'epubulation' ]);
+      matches.should.eql(
+        [ 'epubxhighestsort',
+          'epub',
+          'epub_content/accessible_epub_3/epub/ch03s06',
+          'epub_content/accessible_epub_3/epub/ch03s07',
+          'epub_content/accessible_epub_3/epub/ch03s08',
+          'epub_content/accessible_epub_3/epub/ch03s09',
+          'epub_content/accessible_epub_4/epub/ch03s09',
+          'epubtastic',
+          'epubulation' ]);
       done();
     });
   });
