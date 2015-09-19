@@ -104,24 +104,24 @@ describe('deleting: ', function () {
     });
   })
 
-  // it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
-  //   var sandboxPath = 'test/sandbox';
-  //   var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-  //                               logLevel: logLevel});
-  //   var q = {};
-  //   q.query = {'*': ['*']};
-  //   si.search(q, function (err, searchResults) {
-  //     should.exist(searchResults);
-  //     (err === null).should.be.exactly(true);
-  //     searchResults.hits.length.should.be.exactly(3);
-  //     searchResults.totalHits.should.be.exactly(3);
-  //     searchResults.hits[0].id.should.be.exactly('1');
-  //     searchResults.hits[1].id.should.be.exactly('3');
-  //     searchResults.hits[2].id.should.be.exactly('4');
-  //     si.close(function (err) {
-  //       if (err) false.should.eql(true);done();
-  //     });
-  //   });
-  // });
+  it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
+    var sandboxPath = 'test/sandbox';
+    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
+                                logLevel: logLevel});
+    var q = {};
+    q.query = {'*': ['*']};
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults);
+      (err === null).should.be.exactly(true);
+      searchResults.hits.length.should.be.exactly(3);
+      searchResults.totalHits.should.be.exactly(3);
+      searchResults.hits[0].id.should.be.exactly('1');
+      searchResults.hits[1].id.should.be.exactly('3');
+      searchResults.hits[2].id.should.be.exactly('4');
+      si.close(function (err) {
+        if (err) false.should.eql(true);done();
+      });
+    });
+  });
 
 });
