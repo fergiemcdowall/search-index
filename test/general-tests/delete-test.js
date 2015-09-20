@@ -21,7 +21,7 @@ describe('deleting: ', function () {
     {
       id: 3,
       name: 'The Third Doc',
-      test: 'this is the third doc'
+      test: 'this is the third doc doc'
     },
     {
       id: 4,
@@ -84,8 +84,8 @@ describe('deleting: ', function () {
       searchResults.hits.length.should.be.exactly(3);
       searchResults.totalHits.should.be.exactly(3);
       searchResults.hits[0].id.should.be.exactly('1');
-      searchResults.hits[1].id.should.be.exactly('3');
-      searchResults.hits[2].id.should.be.exactly('4');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('3');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
@@ -116,8 +116,8 @@ describe('deleting: ', function () {
       searchResults.hits.length.should.be.exactly(3);
       searchResults.totalHits.should.be.exactly(3);
       searchResults.hits[0].id.should.be.exactly('1');
-      searchResults.hits[1].id.should.be.exactly('3');
-      searchResults.hits[2].id.should.be.exactly('4');
+      searchResults.hits[1].id.should.be.exactly('4');
+      searchResults.hits[2].id.should.be.exactly('3');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });

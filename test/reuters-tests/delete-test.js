@@ -35,7 +35,7 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true);
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
-      result.hits[5].id.should.be.exactly('747');
+      result.hits[3].id.should.be.exactly('747');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
@@ -142,7 +142,7 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true);
       result.totalHits.should.be.exactly(14);
       result.hits.length.should.be.exactly(14);
-      result.hits[5].id.should.be.exactly('747');
+      result.hits[3].id.should.be.exactly('747');
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });

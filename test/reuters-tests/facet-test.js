@@ -18,10 +18,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         (err === null).should.be.exactly(true);
         results.hits.length.should.be.exactly(100);
         results.totalHits.should.be.exactly(546);
-        results.hits[3].id.should.be.exactly('760');
-        results.hits[10].id.should.be.exactly('133');
-        results.hits[13].id.should.be.exactly('101');
-        results.hits[14].id.should.be.exactly('33');
+        results.hits[0].id.should.be.exactly('287');
+        results.hits[1].id.should.be.exactly('510');
         results.facets[0].value.length.should.be.exactly(39);
         results.facets[0].key.should.be.exactly('places');
         results.facets[0].value[0].key.should.be.exactly('usa');
@@ -44,7 +42,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to sort facets by value ascending', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -67,7 +66,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to sort facets by key ascending', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -91,7 +91,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to sort facets by key descending', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -114,7 +115,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to limit facet length', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -133,7 +135,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to mark a facet as active', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -157,7 +160,8 @@ describe('Searching Reuters and Checking Faceting: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to mark multiple facets as active', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
                                   logLevel: 'warn'});
@@ -185,5 +189,6 @@ describe('Searching Reuters and Checking Faceting: ', function () {
         });
       });
     });
+
   });
 });
