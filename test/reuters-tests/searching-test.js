@@ -17,15 +17,16 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.above(1);
         searchResults.hits.length.should.be.exactly(100);
-        searchResults.hits[3].id.should.be.exactly('760');
-        searchResults.hits[10].id.should.be.exactly('133');
-        searchResults.hits[13].id.should.be.exactly('101');
-        searchResults.hits[14].id.should.be.exactly('33');
+        searchResults.hits[0].id.should.be.exactly('287');
+        searchResults.hits[1].id.should.be.exactly('510');
+        searchResults.hits[2].id.should.be.exactly('470');
+        searchResults.hits[3].id.should.be.exactly('471');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should search on all fields and get no results for a valid, yet absent keyword', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -38,7 +39,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to handle multiword searches', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -52,7 +54,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to return all results by doing a wildcard (*) search', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -66,7 +69,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to handle multi word searches where some words are not present in index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -81,7 +85,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to offset', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -92,12 +97,13 @@ describe('Searching Reuters: ', function () {
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(51);
         searchResults.hits.length.should.be.above(1);
-        searchResults.hits[0].id.should.be.exactly('287');
+        searchResults.hits[0].id.should.be.exactly('918');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to set page size (limit results)', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -111,7 +117,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to page (set offset and page size)', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -122,12 +129,13 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(5);
-        searchResults.hits[0].id.should.be.exactly('287');
+        searchResults.hits[0].id.should.be.exactly('918');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search in indexed data with faceting', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -137,10 +145,10 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(100);
-        searchResults.hits[3].id.should.be.exactly('760');
-        searchResults.hits[10].id.should.be.exactly('133');
-        searchResults.hits[13].id.should.be.exactly('101');
-        searchResults.hits[14].id.should.be.exactly('33');
+        searchResults.hits[0].id.should.be.exactly('287');
+        searchResults.hits[1].id.should.be.exactly('510');
+        searchResults.hits[2].id.should.be.exactly('470');
+        searchResults.hits[3].id.should.be.exactly('471');
         searchResults.facets[0].value.length.should.be.exactly(39);
         searchResults.facets[0].key.should.be.exactly('places');
         searchResults.facets[0].value[0].key.should.be.exactly('usa');
@@ -155,7 +163,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to filter search results', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: this test generates an empty facetRanges object which
@@ -173,7 +182,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search on all fields', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -182,15 +192,16 @@ describe('Searching Reuters: ', function () {
         should.exist(searchResults);
         (err === null).should.be.exactly(true);
         searchResults.hits.length.should.be.exactly(20);
-        searchResults.hits[0].id.should.be.exactly('28');
+        searchResults.hits[0].id.should.be.exactly('231');
         searchResults.hits[1].id.should.be.exactly('804');
-        searchResults.hits[2].id.should.be.exactly('231');
-        searchResults.hits[3].id.should.be.exactly('386');
+        searchResults.hits[2].id.should.be.exactly('869');
+        searchResults.hits[3].id.should.be.exactly('964');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search on one field', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -204,7 +215,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search on one field for two terms', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -221,7 +233,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search on on two fields for seperate terms', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -241,7 +254,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to search on on two fields for multiple terms', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -259,28 +273,34 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
-    it('should be able to weight search results', function (done) {
-      var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
-      var q = {};
-      q.query = {
-        title: ['reagan'],
-        body: ['reagan']
-      };
-      q.weight = {body: 20};
-      si.search(q, function (err, searchResults) {
-        should.exist(searchResults);
-        (err === null).should.be.exactly(true);
-        searchResults.hits.length.should.be.exactly(8);
-        searchResults.hits[0].id.should.be.exactly('28');
-        searchResults.hits[1].id.should.be.exactly('231');
-        searchResults.hits[4].id.should.be.exactly('869');
-        searchResults.hits[5].id.should.be.exactly('877');
-        si.close(function (err) {
-          if (err) false.should.eql(true);done();
-        });
-      });
-    }),
+    });
+
+
+
+    // it('should be able to weight search results', function (done) {
+    //   var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
+    //   var q = {};
+    //   q.query = {
+    //     '*': ['reagan'],
+    //     'body': ['reagan'],
+    //     'title': ['reagan']
+    //   };
+    //   q.weight = {body: 20000};
+    //   si.search(q, function (err, searchResults) {
+    //     console.log(searchResults)
+    //     should.exist(searchResults);
+    //     (err === null).should.be.exactly(true);
+    //     searchResults.hits.length.should.be.exactly(8);
+    //     searchResults.hits[0].id.should.be.exactly('28');
+    //     searchResults.hits[1].id.should.be.exactly('231');
+    //     searchResults.hits[4].id.should.be.exactly('869');
+    //     searchResults.hits[5].id.should.be.exactly('877');
+    //     si.close(function (err) {
+    //       if (err) false.should.eql(true);done();
+    //     });
+    //   });
+    // });
+
     it('should be able to generate teasers', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -296,7 +316,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to display information about the index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: there should probably be an error object in this function
@@ -307,7 +328,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};
@@ -320,14 +342,15 @@ describe('Searching Reuters: ', function () {
         searchResults.hits.length.should.be.exactly(16);
         searchResults.totalHits.should.be.exactly(16);
         searchResults.hits[0].id.should.be.exactly('676');
-        searchResults.hits[1].id.should.be.exactly('753');
-        searchResults.hits[2].id.should.be.exactly('287');
-        searchResults.hits[3].id.should.be.exactly('893');
+        searchResults.hits[1].id.should.be.exactly('287');
+        searchResults.hits[2].id.should.be.exactly('753');
+        searchResults.hits[3].id.should.be.exactly('333');
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to display information about the index', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       //TODO: there should probably be an error object in this function
@@ -338,7 +361,8 @@ describe('Searching Reuters: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
       var q = {};

@@ -18,19 +18,21 @@ describe('Indexing World Bank: ', function () {
       console.log(e);
       true.should.be.exactly(false);
     }
-  }),
-  it('should throw an error when indexing an empty batch', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-empty',
-                                logLevel: 'error'});
-    si.add([], {}, function (err) {
-      should.exist(err);
-      err.should.be.an.Error;
-      err.toString().should.equal('Error: No docs to add');
-      si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
-    });
-  }),
+  });
+
+  // it('should throw an error when indexing an empty batch', function (done) {
+  //   var si = require('../../')({indexPath: sandboxPath + '/si-empty',
+  //                               logLevel: 'error'});
+  //   si.add([], {}, function (err) {
+  //     should.exist(err);
+  //     err.should.be.an.Error;
+  //     err.toString().should.equal('Error: No docs to add');
+  //     si.close(function (err) {
+  //       if (err) false.should.eql(true);done();
+  //     });
+  //   });
+  // });
+
   it('should index the data', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
                                 logLevel: 'error'});

@@ -24,6 +24,7 @@
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
     "stopword": "0.0.3",
+    "term-frequency": "0.0.3",
     "term-vector": "0.0.12"
   },
   "devDependencies": {
