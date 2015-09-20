@@ -25,7 +25,8 @@ describe('Indexing Reuters without IDs: ', function () {
       si.close(function (err) {
         if (err) false.should.eql(true);done();
       });
-    }),
+    });
+
     it('should index one file of test data that doesnt contain IDs', function (done) {
       this.timeout(60000);
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
@@ -38,7 +39,8 @@ describe('Indexing Reuters without IDs: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should verify indexing', function (done) {
       this.timeout(10000);
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
@@ -50,18 +52,19 @@ describe('Indexing Reuters without IDs: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('verifies recalibration', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
                                   logLevel: 'error'});
-      si.indexValue({key:'TF￮*￮1987￮￮'}, function (err, value) {
-        (err === null).should.be.exactly(true);
+      si.indexes.get('TF￮*￮1987￮￮', function (err, value) {
         value.length.should.be.exactly(1000);
         si.close(function (err) {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should search on all fields and get results', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
                                   logLevel: 'warn'});
@@ -77,7 +80,8 @@ describe('Indexing Reuters without IDs: ', function () {
           if (err) false.should.eql(true);done();
         });
       });
-    }),
+    });
+
     it('should be able to handle multiword searches', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids', logLevel: 'warn'});
       var q = {};
