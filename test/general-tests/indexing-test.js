@@ -53,11 +53,10 @@ describe('Indexing API', function () {
     }, function (err) {
       assert.equal(err, null);
       si.search({query: {'*': ['14.2.1.0']}}, function (err, res) {
-        assert(res.totalHits == 1)
+        assert(res.totalHits == 1);
         done();
       });
     });
   });
-
 
 });

@@ -1,7 +1,7 @@
 /* global it */
 /* global describe */
 
-var should = require('should');
+var should = require('should'); // jshint ignore:line
 var fs = require('fs');
 var sandboxPath = 'test/sandbox';
 var _ = require('lodash');

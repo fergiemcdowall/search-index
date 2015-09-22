@@ -29,7 +29,6 @@ describe('deleting: ', function () {
       test: 'this is the fourth doc'
     }];
 
-
   it('should index test data into the index', function (done) {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
@@ -90,7 +89,7 @@ describe('deleting: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('should index duplicate test data into the index', function (done) {
     var sandboxPath = 'test/sandbox';
@@ -102,7 +101,7 @@ describe('deleting: ', function () {
         if (err) false.should.eql(true);done();
       });
     });
-  })
+  });
 
   it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
     var sandboxPath = 'test/sandbox';

@@ -57,31 +57,21 @@ module.exports = function (options) {
     logLevel: 'error',
     nGramLength: 1,
     stopwords: tv.getStopwords('en').sort(),
+    separator: /[\|' \.,\-|(\n)]+/,
     fieldsToStore: 'all'
   };
   //initialize defaults options
-  SearchIndex.options = _.defaults(options || {}, defaults);
+  SearchIndex.options = _.clone(_.defaults(options || {}, defaults));
   var log = SearchIndex.options.log || bunyan.createLogger({
     name: 'search-index',
     level: SearchIndex.options.logLevel
   });
   var docGetter = require('./search/docGetter.js');
-  var calibrater = require('./indexing/calibrater.js')({
-    log: log.child({component: 'calibrater'})
-  });
   var deleter = require('./indexing/deleter.js')({
     log: log.child({component: 'deleter'})
   });
-  var indexPeek = require('./indexing/indexPeek.js')({
-    log: log.child({component: 'indexPeek'})
-  });
-  var indexer = require('./indexing/indexer.js')({
-    deletable: SearchIndex.options.deletable,
-    fieldedSearch: SearchIndex.options.fieldedSearch,
-    fieldsToStore: SearchIndex.options.fieldsToStore,
-    log: log.child({component: 'indexer'}),
-    stopwords: SearchIndex.options.stopwords
-  });
+  var indexer = require('./indexing/indexer.js')(
+    _.assign(SearchIndex.options, {log: log.child({component: 'indexer'})}));
   var matcher = require('./matchers/matcher.js')({
     log: log.child({component: 'matcher'})
   });
@@ -97,16 +87,16 @@ module.exports = function (options) {
       filter: false,
       nGramLength: SearchIndex.options.nGramLength,
       searchable: true,
-      weight: 1,
+      weight: 0,
       fieldedSearch: SearchIndex.options.fieldedSearch
     };
-    var defaults = {
-      batchName: 'my batch',
-      fieldOptions: [],
+    var defaultBatchOptions = {
+      batchName: 'Batch at ' + new Date().toISOString(),
+      fieldOptions: options.fieldOptions || defaultFieldOptions,
       fieldsToStore: SearchIndex.options.fieldsToStore,
       defaultFieldOptions: defaultFieldOptions
     };
-    batchOptions = _.defaults(batchOptions || {}, defaults);
+    batchOptions = _.defaults(batchOptions || {}, defaultBatchOptions);
     batchOptions.filters = _.pluck(_.filter(batchOptions.fieldOptions, 'filter'), 'fieldName');
     if (_.find(batchOptions.fieldOptions, 'fieldName', '*') == -1)
       batchOptions.fieldOptions.push(defaultFieldOptions('*'));
@@ -116,10 +106,6 @@ module.exports = function (options) {
   SearchIndex.indexes = level(SearchIndex.options.indexPath, {
     valueEncoding: 'json',
     db: SearchIndex.options.db
-  });
-
-  calibrater.getTotalDocs(SearchIndex.indexes, function (err, totalDocs) {
-    searcher.setTotalDocs(totalDocs);
   });
 
   /**
@@ -149,10 +135,18 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.add = function (batch, batchOptions, callback) {
-    indexer.addDocToIndex(SearchIndex.indexes,
-                          batch,
-                          processBatchOptions(batchOptions),
-                          callback);
+    if (arguments.length == 2 &amp;&amp; _.isFunction(arguments[1])) {
+      callback = batchOptions;
+      batchOptions = undefined;
+    }
+    // indexer.addDocToIndex(SearchIndex.indexes,
+    //                       batch,
+    //                       processBatchOptions(batchOptions),
+    //                       callback);
+    indexer.addBatchToIndex(SearchIndex.indexes,
+                            batch,
+                            processBatchOptions(batchOptions),
+                            callback);
   };
 
   /**
@@ -279,13 +273,12 @@ module.exports = function (options) {
      @param {callback(info)} callback - returns information about the search-index
   */
   SearchIndex.tellMeAboutMySearchIndex = function (callback) {
-    calibrater.getTotalDocs(SearchIndex.indexes, function (err, totalDocs) {
-      callback(
-        {
-          totalDocs: totalDocs,
-          options: SearchIndex.options
-        }
-      );
+    SearchIndex.indexes.get('DOCUMENT-COUNT', function (err, value) {
+      var td = value || 0;
+      callback({
+        totalDocs: td,
+        options: SearchIndex.options
+      });
     });
   };
 
@@ -301,21 +294,6 @@ module.exports = function (options) {
       }
       callback(null);
     });
-  };
-
-  //utility methods for testing and devlopment
-  //******************************************
-  SearchIndex.indexRange = function (options, callback) {
-    indexPeek.indexRange(options.start, options.stop, SearchIndex.indexes, callback);
-  };
-
-  SearchIndex.indexValue = function (options, callback) {
-    indexPeek.indexValue(options.key, SearchIndex.indexes, callback);
-  };
-
-  //do a full recalibration of the index
-  SearchIndex.calibrate = function (callback) {
-    calibrater.calibrate(SearchIndex.indexes, callback);
   };
 
   SearchIndex.log = log;
@@ -337,7 +315,7 @@ module.exports = function (options) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Aug 31 2015 15:34:52 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Sep 22 2015 17:52:20 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

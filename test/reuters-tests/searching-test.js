@@ -275,8 +275,6 @@ describe('Searching Reuters: ', function () {
       });
     });
 
-
-
     // it('should be able to weight search results', function (done) {
     //   var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'});
     //   var q = {};
