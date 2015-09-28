@@ -19,7 +19,7 @@
     "level-ws": "0.0.0",
     "leveldown": "1.4.1",
     "levelup": "1.2.1",
-    "lodash": "3.8.0",
+    "lodash": "3.10.1",
     "log-skeleton": "^1.1.0",
     "object-hash": "0.8.0",
     "search-context": "0.1.0",
