@@ -30,7 +30,7 @@
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "11.2.0",
-    "jscs": "2.2.0",
+    "jscs": "2.1.1",
     "jsdoc": "3.3.2",
     "jshint": "2.7.0",
     "mocha": "2.3.3",
