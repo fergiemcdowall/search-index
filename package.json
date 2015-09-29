@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "brfs": "1.4.0",
-    "browserify": "10.1.1",
+    "browserify": "11.2.0",
     "jscs": "2.2.0",
     "jsdoc": "3.3.2",
     "jshint": "~2.7.0",
