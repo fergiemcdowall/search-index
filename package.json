@@ -33,7 +33,7 @@
     "jscs": "2.2.0",
     "jsdoc": "3.3.2",
     "jshint": "~2.7.0",
-    "mocha": "2.2.5",
+    "mocha": "2.3.3",
     "reuters-21578-json": "0.0.6",
     "should": "7.0.1",
     "stream-buffers": "^2.2.0",
