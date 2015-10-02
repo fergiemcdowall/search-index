@@ -35,7 +35,7 @@
     "jshint": "2.7.0",
     "mocha": "2.3.3",
     "reuters-21578-json": "0.0.6",
-    "should": "7.0.1",
+    "should": "7.1.0",
     "stream-buffers": "2.2.0",
     "world-bank-dataset": "0.0.1"
   },
