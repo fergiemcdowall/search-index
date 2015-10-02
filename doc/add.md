@@ -21,7 +21,7 @@ batchOptions.fieldOptions = [
 ];
 
 //add
-si.add(batchOptions, data, function (err) {
+si.add(data, batchOptions, function (err) {
   if (!err) console.log('success!');
 });
 ```
