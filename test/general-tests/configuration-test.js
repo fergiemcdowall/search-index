@@ -14,6 +14,12 @@ describe('Configuration: ', function () {
     fs.existsSync(siPath).should.be.exactly(true);
   });
 
+  it('can be instantiated configuration', function () {
+    var si = require('../../')();
+    should.exist(si);
+    fs.existsSync(si.options.indexPath).should.be.exactly(true);
+  });
+
   it('does not leak variables', function () {
     (typeof countDocuments).should.be.exactly('undefined');
     (typeof _).should.be.exactly('undefined');
