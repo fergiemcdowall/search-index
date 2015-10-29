@@ -18,7 +18,8 @@ before_install:
 
 node_js:
   - "0.12"
-  - "3.0"
+  - "3"
+  - "4"
 
 notifications:
   slack: norch:wLsHiXjnAH5BdtTq3qtAqGp7
