@@ -60,7 +60,22 @@ this field
 
 #### nGramLength
 
-Sets the length of the phrase search on this field
+Sets the length of the phrase search on this field. You need to add all the nGramLength you want in an array. If you want phrases of one and two words, you write:
+```javascript
+{
+  ...
+  nGramLength: [1, 2],     //inherited from initialization options
+  ...
+}
+```
+If you want one, two and three words in the phrases, you write:
+```javascript
+{
+  ...
+  nGramLength: [1, 2, 3],     //inherited from initialization options
+  ...
+}
+```
 
 #### searchable
 
