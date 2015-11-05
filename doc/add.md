@@ -64,7 +64,7 @@ Sets the length of the phrase search on this field. You need to add all the nGra
 ```javascript
 {
   ...
-  nGramLength: [1, 2],     //inherited from initialization options
+  nGramLength: [1, 2],
   ...
 }
 ```
@@ -72,7 +72,7 @@ If you want one, two and three words in the phrases, you write:
 ```javascript
 {
   ...
-  nGramLength: [1, 2, 3],     //inherited from initialization options
+  nGramLength: [1, 2, 3],
   ...
 }
 ```
