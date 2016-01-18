@@ -25,6 +25,7 @@
     "search-context": "0.1.0",
     "search-index-adder": "0.0.1",
     "search-index-deleter": "0.0.1",
+    "search-index-replicator": "0.0.1",
     "stopword": "0.0.3",
     "term-frequency": "0.0.3",
     "term-vector": "0.0.12"
