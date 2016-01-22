@@ -4,6 +4,7 @@
 var logLevel = 'error';
 if (process.env.NODE_ENV == 'TEST') logLevel = 'info';
 var should = require('should');
+const searchIndex = require('../../');
 
 describe('deleting: ', function () {
 
@@ -31,8 +32,8 @@ describe('deleting: ', function () {
 
   it('should index test data into the index', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    const si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     si.add(data1, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -44,8 +45,8 @@ describe('deleting: ', function () {
 
   it('should be able to return all documents in index', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    var si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     var q = {};
     q.query = {'*': ['*']};
     si.search(q, function (err, searchResults) {
@@ -61,8 +62,8 @@ describe('deleting: ', function () {
 
   it('should be able to delete a document without throwing errorness', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    var si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     si.del('2', function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -73,8 +74,8 @@ describe('deleting: ', function () {
 
   it('should be able to return all documents in index, with one document deleted', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    var si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     var q = {};
     q.query = {'*': ['*']};
     si.search(q, function (err, searchResults) {
@@ -93,8 +94,8 @@ describe('deleting: ', function () {
 
   it('should index duplicate test data into the index', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    var si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     si.add(data1[0], {batchName: 'data2'}, function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
@@ -105,8 +106,8 @@ describe('deleting: ', function () {
 
   it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
     var sandboxPath = 'test/sandbox';
-    var si = require('../../')({indexPath: sandboxPath + '/si-delete-test',
-                                logLevel: logLevel});
+    var si = searchIndex({indexPath: sandboxPath + '/si-delete-test',
+                          logLevel: logLevel});
     var q = {};
     q.query = {'*': ['*']};
     si.search(q, function (err, searchResults) {

@@ -24,12 +24,12 @@ module.exports = function (options) {
   var defaults = {
     deletable: true,
     fieldedSearch: true,
+    fieldsToStore: 'all',
     indexPath: 'si',
     logLevel: 'error',
     nGramLength: 1,
-    stopwords: tv.getStopwords('en').sort(),
     separator: /[\|' \.,\-|(\n)]+/,
-    fieldsToStore: 'all'
+    stopwords: tv.getStopwords('en').sort()
   }
   // initialize defaults options
   SearchIndex.options = _.clone(_.defaults(options || {}, defaults))
