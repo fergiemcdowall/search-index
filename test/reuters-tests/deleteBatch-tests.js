@@ -25,7 +25,7 @@ describe('deleting a batch: ', function () {
     var sandboxPath = 'test/sandbox';
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10',
                                 logLevel: 'error'});
-    si.deleteBatch(['7', '10', '5', '1', '3'], function (err) {
+    si.del(['7', '10', '5', '1', '3'], function (err) {
       (err === null).should.be.exactly(true);
       si.close(function (err) {
         if (err) false.should.eql(true);done();

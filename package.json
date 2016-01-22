@@ -29,6 +29,7 @@
     "search-index-matcher": "0.0.1",
     "search-index-replicator": "0.0.1",
     "search-index-searcher": "0.0.1",
+    "standard": "^5.4.1",
     "stopword": "0.0.3",
     "term-frequency": "0.0.3",
     "term-vector": "0.0.12"
@@ -56,7 +57,7 @@
     "natural",
     "search"
   ],
-  "main": "./index.js",
+  "main": "search-index.js",
   "browserify": {
     "transform": [
       "brfs"
@@ -75,9 +76,9 @@
     }
   ],
   "scripts": {
-    "lint": " jshint lib test index.js || true && jscs --fix lib test index.js || true",
+    "lint": " jshint search-index.js test index.js || true && jscs --fix search-index.js test index.js || true",
     "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000",
-    "doc": "rm -rf doc/api && jsdoc -d doc/api lib/search-index.js",
+    "doc": "rm -rf doc/api && jsdoc -d doc/api search-index.js",
     "all": "npm run lint && npm run doc && npm test"
   },
   "repository": {

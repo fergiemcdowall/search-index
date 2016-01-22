@@ -3,10 +3,10 @@
  * @module search-index
  */
 
-var bunyan = require('bunyan');
-var _ = require('lodash');
-var level = require('levelup');
-var tv = require('term-vector');
+var bunyan = require('bunyan')
+var _ = require('lodash')
+var level = require('levelup')
+var tv = require('term-vector')
 
 /**
 get an instance of search-index
@@ -20,8 +20,7 @@ get an instance of search-index
 @param {string=} [options.fieldsToStore="all"] Which fields to store (you may wish to only store links/references/IDs instead of whole documents)
 */
 module.exports = function (options) {
-  var SearchIndex = {};
-  //------------libs
+  var SearchIndex = {}
   var defaults = {
     deletable: true,
     fieldedSearch: true,
@@ -31,29 +30,29 @@ module.exports = function (options) {
     stopwords: tv.getStopwords('en').sort(),
     separator: /[\|' \.,\-|(\n)]+/,
     fieldsToStore: 'all'
-  };
-  //initialize defaults options
-  SearchIndex.options = _.clone(_.defaults(options || {}, defaults));
+  }
+  // initialize defaults options
+  SearchIndex.options = _.clone(_.defaults(options || {}, defaults))
   var log = SearchIndex.options.log || bunyan.createLogger({
     name: 'search-index',
     level: SearchIndex.options.logLevel
-  });
-  var docGetter = require('search-index-getter');
+  })
+  var docGetter = require('search-index-getter')
   var deleter = require('search-index-deleter')({
     log: log.child({component: 'deleter'})
-  });
+  })
   var indexer = require('search-index-adder')(
-    _.assign(SearchIndex.options, {log: log.child({component: 'indexer'})}));
+    _.assign(SearchIndex.options, {log: log.child({component: 'indexer'})}))
   var matcher = require('search-index-matcher')({
     log: log.child({component: 'matcher'})
-  });
+  })
   var replicator = require('search-index-replicator')({
     log: log.child({component: 'replicator'})
-  });
+  })
   var searcher = require('search-index-searcher')({
     log: log.child({component: 'searcher'}),
     stopwords: SearchIndex.options.stopwords
-  });
+  })
   var processBatchOptions = function (batchOptions) {
     var defaultFieldOptions = {
       filter: false,
@@ -61,34 +60,25 @@ module.exports = function (options) {
       searchable: true,
       weight: 0,
       fieldedSearch: SearchIndex.options.fieldedSearch
-    };
+    }
     var defaultBatchOptions = {
       batchName: 'Batch at ' + new Date().toISOString(),
       fieldOptions: SearchIndex.options.fieldOptions || defaultFieldOptions,
       fieldsToStore: SearchIndex.options.fieldsToStore,
       defaultFieldOptions: defaultFieldOptions
-    };
-    batchOptions = _.defaults(batchOptions || {}, defaultBatchOptions);
-    batchOptions.filters = _.pluck(_.filter(batchOptions.fieldOptions, 'filter'), 'fieldName');
-    if (_.find(batchOptions.fieldOptions, 'fieldName', '*') == -1)
-      batchOptions.fieldOptions.push(defaultFieldOptions('*'));
-    return batchOptions;
-  };
+    }
+    batchOptions = _.defaults(batchOptions || {}, defaultBatchOptions)
+    batchOptions.filters = _.pluck(_.filter(batchOptions.fieldOptions, 'filter'), 'fieldName')
+    if (_.find(batchOptions.fieldOptions, 'fieldName', '*') === -1) {
+      batchOptions.fieldOptions.push(defaultFieldOptions('*'))
+    }
+    return batchOptions
+  }
 
   SearchIndex.indexes = level(SearchIndex.options.indexPath, {
     valueEncoding: 'json',
     db: SearchIndex.options.db
-  });
-
-  /**
-     Returns an array of stopwords
-     @function getStopwords
-     @param {string} [lang=en] a language code
-     @returns {string[]} The stopword list
-  */
-  SearchIndex.getStopwords = function (lang) {
-    return tv.getStopwords(lang).sort();
-  };
+  })
 
   /**
      Adds a document to the index
@@ -107,19 +97,19 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.add = function (batch, batchOptions, callback) {
-    if (arguments.length == 2 && _.isFunction(arguments[1])) {
-      callback = batchOptions;
-      batchOptions = undefined;
+    if (arguments.length === 2 && _.isFunction(arguments[1])) {
+      callback = batchOptions
+      batchOptions = undefined
     }
     // indexer.addDocToIndex(SearchIndex.indexes,
     //                       batch,
     //                       processBatchOptions(batchOptions),
-    //                       callback);
+    //                       callback)
     indexer.addBatchToIndex(SearchIndex.indexes,
-                            batch,
-                            processBatchOptions(batchOptions),
-                            callback);
-  };
+      batch,
+      processBatchOptions(batchOptions),
+      callback)
+  }
 
   /**
      Delete a document with the given ID
@@ -128,21 +118,16 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.del = function (docID, callback) {
-    if (SearchIndex.options.deletable)
-      deleter.deleteBatch([docID], SearchIndex.indexes, callback);
-    else
-      callback(new Error('this index is non-deleteable- set "deletable: true" in startup options'));
-  };
+    if (SearchIndex.options.deletable) {
+      if (!_.isArray(docID)) {
+        docID = [docID]
+      }
+      deleter.deleteBatch(docID, SearchIndex.indexes, callback)
+    } else {
+      callback(new Error('this index is non-deleteable- set "deletable: true" in startup options'))
+    }
+  }
 
-  /**
-     Delete documents with the given IDs
-     @function deleteBatch
-     @param {string[]} docID - An array of document IDs.
-     @param {callback(err)} callback - A callback to run.
-  */
-  SearchIndex.deleteBatch = function (batch, callback) {
-    deleter.deleteBatch(batch, SearchIndex.indexes, callback);
-  };
 
   /**
      Empty the index
@@ -150,18 +135,18 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.empty = function (callback) {
-    var deleteOps = [];
+    var deleteOps = []
     SearchIndex.indexes.createKeyStream({gte: '0', lte: '￮'})
       .on('data', function (data) {
-        deleteOps.push({type: 'del', key: data});
+        deleteOps.push({type: 'del', key: data})
       })
       .on('error', function (err) {
-        log.error(err, ' failed to empty index');
+        log.error(err, ' failed to empty index')
       })
       .on('end', function () {
-        SearchIndex.indexes.batch(deleteOps, callback);
-      });
-  };
+        SearchIndex.indexes.batch(deleteOps, callback)
+      })
+  }
 
   /**
      Get document with the given ID
@@ -170,8 +155,8 @@ module.exports = function (options) {
      @param {callback(err, result)} callback - A callback to run.
   */
   SearchIndex.get = function (docID, callback) {
-    docGetter.getDoc(SearchIndex.indexes, docID, callback);
-  };
+    docGetter.getDoc(SearchIndex.indexes, docID, callback)
+  }
 
   /**
      Get words from the index that match the input string. Return them weighted by frequency
@@ -185,8 +170,8 @@ module.exports = function (options) {
      @param {callback(err, result)} callback - A callback to run.
   */
   SearchIndex.match = function (options, callback) {
-    matcher.matcher(SearchIndex.indexes, options, callback);
-  };
+    matcher.matcher(SearchIndex.indexes, options, callback)
+  }
 
   /**
      Feed another index into this (empty) index
@@ -195,8 +180,8 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.replicate = function (readStream, callback) {
-    replicator.replicateFromSnapShotStream(readStream, SearchIndex.indexes, callback);
-  };
+    replicator.replicateFromSnapShotStream(readStream, SearchIndex.indexes, callback)
+  }
 
   /**
      Feed another index into this (empty) index
@@ -205,8 +190,8 @@ module.exports = function (options) {
      @param {callback(err)} callback - A callback to run.
   */
   SearchIndex.replicateBatch = function (serializedDB, callback) {
-    replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.indexes, callback);
-  };
+    replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.indexes, callback)
+  }
 
   /**
      Search the index
@@ -216,10 +201,10 @@ module.exports = function (options) {
   */
   SearchIndex.search = function (q, callback) {
     searcher.search(SearchIndex.indexes, q, function (results) {
-      //TODO: make error throwing real
-      callback(null, results);
-    });
-  };
+      // TODO: make error throwing real
+      callback(null, results)
+    })
+  }
 
   /**
      Create a snapshot of this index
@@ -227,8 +212,8 @@ module.exports = function (options) {
      @param {callback(snapshot)} callback - returns snapshot as an array.
   */
   SearchIndex.snapShotBatch = function (callback) {
-    replicator.createSnapShotBatch(SearchIndex.indexes, callback);
-  };
+    replicator.createSnapShotBatch(SearchIndex.indexes, callback)
+  }
 
   /**
      Create a snapshot of this index
@@ -236,8 +221,8 @@ module.exports = function (options) {
      @param {callback(snapshot)} callback - returns snapshot as a stream.
   */
   SearchIndex.snapShot = function (callback) {
-    replicator.createSnapShot(SearchIndex.indexes, callback);
-  };
+    replicator.createSnapShot(SearchIndex.indexes, callback)
+  }
 
   /**
      Create a snapshot of this index
@@ -246,14 +231,17 @@ module.exports = function (options) {
   */
   SearchIndex.tellMeAboutMySearchIndex = function (callback) {
     SearchIndex.indexes.get('DOCUMENT-COUNT', function (err, value) {
-      var td = value || 0;
+      if (err) {
+        log.error(err)
+      }
+      var td = value || 0
       var obj = {}
-      obj.totalDocs = td;
-      obj.options = SearchIndex.options;
+      obj.totalDocs = td
+      obj.options = SearchIndex.options
       delete obj.options.log // causes woe for norch if not deleted
-      callback(obj);
-    });
-  };
+      callback(obj)
+    })
+  }
 
   /**
      Close this index
@@ -263,12 +251,12 @@ module.exports = function (options) {
   SearchIndex.close = function (callback) {
     SearchIndex.indexes.close(function () {
       while (SearchIndex.indexes.isOpen()) {
-        log.info('closing...');
+        log.info('closing...')
       }
-      callback(null);
-    });
-  };
+      callback(null)
+    })
+  }
 
-  SearchIndex.log = log;
-  return SearchIndex;
-};
+  SearchIndex.log = log
+  return SearchIndex
+}
