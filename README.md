@@ -33,11 +33,11 @@ Find out how to use the `search-index` module here:
  * [Replicate an index](./doc/replicate.md)
 
 ### Examples
- * [Examples](doc/examples)
+ * [Examples](doc/EXAMPLES.md)
 
 ### API reference
 
- * [API reference](https://cdn.rawgit.com/fergiemcdowall/search-index/master/doc/api/module-search-index.html)
+ * [API reference](./doc/API.md)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
 [license-url]: LICENSE

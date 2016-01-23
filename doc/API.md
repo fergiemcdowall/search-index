@@ -1,5 +1,16 @@
 # API reference
 
+ * [add(...)](#3)
+ * [close(...)](#4)
+ * [get(...)](#5)
+ * [del(...)](#6)
+ * [empty(...)](#7)
+ * [match(...)](#8)
+ * [replicate(...)](#9)
+ * [search(...)](#10)
+ * [snapShot(...)](#11)
+ * [tellMeAboutMySearchIndex(...)](#12)
+
 ## Initialization
 
 Make sure that `search-index` is npm installed and then do either
@@ -160,8 +171,68 @@ si.replicate(fs.createReadStream('/backup.gz'), function (err) {
 
 ### search(...)
 
-Todo...
+Searches in the index
 
+```javascript
+si.search(q, function (err, searchResults) {
+  // do something cool with searchResults
+})
+```
+
+**q** is an object that describes a search query and can contain the
+  following properties:
+
+ * **query** _Object_ An object that specifies query terms and
+   fields. For example `{'title': ['ronald', 'reagan']}`. An asterisk
+   can be used as a wildcard for either fieldname or terms
+   `{'*': ['ronald', 'reagan']}` or `{'title': ['*']}`. If documents
+   have been indexed with an nGram length of 2 or more, it is possible
+   to search for the phrase 'ronald reagan': `{'*': ['ronald reagan']}`
+
+ * **facets** _Object_ An object that allows you to specify faceted
+   navigation. You must specify fields that were flagged with the
+   `filter` option during indexing. To simply collate values you can
+   do something like this `{totalamt: {}}`. You can also specify
+   buckets or ranges like so:
+
+   ```javascript
+   {
+     totalamt: {
+       ranges: [
+         [
+           '000000000000000',
+           '000000006000000'
+         ],
+         [
+           '000000006000001',
+           '010000000000000'
+         ]
+       ]
+     }
+   }
+   ```
+ * **filters** _Object_ An object that can filter search
+   results. Filters can only be applied to fields that have been
+   flagged with the `filter` option during indexing. Filters are
+   commonly used in conjunction with the selection of facets.
+
+   ```javascript
+   {
+     totalamt: [
+       ['000000000000000', '000000006000000']
+     ]
+   }
+   ```
+ * **offset** _number_ Sets the start index of the results. In a
+   scenario where you want to go to "page 2" in a resultset of 30
+   results per page, you would set `offset` to `30`. Page 3 would
+   require an `offset` of `60`, and so on.
+
+ * **pageSize** _number_ Sets the size of the resultset.
+
+ * **teaser** _string_ Specifies which field should be used to
+   generate a teaser
+   
 ### snapShot(...)
 
 Use `snapShot()` to serialize search indexes to disk.
@@ -178,6 +249,12 @@ si.snapShot(function (rs) {
 });
 ```
 
-### tellMeAboutMySearchIndex
+### tellMeAboutMySearchIndex(...)
 
-todo(...)
+Returns info about the state of the index
+
+```javascript
+si.tellMeAboutMySearchIndex(function (err, info) {
+  console.log(info)
+})
+```

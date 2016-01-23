@@ -76,10 +76,8 @@
     }
   ],
   "scripts": {
-    "lint": " jshint search-index.js test index.js || true && jscs --fix search-index.js test index.js || true",
+    "lint": "standard",
     "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000",
-    "doc": "rm -rf doc/api && jsdoc -d doc/api search-index.js",
-    "all": "npm run lint && npm run doc && npm test"
   },
   "repository": {
     "type": "git",

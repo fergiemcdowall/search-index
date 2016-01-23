@@ -1,63 +1,62 @@
 /* global it */
 /* global describe */
 
-var assert = require('assert');
-var should = require('should');
-var fs = require('fs');
+var assert = require('assert')
+var should = require('should')
+var fs = require('fs')
 
 describe('Indexing Reuters reuters-000.json: ', function () {
-  var data = [];
-  var sandboxPath = 'test/sandbox';
+  var data = []
+  var sandboxPath = 'test/sandbox'
 
   it('should find the data and set up a sandbox', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-                                logLevel: 'error'});
-    data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'));
-    assert.equal(data.length, 1000);
-    assert.equal(data[0].id, '1');
+    logLevel: 'error'})
+    data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'))
+    assert.equal(data.length, 1000)
+    assert.equal(data[0].id, '1')
     try {
-      var stats = fs.lstatSync(sandboxPath);
-      assert(stats.isDirectory());
-    }
-    catch (e) {
-      console.log(e);
-      assert(false);
+      var stats = fs.lstatSync(sandboxPath)
+      assert(stats.isDirectory())
+    } catch (e) {
+      console.log(e)
+      assert(false)
     }
     si.close(function (err) {
-      if (err) false.should.eql(true);done();
-    });
-  });
+      if (err) false.should.eql(true);done()
+    })
+  })
 
   it('should index the data', function (done) {
-    this.timeout(120000);
+    this.timeout(120000)
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-                                logLevel: 'error'});
-    var opt = {};
-    opt.batchName = 'reuters';
+    logLevel: 'error'})
+    var opt = {}
+    opt.batchName = 'reuters'
     opt.fieldOptions = [
       {fieldName: 'places', filter: true},
       {fieldName: 'topics', filter: true}
-    ];
+    ]
     si.add(data, opt, function (err) {
-      (err === null).should.be.exactly(true);
+      (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
-    });
-  });
+        if (err) false.should.eql(true);done()
+      })
+    })
+  })
 
   it('should verify indexing', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-                                logLevel: 'error'});
-    si.tellMeAboutMySearchIndex(function (info) {
-      should.exist(info);
-      (info.totalDocs).should.be.exactly(1000);
-      info.options.indexPath.should.be.exactly('test/sandbox/si-reuters');
-      info.options.logLevel.should.be.exactly('error');
-      info.options.deletable.should.be.exactly(true);
-      info.options.fieldedSearch.should.be.exactly(true);
-      info.options.nGramLength.should.be.exactly(1);
-      info.options.fieldsToStore.should.be.exactly('all');
+    logLevel: 'error'})
+    si.tellMeAboutMySearchIndex(function (err, info) {
+      should.exist(info)
+      ;(info.totalDocs).should.be.exactly(1000)
+      info.options.indexPath.should.be.exactly('test/sandbox/si-reuters')
+      info.options.logLevel.should.be.exactly('error')
+      info.options.deletable.should.be.exactly(true)
+      info.options.fieldedSearch.should.be.exactly(true)
+      info.options.nGramLength.should.be.exactly(1)
+      info.options.fieldsToStore.should.be.exactly('all')
       info.options.stopwords.should.eql(
         [ '$',
           '0',
@@ -203,11 +202,11 @@ describe('Indexing Reuters reuters-000.json: ', function () {
           'y',
           'you',
           'your',
-          'z' ]);
+          'z' ])
       si.close(function (err) {
-        if (err) false.should.eql(true);done();
-      });
-    });
-  });
+        if (err) false.should.eql(true);done()
+      })
+    })
+  })
 
-});
+})

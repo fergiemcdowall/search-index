@@ -1,10 +1,9 @@
-
 /* global it */
 /* global describe */
 
-var fs = require('fs');
-var should = require('should');  // jshint ignore:line
-var sandboxPath = 'test/sandbox';
+var fs = require('fs')
+var should = require('should'); // jshint ignore:line
+var sandboxPath = 'test/sandbox'
 
 var batch = [
   {
@@ -26,7 +25,7 @@ var batch = [
     content: 'Pink Floyd were an English rock band formed in London London London. Pink Floyd achieved international acclaim with their progressive and psychedelic music.',
     year: ['1963', '1964', '1965']
   }
-];
+]
 
 describe('Indexing API', function (done) { // jshint ignore:line
   var si = require('../../')({
@@ -34,24 +33,24 @@ describe('Indexing API', function (done) { // jshint ignore:line
     logLevel: 'warn',
     fieldsToStore: ['id', 'title', 'content'],
     fieldOptions: [{fieldName: 'year', filter: true}]
-  });
-  it('should do some simple indexing', function (done)  {
+  })
+  it('should do some simple indexing', function (done) {
     si.add(batch, {}, function (err) {
-      (err === null).should.be.exactly(true);
+      (err === null).should.be.exactly(true)
 
       si.snapShot(function (rs) {
         rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
           .on('close', function () {
-            (true).should.be.exactly(true);
+            (true).should.be.exactly(true)
             si.close(function (err) {
-              if (err) false.should.eql(true);
-              done();
-            });
+              if (err) false.should.eql(true)
+              done()
+            })
           })
           .on('error', function (err) {
-            (err === null).should.be.exactly(true);
-          });
-      });
-    });
-  });
-});
+            (err === null).should.be.exactly(true)
+          })
+      })
+    })
+  })
+})
