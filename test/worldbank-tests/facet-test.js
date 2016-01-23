@@ -7,8 +7,10 @@ var sandboxPath = 'test/sandbox'
 describe('Searching World Bank and Checking Faceting: ', function () {
   describe('searching world bank dataset', function () {
     it('should be able to search and do facet ranges', function (done) {
-      var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
-      logLevel: 'warn'})
+      var si = require('../../')({
+        indexPath: sandboxPath + '/si-world-bank',
+        logLevel: 'warn'
+      })
       var q = {}
       q.query = {'*': ['africa']}
       q.facets = {
@@ -60,10 +62,12 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[1].lte.should.be.exactly('J')
         results.facets[1].value[1].value.should.be.exactly(135)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
-    }),
+    })
+
     it('should be able to search for more than 1 word and show facetranges', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
       logLevel: 'warn'})
@@ -80,7 +84,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
               '000000050000001',
               '100000000000000'
             ]
-        ]},
+          ]},
         mjtheme: {
           ranges: [
             [
@@ -91,7 +95,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
               'K',
               'Z'
             ]
-        ]}
+          ]}
       }
       q.pageSize = 100
       si.search(q, function (err, results) {
@@ -108,10 +112,12 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[1].key.should.be.exactly('A-J')
         results.facets[1].value[1].value.should.be.exactly(8)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
-    }),
+    })
+
     it('should be able to search for more than 1 word and no ranges (experiment)', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
       logLevel: 'warn'})
@@ -136,10 +142,12 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[0].value.should.be.exactly(5)
         results.facets[1].value[1].value.should.be.exactly(4)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
-    }),
+    })
+
     it('should be able to limit facet length', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
       logLevel: 'warn'})
@@ -158,10 +166,12 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[0].value.length.should.be.exactly(2)
         results.facets[1].value.length.should.be.exactly(3)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
-    }),
+    })
+
     it('should be able to search for more than 1 word with a mix of ranged and unranged facets', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
       logLevel: 'warn'})
@@ -204,7 +214,8 @@ describe('Searching World Bank and Checking Faceting: ', function () {
         results.facets[1].value[1].key.should.be.exactly('K-Z')
         results.facets[1].value[1].value.should.be.exactly(9)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })

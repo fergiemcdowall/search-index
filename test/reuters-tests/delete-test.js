@@ -21,7 +21,8 @@ describe('deleting and reindexing: ', function () {
     si.add(singleDoc, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -37,7 +38,8 @@ describe('deleting and reindexing: ', function () {
       result.hits.length.should.be.exactly(14)
       result.hits[3].id.should.be.exactly('747')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -49,7 +51,8 @@ describe('deleting and reindexing: ', function () {
     si.del('747', function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -63,7 +66,8 @@ describe('deleting and reindexing: ', function () {
       ;(doc === null).should.be.exactly(true)
       err.toString().should.be.exactly('NotFoundError: Key not found in database [DOCUMENT￮747￮]')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -76,7 +80,8 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(false)
       err.toString().should.be.exactly('NotFoundError: Key not found in database [TF￮*￮mccaw￮￮]')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -86,9 +91,11 @@ describe('deleting and reindexing: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
     si.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+      (err === null).should.be.exactly(true)
       value.length.should.be.exactly(999)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -102,10 +109,12 @@ describe('deleting and reindexing: ', function () {
       ;(err === null).should.be.exactly(true)
       result.totalHits.should.be.exactly(13)
       result.hits.length.should.be.exactly(13)
-      for (var i = 0; i < result.hits.length; i++)
+      for (var i = 0; i < result.hits.length; i++) {
         result.hits[i].id.should.not.be.exactly('747')
+      }
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -126,7 +135,8 @@ describe('deleting and reindexing: ', function () {
     si.add(singleDoc, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -142,7 +152,8 @@ describe('deleting and reindexing: ', function () {
       result.hits.length.should.be.exactly(14)
       result.hits[3].id.should.be.exactly('747')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -156,7 +167,8 @@ describe('deleting and reindexing: ', function () {
       value.should.have.lengthOf(1)
       value[0].should.be.exactly('747')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -169,7 +181,8 @@ describe('deleting and reindexing: ', function () {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(1000)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })

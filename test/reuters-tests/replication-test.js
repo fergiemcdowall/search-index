@@ -17,7 +17,8 @@ describe('Replication, Reuters: ', function () {
       si.add(data, opt, function (err) {
         (err === null).should.be.exactly(true)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -31,7 +32,8 @@ describe('Replication, Reuters: ', function () {
           .on('close', function () {
             (true).should.be.exactly(true)
             si.close(function (err) {
-              if (err) false.should.eql(true);done()
+              if (err) false.should.eql(true)
+              done()
             })
           })
           .on('error', function (err) {
@@ -47,7 +49,8 @@ describe('Replication, Reuters: ', function () {
         // Is this a bug in levelUP? Should undefined be null?
         (err === undefined).should.be.exactly(true)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -56,9 +59,11 @@ describe('Replication, Reuters: ', function () {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-replication',
       logLevel: 'error'})
       si.tellMeAboutMySearchIndex(function (err, result) {
+        (err === undefined).should.be.exactly(false)
         result.totalDocs.should.be.exactly(0)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -70,7 +75,8 @@ describe('Replication, Reuters: ', function () {
       si.replicate(fs.createReadStream(sandboxPath + '/backup.gz'), function (err) {
         (err === undefined).should.be.exactly(true)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -79,13 +85,14 @@ describe('Replication, Reuters: ', function () {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-replication',
       logLevel: 'error'})
       si.tellMeAboutMySearchIndex(function (err, result) {
+        (err === null).should.be.exactly(true)
         should.exist(result)
         result.totalDocs.should.be.exactly(10)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
-
   })
 })

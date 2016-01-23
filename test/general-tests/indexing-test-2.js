@@ -2,7 +2,6 @@
 /* global describe */
 
 var fs = require('fs')
-var should = require('should'); // jshint ignore:line
 var sandboxPath = 'test/sandbox'
 
 var batch = [

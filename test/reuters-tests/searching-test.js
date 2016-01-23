@@ -9,7 +9,7 @@ describe('Searching Reuters: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'warn'})
     var q = {}
-    q.query = {'*': ['usa']}; // TODO: add error message if this is
+    q.query = {'*': ['usa']} // TODO: add error message if this is
     //      not an array
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
@@ -21,7 +21,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[2].id.should.be.exactly('470')
       searchResults.hits[3].id.should.be.exactly('471')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -35,7 +36,8 @@ describe('Searching Reuters: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -50,7 +52,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.exactly(100)
       searchResults.totalHits.should.be.exactly(922)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -65,7 +68,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.exactly(100)
       searchResults.totalHits.should.be.exactly(1000)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -81,7 +85,8 @@ describe('Searching Reuters: ', function () {
       // TODO: make this return a full resultset
       //        searchResults.totalHits.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -98,7 +103,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.above(1)
       searchResults.hits[0].id.should.be.exactly('918')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -113,7 +119,8 @@ describe('Searching Reuters: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(5)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -130,7 +137,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.exactly(5)
       searchResults.hits[0].id.should.be.exactly('918')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -159,7 +167,8 @@ describe('Searching Reuters: ', function () {
       searchResults.facets[0].value[3].key.should.be.exactly('brazil')
       searchResults.facets[0].value[3].value.should.be.exactly(9)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -178,7 +187,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.exactly(16)
       searchResults.hits[0].id.should.be.exactly('287')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -196,7 +206,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[2].id.should.be.exactly('869')
       searchResults.hits[3].id.should.be.exactly('964')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -211,7 +222,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits.length.should.be.exactly(10)
       searchResults.hits[8].id.should.be.exactly('877')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -229,7 +241,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[2].id.should.be.exactly('796')
       searchResults.hits[3].id.should.be.exactly('804')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -250,7 +263,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[2].id.should.be.exactly('386')
       searchResults.hits[3].id.should.be.exactly('28')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -269,7 +283,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[0].id.should.be.exactly('869')
       searchResults.hits[1].id.should.be.exactly('386')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -310,7 +325,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[0].document.teaser.should.be
         .exactly('GREY <span class="sc-em">advertising</span> <GREY> FORMS NEW DIVISION')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -319,10 +335,12 @@ describe('Searching Reuters: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'})
     // TODO: there should probably be an error object in this function
     si.tellMeAboutMySearchIndex(function (err, info) {
+      ;(err === null).should.be.exactly(true)
       should.exist(info)
       info.totalDocs.should.be.exactly(1000)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -343,7 +361,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[2].id.should.be.exactly('753')
       searchResults.hits[3].id.should.be.exactly('333')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -352,10 +371,12 @@ describe('Searching Reuters: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'})
     // TODO: there should probably be an error object in this function
     si.tellMeAboutMySearchIndex(function (err, info) {
+      ;(err === null).should.be.exactly(true)
       should.exist(info)
       info.totalDocs.should.be.exactly(1000)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -374,7 +395,8 @@ describe('Searching Reuters: ', function () {
       searchResults.hits[0].id.should.be.exactly('938')
       searchResults.hits[1].id.should.be.exactly('921')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })

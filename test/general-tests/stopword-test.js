@@ -2,7 +2,7 @@
 /* global describe */
 
 var logLevel = 'error'
-if (process.env.NODE_ENV == 'TEST') logLevel = 'info'
+if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 var should = require('should')
 
 describe('stopwords: ', function () {
@@ -46,10 +46,11 @@ describe('stopwords: ', function () {
     si.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
 
   it('should be able to return all documents that contain "dette" if indexing with english stopwords', function (done) {
     var sandboxPath = 'test/sandbox'
@@ -63,10 +64,11 @@ describe('stopwords: ', function () {
       searchResults.hits.length.should.be.exactly(3)
       searchResults.totalHits.should.be.exactly(3)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
 
   it('should index test data into the index with norwegian stopwords', function (done) {
     var sandboxPath = 'test/sandbox'
@@ -77,10 +79,11 @@ describe('stopwords: ', function () {
     si.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
 
   it('should be able to return all documents in index', function (done) {
     var sandboxPath = 'test/sandbox'
@@ -94,10 +97,11 @@ describe('stopwords: ', function () {
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
 
   // 14th Aug 2015 - This test seems to run fine locally, but Travis complains...
 
@@ -128,10 +132,12 @@ describe('stopwords: ', function () {
     si.add(food, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should be able to return results for "fish and chips"', function (done) {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
@@ -145,10 +151,12 @@ describe('stopwords: ', function () {
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should be able to return results for "and"', function (done) {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
@@ -162,10 +170,12 @@ describe('stopwords: ', function () {
       searchResults.hits.length.should.be.exactly(2)
       searchResults.totalHits.should.be.exactly(2)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should create an index of fast food without stopwords', function (done) {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food-2',
@@ -173,10 +183,12 @@ describe('stopwords: ', function () {
     si.add(food, {batchName: 'food'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should be able to return "fish and chips"', function (done) {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food-2',
@@ -189,9 +201,9 @@ describe('stopwords: ', function () {
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

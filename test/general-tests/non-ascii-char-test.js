@@ -22,10 +22,12 @@ describe('Indexing and searching non-ascii characters: ', function () {
     si.add(data, {}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should be able to search in test data', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-non-ascii',
     logLevel: 'error'})
@@ -38,10 +40,12 @@ describe('Indexing and searching non-ascii characters: ', function () {
       results.totalHits.should.be.exactly(1)
       results.hits[0].id.should.be.exactly('1')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
-  }),
+  })
+
   it('should be able to search in test data', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-non-ascii',
     logLevel: 'error'})
@@ -54,7 +58,8 @@ describe('Indexing and searching non-ascii characters: ', function () {
       results.totalHits.should.be.exactly(1)
       results.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })

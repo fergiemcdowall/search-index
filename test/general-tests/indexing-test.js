@@ -18,6 +18,7 @@ describe('Indexing API', function () {
     si.add(_.assign(doc, {id: 1}), {}, function (err) {
       assert.equal(err, null)
       si.get(1, function (err, res) {
+        (err === null).should.be.exactly(true)
         assert(_.isEqual(res, doc))
         done()
       })
@@ -28,6 +29,7 @@ describe('Indexing API', function () {
     si.add([_.assign(doc, {id: 2})], undefined, function (err) {
       assert.equal(err, null)
       si.get(2, function (err, res) {
+        (err === null).should.be.exactly(true)
         assert(_.isEqual(res, doc))
         done()
       })
@@ -38,6 +40,7 @@ describe('Indexing API', function () {
     si.add([_.assign(doc, {id: 3})], function (err) {
       assert.equal(err, null)
       si.get(3, function (err, res) {
+        (err === null).should.be.exactly(true)
         assert(_.isEqual(res, doc))
         done()
       })
@@ -53,10 +56,10 @@ describe('Indexing API', function () {
     }, function (err) {
       assert.equal(err, null)
       si.search({query: {'*': ['14.2.1.0']}}, function (err, res) {
-        assert(res.totalHits == 1)
+        (err === null).should.be.exactly(true)
+        assert(res.totalHits === 1)
         done()
       })
     })
   })
-
 })

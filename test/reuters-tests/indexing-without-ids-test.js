@@ -10,7 +10,7 @@ describe('Indexing Reuters without IDs: ', function () {
     var sandboxPath = 'test/sandbox'
     it('should find the data and set up a sandbox', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
-      logLevel: 'error'})
+                                  logLevel: 'error'})
       data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/noIDs/reuters-000.json'))
       data.length.should.be.exactly(1000)
       should.not.exist(data.id)
@@ -22,20 +22,22 @@ describe('Indexing Reuters without IDs: ', function () {
         true.should.be.exactly(false)
       }
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
 
     it('should index one file of test data that doesnt contain IDs', function (done) {
       this.timeout(60000)
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
-      logLevel: 'error'})
+                                  logLevel: 'error'})
       var opt = {}
       opt.batchName = 'reuters no ids'
       si.add(data, opt, function (err) {
         (err === null).should.be.exactly(true)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -43,32 +45,36 @@ describe('Indexing Reuters without IDs: ', function () {
     it('should verify indexing', function (done) {
       this.timeout(10000)
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
-      logLevel: 'error'})
+                                  logLevel: 'error'})
       si.tellMeAboutMySearchIndex(function (err, info) {
+        (err === null).should.be.exactly(true)
         should.exist(info)
         ;(info.totalDocs).should.be.exactly(1000)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
 
     it('verifies recalibration', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
-      logLevel: 'error'})
+                                  logLevel: 'error'})
       si.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+        (err === null).should.be.exactly(true)
         value.length.should.be.exactly(1000)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
 
     it('should search on all fields and get results', function (done) {
       var si = require('../../')({indexPath: sandboxPath + '/si-reuters-no-ids',
-      logLevel: 'warn'})
+                                  logLevel: 'warn'})
       var q = {}
-      q.query = {'*': ['usa']}; // TODO: add error message if this is
+      q.query = {'*': ['usa']} // TODO: add error message if this is
       //      not an array
       si.search(q, function (err, searchResults) {
         should.exist(searchResults)
@@ -76,7 +82,8 @@ describe('Indexing Reuters without IDs: ', function () {
         searchResults.hits.length.should.be.above(1)
         searchResults.hits.length.should.be.exactly(100)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -91,7 +98,8 @@ describe('Indexing Reuters without IDs: ', function () {
         searchResults.hits.length.should.be.exactly(100)
         searchResults.totalHits.should.be.exactly(922)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })

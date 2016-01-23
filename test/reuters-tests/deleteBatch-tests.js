@@ -14,7 +14,8 @@ describe('deleting a batch: ', function () {
     si.add(data, {batchName: 'reuters-000.json'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -27,7 +28,8 @@ describe('deleting a batch: ', function () {
     si.del(['7', '10', '5', '1', '3'], function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -48,9 +50,9 @@ describe('deleting a batch: ', function () {
       result.hits[3].id.should.be.exactly('2')
       result.hits[4].id.should.be.exactly('8')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

@@ -18,8 +18,8 @@ module.exports = function (options) {
   // initialize defaults options
   SearchIndex.options = _.clone(_.defaults(options || {}, defaults))
   var log = SearchIndex.options.log || bunyan.createLogger({
-      name: 'search-index',
-      level: SearchIndex.options.logLevel
+    name: 'search-index',
+    level: SearchIndex.options.logLevel
   })
   var docGetter = require('search-index-getter')
   var deleter = require('search-index-deleter')({
@@ -142,9 +142,6 @@ module.exports = function (options) {
 
   SearchIndex.tellMeAboutMySearchIndex = function (callback) {
     SearchIndex.indexes.get('DOCUMENT-COUNT', function (err, value) {
-      if (err) {
-        log.error(err)
-      }
       var td = value || 0
       var obj = {}
       obj.totalDocs = td

@@ -2,7 +2,7 @@
 /* global describe */
 
 var logLevel = 'error'
-if (process.env.NODE_ENV == 'TEST') logLevel = 'info'
+if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 var should = require('should')
 const searchIndex = require('../../')
 
@@ -54,7 +54,8 @@ describe('deleting: ', function () {
       searchResults.hits.length.should.be.exactly(4)
       searchResults.totalHits.should.be.exactly(4)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -66,7 +67,8 @@ describe('deleting: ', function () {
     si.del('2', function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -86,7 +88,8 @@ describe('deleting: ', function () {
       searchResults.hits[1].id.should.be.exactly('4')
       searchResults.hits[2].id.should.be.exactly('3')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -98,7 +101,8 @@ describe('deleting: ', function () {
     si.add(data1[0], {batchName: 'data2'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -118,9 +122,9 @@ describe('deleting: ', function () {
       searchResults.hits[1].id.should.be.exactly('4')
       searchResults.hits[2].id.should.be.exactly('3')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

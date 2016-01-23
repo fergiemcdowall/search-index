@@ -1,7 +1,6 @@
 /* global it */
 /* global describe */
 
-var should = require('should'); // jshint ignore:line
 var fs = require('fs')
 var sandboxPath = 'test/sandbox'
 var _ = require('lodash')
@@ -19,19 +18,6 @@ describe('Indexing World Bank: ', function () {
       true.should.be.exactly(false)
     }
   })
-
-  // it('should throw an error when indexing an empty batch', function (done) {
-  //   var si = require('../../')({indexPath: sandboxPath + '/si-empty',
-  //                               logLevel: 'error'})
-  //   si.add([], {}, function (err) {
-  //     should.exist(err)
-  //     err.should.be.an.Error
-  //     err.toString().should.equal('Error: No docs to add')
-  //     si.close(function (err) {
-  //       if (err) false.should.eql(true);done()
-  //     })
-  //   })
-  // })
 
   it('should index the data', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-world-bank',
@@ -64,7 +50,8 @@ describe('Indexing World Bank: ', function () {
     si.add(_.map(data, processDoc), opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })

@@ -5,7 +5,7 @@ var should = require('should')
 var sandboxPath = 'test/sandbox'
 var fs = require('fs')
 var logLevel = 'error'
-if (process.env.NODE_ENV == 'TEST') logLevel = 'info'
+if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 
 describe('indexing options: ', function () {
   var siOps1 = {indexPath: sandboxPath + '/si-reuters-10-indexing-ops-1',
@@ -61,7 +61,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -77,7 +78,8 @@ describe('indexing options: ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('9')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -93,7 +95,8 @@ describe('indexing options: ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('8')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -107,7 +110,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -121,7 +125,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -140,7 +145,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -154,7 +160,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -180,7 +187,8 @@ describe('indexing options: ', function () {
           { key: 'argentina', gte: 'argentina', lte: 'argentina', value: 1 } ]
       )
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -197,7 +205,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -211,7 +220,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -225,7 +235,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -243,7 +254,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -257,7 +269,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -271,7 +284,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -288,7 +302,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -302,7 +317,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -316,7 +332,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -330,7 +347,8 @@ describe('indexing options: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -347,7 +365,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -365,7 +384,8 @@ describe('indexing options: ', function () {
       searchResults.hits[2].id.should.be.exactly('10')
       searchResults.hits[3].id.should.be.exactly('8')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -379,7 +399,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -397,7 +418,8 @@ describe('indexing options: ', function () {
       searchResults.hits[2].id.should.be.exactly('10')
       searchResults.hits[3].id.should.be.exactly('8')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -408,7 +430,8 @@ describe('indexing options: ', function () {
       should.exist(err)
       err.toString().should.be.exactly('Error: this index is non-deleteable- set "deletable: true" in startup options')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -426,7 +449,8 @@ describe('indexing options: ', function () {
       searchResults.hits[2].id.should.be.exactly('10')
       searchResults.hits[3].id.should.be.exactly('8')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -441,7 +465,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -463,7 +488,8 @@ describe('indexing options: ', function () {
         title: 'CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT'
       })
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -478,7 +504,8 @@ describe('indexing options: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -499,9 +526,9 @@ describe('indexing options: ', function () {
         title: 'CHAMPION PRODUCTS <CH> APPROVES STOCK SPLIT'
       })
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

@@ -2,7 +2,7 @@
 /* global describe */
 
 var logLevel = 'error'
-if (process.env.NODE_ENV == 'TEST') logLevel = 'info'
+if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 var should = require('should')
 
 describe('ngrams (phrase search): ', function () {
@@ -27,7 +27,8 @@ describe('ngrams (phrase search): ', function () {
     si.add(food, {}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -45,7 +46,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('1')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -63,7 +65,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('1')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -81,7 +84,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -99,7 +103,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -112,7 +117,8 @@ describe('ngrams (phrase search): ', function () {
     si.add(food, {}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -128,7 +134,8 @@ describe('ngrams (phrase search): ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -146,7 +153,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -164,7 +172,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -180,7 +189,8 @@ describe('ngrams (phrase search): ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -197,7 +207,8 @@ describe('ngrams (phrase search): ', function () {
     si.add(food, ops, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -215,7 +226,8 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -231,7 +243,8 @@ describe('ngrams (phrase search): ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(0)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -249,9 +262,9 @@ describe('ngrams (phrase search): ', function () {
       searchResults.totalHits.should.be.exactly(1)
       searchResults.hits[0].id.should.be.exactly('2')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

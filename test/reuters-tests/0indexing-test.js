@@ -23,7 +23,8 @@ describe('Indexing Reuters reuters-000.json: ', function () {
       assert(false)
     }
     si.close(function (err) {
-      if (err) false.should.eql(true);done()
+      if (err) false.should.eql(true)
+      done()
     })
   })
 
@@ -40,7 +41,8 @@ describe('Indexing Reuters reuters-000.json: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -49,6 +51,7 @@ describe('Indexing Reuters reuters-000.json: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
     si.tellMeAboutMySearchIndex(function (err, info) {
+      (err === null).should.be.exactly(true)
       should.exist(info)
       ;(info.totalDocs).should.be.exactly(1000)
       info.options.indexPath.should.be.exactly('test/sandbox/si-reuters')
@@ -204,9 +207,9 @@ describe('Indexing Reuters reuters-000.json: ', function () {
           'your',
           'z' ])
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

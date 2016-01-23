@@ -2,7 +2,7 @@
 /* global describe */
 
 var logLevel = 'error'
-if (process.env.NODE_ENV == 'TEST') logLevel = 'info'
+if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 var should = require('should')
 var sandboxPath = 'test/sandbox'
 
@@ -198,5 +198,4 @@ describe('Matching epub: ', function () {
       done()
     })
   })
-
 })

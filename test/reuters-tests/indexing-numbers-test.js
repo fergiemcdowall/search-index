@@ -16,7 +16,8 @@ describe('Indexing numeric fields, Reuters: ', function () {
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -28,7 +29,8 @@ describe('Indexing numeric fields, Reuters: ', function () {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(1)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -37,10 +39,12 @@ describe('Indexing numeric fields, Reuters: ', function () {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
     logLevel: 'error'})
     si.tellMeAboutMySearchIndex(function (err, info) {
+      (err === null).should.be.exactly(true)
       should.exist(info)
       ;(info.totalDocs).should.be.exactly(10)
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
@@ -56,9 +60,9 @@ describe('Indexing numeric fields, Reuters: ', function () {
       results.hits.length.should.be.exactly(1)
       results.hits[0].id.should.be.exactly('9')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })
-
 })

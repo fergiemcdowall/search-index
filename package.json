@@ -77,7 +77,7 @@
   ],
   "scripts": {
     "lint": "standard",
-    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000",
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000"
   },
   "repository": {
     "type": "git",

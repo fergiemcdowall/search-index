@@ -19,7 +19,8 @@ describe('Matching Reuters: ', function () {
       matches[4].should.be.exactly('longstanding')
       matches[5].should.be.exactly('longtime')
       si.close(function (err) {
-        if (err) false.should.eql(true);done()
+        if (err) false.should.eql(true)
+        done()
       })
     })
   })

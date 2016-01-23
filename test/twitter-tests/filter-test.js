@@ -21,7 +21,8 @@ describe('Filters: ', function () {
       si.add(data, opt, function (err) {
         (err === null).should.be.exactly(true)
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -54,7 +55,8 @@ describe('Filters: ', function () {
         results.hits[1].id.should.be.exactly('TEWP')
         results.hits[2].id.should.be.exactly('4EaEkI')
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -78,7 +80,8 @@ describe('Filters: ', function () {
         should.exist(results.facets[0])
         results.hits[0].id.should.be.exactly('4EaEkI')
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -104,7 +107,8 @@ describe('Filters: ', function () {
         results.hits[1].id.should.be.exactly('2PHH0R')
         results.hits[2].id.should.be.exactly('4bU7P5')
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
@@ -128,7 +132,8 @@ describe('Filters: ', function () {
         results.hits[0].id.should.be.exactly('2DIjQj')
         results.hits[1].id.should.be.exactly('1NsXUW')
         si.close(function (err) {
-          if (err) false.should.eql(true);done()
+          if (err) false.should.eql(true)
+          done()
         })
       })
     })
