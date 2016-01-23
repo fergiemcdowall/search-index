@@ -35,7 +35,7 @@ Find out how to use the `search-index` module here:
 ### Examples
  * [Examples](doc/EXAMPLES.md)
 
-### API reference
+### API
 
  * [API reference](./doc/API.md)
 
