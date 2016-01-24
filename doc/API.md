@@ -1,15 +1,15 @@
 # API reference
 
- * [add(...)](#3)
- * [close(...)](#4)
- * [get(...)](#5)
- * [del(...)](#6)
- * [empty(...)](#7)
- * [match(...)](#8)
- * [replicate(...)](#9)
- * [search(...)](#10)
- * [snapShot(...)](#11)
- * [tellMeAboutMySearchIndex(...)](#12)
+ * [add(...)](#add)
+ * [close(...)](#close)
+ * [get(...)](#get)
+ * [del(...)](#del)
+ * [empty(...)](#empty)
+ * [match(...)](#match)
+ * [replicate(...)](#replicate)
+ * [search(...)](#search)
+ * [snapShot(...)](#snapShot)
+ * [tellMeAboutMySearchIndex(...)](#tellMeAboutMySearchIndex)
 
 ## Initialization
 
