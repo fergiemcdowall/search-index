@@ -25,7 +25,7 @@ Find out how to use the `search-index` module here:
 ### For the impatient
  * [Quickstart](./doc/quickstart.md)
 
-### User Documentation
+### Documentation
  * [Create an index](./doc/create.md)
  * [Add documents to an index](./doc/add.md)
  * [Search in an index](./doc/search.md)
@@ -35,7 +35,7 @@ Find out how to use the `search-index` module here:
 ### Examples
  * [Examples](doc/EXAMPLES.md)
 
-### API reference
+### API
 
  * [API reference](./doc/API.md)
 
