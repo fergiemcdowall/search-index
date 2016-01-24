@@ -8,10 +8,10 @@
  * [match(...)](#match)
  * [replicate(...)](#replicate)
  * [search(...)](#search)
- * [snapShot(...)](#snapShot)
- * [tellMeAboutMySearchIndex(...)](#tellMeAboutMySearchIndex)
+ * [snapShot(...)](#snapshot)
+ * [tellMeAboutMySearchIndex(...)](#tellmeaboutmysearchindex)
 
-## Initialization
+## initialization
 
 Make sure that `search-index` is npm installed and then do either
 
