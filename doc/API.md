@@ -198,6 +198,7 @@ si.search(q, function (err, searchResults) {
    ```javascript
    {
      totalamt: {
+       sort: 'keyAsc',
        ranges: [
          [
            '000000000000000',
@@ -211,6 +212,14 @@ si.search(q, function (err, searchResults) {
      }
    }
    ```
+   **facets** can take the following parameters:
+   * **ranges** _Array_ An array of arrays that describe value
+   ranges. If `ranges` is not specified, then the facet will collate
+   on every distinct value it finds.
+   * **sort** How the list is to be sorted- can be `keyAsc`,
+   `keyDesc`, `valueAsc`, `valueDesc`
+
+
  * **filters** _Object_ An object that can filter search
    results. Filters can only be applied to fields that have been
    flagged with the `filter` option during indexing. Filters are
