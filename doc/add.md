@@ -58,6 +58,15 @@ Default field options are equivalent to:
 Set this to `true` in order to be able to do faceting and filtering on
 this field
 
+```javascript
+{
+  ...
+  fieldName: 'tags',
+  filter: true
+  ...
+}
+```
+
 #### nGramLength
 
 Sets the length of the phrase search on this field. You need to add all the nGramLength you want in an array. If you want phrases of one and two words, you write:
