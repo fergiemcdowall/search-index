@@ -72,10 +72,12 @@ describe('stopwords: ', function () {
 
   it('should index test data into the index with norwegian stopwords', function (done) {
     var sandboxPath = 'test/sandbox'
-    var sw = require('stopword')
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
+    var tv = require('term-vector')
+    var si = require('../../')({
+      indexPath: sandboxPath + '/si-stopwords-test-no',
       logLevel: logLevel,
-    stopwords: sw.getStopwords('no')})
+      stopwords: tv.getStopwords('no')
+    })
     si.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
       si.close(function (err) {
