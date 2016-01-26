@@ -14,9 +14,9 @@
     "lodash": "3.10.1",
     "search-index-adder": "0.0.3",
     "search-index-deleter": "0.0.1",
-    "search-index-getter": "0.0.1",
-    "search-index-matcher": "0.0.1",
-    "search-index-replicator": "0.0.1",
+    "search-index-getter": "0.0.2",
+    "search-index-matcher": "0.0.2",
+    "search-index-replicator": "0.0.2",
     "search-index-searcher": "0.0.1",
     "term-vector": "0.0.12"
   },

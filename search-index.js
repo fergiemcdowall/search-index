@@ -17,21 +17,29 @@ module.exports = function (options) {
   }
   // initialize defaults options
   SearchIndex.options = _.clone(_.defaults(options || {}, defaults))
+  var indexes = SearchIndex.indexes = level(SearchIndex.options.indexPath, {
+    valueEncoding: 'json',
+    db: SearchIndex.options.db
+  })
   var log = SearchIndex.options.log || bunyan.createLogger({
     name: 'search-index',
     level: SearchIndex.options.logLevel
   })
-  var docGetter = require('search-index-getter')
+  var docGetter = require('search-index-getter')({
+    indexes: SearchIndex.indexes
+  })
   var deleter = require('search-index-deleter')({
     log: log.child({component: 'deleter'})
   })
   var indexer = require('search-index-adder')(
     _.assign(SearchIndex.options, {log: log.child({component: 'indexer'})}))
   var matcher = require('search-index-matcher')({
-    log: log.child({component: 'matcher'})
+    log: log.child({component: 'matcher'}),
+    indexes: SearchIndex.indexes
   })
   var replicator = require('search-index-replicator')({
-    log: log.child({component: 'replicator'})
+    log: log.child({component: 'replicator'}),
+    indexes: SearchIndex.indexes
   })
   var searcher = require('search-index-searcher')({
     log: log.child({component: 'searcher'}),
@@ -59,10 +67,6 @@ module.exports = function (options) {
     return batchOptions
   }
 
-  SearchIndex.indexes = level(SearchIndex.options.indexPath, {
-    valueEncoding: 'json',
-    db: SearchIndex.options.db
-  })
 
   SearchIndex.add = function (batch, batchOptions, callback) {
     if (arguments.length === 2 && _.isFunction(arguments[1])) {
@@ -109,17 +113,9 @@ module.exports = function (options) {
       })
   }
 
-  SearchIndex.get = function (docID, callback) {
-    docGetter.getDoc(SearchIndex.indexes, docID, callback)
-  }
-
-  SearchIndex.match = function (options, callback) {
-    matcher.matcher(SearchIndex.indexes, options, callback)
-  }
-
-  SearchIndex.replicate = function (readStream, callback) {
-    replicator.replicateFromSnapShotStream(readStream, SearchIndex.indexes, callback)
-  }
+  SearchIndex.get = docGetter.getDoc
+  SearchIndex.match = matcher.matcher
+  SearchIndex.replicate = replicator.replicateFromSnapShotStream
 
   SearchIndex.replicateBatch = function (serializedDB, callback) {
     replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.indexes, callback)
@@ -136,9 +132,7 @@ module.exports = function (options) {
     replicator.createSnapShotBatch(SearchIndex.indexes, callback)
   }
 
-  SearchIndex.snapShot = function (callback) {
-    replicator.createSnapShot(SearchIndex.indexes, callback)
-  }
+  SearchIndex.snapShot = replicator.createSnapShot
 
   SearchIndex.tellMeAboutMySearchIndex = function (callback) {
     SearchIndex.indexes.get('DOCUMENT-COUNT', function (err, value) {
