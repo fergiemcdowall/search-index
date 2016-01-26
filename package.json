@@ -12,7 +12,7 @@
     "leveldown": "^1.4.3",
     "levelup": "1.2.1",
     "lodash": "3.10.1",
-    "search-index-adder": "0.0.2",
+    "search-index-adder": "0.0.3",
     "search-index-deleter": "0.0.1",
     "search-index-getter": "0.0.1",
     "search-index-matcher": "0.0.1",
