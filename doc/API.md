@@ -4,7 +4,7 @@
  * [close(...)](#close)
  * [get(...)](#get)
  * [del(...)](#del)
- * [empty(...)](#empty)
+ * [flush(...)](#flush)
  * [match(...)](#match)
  * [replicate(...)](#replicate)
  * [search(...)](#search)
@@ -127,19 +127,20 @@ index.get('docID', function(err) {
 * **docID** an array of document IDs that are to be deleted. A single
     ID can also be used.
 
-### empty(...)
+### flush(...)
 
-Empties the index. Can be used during replication
+Empties the index. Can be used during replication.
 
 ```javascript
-index.empty(function(err) {
+index.flush(function(err) {
   if (!err) console.log('success!')
 })
 ```
 
 ### match(...)
 
-Use match to create autosuggest and autocomplete functionality
+Use match to create autosuggest and autocomplete functionality. [See
+also here](./autosuggest.md)
 
 ```javascript
 index.match(options, function(err, results) {
@@ -161,7 +162,7 @@ index.match(options, function(err, results) {
 ### replicate(...)
 
 Use `replicate()` to read in indexes that have been serialized with
-`snapShot()`
+`snapShot()`. [See also here](replicate.md)
 
 ```javascript
 si.replicate(fs.createReadStream('/backup.gz'), function (err) {
@@ -171,7 +172,7 @@ si.replicate(fs.createReadStream('/backup.gz'), function (err) {
 
 ### search(...)
 
-Searches in the index
+Searches in the index. [See also here](./search.md)
 
 ```javascript
 si.search(q, function (err, searchResults) {

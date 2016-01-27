@@ -44,7 +44,7 @@ describe('Replication: ', function () {
   it('should empty the index', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-replication',
                                 logLevel: 'error'})
-    si.empty(function (err) {
+    si.flush(function (err) {
       // Is this a bug in levelUP? Should undefined be null?
       (err === undefined).should.be.exactly(true)
       si.close(function (err) {
