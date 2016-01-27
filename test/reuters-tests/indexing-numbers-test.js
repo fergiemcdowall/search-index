@@ -25,7 +25,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
   it('verifies calibration of number after batch is indexed', function (done) {
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters-10-2',
     logLevel: 'error'})
-    si.indexes.get('TF￮randomNumber￮2749￮￮', function (err, value) {
+    si.options.indexes.get('TF￮randomNumber￮2749￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(1)
       si.close(function (err) {

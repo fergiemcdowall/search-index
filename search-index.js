@@ -2,49 +2,14 @@ var _ = require('lodash')
 var bunyan = require('bunyan')
 var level = require('levelup')
 var tv = require('term-vector')
+var log
+
+
+
 
 module.exports = function (options) {
   var SearchIndex = {}
-  var defaults = {
-    deletable: true,
-    fieldedSearch: true,
-    fieldsToStore: 'all',
-    indexPath: 'si',
-    logLevel: 'error',
-    nGramLength: 1,
-    separator: /[\|' \.,\-|(\n)]+/,
-    stopwords: tv.getStopwords('en').sort()
-  }
-  // initialize defaults options
-  SearchIndex.options = _.clone(_.defaults(options || {}, defaults))
-  var indexes = SearchIndex.indexes = level(SearchIndex.options.indexPath, {
-    valueEncoding: 'json',
-    db: SearchIndex.options.db
-  })
-  var log = SearchIndex.options.log || bunyan.createLogger({
-    name: 'search-index',
-    level: SearchIndex.options.logLevel
-  })
-  var docGetter = require('search-index-getter')({
-    indexes: SearchIndex.indexes
-  })
-  var deleter = require('search-index-deleter')({
-    log: log.child({component: 'deleter'})
-  })
-  var indexer = require('search-index-adder')(
-    _.assign(SearchIndex.options, {log: log.child({component: 'indexer'})}))
-  var matcher = require('search-index-matcher')({
-    log: log.child({component: 'matcher'}),
-    indexes: SearchIndex.indexes
-  })
-  var replicator = require('search-index-replicator')({
-    log: log.child({component: 'replicator'}),
-    indexes: SearchIndex.indexes
-  })
-  var searcher = require('search-index-searcher')({
-    log: log.child({component: 'searcher'}),
-    stopwords: SearchIndex.options.stopwords
-  })
+  SearchIndex.options = getOptions(options)
   var processBatchOptions = function (batchOptions) {
     var defaultFieldOptions = {
       filter: false,
@@ -68,74 +33,24 @@ module.exports = function (options) {
   }
 
 
-  SearchIndex.add = function (batch, batchOptions, callback) {
-    if (arguments.length === 2 && _.isFunction(arguments[1])) {
-      callback = batchOptions
-      batchOptions = undefined
-    }
-    indexer.addBatchToIndex(SearchIndex.indexes,
-      batch,
-      processBatchOptions(batchOptions),
-      callback)
-  }
+  var docGetter = require('search-index-getter')(SearchIndex.options)
+  var deleter = require('search-index-deleter')(SearchIndex.options)
+  var indexer = require('search-index-adder')(SearchIndex.options)
+  var matcher = require('search-index-matcher')(SearchIndex.options)
+  var replicator = require('search-index-replicator')(SearchIndex.options)
+  var searcher = require('search-index-searcher')(SearchIndex.options)
 
-  SearchIndex.close = function (callback) {
-    SearchIndex.indexes.close(function () {
-      while (SearchIndex.indexes.isOpen()) {
-        log.info('closing...')
-      }
-      callback(null)
-    })
-  }
 
-  SearchIndex.del = function (docID, callback) {
-    if (SearchIndex.options.deletable) {
-      if (!_.isArray(docID)) {
-        docID = [docID]
-      }
-      deleter.deleteBatch(docID, SearchIndex.indexes, callback)
-    } else {
-      callback(new Error('this index is non-deleteable- set "deletable: true" in startup options'))
-    }
-  }
-
-  SearchIndex.empty = function (callback) {
-    var deleteOps = []
-    SearchIndex.indexes.createKeyStream({gte: '0', lte: '￮'})
-      .on('data', function (data) {
-        deleteOps.push({type: 'del', key: data})
-      })
-      .on('error', function (err) {
-        log.error(err, ' failed to empty index')
-      })
-      .on('end', function () {
-        SearchIndex.indexes.batch(deleteOps, callback)
-      })
-  }
-
-  SearchIndex.get = docGetter.getDoc
-  SearchIndex.match = matcher.matcher
-  SearchIndex.replicate = replicator.replicateFromSnapShotStream
-
+//experimental API calls
   SearchIndex.replicateBatch = function (serializedDB, callback) {
-    replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.indexes, callback)
+    replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.options.indexes, callback)
   }
-
-  SearchIndex.search = function (q, callback) {
-    searcher.search(SearchIndex.indexes, q, function (results) {
-      // TODO: make error throwing real
-      callback(null, results)
-    })
-  }
-
   SearchIndex.snapShotBatch = function (callback) {
-    replicator.createSnapShotBatch(SearchIndex.indexes, callback)
+    replicator.createSnapShotBatch(SearchIndex.options.indexes, callback)
   }
 
-  SearchIndex.snapShot = replicator.createSnapShot
-
-  SearchIndex.tellMeAboutMySearchIndex = function (callback) {
-    SearchIndex.indexes.get('DOCUMENT-COUNT', function (err, value) {
+  var tellMeAboutMySearchIndex = function (callback) {
+    SearchIndex.options.indexes.get('DOCUMENT-COUNT', function (err, value) {
       var td = value || 0
       var obj = {}
       obj.totalDocs = td
@@ -145,6 +60,63 @@ module.exports = function (options) {
     })
   }
 
-  SearchIndex.log = log
+  var close = function (callback) {
+    SearchIndex.options.indexes.close(function () {
+      while (SearchIndex.options.indexes.isOpen()) {
+        log.info('closing...')
+      }
+      callback(null)
+    })
+  }
+
+  var add = function (batch, batchOptions, callback) {
+    if (arguments.length === 2 && _.isFunction(arguments[1])) {
+      callback = batchOptions
+      batchOptions = undefined
+    }
+    indexer.addBatchToIndex(batch,
+                            processBatchOptions(batchOptions),
+                            callback)
+  }
+
+  SearchIndex.add = add
+  SearchIndex.close = close
+  SearchIndex.del = deleter.deleteBatch
+  SearchIndex.empty = deleter.flush
+  SearchIndex.get = docGetter.getDoc
+  SearchIndex.match = matcher.matcher
+  SearchIndex.replicate = replicator.replicateFromSnapShotStream
+  SearchIndex.search = searcher.search;
+  SearchIndex.snapShot = replicator.createSnapShot
+  SearchIndex.tellMeAboutMySearchIndex = tellMeAboutMySearchIndex
+
+  SearchIndex.log = SearchIndex.options.log
+
   return SearchIndex
+}
+
+
+var getOptions = function(options) {
+  var newOptions = {}
+  var defaults = {
+    deletable: true,
+    fieldedSearch: true,
+    fieldsToStore: 'all',
+    indexPath: 'si',
+    logLevel: 'error',
+    nGramLength: 1,
+    separator: /[\|' \.,\-|(\n)]+/,
+    stopwords: tv.getStopwords('en').sort(),
+  }
+  // initialize defaults options
+  newOptions = _.clone(_.defaults(options || {}, defaults))
+  newOptions.log = options.log || bunyan.createLogger({
+    name: 'search-index',
+    level: newOptions.logLevel
+  })
+  newOptions.indexes = level(newOptions.indexPath, {
+    valueEncoding: 'json',
+    db: newOptions.db
+  })
+  return newOptions;
 }

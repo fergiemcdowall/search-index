@@ -76,7 +76,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
-    si.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
+    si.options.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
       (err === null).should.be.exactly(false)
       err.toString().should.be.exactly('NotFoundError: Key not found in database [TF￮*￮mccaw￮￮]')
       si.close(function (err) {
@@ -90,7 +90,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
-    si.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+    si.options.indexes.get('TF￮*￮1987￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(999)
       si.close(function (err) {
@@ -162,7 +162,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
-    si.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
+    si.options.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.should.have.lengthOf(1)
       value[0].should.be.exactly('747')
@@ -177,7 +177,7 @@ describe('deleting and reindexing: ', function () {
     var sandboxPath = 'test/sandbox'
     var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
     logLevel: 'error'})
-    si.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+    si.options.indexes.get('TF￮*￮1987￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(1000)
       si.close(function (err) {
