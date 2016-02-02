@@ -17,7 +17,6 @@ before_install:
   - export prebuild_compile=true
 
 node_js:
-  - "0.12"
   - "3"
   - "4"
   - "5"
