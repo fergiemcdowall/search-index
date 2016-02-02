@@ -32,7 +32,7 @@ module.exports = function(indexer, siOptions) {
       obj.totalDocs = td
       obj.options = siOptions
       delete obj.options.log // causes woe for norch if not deleted
-      callback(err, obj)
+      callback(null, obj)
     })
   }
 
