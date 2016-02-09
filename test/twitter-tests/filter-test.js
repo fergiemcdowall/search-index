@@ -53,7 +53,7 @@ describe('Filters: ', function () {
         results.hits.length.should.be.exactly(8)
         results.hits[0].id.should.be.exactly('1NsXUW')
         results.hits[1].id.should.be.exactly('TEWP')
-        results.hits[2].id.should.be.exactly('4EaEkI')
+        results.hits[2].id.should.be.exactly('4bU7P5')
         si.close(function (err) {
           if (err) false.should.eql(true)
           done()
@@ -104,8 +104,8 @@ describe('Filters: ', function () {
         results.totalHits.should.be.exactly(5)
         should.exist(results.facets[0])
         results.hits[0].id.should.be.exactly('TEWP')
-        results.hits[1].id.should.be.exactly('2PHH0R')
-        results.hits[2].id.should.be.exactly('4bU7P5')
+        results.hits[1].id.should.be.exactly('4bU7P5')
+        results.hits[2].id.should.be.exactly('3swrN')
         si.close(function (err) {
           if (err) false.should.eql(true)
           done()
@@ -129,8 +129,8 @@ describe('Filters: ', function () {
         results.hits.length.should.be.exactly(64)
         results.totalHits.should.be.exactly(64)
         should.exist(results.facets[0])
-        results.hits[0].id.should.be.exactly('2DIjQj')
-        results.hits[1].id.should.be.exactly('1NsXUW')
+        results.hits[0].id.should.be.exactly('3gRQbL')
+        results.hits[1].id.should.be.exactly('tLl7B')
         si.close(function (err) {
           if (err) false.should.eql(true)
           done()

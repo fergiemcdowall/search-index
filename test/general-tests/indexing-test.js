@@ -4,6 +4,7 @@
 var assert = require('assert')
 var _ = require('lodash')
 var sandboxPath = 'test/sandbox'
+var should = require('should');
 
 var doc = {
   id: undefined,

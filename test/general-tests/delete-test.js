@@ -84,8 +84,8 @@ describe('deleting: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(3)
       searchResults.totalHits.should.be.exactly(3)
-      searchResults.hits[0].id.should.be.exactly('1')
-      searchResults.hits[1].id.should.be.exactly('4')
+      searchResults.hits[0].id.should.be.exactly('4')
+      searchResults.hits[1].id.should.be.exactly('1')
       searchResults.hits[2].id.should.be.exactly('3')
       si.close(function (err) {
         if (err) false.should.eql(true)
@@ -118,8 +118,8 @@ describe('deleting: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(3)
       searchResults.totalHits.should.be.exactly(3)
-      searchResults.hits[0].id.should.be.exactly('1')
-      searchResults.hits[1].id.should.be.exactly('4')
+      searchResults.hits[0].id.should.be.exactly('4')
+      searchResults.hits[1].id.should.be.exactly('1')
       searchResults.hits[2].id.should.be.exactly('3')
       si.close(function (err) {
         if (err) false.should.eql(true)

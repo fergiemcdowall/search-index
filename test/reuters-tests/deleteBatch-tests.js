@@ -47,8 +47,8 @@ describe('deleting a batch: ', function () {
       result.hits[0].id.should.be.exactly('9')
       result.hits[1].id.should.be.exactly('4')
       result.hits[2].id.should.be.exactly('6')
-      result.hits[3].id.should.be.exactly('2')
-      result.hits[4].id.should.be.exactly('8')
+      result.hits[3].id.should.be.exactly('8')
+      result.hits[4].id.should.be.exactly('2')
       si.close(function (err) {
         if (err) false.should.eql(true)
         done()

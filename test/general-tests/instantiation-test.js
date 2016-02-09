@@ -64,8 +64,8 @@ describe('Instantiation: ', function () {
         ;(err === null).should.be.exactly(true)
         results.hits.length.should.be.exactly(2)
         results.totalHits.should.be.exactly(2)
-        results.hits[0].id.should.be.exactly('1')
-        results.hits[1].id.should.be.exactly('2')
+        results.hits[0].id.should.be.exactly('2')
+        results.hits[1].id.should.be.exactly('1')
         si.close(function (err) {
           if (err) false.should.eql(true)
           done()
@@ -83,8 +83,8 @@ describe('Instantiation: ', function () {
         ;(err === null).should.be.exactly(true)
         results.hits.length.should.be.exactly(2)
         results.totalHits.should.be.exactly(2)
-        results.hits[0].id.should.be.exactly('3')
-        results.hits[1].id.should.be.exactly('4')
+        results.hits[0].id.should.be.exactly('4')
+        results.hits[1].id.should.be.exactly('3')
         si.close(function (err) {
           if (err) false.should.eql(true)
           done()

@@ -2,6 +2,7 @@
 /* global describe */
 
 var fs = require('fs')
+var should = require('should');
 var sandboxPath = 'test/sandbox'
 
 var batch = [
@@ -36,7 +37,6 @@ describe('Indexing API', function (done) { // jshint ignore:line
   it('should do some simple indexing', function (done) {
     si.add(batch, {}, function (err) {
       (err === null).should.be.exactly(true)
-
       si.snapShot(function (rs) {
         rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
           .on('close', function () {

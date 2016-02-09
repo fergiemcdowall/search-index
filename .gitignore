@@ -6,3 +6,4 @@ backup.gz
 *.swp
 .idea
 bundle.js
+test/sandbox
