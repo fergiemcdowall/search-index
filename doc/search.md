@@ -28,6 +28,11 @@ q.query = {
 
 You can search on specified fields
 
+Every `<fieldName>: [<searchterms>]` in the query must return `true`
+in order for the corresponding document to be included in the search
+results. In the example below, only documents containing the word *reagan*
+in the `title` field **AND** the word *usa* in the `body` field will be returned.
+
 ```javascript
 q.query = {
   'title': ['reagan'],
@@ -35,10 +40,14 @@ q.query = {
 }
 ```
 
+
 ### Multi-word Search
 
 To search for more than one term, the search string must be tokenised
 into an array
+
+A search on `<fieldName>` for `[<searchterms>]` returns `true` if and only if
+all of `[<searchterms>]` appear in `<fieldName>`
 
 ```javascript
 q.query = {
