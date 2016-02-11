@@ -5,22 +5,36 @@ var fs = require('fs')
 var assert = require('assert')
 var should = require('should')
 var sandboxPath = 'test/sandbox'
+var searchindex = require('../../')
 
 describe('Configuration: ', function () {
-  it('should accept configuration', function () {
-    var siPath = sandboxPath + '/si-config'
-    var si = require('../../')({ indexPath: siPath })
-    should.exist(si)
-    fs.existsSync(siPath).should.be.exactly(true)
+  it('should accept configuration', function (done) {
+    const siPath = sandboxPath + '/si-config'
+    searchindex({
+      indexPath: siPath
+    }, function(err, si) {
+      should.exist(si)
+      fs.existsSync(siPath).should.be.exactly(true)
+      done()
+    })
   })
 
-// constructor possibly needs to be promisey before this will always work
-
-  // it('can be instantiated configuration', function () {
-  //   var si = require('../../')()
-  //   should.exist(si)
-  //   fs.existsSync(si.options.indexPath).should.be.exactly(true)
+  // it('can be instantiated without an options object', function (done) {
+  //   searchindex(function(err, si) {
+  //     should.exist(si)
+  //     fs.existsSync(si.options.indexPath).should.be.exactly(true)
+  //     done()
+  //   })
   // })
+
+  it('can be instantiated with an empty options object', function (done) {
+    searchindex({}, function(err, si) {
+      should.exist(si)
+      fs.existsSync(si.options.indexPath).should.be.exactly(true)
+      done()
+    })
+  })
+
 
   it('does not leak variables', function () {
     (typeof countDocuments).should.be.exactly('undefined')
@@ -35,21 +49,21 @@ describe('Configuration: ', function () {
       stream: myStream
     })
     assert.equal(myStream.size(), 0)
-    var si = require('../../')({
+    searchindex({
       indexPath: sandboxPath + '/test-log-index',
       log: log,
       logLevel: 'info'
-    })
-    should.exist(si.log)
-
-    si.add({
-      id: 1,
-      name: 'The First Doc',
-      test: 'this is the first doc'
-    }, function (err) {
-      should(err).be.undefined
-      myStream.size().should.be.above(0)
-      done()
+    }, function(err, si) {
+      should.exist(si.log)
+      si.add({
+        id: 1,
+        name: 'The First Doc',
+        test: 'this is the first doc'
+      }, function (err) {
+        should(err).be.undefined
+        myStream.size().should.be.above(0)
+        done()
+      })
     })
   })
 })

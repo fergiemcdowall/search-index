@@ -3,12 +3,25 @@
 
 var logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-var should = require('should')
-var sandboxPath = 'test/sandbox'
+
+const should = require('should')
 
 describe('Matching epub: ', function () {
-  var si = require('../../')({indexPath: sandboxPath + '/si-epub-matching-test',
-  logLevel: logLevel})
+
+  var si
+
+  it('should initialize the first search index', function (done) {
+    require('../../')({
+      indexPath: 'test/sandbox/si-epub-matching-test',
+      logLevel: logLevel
+    },
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        si = thisSi
+        done()
+      })
+  })
+
 
   it('should index test data into the index', function (done) {
     var data = [

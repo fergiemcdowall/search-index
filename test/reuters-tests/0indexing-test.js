@@ -1,18 +1,29 @@
 /* global it */
 /* global describe */
 
-var assert = require('assert')
-var should = require('should')
-var fs = require('fs')
+const assert = require('assert')
+const fs = require('fs')
+const searchindex = require('../../')
+const should = require('should')
 
 describe('Indexing Reuters reuters-000.json: ', function () {
+  const sandboxPath = 'test/sandbox'
   var data = []
-  var sandboxPath = 'test/sandbox'
+  var si
+
+  it('should initialize the search index', function (done) {
+    searchindex({
+      indexPath: sandboxPath + '/si-reuters',
+      logLevel: 'error'
+    }, function (err, thisSi) {
+      if (err) false.should.eql(true)
+      si = thisSi
+      done()
+    })
+  })
 
   it('should find the data and set up a sandbox', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-    logLevel: 'error'})
-    data = JSON.parse(fs.readFileSync('node_modules/reuters-21578-json/data/full/reuters-000.json'))
+    data = require('../../node_modules/reuters-21578-json/data/full/reuters-000.json')
     assert.equal(data.length, 1000)
     assert.equal(data[0].id, '1')
     try {
@@ -22,16 +33,11 @@ describe('Indexing Reuters reuters-000.json: ', function () {
       console.log(e)
       assert(false)
     }
-    si.close(function (err) {
-      if (err) false.should.eql(true)
-      done()
-    })
+    done()
   })
 
   it('should index the data', function (done) {
     this.timeout(120000)
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-    logLevel: 'error'})
     var opt = {}
     opt.batchName = 'reuters'
     opt.fieldOptions = [
@@ -40,16 +46,11 @@ describe('Indexing Reuters reuters-000.json: ', function () {
     ]
     si.add(data, opt, function (err) {
       (err === null).should.be.exactly(true)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should verify indexing', function (done) {
-    var si = require('../../')({indexPath: sandboxPath + '/si-reuters',
-    logLevel: 'error'})
     si.tellMeAboutMySearchIndex(function (err, info) {
       (err === null).should.be.exactly(true)
       should.exist(info)
@@ -206,10 +207,23 @@ describe('Indexing Reuters reuters-000.json: ', function () {
           'you',
           'your',
           'z' ])
-      si.close(function (err) {
-        if (err) false.should.eql(true)
+      done()
+    })
+  })
+
+  it('should be able to return all documents in index', function (done) {
+    var q = {}
+    q.query = {'*': ['*']}
+    si.search(q, function (err, searchResults) {
+      should.exist(searchResults)
+      ;(err === null).should.be.exactly(true)
+      searchResults.hits.length.should.be.exactly(100)
+      searchResults.totalHits.should.be.exactly(1000)
+      si.close(function(err){
         done()
       })
     })
   })
+
+
 })

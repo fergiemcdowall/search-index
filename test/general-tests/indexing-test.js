@@ -13,7 +13,19 @@ var doc = {
 }
 
 describe('Indexing API', function () {
-  var si = require('../../')({indexPath: sandboxPath + '/indexing-test', logLevel: 'error'})
+
+  var si;
+
+  it('should initialize the search index', function (done) {
+    require('../../')(
+      {indexPath: sandboxPath + '/indexing-test',
+       logLevel: 'error'}, function (err, thisSi) {
+         if (err) false.should.eql(true)
+         si = thisSi
+         done()
+       })
+  })
+
 
   it('should allow indexing a plain object (as opposed to an array)', function (done) {
     si.add(_.assign(doc, {id: 1}), {}, function (err) {

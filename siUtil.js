@@ -1,4 +1,6 @@
 module.exports = function(indexer, siOptions) {
+
+
   var siUtil = {}
   var _ = require('lodash')
 
@@ -14,11 +16,15 @@ module.exports = function(indexer, siOptions) {
   }
 
   siUtil.close = function (callback) {
-    siOptions.indexes.close(function () {
-      while (siOptions.indexes.isOpen()) {
-        log.info('closing...')
+    siOptions.indexes.close(function (err) {
+      while (!siOptions.indexes.isClosed()) {
+        //log not always working here- investigate
+//        siOptions.log.info('closing...')
       }
-      callback(null)
+      if (siOptions.indexes.isClosed()) {
+//        siOptions.log.info('closed...')
+        callback(err)
+      }
     })
   }
 

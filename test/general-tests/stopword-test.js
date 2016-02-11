@@ -3,7 +3,10 @@
 
 var logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-var should = require('should')
+const should = require('should')
+const searchindex = require('../../')
+const tv = require('term-vector')
+const sandboxPath = 'test/sandbox'
 
 describe('stopwords: ', function () {
   var food = [
@@ -39,23 +42,65 @@ describe('stopwords: ', function () {
       test: 'Ta en tur til Køben- dette blir stas!'
     }]
 
-  it('should index test data into the index with default (english) stopwords', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-en',
-    logLevel: logLevel})
-    si.add(data, {batchName: 'data1'}, function (err) {
-      (err === null).should.be.exactly(true)
-      si.close(function (err) {
+  var si, siNO, siFood, siFood2
+
+  it('should initialize search index', function (done) {
+    searchindex(
+      {indexPath: sandboxPath + '/si-stopwords-test-en',
+       logLevel: logLevel},
+      function (err, thisSi) {
         if (err) false.should.eql(true)
+        si = thisSi
         done()
       })
+  })
+
+  it('should initialize norwegian search index', function (done) {
+    searchindex(
+      {indexPath: sandboxPath + '/si-stopwords-test-no',
+       logLevel: logLevel,
+       stopwords: tv.getStopwords('no')
+      },
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        siNO = thisSi
+        done()
+      })
+  })
+
+  it('should initialize a food search index', function (done) {
+    searchindex(
+      {indexPath: sandboxPath + '/si-stopwords-test-food',
+       logLevel: logLevel,
+       stopwords: []},
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        siFood = thisSi
+        done()
+      })
+  })
+
+  it('should initialize a food search index', function (done) {
+    searchindex(
+      {indexPath: sandboxPath + '/si-stopwords-test-food-2',
+       logLevel: logLevel},
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        siFood2 = thisSi
+        done()
+      })
+  })
+
+
+
+  it('should index test data into the index with default (english) stopwords', function (done) {
+    si.add(data, {batchName: 'data1'}, function (err) {
+      (err === null).should.be.exactly(true)
+      done()
     })
   })
 
   it('should be able to return all documents that contain "dette" if indexing with english stopwords', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-en',
-    logLevel: logLevel})
     var q = {}
     q.query = {'*': ['dette']}
     si.search(q, function (err, searchResults) {
@@ -63,149 +108,89 @@ describe('stopwords: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(3)
       searchResults.totalHits.should.be.exactly(3)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should index test data into the index with norwegian stopwords', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var tv = require('term-vector')
-    var si = require('../../')({
-      indexPath: sandboxPath + '/si-stopwords-test-no',
-      logLevel: logLevel,
-      stopwords: tv.getStopwords('no')
-    })
-    si.add(data, {batchName: 'data1'}, function (err) {
+    siNO.add(data, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should be able to return all documents in index', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
-    logLevel: logLevel})
     var q = {}
     q.query = {'*': ['tur']}
-    si.search(q, function (err, searchResults) {
+    siNO.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   // 14th Aug 2015 - This test seems to run fine locally, but Travis complains...
-
-  // it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
-  //   var sandboxPath = 'test/sandbox'
-  //   var stopwordList = require('stopword').getStopwords('no')
-  //   var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-no',
-  //                               logLevel: logLevel,
-  //                               stopwords: stopwordList
-  //                              })
-  //   var q = {}
-  //   q.query = {'*': ['dette']}
-  //   si.search(q, function (err, searchResults) {
-  //     should.exist(searchResults)
-  //     (err === null).should.be.exactly(true)
-  //     searchResults.hits.length.should.be.exactly(0)
-  //     si.close(function (err) {
-  //       if (err) false.should.eql(true);done()
-  //     })
-  //   })
-  // })
+  it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
+    var q = {}
+    q.query = {'*': ['dette']}
+    siNO.search(q, function (err, searchResults) {
+      should.exist(searchResults)
+      ;(err === null).should.be.exactly(true)
+      searchResults.hits.length.should.be.exactly(0)
+      done()
+    })
+  })
 
   it('should create an index of fast food without stopwords', function (done) {
     var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
-      logLevel: logLevel,
-    stopwords: []})
-    si.add(food, {batchName: 'data1'}, function (err) {
+    siFood.add(food, {batchName: 'data1'}, function (err) {
       (err === null).should.be.exactly(true)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should be able to return results for "fish and chips"', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
-      logLevel: logLevel,
-    stopwords: []})
     var q = {}
     q.query = {'*': 'fish and chips'.split(' ')}
-    si.search(q, function (err, searchResults) {
+    siFood.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should be able to return results for "and"', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food',
-      logLevel: logLevel,
-    stopwords: []})
     var q = {}
     q.query = {'*': ['and']}
-    si.search(q, function (err, searchResults) {
+    siFood.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(2)
       searchResults.totalHits.should.be.exactly(2)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should create an index of fast food without stopwords', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food-2',
-    logLevel: logLevel})
-    si.add(food, {batchName: 'food'}, function (err) {
+    siFood2.add(food, {batchName: 'food'}, function (err) {
       (err === null).should.be.exactly(true)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 
   it('should be able to return "fish and chips"', function (done) {
-    var sandboxPath = 'test/sandbox'
-    var si = require('../../')({indexPath: sandboxPath + '/si-stopwords-test-food-2',
-    logLevel: logLevel})
     var q = {}
     q.query = {'*': 'fish and chips'.split(' ')}
-    si.search(q, function (err, searchResults) {
+    siFood2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(1)
       searchResults.totalHits.should.be.exactly(1)
-      si.close(function (err) {
-        if (err) false.should.eql(true)
-        done()
-      })
+      done()
     })
   })
 })

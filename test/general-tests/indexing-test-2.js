@@ -27,28 +27,29 @@ var batch = [
   }
 ]
 
-describe('Indexing API', function (done) { // jshint ignore:line
-  var si = require('../../')({
-    indexPath: sandboxPath + '/indexing-test-2',
-    logLevel: 'warn',
-    fieldsToStore: ['id', 'title', 'content'],
-    fieldOptions: [{fieldName: 'year', filter: true}]
-  })
+describe('Indexing API', function () { // jshint ignore:line
   it('should do some simple indexing', function (done) {
-    si.add(batch, {}, function (err) {
-      (err === null).should.be.exactly(true)
-      si.snapShot(function (rs) {
-        rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
-          .on('close', function () {
-            (true).should.be.exactly(true)
-            si.close(function (err) {
-              if (err) false.should.eql(true)
-              done()
+    var searchindex = require('../../')
+    searchindex({
+      indexPath: sandboxPath + '/indexing-test-2',
+      logLevel: 'warn',
+      fieldsToStore: ['id', 'title', 'content'],
+      fieldOptions: [{fieldName: 'year', filter: true}]
+    }, function(err, si){
+      si.add(batch, {}, function (err) {
+        (err === null).should.be.exactly(true)
+        si.snapShot(function (rs) {
+          rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+            .on('close', function () {
+              (true).should.be.exactly(true)
+              si.close(function(){
+                done()  
+              })
             })
-          })
-          .on('error', function (err) {
-            (err === null).should.be.exactly(true)
-          })
+            .on('error', function (err) {
+              (err === null).should.be.exactly(true)
+            })
+        })
       })
     })
   })
