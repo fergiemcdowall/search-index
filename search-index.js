@@ -9,10 +9,10 @@ module.exports = function (givenOptions, callback) {
     const matcher = require('search-index-matcher')(SearchIndex.options)
     const replicator = require('search-index-replicator')(SearchIndex.options)
     const searcher = require('search-index-searcher')(SearchIndex.options)
-    const siUtil = require('./siUtil.js')(indexer, SearchIndex.options)
+    const siUtil = require('./siUtil.js')(SearchIndex.options)
 
     //API
-    SearchIndex.add = siUtil.add
+    SearchIndex.add = indexer.add
     SearchIndex.close = siUtil.close
     SearchIndex.del = deleter.deleteBatch
     SearchIndex.flush = deleter.flush

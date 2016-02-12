@@ -1,4 +1,4 @@
-module.exports = function(indexer, siOptions) {
+module.exports = function(siOptions) {
 
 
   var siUtil = {}
@@ -26,16 +26,6 @@ module.exports = function(indexer, siOptions) {
         callback(err)
       }
     })
-  }
-
-  siUtil.add = function (batch, batchOptions, callback) {
-    if (arguments.length === 2 && _.isFunction(arguments[1])) {
-      callback = batchOptions
-      batchOptions = undefined
-    }
-    indexer.addBatchToIndex(batch,
-                            batchOptions,
-                            callback)
   }
 
   return siUtil
