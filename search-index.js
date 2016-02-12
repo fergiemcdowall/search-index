@@ -9,21 +9,34 @@ module.exports = function (givenOptions, callbacky) {
   var SearchIndex = {}
   getOptions(givenOptions, function(err, options) {
     SearchIndex.options = options
-    // console.log(SearchIndex.options)
 
-
-    async.parallel([
-      function(callback){
+    async.series([
+      function(callback) {
         require('search-index-adder')(SearchIndex.options, callback)
-      }
+      },
+      function(callback) {
+        require('search-index-getter')(SearchIndex.options, callback)
+      },
+      function(callback) {
+        require('search-index-deleter')(SearchIndex.options, callback)
+      },
+      function(callback) {
+        require('search-index-matcher')(SearchIndex.options, callback)
+      },
+      function(callback) {
+        require('search-index-replicator')(SearchIndex.options, callback)
+      },
+      function(callback) {
+        require('search-index-searcher')(SearchIndex.options, callback)
+      }     
     ], function(err, results){
       
       const searchIndexAdder = results[0]
-      const searchIndexGetter = require('search-index-getter')(SearchIndex.options)
-      const searchIndexDeleter = require('search-index-deleter')(SearchIndex.options)
-      const searchIndexMatcher = require('search-index-matcher')(SearchIndex.options)
-      const searchIndexReplicator = require('search-index-replicator')(SearchIndex.options)
-      const searchIndexSearcher = require('search-index-searcher')(SearchIndex.options)
+      const searchIndexGetter = results[1]
+      const searchIndexDeleter = results[2]
+      const searchIndexMatcher = results[3]
+      const searchIndexReplicator = results[4]
+      const searchIndexSearcher = results[5]
       const siUtil = require('./siUtil.js')(SearchIndex.options)
 
       //API
