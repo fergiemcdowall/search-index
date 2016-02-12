@@ -1,48 +1,61 @@
-module.exports = function (givenOptions, callback) {
+const _ = require('lodash')
+const async = require('async')
+const bunyan = require('bunyan')
+const levelup = require('levelup')
+const leveldown = require('leveldown')
+const tv = require('term-vector')
+
+module.exports = function (givenOptions, callbacky) {
   var SearchIndex = {}
   getOptions(givenOptions, function(err, options) {
     SearchIndex.options = options
     // console.log(SearchIndex.options)
-    const docGetter = require('search-index-getter')(SearchIndex.options)
-    const deleter = require('search-index-deleter')(SearchIndex.options)
-    const indexer = require('search-index-adder')(SearchIndex.options)
-    const matcher = require('search-index-matcher')(SearchIndex.options)
-    const replicator = require('search-index-replicator')(SearchIndex.options)
-    const searcher = require('search-index-searcher')(SearchIndex.options)
-    const siUtil = require('./siUtil.js')(SearchIndex.options)
 
-    //API
-    SearchIndex.add = indexer.add
-    SearchIndex.close = siUtil.close
-    SearchIndex.del = deleter.deleteBatch
-    SearchIndex.flush = deleter.flush
-    SearchIndex.get = docGetter.getDoc
-    SearchIndex.match = matcher.matcher
-    SearchIndex.replicate = replicator.replicateFromSnapShotStream
-    SearchIndex.search = searcher.search;
-    SearchIndex.snapShot = replicator.createSnapShot
-    SearchIndex.tellMeAboutMySearchIndex = siUtil.tellMeAboutMySearchIndex
 
-    //experimental API
-    SearchIndex.replicateBatch = function (serializedDB, callback) {
-      replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.options.indexes, callback)
-    }
-    SearchIndex.snapShotBatch = function (callback) {
-      replicator.createSnapShotBatch(SearchIndex.options.indexes, callback)
-    }
+    async.parallel([
+      function(callback){
+        require('search-index-adder')(SearchIndex.options, callback)
+      }
+    ], function(err, results){
+      
+      const searchIndexAdder = results[0]
+      const searchIndexGetter = require('search-index-getter')(SearchIndex.options)
+      const searchIndexDeleter = require('search-index-deleter')(SearchIndex.options)
+      const searchIndexMatcher = require('search-index-matcher')(SearchIndex.options)
+      const searchIndexReplicator = require('search-index-replicator')(SearchIndex.options)
+      const searchIndexSearcher = require('search-index-searcher')(SearchIndex.options)
+      const siUtil = require('./siUtil.js')(SearchIndex.options)
 
-    SearchIndex.log = SearchIndex.options.log
-    return callback(err, SearchIndex)
+      //API
+      SearchIndex.add = searchIndexAdder.add
+      SearchIndex.close = siUtil.close
+      SearchIndex.del = searchIndexDeleter.deleteBatch
+      SearchIndex.flush = searchIndexDeleter.flush
+      SearchIndex.get = searchIndexGetter.getDoc
+      SearchIndex.match = searchIndexMatcher.matcher
+      SearchIndex.replicate = searchIndexReplicator.replicateFromSnapShotStream
+      SearchIndex.search = searchIndexSearcher.search;
+      SearchIndex.snapShot = searchIndexReplicator.createSnapShot
+      SearchIndex.tellMeAboutMySearchIndex = siUtil.tellMeAboutMySearchIndex
+
+      //experimental API
+      SearchIndex.replicateBatch = function (serializedDB, callback) {
+        replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.options.indexes, callback)
+      }
+      SearchIndex.snapShotBatch = function (callback) {
+        replicator.createSnapShotBatch(SearchIndex.options.indexes, callback)
+      }
+
+      SearchIndex.log = SearchIndex.options.log
+      return callbacky(err, SearchIndex)
+
+
+    });
   })
 }
 
 
 var getOptions = function(options, callback) {
-  const _ = require('lodash')
-  const bunyan = require('bunyan')
-  var levelup = require('levelup')
-  var leveldown = require('leveldown')
-  const tv = require('term-vector')
   options = options || {}
   levelup(options.indexPath || 'si', {
     valueEncoding: 'json'
