@@ -18,7 +18,7 @@ si.search(q, function (err, searchResults) {
 
 You can also generate search indexes and easily share them- you could for example make an index available on bittorrent, or you could push an index out to a browser. It is really easy to move indexes around, and create decentralised search engines.
 
-`search-index` uses LevelDB as a backend via the [LevelUp](https://github.com/Level/levelup) interface. These days, LevelDB-ish databases are installed pretty much everywhere, which is why `search-index` is so portable.
+`search-index` uses LevelDB as a backend via the [LevelUp](https://github.com/Level/levelup) interface. These days, LevelDB-ish databases are installed pretty much everywhere, so `search-index` is really portable.
 
 Find out how to use the `search-index` module here:
 
