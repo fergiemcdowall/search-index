@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "async": "^1.5.2",
     "bunyan": "^1.5.1",
     "leveldown": "1.4.3",
     "levelup": "^1.3.1",
