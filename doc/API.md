@@ -17,13 +17,17 @@ Make sure that `search-index` is npm installed and then do either
 
 ```javascript
 const searchIndex = require('search-index')
-const index = searchIndex(options)
+searchIndex(options, function(err, si) {
+  // si is now a new search index
+})
 ```
 
 or
 
 ```javascript
-const index = require('search-index')(options)
+require('search-index')(options, function(err, si) {
+  // si is now a new search index
+})
 ```
 
 `options` is an object that can take the following values:
