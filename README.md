@@ -3,14 +3,16 @@
 [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
 
 ```javascript
-var si = require('search-index')(options);
+var searchIndex = require('search-index')
 
-si.add(data, opt, function (err) {
-  //add stuff to index
-});
+searchIndex(options, function(err, si) {
+  si.add(data, opt, function (err) {
+    //add stuff to index
+  });
 
-si.search(q, function (err, searchResults) {
-  //search in index
+  si.search(q, function (err, searchResults) {
+    //search in index
+  });
 });
 ```
 

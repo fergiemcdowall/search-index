@@ -14,12 +14,14 @@ old Reuters articles, [like the ones found here](https://raw.githubusercontent.c
 Initialize a search index and add the data
 
 ```javascript
-var si = require('search-index');
-var data = require('path/to/data/file');
-si.add(data, opt, function (err) {
-  if (err) console.log('oops! ' + err);
-  else console.log('success!');
-});
+var searchIndex = require('search-index')
+var data = require('path/to/data/file')
+searchIndex(options, function(err, si) {
+  si.add(data, opt, function (err) {
+    if (err) console.log('oops! ' + err)
+    else console.log('success!')
+  })
+})
 
 ```
 
