@@ -178,3 +178,21 @@ q.query = {
 };
 q.teaser = 'body';
 ```
+
+### Common error when test-querying your search solution
+
+When you have indexed some documents, you want to check if your search is working, and do a couple of test queries. Remember then, to not use any of the stopwords. These are words that hold little meaning and are therefore left out of the index. This is [search-index' stopword list for English](https://github.com/fergiemcdowall/stopword/blob/master/lib/stopwords_en.js#L25-L38), and here are all the [available stopword languages](https://github.com/fergiemcdowall/stopword/tree/master/lib).
+
+```javascript
+q.query = {
+  '*': ['and']
+};
+```
+
+And since there's an inherent logical `AND` when having multiple words in your query, it only takes one word from the stopword-list to get zero results back.
+
+```javascript
+q.query = {
+  '*': ['and', 'meaningful']
+};
+```
