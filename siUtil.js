@@ -5,13 +5,16 @@ module.exports = function(siOptions) {
   var _ = require('lodash')
 
   siUtil.tellMeAboutMySearchIndex = function (callback) {
-    siOptions.indexes.get('DOCUMENT-COUNT', function (err, value) {
-      var td = value || 0
-      var obj = {}
-      obj.totalDocs = td
-      obj.options = siOptions
-      delete obj.options.log // causes woe for norch if not deleted
-      callback(null, obj)
+    siOptions.indexes.get('DOCUMENT-COUNT', function (err, docCount) {
+      siOptions.indexes.get('LAST-UPDATE-TIMESTAMP', function (err, lastUpdate) {
+        console.log(err || lastUpdate)
+        var obj = {}
+        obj.totalDocs = docCount || 0
+        obj.lastUpdate = lastUpdate || 0
+        obj.options = siOptions
+        delete obj.options.log // causes woe for norch if not deleted
+        callback(null, obj)
+      })
     })
   }
 
