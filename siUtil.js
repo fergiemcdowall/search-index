@@ -7,7 +7,6 @@ module.exports = function(siOptions) {
   siUtil.tellMeAboutMySearchIndex = function (callback) {
     siOptions.indexes.get('DOCUMENT-COUNT', function (err, docCount) {
       siOptions.indexes.get('LAST-UPDATE-TIMESTAMP', function (err, lastUpdate) {
-        console.log(err || lastUpdate)
         var obj = {}
         obj.totalDocs = docCount || 0
         obj.lastUpdate = lastUpdate || 0
