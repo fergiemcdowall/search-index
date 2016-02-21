@@ -1,10 +1,10 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=3"
   },
   "license": "MIT",
   "dependencies": {
