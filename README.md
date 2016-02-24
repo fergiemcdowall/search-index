@@ -16,7 +16,7 @@ searchIndex(options, function(err, si) {
 });
 ```
 
-`search-index` is a freetext search library for JavaScript. You can use it to drop kick-ass search functionality into your node.js, HTML, OSX and Android applications.
+`search-index` is a freetext search library for JavaScript. You can use it to drop fantabulous search functionality into your node.js, HTML, OSX and Android applications.
 
 You can also generate search indexes and easily share them- you could for example make an index available on bittorrent, or you could push an index out to a browser. It is really easy to move indexes around, and create decentralised search engines.
 
