@@ -123,7 +123,7 @@ index.get('docID', function(err) {
 Deletes one or more documents from the corpus
 
 ```javascript
-index.get('docID', function(err) {
+index.del('docID', function(err) {
   if (!err) console.log('success!')
 })
 ```
