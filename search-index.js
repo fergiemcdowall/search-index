@@ -51,14 +51,6 @@ module.exports = function (givenOptions, callbacky) {
       SearchIndex.snapShot = searchIndexReplicator.createSnapShot
       SearchIndex.tellMeAboutMySearchIndex = siUtil.tellMeAboutMySearchIndex
 
-      //experimental API
-      SearchIndex.replicateBatch = function (serializedDB, callback) {
-        replicator.replicateFromSnapShotBatch(serializedDB, SearchIndex.options.indexes, callback)
-      }
-      SearchIndex.snapShotBatch = function (callback) {
-        replicator.createSnapShotBatch(SearchIndex.options.indexes, callback)
-      }
-
       SearchIndex.log = SearchIndex.options.log
       return callbacky(err, SearchIndex)
     })
