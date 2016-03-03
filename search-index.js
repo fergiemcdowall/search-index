@@ -61,32 +61,48 @@ module.exports = function (givenOptions, callbacky) {
 
       SearchIndex.log = SearchIndex.options.log
       return callbacky(err, SearchIndex)
-
-
-    });
+    })
   })
 }
 
 
-var getOptions = function(options, callback) {
-  options = options || {}
-  levelup(options.indexPath || 'si', {
-    valueEncoding: 'json'
-  }, function (err, db) {
-    var defaultOps = {}
-    defaultOps.deletable = true
-    defaultOps.fieldedSearch = true
-    defaultOps.fieldsToStore = 'all'
-    defaultOps.indexPath = 'si'
-    defaultOps.logLevel = 'error'
-    defaultOps.nGramLength = 1
-    defaultOps.separator = /[\|' \.,\-|(\n)]+/
-    defaultOps.stopwords = tv.getStopwords('en').sort()
-    defaultOps.log = bunyan.createLogger({
-      name: 'search-index',
-      level: options.logLevel || defaultOps.logLevel
-    })
-    defaultOps.indexes = db
-    return callback(err, _.defaults(options, defaultOps))
+
+var getOptions = function(givenOptions, callbacky) {
+  givenOptions = givenOptions || {}
+  async.parallel([
+    function(callback) {
+      var defaultOps = {}
+      defaultOps.deletable = true
+      defaultOps.fieldedSearch = true
+      defaultOps.fieldsToStore = 'all'
+      defaultOps.indexPath = 'si'
+      defaultOps.logLevel = 'error'
+      defaultOps.nGramLength = 1
+      defaultOps.separator = /[\|' \.,\-|(\n)]+/
+      defaultOps.stopwords = tv.getStopwords('en').sort()
+      defaultOps.log = bunyan.createLogger({
+        name: 'search-index',
+        level: givenOptions.logLevel || defaultOps.logLevel
+      })
+      callback(null, defaultOps)
+    },
+    function(callback){
+      if (!givenOptions.indexes) {
+        levelup(givenOptions.indexPath || 'si', {
+          valueEncoding: 'json'
+        }, function(err, db) {
+          callback(null, db)          
+        })
+      }
+      else {
+        callback(null, null)
+      }
+    }
+  ], function(err, results){
+    var options = _.defaults(givenOptions, results[0])
+    if (results[1] != null) {
+      options.indexes = results[1]
+    }
+    return callbacky(err, options)
   })
 }

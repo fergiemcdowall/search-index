@@ -17,7 +17,7 @@
     "search-index-deleter": "0.0.4",
     "search-index-getter": "0.0.3",
     "search-index-matcher": "0.0.4",
-    "search-index-replicator": "0.0.4",
+    "search-index-replicator": "0.0.5",
     "search-index-searcher": "0.0.5",
     "term-vector": "0.0.12"
   },
