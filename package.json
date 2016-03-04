@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=3"
@@ -15,7 +15,7 @@
     "lodash": "4.5.0",
     "search-index-adder": "0.0.11",
     "search-index-deleter": "0.0.4",
-    "search-index-getter": "0.0.3",
+    "search-index-getter": "0.0.4",
     "search-index-matcher": "0.0.4",
     "search-index-replicator": "0.0.5",
     "search-index-searcher": "0.0.5",
