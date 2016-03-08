@@ -46,10 +46,12 @@ module.exports = function (givenOptions, callbacky) {
       SearchIndex.flush = searchIndexDeleter.flush
       SearchIndex.get = searchIndexGetter.getDoc
       SearchIndex.match = searchIndexMatcher.match
+      SearchIndex.readStream = searchIndexReplicator.readStream
       SearchIndex.replicate = searchIndexReplicator.replicateFromSnapShotStream
       SearchIndex.search = searchIndexSearcher.search;
       SearchIndex.snapShot = searchIndexReplicator.createSnapShot
       SearchIndex.tellMeAboutMySearchIndex = siUtil.tellMeAboutMySearchIndex
+      SearchIndex.writeStream = searchIndexReplicator.writeStream
 
       SearchIndex.log = SearchIndex.options.log
       return callbacky(err, SearchIndex)
