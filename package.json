@@ -16,18 +16,22 @@
     "search-index-adder": "0.0.12",
     "search-index-deleter": "0.0.5",
     "search-index-getter": "0.0.5",
-    "search-index-matcher": "0.0.4",
+    "search-index-matcher": "0.0.5",
     "search-index-replicator": "0.0.5",
-    "search-index-searcher": "0.0.5",
+    "search-index-searcher": "0.0.7",
     "term-vector": "0.0.12"
   },
   "devDependencies": {
     "brfs": "1.4.0",
     "browserify": "11.2.0",
+    "chromedriver": "^2.21.2",
+    "level-js": "^2.2.3",
     "mocha": "2.3.3",
     "reuters-21578-json": "0.0.6",
+    "selenium-webdriver": "^2.52.0",
     "should": "7.1.0",
     "stream-buffers": "2.2.0",
+    "tape": "^4.5.1",
     "world-bank-dataset": "0.0.1"
   },
   "author": {
@@ -62,7 +66,8 @@
   ],
   "scripts": {
     "lint": "standard",
-    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha test/node --recursive --timeout 10000"
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha test/node --recursive --timeout 10000",
+    "test-browserify": "rm -rf test/sandbox && mkdir test/sandbox && browserify test/browser/browserify-test-uncompiled.js > test/sandbox/bundle.js && tape test/browser/selenium-test.js"
   },
   "repository": {
     "type": "git",
