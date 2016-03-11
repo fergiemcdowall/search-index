@@ -3,7 +3,7 @@
 
 const should = require('should')
 const sandboxPath = 'test/sandbox'
-const searchindex = require('../../')
+const searchindex = require('../../../')
 
 var logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 describe('indexing options: ', function () {
 
   var si1, si2, si3, si4, si5, si6, si7, si8, si9
-  var data = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json')
+  var data = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json')
 
   it('should initialize the search index', function (done) {
     searchindex({

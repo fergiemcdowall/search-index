@@ -2,7 +2,7 @@
 /* global describe */
 
 const should = require('should')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 
 describe('Searching Reuters: ', function () {
 
@@ -244,7 +244,7 @@ describe('Searching Reuters: ', function () {
   })
 
   // it('should be able to weight search results', function (done) {
-  //   var si = require('../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'})
+  //   var si = require('../../../')({indexPath: sandboxPath + '/si-reuters', logLevel: 'warn'})
   //   var q = {}
   //   q.query = {
   //     '*': ['reagan'],

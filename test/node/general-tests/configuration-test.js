@@ -5,7 +5,7 @@ var fs = require('fs')
 var assert = require('assert')
 var should = require('should')
 var sandboxPath = 'test/sandbox'
-var searchindex = require('../../')
+var searchindex = require('../../../')
 
 describe('Configuration: ', function () {
   it('should accept configuration', function (done) {

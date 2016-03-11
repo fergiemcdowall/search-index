@@ -6,11 +6,11 @@ const should = require('should')
 
 describe('Indexing World Bank: ', function () {
 
-  var data = require('../../node_modules/world-bank-dataset/world-bank-projects.json')
+  var data = require('../../../node_modules/world-bank-dataset/world-bank-projects.json')
   var si
 
   it('should initialize the search index', function (done) {
-    require('../../')({
+    require('../../../')({
       indexPath: 'test/sandbox/si-world-bank',
       logLevel: 'error'
     }, function (err, thisSi) {

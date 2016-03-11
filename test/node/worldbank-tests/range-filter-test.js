@@ -8,7 +8,7 @@ describe('searching world bank dataset and filtering on ranges', function () {
   var si
 
   it('should initialize the search index', function (done) {
-    require('../../')({
+    require('../../../')({
       indexPath: 'test/sandbox/si-world-bank',
       logLevel: 'error'
     }, function (err, thisSi) {

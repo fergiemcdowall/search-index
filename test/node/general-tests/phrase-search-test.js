@@ -4,7 +4,7 @@
 var logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 var should = require('should')
-var searchindex = require('../../')
+var searchindex = require('../../../')
 const sandboxPath = 'test/sandbox'
 
 describe('ngrams (phrase search): ', function () {

@@ -8,7 +8,7 @@ describe('Filters: ', function () {
   var si
 
   it('should initialize the search index', function (done) {
-    require('../../')({
+    require('../../../')({
       indexPath: 'test/sandbox/si-twitter',
       logLevel: 'error'
     }, function (err, thisSi) {

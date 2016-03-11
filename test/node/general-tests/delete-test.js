@@ -4,7 +4,7 @@
 const logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 const should = require('should')
-const searchIndex = require('../../')
+const searchIndex = require('../../../')
 const sandboxPath = 'test/sandbox'
 
 describe('deleting: ', function () {

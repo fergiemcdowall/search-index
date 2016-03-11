@@ -2,7 +2,7 @@
 /* global describe */
 
 const should = require('should')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 
 describe('Indexing numeric fields, Reuters: ', function () {
 
@@ -22,7 +22,7 @@ describe('Indexing numeric fields, Reuters: ', function () {
 
   it('should index one file of test data', function (done) {
     this.timeout(20000)
-    var data = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json')
+    var data = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json')
     var opt = {}
     opt.batchName = 'reuters'
     si.add(data, opt, function (err) {

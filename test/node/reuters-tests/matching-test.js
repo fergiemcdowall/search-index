@@ -5,7 +5,7 @@ var should = require('should')
 
 describe('Matching Reuters: ', function () {
   it('should search on all fields and get results', function (done) {
-    require('../../')({
+    require('../../../')({
       indexPath: 'test/sandbox/si-reuters',
       logLevel: 'warn'
     }, function (err, si) {

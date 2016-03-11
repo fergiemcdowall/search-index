@@ -3,7 +3,7 @@
 
 var should = require('should')
 var sandboxPath = 'test/sandbox'
-var searchindex = require('../../')
+var searchindex = require('../../../')
 
 describe('Instantiation: ', function () {
   describe('setting up different indexes with no pollution', function () {

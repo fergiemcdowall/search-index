@@ -2,7 +2,7 @@
 /* global describe */
 
 const sandboxPath = 'test/sandbox'
-const searchindex = require('../../')
+const searchindex = require('../../../')
 const should = require('should')
 
 describe('deleting and reindexing: ', function () {
@@ -23,7 +23,7 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('should index documents', function (done) {
-    var data = require('../../node_modules/reuters-21578-json/data/full/reuters-000.json')
+    var data = require('../../../node_modules/reuters-21578-json/data/full/reuters-000.json')
     var singleDoc = []
     singleDoc.push(data['746'])
     var opt = {batchName: 'document 747'}
@@ -95,7 +95,7 @@ describe('deleting and reindexing: ', function () {
 
   it('should reindex deleted document', function (done) {
     this.timeout(10000)
-    var data = require('../../node_modules/reuters-21578-json/data/full/reuters-000.json')
+    var data = require('../../../node_modules/reuters-21578-json/data/full/reuters-000.json')
     var singleDoc = []
     singleDoc.push(data['746'])
     var opt = {batchName: 'document 747'}

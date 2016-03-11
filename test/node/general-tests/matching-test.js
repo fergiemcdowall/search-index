@@ -11,7 +11,7 @@ describe('Matching epub: ', function () {
   var si
 
   it('should initialize the first search index', function (done) {
-    require('../../')({
+    require('../../../')({
       indexPath: 'test/sandbox/si-epub-matching-test',
       logLevel: logLevel
     },

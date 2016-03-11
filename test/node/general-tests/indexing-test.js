@@ -17,7 +17,7 @@ describe('Indexing API', function () {
   var si;
 
   it('should initialize the search index', function (done) {
-    require('../../')(
+    require('../../../')(
       {indexPath: sandboxPath + '/indexing-test',
        logLevel: 'error'}, function (err, thisSi) {
          if (err) false.should.eql(true)

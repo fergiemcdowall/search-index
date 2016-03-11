@@ -4,7 +4,7 @@
 var logLevel = 'error'
 if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
 const should = require('should')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 const tv = require('term-vector')
 const sandboxPath = 'test/sandbox'
 

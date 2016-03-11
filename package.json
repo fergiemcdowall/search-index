@@ -13,9 +13,9 @@
     "leveldown": "^1.4.3",
     "levelup": "^1.3.1",
     "lodash": "4.5.0",
-    "search-index-adder": "0.0.11",
-    "search-index-deleter": "0.0.4",
-    "search-index-getter": "0.0.4",
+    "search-index-adder": "0.0.12",
+    "search-index-deleter": "0.0.5",
+    "search-index-getter": "0.0.5",
     "search-index-matcher": "0.0.4",
     "search-index-replicator": "0.0.5",
     "search-index-searcher": "0.0.5",
@@ -42,7 +42,7 @@
     "offline",
     "search"
   ],
-  "main": "search-index.js",
+  "main": "index.js",
   "browserify": {
     "transform": [
       "brfs"
@@ -62,7 +62,7 @@
   ],
   "scripts": {
     "lint": "standard",
-    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha --recursive --timeout 10000"
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha test/node --recursive --timeout 10000"
   },
   "repository": {
     "type": "git",

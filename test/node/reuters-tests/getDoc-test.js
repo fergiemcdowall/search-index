@@ -2,7 +2,7 @@
 /* global describe */
 
 const should = require('should')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 
 describe('get-ting on the reuters dataset: ', function () {
 

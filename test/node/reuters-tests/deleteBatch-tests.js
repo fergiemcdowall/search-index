@@ -2,7 +2,7 @@
 /* global describe */
 
 const should = require('should')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 
 describe('deleting a batch: ', function () {
 
@@ -22,7 +22,7 @@ describe('deleting a batch: ', function () {
   })
 
   it('should index one file of test data', function (done) {
-    var data = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json')
+    var data = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json')
     si.add(data, {batchName: 'reuters-000.json'}, function (err) {
       (err === null).should.be.exactly(true)
       done()

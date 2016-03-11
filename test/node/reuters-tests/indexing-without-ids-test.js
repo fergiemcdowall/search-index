@@ -2,12 +2,12 @@
 /* global describe */
 
 const fs = require('fs')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 const should = require('should')
 
 describe('Indexing Reuters without IDs: ', function () {
 
-  var data = require('../../node_modules/reuters-21578-json/data/noIDs/reuters-000.json')
+  var data = require('../../../node_modules/reuters-21578-json/data/noIDs/reuters-000.json')
   var sandboxPath = 'test/sandbox'
   var si
 

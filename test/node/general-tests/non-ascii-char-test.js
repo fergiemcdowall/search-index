@@ -3,7 +3,8 @@
 
 var should = require('should')
 var sandboxPath = 'test/sandbox'
-var searchindex = ('../../')
+var searchindex = require('../../../')
+var si
 
 describe('Indexing and searching non-ascii characters: ', function () {
   var data = [
@@ -18,8 +19,6 @@ describe('Indexing and searching non-ascii characters: ', function () {
       test: 'everything in names doc field smør should be searchable searchable searchable'
     }]
 
-  var searchindex = require('../../')
-
   it('should initialize the first search index', function (done) {
     searchindex(
       {indexPath: sandboxPath + '/si-non-ascii',
@@ -30,8 +29,6 @@ describe('Indexing and searching non-ascii characters: ', function () {
         done()
       })
   })
-
-
 
   it('should index test data', function (done) {
     si.add(data, {}, function (err) {

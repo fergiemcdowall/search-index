@@ -2,7 +2,7 @@
 /* global describe */
 
 const sandboxPath = 'test/sandbox'
-const searchindex = require('../../')
+const searchindex = require('../../../')
 const should = require('should')
 const fs = require('fs')
 
@@ -24,7 +24,7 @@ describe('Replication: ', function () {
 
   it('should index one file of test data', function (done) {
     this.timeout(5000)
-    var data = require('../../node_modules/reuters-21578-json/data/justTen/justTen.json')
+    var data = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json')
     var opt = {}
     opt.batchName = 'reuters'
     si.add(data, opt, function (err) {

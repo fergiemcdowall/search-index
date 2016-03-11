@@ -3,7 +3,7 @@
 
 const assert = require('assert')
 const fs = require('fs')
-const searchindex = require('../../')
+const searchindex = require('../../../')
 const should = require('should')
 
 describe('Indexing Reuters reuters-000.json: ', function () {
@@ -23,7 +23,7 @@ describe('Indexing Reuters reuters-000.json: ', function () {
   })
 
   it('should find the data and set up a sandbox', function (done) {
-    data = require('../../node_modules/reuters-21578-json/data/full/reuters-000.json')
+    data = require('../../../node_modules/reuters-21578-json/data/full/reuters-000.json')
     assert.equal(data.length, 1000)
     assert.equal(data[0].id, '1')
     try {

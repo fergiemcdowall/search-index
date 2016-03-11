@@ -29,7 +29,7 @@ var batch = [
 
 describe('Indexing API', function () { // jshint ignore:line
   it('should do some simple indexing', function (done) {
-    var searchindex = require('../../')
+    var searchindex = require('../../../')
     searchindex({
       indexPath: sandboxPath + '/indexing-test-2',
       logLevel: 'warn',

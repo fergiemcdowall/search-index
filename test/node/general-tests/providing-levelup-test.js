@@ -1,6 +1,6 @@
 const should = require('should')
 const levelup = require('levelup')
-const searchIndex = require('../../')
+const searchIndex = require('../../../')
 const sandbox = 'test/sandbox'
 
 var db, si
