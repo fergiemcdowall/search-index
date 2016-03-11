@@ -65,9 +65,11 @@
     }
   ],
   "scripts": {
+    "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
     "lint": "standard",
-    "testss": "rm -rf test/sandbox && mkdir test/sandbox && date && mocha test/node --recursive --timeout 10000",
-    "test": "rm -rf test/sandbox && mkdir test/sandbox && browserify test/browser/browserify-test-uncompiled.js > test/sandbox/bundle.js && tape test/browser/selenium-test.js"
+    "test-browserify": "browserify test/browser/browserify-test-uncompiled.js > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
+    "test-node": "mocha test/node --recursive --timeout 10000",
+    "test": "npm run empty-sandbox && date && npm run test-browserify && npm run test-node"
   },
   "repository": {
     "type": "git",
