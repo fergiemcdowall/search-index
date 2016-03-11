@@ -23,22 +23,43 @@ test('start server', function (t) {
   })
 })
 
+
 test('connect to test html page', function (t) {
-  var webdriver = require('selenium-webdriver')
-  var driver = new webdriver.Builder()
-    .forBrowser('chrome')
-    .build()
   t.plan(2)
-  driver.get('http://localhost:8080')
-  var resultDiv = driver.findElement(webdriver.By.id('result'))
+  var webdriver = require('selenium-webdriver')
+  var browser
+
+  if (process.env.SAUCE_USERNAME != undefined) {
+    browser = new webdriver.Builder()
+      .usingServer('http://'+ process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub')
+      .withCapabilities({
+        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+        build: process.env.TRAVIS_BUILD_NUMBER,
+        username: process.env.SAUCE_USERNAME,
+        accessKey: process.env.SAUCE_ACCESS_KEY,
+        browserName: "chrome"
+      }).build();
+  } else {
+    browser = new webdriver.Builder()
+      .withCapabilities({
+        browserName: "chrome"
+      }).build();
+  }
+  browser.get('http://localhost:8080')
+
+  // var browser = new webdriver.Builder()
+  //   .forBrowser('chrome')
+  //   .build()
+  // browser.get('http://localhost:8080')
+  var resultDiv = browser.findElement(webdriver.By.id('result'))
   resultDiv.getInnerHtml().then(function (html) {
     t.equal(html, 'waiting...')
   })
-  driver.wait(webdriver.until.elementTextIs(resultDiv, 'TALKING POINT/BANKAMERICA EQUITY OFFER'), 30000)
+  browser.wait(webdriver.until.elementTextIs(resultDiv, 'TALKING POINT/BANKAMERICA EQUITY OFFER'), 30000)
   resultDiv.getInnerHtml().then(function (html) {
     t.equal(html, 'TALKING POINT/BANKAMERICA <bac> EQUITY OFFER</bac>')
   })
-  driver.quit()
+  browser.quit()
 })
 
 test('teardown', function (t) {
