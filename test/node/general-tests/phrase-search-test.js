@@ -18,9 +18,14 @@ describe('ngrams (phrase search): ', function () {
       id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
+    },
+    {
+      id: 3,
+      name: 'Haggisxandxchips',
+      test: 'Axseldomxdelicacy'
     }]
 
-  var si, si2, si3
+  var si, si2, si3, si4
 
   it('should initialize search index', function (done) {
     searchindex(
@@ -56,6 +61,19 @@ describe('ngrams (phrase search): ', function () {
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si3 = thisSi
+        done()
+      })
+  })
+
+
+  it('should initialize search index', function (done) {
+    searchindex(
+      {indexPath: sandboxPath + '/si-phrase-tests-4',
+       logLevel: logLevel,
+       stopwords: []},
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        si4 = thisSi
         done()
       })
   })
@@ -222,4 +240,32 @@ describe('ngrams (phrase search): ', function () {
       done()
     })
   })
+
+  it('should index test data into the index with a separator set at field level', function (done) {
+    si4.add(food, {
+      fieldOptions: [{
+        fieldName: 'name',
+        separator: 'x'
+      }]
+    }, function (err) {
+      (err === null).should.be.exactly(true)
+      done()
+    })
+  })
+
+  it('should be able to confirm field level separator', function (done) {
+    var q = {}
+    q.query = {'*': ['chips']}
+    si4.search(q, function (err, searchResults) {
+      should.exist(searchResults)
+      ;(err === null).should.be.exactly(true)
+      searchResults.hits.length.should.be.exactly(2)
+      searchResults.totalHits.should.be.exactly(2)
+      searchResults.hits[0].id.should.be.exactly('3')
+      searchResults.hits[1].id.should.be.exactly('1')
+      done()
+    })
+  })
+
+
 })
