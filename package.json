@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=3"
@@ -18,7 +18,7 @@
     "search-index-getter": "0.0.5",
     "search-index-matcher": "0.0.5",
     "search-index-replicator": "0.0.5",
-    "search-index-searcher": "0.0.7",
+    "search-index-searcher": "0.0.8",
     "term-vector": "0.0.15"
   },
   "devDependencies": {
@@ -69,7 +69,7 @@
     "lint": "standard",
     "test-browserify": "browserify test/browser/browserify-test-uncompiled.js > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
     "test-node": "mocha test/node --recursive --timeout 10000",
-    "test": "npm run empty-sandbox && date && npm run test-browserify && npm run test-node"
+    "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify"
   },
   "repository": {
     "type": "git",

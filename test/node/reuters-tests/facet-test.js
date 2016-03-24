@@ -11,7 +11,6 @@ describe('Searching Reuters and Checking Faceting: ', function () {
       indexPath: 'test/sandbox/si-reuters',
       logLevel: 'error'
     }, function (err, thisSi) {
-      console.log(err)
       ;(err === null).should.be.exactly(true)
       si = thisSi
       done()
