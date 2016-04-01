@@ -19,7 +19,7 @@
     "search-index-matcher": "0.0.5",
     "search-index-replicator": "0.0.5",
     "search-index-searcher": "0.0.8",
-    "term-vector": "0.0.15"
+    "term-vector": "0.0.16"
   },
   "devDependencies": {
     "brfs": "1.4.0",

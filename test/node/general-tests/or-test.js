@@ -83,7 +83,7 @@ const batch = [
 
 it('should do some simple indexing', function (done) {
   SearchIndex({
-    indexPath: sandboxPath + '/sorting-test',
+    indexPath: sandboxPath + '/or-test',
     logLevel: 'warn'
   }, function(err, thisSI){
     si = thisSI
@@ -97,7 +97,8 @@ it('should do some simple indexing', function (done) {
 
 it('simple search, sorted by ID', function (done) {
   si.search({query: {'*': ['*']}}, function (err, results) {
-    (err === null).should.be.exactly(true)
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
       [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ])
@@ -105,81 +106,26 @@ it('simple search, sorted by ID', function (done) {
   })
 })
 
-
-it('simple search, sorted by relevance', function (done) {
-  si.search({query: {'*': ['watch']}}, function (err, results) {
+it('simple search, sorted by ID', function (done) {
+  si.search({query: {'*': ['armani', 'watch'] }}, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
-      [ '1', '9', '7', '3', '2', '10' ])
+      [ '10' ])
     done()
   })
 })
 
-it('simple search, sorted by price', function (done) {
-  si.search({query: {'*': ['watch']}, sort:['price', 'desc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
+it('search for Armarni AND TW', function (done) {
+  si.search({query: [
+    {'*': ['armani', 'watch']},
+    {'*': ['tw', 'watch']}
+  ]}, function (err, results) {
+    ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
-      [ '7', '10', '1', '3', '9', '2' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ '33333', '30000', '20002', '4716', '1000', '99' ])
+      [ '7', '10' ])
     done()
   })
 })
 
-it('simple search, two tokens, sorted by price', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']}, sort:['price', 'desc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '10', '3', '9', '2' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ '30000', '4716', '1000', '99' ] )
-    done()
-  })
-})
-
-it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']}, pageSize: 2, sort:['price', 'desc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '10', '3' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ '30000', '4716' ] )
-    done()
-  })
-})
-
-
-it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']},
-             offset: 1,
-             pageSize: 2,
-             sort:['price', 'desc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '3', '9' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ '4716', '1000' ] )
-    done()
-  })
-})
-
-it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort asc', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']},
-             offset: 1,
-             pageSize: 2,
-             sort:['price', 'asc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-//    console.log(JSON.stringify(results.hits, null, 2))
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '9', '3' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ '1000', '4716' ] )
-    done()
-  })
-})
