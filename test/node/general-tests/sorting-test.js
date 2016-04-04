@@ -108,7 +108,7 @@ it('simple search, sorted by ID', function (done) {
 
 it('simple search, sorted by relevance', function (done) {
   si.search({query: {'*': ['watch']}}, function (err, results) {
-    (err === null).should.be.exactly(true)
+    ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
       [ '1', '9', '7', '3', '2', '10' ])

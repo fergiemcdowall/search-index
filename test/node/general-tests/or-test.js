@@ -53,7 +53,7 @@ const batch = [
   {
     id: '7',
     name: 'TW Steel',
-    description: 'A standout timepiece that boasts a rich heritage and high-speed design. This CEO Tech watch from TW Steel sets the standard for elite.',
+    description: 'A standout timepiece that boasts a rich heritage and high-speed design. This CEO Tech watch from TW Steel sets the standard for elite. Armani',
     price: '33333',
     age: '33342'
   },
@@ -95,9 +95,8 @@ it('should do some simple indexing', function (done) {
 })
 
 
-it('simple search, sorted by ID', function (done) {
+it('simple * search, sorted by ID', function (done) {
   si.search({query: {'*': ['*']}}, function (err, results) {
-    // console.log(JSON.stringify(results, null, 2))
     ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -108,10 +107,11 @@ it('simple search, sorted by ID', function (done) {
 
 it('simple search, sorted by ID', function (done) {
   si.search({query: {'*': ['armani', 'watch'] }}, function (err, results) {
-    (err === null).should.be.exactly(true)
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
-      [ '10' ])
+      [ '10', '7' ])
     done()
   })
 })
@@ -125,6 +125,21 @@ it('search for Armarni AND TW', function (done) {
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
       [ '7', '10' ])
+    done()
+  })
+})
+
+it('search for Armarni, Victorinox AND TW', function (done) {
+  si.search({query: [
+    {'*': ['armani', 'watch']},
+    {'*': ['victorinox', 'swiss']},
+    {'*': ['tw', 'watch']}
+  ]}, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '7', '9', '10', '2'])
     done()
   })
 })
