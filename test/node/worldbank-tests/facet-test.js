@@ -8,6 +8,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
   var si
 
   it('should initialize the search index', function (done) {
+    this.timeout(10000)
     require('../../../')({
       indexPath: 'test/sandbox/si-world-bank',
       logLevel: 'error'

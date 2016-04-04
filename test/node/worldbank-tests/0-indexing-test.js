@@ -22,7 +22,7 @@ describe('Indexing World Bank: ', function () {
 
 
   it('should index the data', function (done) {
-    this.timeout(60000)
+    this.timeout(120000)
     var padInt = function (intIn) {
       return ('000000000000000' + intIn).slice(-15)
     }
