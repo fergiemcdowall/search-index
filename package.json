@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.7.13",
+  "version": "0.7.14",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=3"
@@ -33,6 +33,7 @@
     "should": "7.1.0",
     "stream-buffers": "2.2.0",
     "tape": "^4.5.1",
+    "term-vector": "0.0.18",
     "uglifyjs": "^2.4.10",
     "world-bank-dataset": "0.0.1"
   },
