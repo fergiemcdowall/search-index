@@ -88,7 +88,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for an ngram of length 3', function (done) {
     var q = {}
-    q.query = {'*': ['now sadly defunct']}
+    q.query = {
+      AND: {'*': ['now sadly defunct']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -101,7 +103,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 2', function (done) {
     var q = {}
-    q.query = {'*': ['tastie bite']}
+    q.query = {
+      AND: {'*': ['tastie bite']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -114,7 +118,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 1', function (done) {
     var q = {}
-    q.query = {'*': ['curry']}
+    q.query = {
+      AND: {'*': ['curry']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -127,7 +133,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for multiple ngrams', function (done) {
     var q = {}
-    q.query = {'*': ['curry', 'substituted for gravy']}
+    q.query = {
+      AND: {'*': ['curry', 'substituted for gravy']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -147,7 +155,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for an ngram of length 3', function (done) {
     var q = {}
-    q.query = {'*': ['now sadly defunct']}
+    q.query = {
+      AND: {'*': ['now sadly defunct']}
+    }
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -158,7 +168,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 5', function (done) {
     var q = {}
-    q.query = {'*': ['curry sauce may be substituted']}
+    q.query = {
+      AND: {'*': ['curry sauce may be substituted']}
+    }
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -171,7 +183,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents with a search string of ngram length 5 and 1', function (done) {
     var q = {}
-    q.query = {'*': ['curry sauce may be substituted', 'gravy']}
+    q.query = {
+      AND: {'*': ['curry sauce may be substituted', 'gravy']}
+    }
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -183,7 +197,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be not able to get hits for documents with a search string of ngram length 5, 3 and 1', function (done) {
     var q = {}
-    q.query = {'*': ['curry sauce may be substituted', 'and curry sauce', 'gravy']}
+    q.query = {
+      AND: {'*': ['curry sauce may be substituted', 'and curry sauce', 'gravy']}
+    }
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -206,7 +222,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to do fielded ngrams', function (done) {
     var q = {}
-    q.query = {'*': ['chips and curry']}
+    q.query = {
+      AND: {'*': ['chips and curry']}
+    }
     si3.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -219,7 +237,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to do fielded ngrams', function (done) {
     var q = {}
-    q.query = {'*': ['substituted for gravy']}
+    q.query = {
+      AND: {'*': ['substituted for gravy']}
+    }
     si3.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -230,7 +250,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to do fielded ngrams', function (done) {
     var q = {}
-    q.query = {'*': ['substituted']}
+    q.query = {
+      AND: {'*': ['substituted']}
+    }
     si3.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -255,7 +277,9 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to confirm field level separator', function (done) {
     var q = {}
-    q.query = {'*': ['chips']}
+    q.query = {
+      AND: {'*': ['chips']}
+    }
     si4.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

@@ -96,7 +96,11 @@ it('should do some simple indexing', function (done) {
 
 
 it('simple * search, sorted by ID', function (done) {
-  si.search({query: {'*': ['*']}}, function (err, results) {
+  si.search({
+    query: {
+      AND: [{'*': ['*']}]
+    }
+  }, function (err, results) {
     ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -106,7 +110,13 @@ it('simple * search, sorted by ID', function (done) {
 })
 
 it('simple search, sorted by ID', function (done) {
-  si.search({query: {'*': ['armani', 'watch'] }}, function (err, results) {
+  si.search({
+    query: {
+      AND: [
+        {'*': ['armani', 'watch'] }
+      ]
+    }
+  }, function (err, results) {
     // console.log(JSON.stringify(results, null, 2))
     ;(err === null).should.be.exactly(true)
     should.exist(results)
@@ -117,10 +127,16 @@ it('simple search, sorted by ID', function (done) {
 })
 
 it('search for Armarni AND TW', function (done) {
-  si.search({query: [
-    {'*': ['armani', 'watch']},
-    {'*': ['tw', 'watch']}
-  ]}, function (err, results) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['armani', 'watch']}
+      },
+      {
+        AND: {'*': ['tw', 'watch']}
+      }
+    ]
+  }, function (err, results) {
     ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -129,12 +145,20 @@ it('search for Armarni AND TW', function (done) {
   })
 })
 
-it('search for Armarni, Victorinox AND TW', function (done) {
-  si.search({query: [
-    {'*': ['armani', 'watch']},
-    {'*': ['victorinox', 'swiss']},
-    {'*': ['tw', 'watch']}
-  ]}, function (err, results) {
+it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['armani', 'watch']}
+      },
+      {
+        AND: {'*': ['victorinox', 'swiss']}
+      },
+      {
+        AND: {'*': ['tw', 'watch']}
+      }
+    ]
+  }, function (err, results) {
     // console.log(JSON.stringify(results, null, 2))
     ;(err === null).should.be.exactly(true)
     should.exist(results)
@@ -144,3 +168,78 @@ it('search for Armarni, Victorinox AND TW', function (done) {
   })
 })
 
+it('search for watch NOT armani', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['watch'] },
+        NOT: {'*': ['armani'] }
+      }
+    ]
+  }, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '1', '9', '3', '2' ])
+    done()
+  })
+})
+
+it('search for watch NOT apple in name field', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['watch'] },
+        NOT: {'name': ['apple'] }
+      }
+    ]
+  }, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '9', '7', '3', '2', '10' ])
+    done()
+  })
+})
+
+it('search for watch NOT apple in title field, but then add "apple watch" back in through an OR condition', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['watch'] },
+        NOT: {'name': ['apple'] }
+      },
+      {
+        AND: {'*': ['apple', 'watch'] }
+      }
+    ]
+  }, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '1', '9', '7', '3', '2', '10' ])
+    done()
+  })
+})
+
+
+it('search for armani NOT TW', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['armani'] },
+        NOT: {'*': ['tw'] }
+      }
+    ]
+  }, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '10' ])
+    done()
+  })
+})

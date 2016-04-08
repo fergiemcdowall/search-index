@@ -96,7 +96,11 @@ it('should do some simple indexing', function (done) {
 
 
 it('simple search, sorted by ID', function (done) {
-  si.search({query: {'*': ['*']}}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['*']}
+    }
+  }, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -107,7 +111,11 @@ it('simple search, sorted by ID', function (done) {
 
 
 it('simple search, sorted by relevance', function (done) {
-  si.search({query: {'*': ['watch']}}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['watch']}
+    }
+  }, function (err, results) {
     ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -117,7 +125,12 @@ it('simple search, sorted by relevance', function (done) {
 })
 
 it('simple search, sorted by price', function (done) {
-  si.search({query: {'*': ['watch']}, sort:['price', 'desc']}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['watch']}
+    },
+    sort:['price', 'desc']
+  }, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -129,7 +142,12 @@ it('simple search, sorted by price', function (done) {
 })
 
 it('simple search, two tokens, sorted by price', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']}, sort:['price', 'desc']}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['watch', 'swiss'] }
+    },
+    sort:['price', 'desc']
+  }, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -141,7 +159,13 @@ it('simple search, two tokens, sorted by price', function (done) {
 })
 
 it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']}, pageSize: 2, sort:['price', 'desc']}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['watch', 'swiss']}
+    },
+    pageSize: 2,
+    sort:['price', 'desc']
+  }, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
@@ -154,11 +178,15 @@ it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
 
 
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']},
-             offset: 1,
-             pageSize: 2,
-             sort:['price', 'desc']}, function (err, results) {
-    (err === null).should.be.exactly(true)
+  si.search({
+    query: {
+      AND: {'*': ['watch', 'swiss']}
+    },
+    offset: 1,
+    pageSize: 2,
+    sort:['price', 'desc']
+  }, function (err, results) {
+    ;(err === null).should.be.exactly(true)
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
       [ '3', '9' ])
@@ -169,10 +197,14 @@ it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', functi
 })
 
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort asc', function (done) {
-  si.search({query: {'*': ['watch', 'swiss']},
-             offset: 1,
-             pageSize: 2,
-             sort:['price', 'asc']}, function (err, results) {
+  si.search({
+    query: {
+      AND: {'*': ['watch', 'swiss']}
+    },
+    offset: 1,
+    pageSize: 2,
+    sort:['price', 'asc']
+  }, function (err, results) {
     (err === null).should.be.exactly(true)
     should.exist(results)
 //    console.log(JSON.stringify(results.hits, null, 2))

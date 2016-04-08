@@ -213,7 +213,9 @@ describe('Indexing Reuters reuters-000.json: ', function () {
 
   it('should be able to return all documents in index', function (done) {
     var q = {}
-    q.query = {'*': ['*']}
+    q.query = {
+      AND: {'*': ['*']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

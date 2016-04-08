@@ -39,7 +39,9 @@ describe('Indexing and searching non-ascii characters: ', function () {
 
   it('should be able to search in test data', function (done) {
     var q = {}
-    q.query = {'*': ['ståle', 'synnøve', 'kjærsti']}
+    q.query = {
+      AND: {'*': ['ståle', 'synnøve', 'kjærsti']}
+    }
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
@@ -52,7 +54,9 @@ describe('Indexing and searching non-ascii characters: ', function () {
 
   it('should be able to search in test data', function (done) {
     var q = {}
-    q.query = {'*': ['gerät', 'grünnerløkka']}
+    q.query = {
+      AND: {'*': ['gerät', 'grünnerløkka']}
+    }
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)

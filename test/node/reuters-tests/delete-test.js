@@ -38,7 +38,11 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('document is present in search', function (done) {
-    si.search({query: {'*': ['western']}}, function (err, result) {
+    si.search({
+      query: {
+        AND: {'*': ['western']}
+      }
+    }, function (err, result) {
       should.exist(result)
       ;(err === null).should.be.exactly(true)
       result.totalHits.should.be.exactly(14)
@@ -81,7 +85,11 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('deleted document is not appearing in results', function (done) {
-    si.search({query: {'*': ['western']}}, function (err, result) {
+    si.search({
+      query: {
+        AND: {'*': ['western']}
+      }
+    }, function (err, result) {
       should.exist(result)
       ;(err === null).should.be.exactly(true)
       result.totalHits.should.be.exactly(13)
@@ -110,7 +118,11 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('document reappears in search', function (done) {
-    si.search({query: {'*': ['western']}}, function (err, result) {
+    si.search({
+      query: {
+        AND: {'*': ['western']}
+      }
+    }, function (err, result) {
       should.exist(result)
       ;(err === null).should.be.exactly(true)
       result.totalHits.should.be.exactly(14)

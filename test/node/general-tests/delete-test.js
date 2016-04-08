@@ -53,7 +53,9 @@ describe('deleting: ', function () {
 
   it('should be able to return all documents in index', function (done) {
     var q = {}
-    q.query = {'*': ['*']}
+    q.query = {
+      AND: {'*': ['*']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -72,7 +74,9 @@ describe('deleting: ', function () {
 
   it('should be able to return all documents in index, with one document deleted', function (done) {
     var q = {}
-    q.query = {'*': ['*']}
+    q.query = {
+      AND: {'*': ['*']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -94,7 +98,9 @@ describe('deleting: ', function () {
 
   it('should return 3 docs, since the previously indexed doc is a duplicate', function (done) {
     var q = {}
-    q.query = {'*': ['*']}
+    q.query = {
+      AND: {'*': ['*']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

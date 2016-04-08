@@ -71,7 +71,9 @@ describe('Instantiation: ', function () {
 
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
       var q = {}
-      q.query = {'*': ['*']}
+      q.query = {
+        AND: {'*': ['*']}
+      }
       siOne.search(q, function (err, results) {
         should.exist(results)
         ;(err === null).should.be.exactly(true)
@@ -85,7 +87,9 @@ describe('Instantiation: ', function () {
 
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
       var q = {}
-      q.query = {'*': ['*']}
+      q.query = {
+        AND: {'*': ['*']}
+      }
       siTwo.search(q, function (err, results) {
         should.exist(results)
         ;(err === null).should.be.exactly(true)

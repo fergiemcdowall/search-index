@@ -21,267 +21,401 @@ describe('searching world bank dataset and filtering on ranges', function () {
 
   it('should be able to search for more than 1 word and show facetranges', function (done) {
     var q = {}
-    q.query = {'*': ['africa', 'bank']}
-    q.facets = {
-      totalamt: {
-        ranges: [
-          [
-            '000000000000000',
-            '000000050000000'
-          ],
-          [
-            '000000050000001',
-            '100000000000000'
-          ]
-        ]
-      },
-      mjtheme: {
-        ranges: [
-          [
-            'A',
-            'J'
-          ],
-          [
-            'K',
-            'Z'
-          ]
-        ]
-      }
+    q.query = {
+      AND: [{'*': ['africa', 'bank']}]
     }
+    q.buckets = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
+      },
+      {
+        field: 'totalamt',
+        gte: '000000050000001',
+        lte: '100000000000000'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'J'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'K',
+        lte: 'Z'
+      }      
+    ]
     q.pageSize = 100
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
       results.hits.length.should.be.exactly(12)
       results.totalHits.should.be.exactly(12)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].value.should.be.exactly(10)
-      results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000')
-      results.facets[0].value[1].value.should.be.exactly(2)
-      results.facets[1].value[0].key.should.be.exactly('K-Z')
-      results.facets[1].value[0].value.should.be.exactly(9)
-      results.facets[1].value[1].key.should.be.exactly('A-J')
-      results.facets[1].value[1].value.should.be.exactly(8)
+      results.buckets.should.eql(
+        [ 
+          {
+            "field": "totalamt",
+            "gte": "000000000000000",
+            "lte": "000000050000000",
+            "count": 10
+          },
+          {
+            "field": "totalamt",
+            "gte": "000000050000001",
+            "lte": "100000000000000",
+            "count": 2
+          },
+          {
+            "field": "mjtheme",
+            "gte": "A",
+            "lte": "J",
+            "count": 8
+          },
+          {
+            "field": "mjtheme",
+            "gte": "K",
+            "lte": "Z",
+            "count": 9
+          }
+        ]
+      )
       done()
     })
   })
 
   it('should be able to filter on a chosen facetrange', function (done) {
     var q = {}
-    q.query = {'*': ['africa', 'bank']}
-    q.facets = {
-      totalamt: {
-        ranges: [
-          [
-            '000000000000000',
-            '000000050000000'
-          ],
-          [
-            '000000050000001',
-            '100000000000000'
-          ]
-        ]
+    q.query = {
+      AND: [{'*': ['africa', 'bank']}]
+    }
+    q.buckets = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
       },
-      mjtheme: {
-        ranges: [
-          [
-            'A',
-            'J'
-          ],
-          [
-            'K',
-            'Z'
-          ]
-        ]
+      {
+        field: 'totalamt',
+        gte: '000000050000001',
+        lte: '100000000000000'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'J'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'K',
+        lte: 'Z'
+      }      
+    ]
+    q.filter = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
       }
-    }
-    q.filter = {
-      totalamt: [
-        [
-          '000000000000000',
-          '000000050000000'
-        ]
-      ]
-    }
+    ]
     q.pageSize = 100
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
       results.hits.length.should.be.exactly(10)
       results.totalHits.should.be.exactly(10)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].value.should.be.exactly(10)
-      results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000')
-      results.facets[0].value[1].value.should.be.exactly(0)
-      results.facets[1].value[0].key.should.be.exactly('K-Z')
-      results.facets[1].value[0].value.should.be.exactly(8)
-      results.facets[1].value[1].key.should.be.exactly('A-J')
-      results.facets[1].value[1].value.should.be.exactly(6)
+
+      results.buckets.should.eql([
+        {
+          "field": "totalamt",
+          "gte": "000000000000000",
+          "lte": "000000050000000",
+          "count": 10
+        },
+        {
+          "field": "totalamt",
+          "gte": "000000050000001",
+          "lte": "100000000000000",
+          "count": 0
+        },
+        {
+          "field": "mjtheme",
+          "gte": "A",
+          "lte": "J",
+          "count": 6
+        },
+        {
+          "field": "mjtheme",
+          "gte": "K",
+          "lte": "Z",
+          "count": 8
+        }
+      ])
       done()
     })
   })
 
   it('should be able to show facets', function (done) {
     var q = {}
-    q.query = {'*': ['africa', 'bank']}
-    q.facets = {
-      totalamt: {
-        ranges: [
-          [
-            '000000000000000',
-            '000000050000000'
-          ],
-          [
-            '000000050000001',
-            '100000000000000'
-          ]
-        ]
-      },
-      mjtheme: {
-        ranges: [
-          ['A', 'F'],
-          ['G', 'N'],
-          ['O', 'Z']
-        ]
-      }
+    q.query = {
+      AND: [{'*': ['africa', 'bank']}]
     }
+    q.buckets = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
+      },
+      {
+        field: 'totalamt',
+        gte: '000000050000001',
+        lte: '100000000000000'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'F'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'G',
+        lte: 'N'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'O',
+        lte: 'Z'
+      }      
+    ]
     q.pageSize = 100
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
       results.hits.length.should.be.exactly(12)
       results.totalHits.should.be.exactly(12)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].value.should.be.exactly(10)
-      results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000')
-      results.facets[0].value[1].value.should.be.exactly(2)
-      results.facets[1].value[0].key.should.be.exactly('O-Z')
-      results.facets[1].value[0].value.should.be.exactly(9)
-      results.facets[1].value[1].key.should.be.exactly('A-F')
-      results.facets[1].value[1].value.should.be.exactly(7)
-      results.facets[1].value[2].key.should.be.exactly('G-N')
-      results.facets[1].value[2].value.should.be.exactly(1)
+      results.buckets.should.eql(
+        [ 
+          {
+            "field": "totalamt",
+            "gte": "000000000000000",
+            "lte": "000000050000000",
+            "count": 10
+          },
+          {
+            "field": "totalamt",
+            "gte": "000000050000001",
+            "lte": "100000000000000",
+            "count": 2
+          },
+          {
+            "field": "mjtheme",
+            "gte": "A",
+            "lte": "F",
+            "count": 7
+          },
+          {
+            "field": "mjtheme",
+            "gte": "G",
+            "lte": "N",
+            "count": 1
+          },
+          {
+            "field": "mjtheme",
+            "gte": "O",
+            "lte": "Z",
+            "count": 9
+          }
+        ]
+      )
       done()
     })
   })
 
   it('should be able to filter on a chosen facetrange and drill down on two values in same filter', function (done) {
     var q = {}
-    q.query = {'*': ['africa', 'bank']}
-    q.facets = {
-      totalamt: {
-        ranges: [
-          [
-            '000000000000000',
-            '000000050000000'
-          ],
-          [
-            '000000050000001',
-            '100000000000000'
-          ]
-        ]
+    q.query = {
+      AND: [{'*': ['africa', 'bank']}]
+    }
+    q.buckets = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
       },
-      mjtheme: {
-        ranges: [
-          ['A', 'F'],
-          ['G', 'N'],
-          ['O', 'Z']
-        ]
+      {
+        field: 'totalamt',
+        gte: '000000050000001',
+        lte: '100000000000000'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'F'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'G',
+        lte: 'N'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'O',
+        lte: 'Z'
+      }      
+    ]
+    q.filter = [
+      {
+        field: 'mjtheme',
+        gte: 'O',
+        lte: 'Z'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'F'
       }
-    }
-    q.filter = {
-      mjtheme: [
-        ['O', 'Z'],
-        ['A', 'F']
-      ]
-    }
+    ]
     q.pageSize = 100
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
       results.hits.length.should.be.exactly(4)
       results.totalHits.should.be.exactly(4)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].value.should.be.exactly(3)
-      results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000')
-      results.facets[0].value[1].value.should.be.exactly(1)
-      results.facets[1].value[0].key.should.be.exactly('O-Z')
-      results.facets[1].value[0].value.should.be.exactly(4)
-      results.facets[1].value[1].key.should.be.exactly('A-F')
-      results.facets[1].value[1].value.should.be.exactly(4)
-      results.facets[1].value[2].key.should.be.exactly('G-N')
-      results.facets[1].value[2].value.should.be.exactly(0)
+
+      results.buckets.should.eql(
+        [ 
+          {
+            "field": "totalamt",
+            "gte": "000000000000000",
+            "lte": "000000050000000",
+            "count": 3
+          },
+          {
+            "field": "totalamt",
+            "gte": "000000050000001",
+            "lte": "100000000000000",
+            "count": 1
+          },
+          {
+            "field": "mjtheme",
+            "gte": "A",
+            "lte": "F",
+            "count": 4
+          },
+          {
+            "field": "mjtheme",
+            "gte": "G",
+            "lte": "N",
+            "count": 0
+          },
+          {
+            "field": "mjtheme",
+            "gte": "O",
+            "lte": "Z",
+            "count": 4
+          }
+        ]
+      )
       done()
     })
   })
 
   it('should be able to filter on a chosen facetrange and drill down on two values in multiple filters', function (done) {
     var q = {}
-    q.query = {'*': ['africa', 'bank']}
-    q.facets = {
-      totalamt: {
-        ranges: [
-          [
-            '000000000000000',
-            '000000050000000'
-          ],
-          [
-            '000000050000001',
-            '100000000000000'
-          ]
-        ]
+
+
+    q.query = {
+      AND: [{'*': ['africa', 'bank']}]
+    }
+    q.buckets = [
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
       },
-      mjtheme: {
-        ranges: [
-          ['A', 'F'],
-          ['G', 'N'],
-          ['O', 'Z']
-        ]
+      {
+        field: 'totalamt',
+        gte: '000000050000001',
+        lte: '100000000000000'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'F'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'G',
+        lte: 'N'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'O',
+        lte: 'Z'
+      }      
+    ]
+    q.filter = [
+      {
+        field: 'mjtheme',
+        gte: 'O',
+        lte: 'Z'
+      },
+      {
+        field: 'mjtheme',
+        gte: 'A',
+        lte: 'F'
+      },
+      {
+        field: 'totalamt',
+        gte: '000000000000000',
+        lte: '000000050000000'
       }
-    }
-    q.filter = {
-      totalamt: [
-        ['000000000000000', '000000050000000']
-      ],
-      mjtheme: [
-        ['O', 'Z'],
-        ['A', 'F']
-      ]
-    }
+    ]
+
     q.pageSize = 100
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)
       results.hits.length.should.be.exactly(3)
       results.totalHits.should.be.exactly(3)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].gte.should.be.exactly('000000000000000')
-      results.facets[0].value[0].lte.should.be.exactly('000000050000000')
-      results.facets[0].value[0].active.should.be.exactly(true)
-      results.facets[0].value[0].value.should.be.exactly(3)
-      results.facets[0].value[1].key.should.be.exactly('000000050000001-100000000000000')
-      results.facets[0].value[1].gte.should.be.exactly('000000050000001')
-      results.facets[0].value[1].lte.should.be.exactly('100000000000000')
-      should.not.exist(results.facets[0].value[1].active)
-      results.facets[0].value[1].value.should.be.exactly(0)
-      results.facets[0].value[0].key.should.be.exactly('000000000000000-000000050000000')
-      results.facets[0].value[0].gte.should.be.exactly('000000000000000')
-      results.facets[0].value[0].lte.should.be.exactly('000000050000000')
-      results.facets[0].value[0].active.should.be.exactly(true)
-      results.facets[1].value[0].value.should.be.exactly(3)
-      results.facets[1].value[1].key.should.be.exactly('A-F')
-      results.facets[1].value[1].gte.should.be.exactly('A')
-      results.facets[1].value[1].lte.should.be.exactly('F')
-      results.facets[1].value[1].active.should.be.exactly(true)
-      results.facets[1].value[1].value.should.be.exactly(3)
-      results.facets[1].value[2].key.should.be.exactly('G-N')
-      results.facets[1].value[2].gte.should.be.exactly('G')
-      results.facets[1].value[2].lte.should.be.exactly('N')
-      should.not.exist(results.facets[1].value[2].active)
-      results.facets[1].value[2].value.should.be.exactly(0)
+      results.buckets.should.eql(
+        [ 
+          {
+            "field": "totalamt",
+            "gte": "000000000000000",
+            "lte": "000000050000000",
+            "count": 3
+          },
+          {
+            "field": "totalamt",
+            "gte": "000000050000001",
+            "lte": "100000000000000",
+            "count": 0
+          },
+          {
+            "field": "mjtheme",
+            "gte": "A",
+            "lte": "F",
+            "count": 3
+          },
+          {
+            "field": "mjtheme",
+            "gte": "G",
+            "lte": "N",
+            "count": 0
+          },
+          {
+            "field": "mjtheme",
+            "gte": "O",
+            "lte": "Z",
+            "count": 3
+          }
+        ]
+      )
       si.close(function(err){
         done()
       })
     })
   })
+
 })

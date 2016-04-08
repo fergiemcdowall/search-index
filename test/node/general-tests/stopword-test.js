@@ -102,7 +102,9 @@ describe('stopwords: ', function () {
 
   it('should be able to return all documents that contain "dette" if indexing with english stopwords', function (done) {
     var q = {}
-    q.query = {'*': ['dette']}
+    q.query = {
+      AND: {'*': ['dette']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -114,14 +116,16 @@ describe('stopwords: ', function () {
 
   it('should index test data into the index with norwegian stopwords', function (done) {
     siNO.add(data, {batchName: 'data1'}, function (err) {
-      (err === null).should.be.exactly(true)
+      ;(err === null).should.be.exactly(true)
       done()
     })
   })
 
   it('should be able to return all documents in index', function (done) {
     var q = {}
-    q.query = {'*': ['tur']}
+    q.query = {
+      AND: {'*': ['tur']}
+    }
     siNO.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -131,10 +135,11 @@ describe('stopwords: ', function () {
     })
   })
 
-  // 14th Aug 2015 - This test seems to run fine locally, but Travis complains...
   it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
     var q = {}
-    q.query = {'*': ['dette']}
+    q.query = {
+      AND: {'*': ['dette']}
+    }
     siNO.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -153,7 +158,9 @@ describe('stopwords: ', function () {
 
   it('should be able to return results for "fish and chips"', function (done) {
     var q = {}
-    q.query = {'*': 'fish and chips'.split(' ')}
+    q.query = {
+      AND: {'*': 'fish and chips'.split(' ')}
+    }
     siFood.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -165,7 +172,9 @@ describe('stopwords: ', function () {
 
   it('should be able to return results for "and"', function (done) {
     var q = {}
-    q.query = {'*': ['and']}
+    q.query = {
+      AND: {'*': ['and']}
+    }
     siFood.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -176,15 +185,20 @@ describe('stopwords: ', function () {
   })
 
   it('should create an index of fast food without stopwords', function (done) {
-    siFood2.add(food, {batchName: 'food'}, function (err) {
-      (err === null).should.be.exactly(true)
+    siFood2.add(food, {
+      batchName: 'food',
+      stopwords: []
+    }, function (err) {
+      ;(err === null).should.be.exactly(true)
       done()
     })
   })
 
   it('should be able to return "fish and chips"', function (done) {
     var q = {}
-    q.query = {'*': 'fish and chips'.split(' ')}
+    q.query = {
+      AND: {'*': 'fish and chips'.split(' ')}
+    }
     siFood2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

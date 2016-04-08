@@ -28,7 +28,11 @@ describe('Making a search-index with a vanilla (leveldown) levelup: ', function 
       title: 'a realllly cool document',
       body: 'this is my doc'
     }], function (err) {
-      si.search({query:{title: ['cool']}}, function(err, results){
+      si.search({
+        query: {
+          AND: {title: ['cool']}
+        }
+      }, function(err, results){
         results.hits[0].document.body.should.equal('this is my doc')
         done()
       })

@@ -37,7 +37,11 @@ describe('deleting a batch: ', function () {
   })
 
   it('should be able verify that docs are deleted', function (done) {
-    si.search({query: {'*': ['*']}}, function (err, result) {
+    si.search({
+      query: {
+        AND: {'*': ['*']}
+      }
+    }, function (err, result) {
       should.exist(result)
       ;(err === null).should.be.exactly(true)
       result.totalHits.should.be.exactly(5)

@@ -68,7 +68,11 @@ describe('Indexing API', function () {
       separator: /[ (\n)]+/
     }, function (err) {
       assert.equal(err, null)
-      si.search({query: {'*': ['14.2.1.0']}}, function (err, res) {
+      si.search({
+        query: {
+          AND: {'*': ['14.2.1.0']}
+        }
+      }, function (err, res) {
         (err === null).should.be.exactly(true)
         assert(res.totalHits === 1)
         done()
