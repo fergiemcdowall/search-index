@@ -141,7 +141,9 @@ describe('indexing options: ', function () {
 
   it('should search on title', function (done) {
     var q = {}
-    q.query = {title: ['stock']}
+    q.query = {
+      AND: {title: ['stock']}
+    }
     si1.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -154,7 +156,9 @@ describe('indexing options: ', function () {
 
   it('should be able to search for a term in the body by using the composite (*) field', function (done) {
     var q = {}
-    q.query = {'*': ['marathon']}
+    q.query = {
+      AND: {'*': ['marathon']}
+    }
     si1.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -167,7 +171,9 @@ describe('indexing options: ', function () {
 
   it('should be NOT able to search for a term in the body by using the body field since "body" was not specified as a canDoFieldedSearchOn field', function (done) {
     var q = {}
-    q.query = {body: ['marathon']}
+    q.query = {
+      AND: {body: ['marathon']}
+    }
     si1.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -178,7 +184,9 @@ describe('indexing options: ', function () {
 
   it('should be NOT able to search for any term at all in the body by using the body field since "body" was not specified as a canDoFieldedSearchOn field', function (done) {
     var q = {}
-    q.query = {body: ['*']}
+    q.query = {
+      AND:{body: ['*']}
+    }
     si1.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -204,7 +212,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD able to search for a term in the body by using the body field since fieldedSearchOnAllFieldsByDefault is true', function (done) {
     var q = {}
-    q.query = {body: ['marathon']}
+    q.query = {
+      AND: {body: ['marathon']}
+    }
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -213,24 +223,47 @@ describe('indexing options: ', function () {
     })
   })
 
-  it('SHOULD able to do facets', function (done) {
+  it('SHOULD be able to do facets', function (done) {
     var q = {}
-    q.query = {'*': ['reuter']}
-    q.facets = {places: {}}
+    q.query = {
+      AND: {'*': ['reuter']}
+    }
+    q.categories = [{
+      name: 'places'
+    }]
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(10)
-      searchResults.facets[0].key.should.be.exactly('places')
-      searchResults.facets[0].value.should.eql(
-        [ { key: 'usa', gte: 'usa', lte: 'usa', value: 9 },
-          { key: 'uruguay', gte: 'uruguay', lte: 'uruguay', value: 1 },
-          { key: 'el-salvador',
-            gte: 'el-salvador',
-            lte: 'el-salvador',
-          value: 1 },
-          { key: 'brazil', gte: 'brazil', lte: 'brazil', value: 1 },
-          { key: 'argentina', gte: 'argentina', lte: 'argentina', value: 1 } ]
+      // searchResults.facets[0].key.should.be.exactly('places')
+      searchResults.categories.should.eql(
+        [
+          {
+            "key": "places",
+            "value": [
+              {
+                "key": "usa",
+                "value": 9
+              },
+              { 
+                "key": "argentina",
+                "value": 1
+              },
+              { 
+                "key": "brazil",
+                "value": 1
+              },
+              { 
+                "key": "el-salvador",
+                "value": 1
+              },
+              { 
+                "key": "uruguay",
+                "value": 1
+              }
+            ]
+          }
+        ]
       )
       done()
     })
@@ -251,7 +284,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD NOT able to search for a term in the body by using the composite field since nonSearchableFields included "body" when data was indexed', function (done) {
     var q = {}
-    q.query = {'*': ['marathon']}
+    q.query = {
+      AND: {'*': ['marathon']}
+    }
     si3.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -262,7 +297,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD able to search for a term in the title since nonSearchableFields included "body" when data was indexed', function (done) {
     var q = {}
-    q.query = {'*': ['GRAIN/OILSEED']}
+    q.query = {
+      AND: {'*': ['grain/oilseed']}
+    }
     si3.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -287,7 +324,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD NOT able to do fielded search on the body field', function (done) {
     var q = {}
-    q.query = {body: ['marathon']}
+    q.query = {
+      AND: {body: ['marathon']}
+    }
     si4.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -298,7 +337,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD be able to do fielded search on the composite (*) field', function (done) {
     var q = {}
-    q.query = {'*': ['marathon']}
+    q.query = {
+      AND: {'*': ['marathon']}
+    }
     si4.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -322,7 +363,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD NOT able to do fielded search on the body field', function (done) {
     var q = {}
-    q.query = {body: ['marathon']}
+    q.query = {
+      AND: {body: ['marathon']}
+    }
     si5.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -333,7 +376,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD NOT able to do search on the composite field for tokens present in the body field defined in nonSearchableFields', function (done) {
     var q = {}
-    q.query = {'*': ['marathon']}
+    q.query = {
+      AND: {'*': ['marathon']}
+    }
     si5.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -344,7 +389,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD be able to do search on the composite field for tokens present in the title field', function (done) {
     var q = {}
-    q.query = {'*': ['GRAIN/OILSEED']}
+    q.query = {
+      AND: {'*': ['grain/oilseed']}
+    }
     si5.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -368,7 +415,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD be able to do search on the composite field for tokens present in the title field', function (done) {
     var q = {}
-    q.query = {'*': ['stock']}
+    q.query = {
+      AND: {'*': ['stock']}
+    }
     si6.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -393,7 +442,9 @@ describe('indexing options: ', function () {
 
   it('SHOULD be able to do a search', function (done) {
     var q = {}
-    q.query = {'*': ['stock']}
+    q.query = {
+      AND: {'*': ['stock']}
+    }
     si7.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -416,7 +467,9 @@ describe('indexing options: ', function () {
 
   it('doc should still be present in index', function (done) {
     var q = {}
-    q.query = {'*': ['stock']}
+    q.query = {
+      AND: {'*': ['stock']}
+    }
     si7.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -442,7 +495,9 @@ describe('indexing options: ', function () {
 
   it('doc should still be present in index', function (done) {
     var q = {}
-    q.query = {'*': ['stock']}
+    q.query = {
+      AND: {'*': ['stock']}
+    }
     si8.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -472,7 +527,9 @@ describe('indexing options: ', function () {
 
   it('doc should still be present in index', function (done) {
     var q = {}
-    q.query = {'*': ['stock']}
+    q.query = {
+      AND: {'*': ['stock']}
+    }
     si9.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

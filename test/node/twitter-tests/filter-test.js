@@ -49,15 +49,24 @@ it('should be able to search in twitter data', function (done) {
     results.totalHits.should.be.exactly(8)
     results.categories.should.eql([ 
       {
+        "key": "user",
+        "value": [
+          {
+            "key": "eklem",
+            "value": 8
+          },
+          {
+            "key": "GoogleforWork",
+            "value": 1
+          }
+        ]
+      },
+      {
         "key": "tags",
         "value": [
           {
             "key": "search",
             "value": 5
-          },
-          {
-            "key": "undefined",
-            "value": 3
           },
           {
             "key": "engine",
@@ -77,19 +86,6 @@ it('should be able to search in twitter data', function (done) {
           },
           {
             "key": "sites",
-            "value": 1
-          }
-        ]
-      },
-      {
-        "key": "user",
-        "value": [
-          {
-            "key": "eklem",
-            "value": 8
-          },
-          {
-            "key": "GoogleforWork",
             "value": 1
           }
         ]
@@ -130,19 +126,31 @@ it('should be able to filter by user', function (done) {
     }
   ]
   si.search(q, function (err, results) {
+    // console.log(JSON.stringify(results, null, 2))
     should.exist(results)
     ;(err === null).should.be.exactly(true)
     results.hits.length.should.be.exactly(1)
     results.totalHits.should.be.exactly(1)
-    results.categories.should.eql([{
-      "key": "user",
-      "value": [
-        {
-          "key": "GoogleforWork",
-          "value": 1
-        }
-      ]
-    }])
+    results.categories.should.eql([
+      {
+        "key": "user",
+        "value": [
+          {
+            "active": true,
+            "key": "GoogleforWork",
+            "value": 1
+          },
+          {
+            "key": "eklem",
+            "value": 1
+          }
+        ]
+      },
+      {
+        "key": "tags",
+        "value": []
+      }
+    ])
     results.hits.map(function (item) { return item.id }).should.eql(
       [
         "4EaEkI"
@@ -171,24 +179,52 @@ it('should be able to filter by tag', function (done) {
     }
   ]
   si.search(q, function (err, results) {
+     // console.log(JSON.stringify(results, null, 2))
+
     should.exist(results)
     ;(err === null).should.be.exactly(true)
     results.hits.length.should.be.exactly(5)
     results.totalHits.should.be.exactly(5)
     results.categories.should.eql(
-      [ 
+      [
+        {
+          "key": "user",
+          "value": [
+            {
+              "key": "eklem",
+              "value": 5
+            } 
+          ] 
+        },
         {
           "key": "tags",
           "value": [
             {
+              "active": true,
               "key": "search",
               "value": 5
             },
             {
+              "key": "engine",
+              "value": 1
+            },
+            {
+              "key": "eso",
+              "value": 1
+            },
+            {
+              "key": "events",
+              "value": 1
+            },
+            {
               "key": "searchable",
               "value": 1
+            },
+            {
+              "key": "sites",
+              "value": 1
             } 
-          ] 
+          ]
         } 
       ]
     )

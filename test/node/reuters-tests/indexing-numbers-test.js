@@ -50,7 +50,9 @@ describe('Indexing numeric fields, Reuters: ', function () {
 
   it('should be able to search number fields in indexed datas', function (done) {
     var q = {}
-    q.query = {randomNumber: [2749]}
+    q.query = {
+      AND: {randomNumber: [2749]}
+    }
     si.search(q, function (err, results) {
       should.exist(results)
       ;(err === null).should.be.exactly(true)

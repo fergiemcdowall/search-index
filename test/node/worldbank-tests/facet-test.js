@@ -176,7 +176,20 @@ describe('Searching World Bank and Checking Faceting: ', function () {
       results.hits.length.should.be.exactly(12)
       results.totalHits.should.be.exactly(12)
       results.categories.should.eql(
-        [ 
+        [
+          {
+            "key": "totalamt",
+            "value": [
+              {
+                "key": "000000020000000",
+                "value": 1
+              },
+              {
+                "key": "000000070000000",
+                "value": 1
+              } 
+            ] 
+          },
           {
             "key": "mjtheme",
             "value": [
@@ -193,20 +206,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
                 "value": 4
               } 
             ]
-          },
-          {
-            "key": "totalamt",
-            "value": [
-              {
-                "key": "000000020000000",
-                "value": 1
-              },
-              {
-                "key": "000000070000000",
-                "value": 1
-              } 
-            ] 
-          } 
+          }
         ] 
       )
       done()

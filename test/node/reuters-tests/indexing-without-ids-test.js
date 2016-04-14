@@ -65,8 +65,9 @@ describe('Indexing Reuters without IDs: ', function () {
 
   it('should search on all fields and get results', function (done) {
     var q = {}
-    q.query = {'*': ['usa']} // TODO: add error message if this is
-    //      not an array
+    q.query = {
+      AND: {'*': ['usa']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)
@@ -78,7 +79,9 @@ describe('Indexing Reuters without IDs: ', function () {
 
   it('should be able to handle multiword searches', function (done) {
     var q = {}
-    q.query = {'*': ['reuter', '1987']}
+    q.query = {
+      AND: {'*': ['reuter', '1987']}
+    }
     si.search(q, function (err, searchResults) {
       should.exist(searchResults)
       ;(err === null).should.be.exactly(true)

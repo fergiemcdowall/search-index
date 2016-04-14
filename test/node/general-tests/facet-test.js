@@ -118,6 +118,43 @@ it('should do some simple indexing with filters', function (done) {
   })
 })
 
+
+it('return all docs, and show manufacturer and color categories, filter on color: black', function (done) {
+  si.search({
+    query: [
+      {
+        AND: {'*': ['swiss', 'watch']},
+      },
+      {
+        AND: {'*': ['apple']},
+      }
+    ],
+    categories: [{
+      name: 'manufacturer'
+    }, {
+      name: 'color'
+    }],
+    filter: [{
+      field: 'color',
+      gte: 'black',
+      lte: 'black'
+    }]
+  }, function (err, results) {
+    ;(err === null).should.be.exactly(true)
+    should.exist(results)
+    results.hits.map(function (item) { return item.id }).should.eql(
+      [ '1', '3', '9', '2' ]
+    )
+    // console.log(JSON.stringify(results.categories, null, 2))
+
+    // results.categories.should.eql('sds')
+
+    done()
+  })
+})
+
+
+
 it('should be able to do simple filtering on manufacturer=armani', function (done) {
   var q = {}
   q.query = {
@@ -447,40 +484,12 @@ it('return all docs, and show manufacturer and color categories', function (done
     }]
   }, function (err, results) {
     ;(err === null).should.be.exactly(true)
+    // console.log(JSON.stringify(results.categories, null, 2))
     should.exist(results)
     results.hits.map(function (item) { return item.id }).should.eql(
       [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
     )
     results.categories.should.eql([
-      {
-        "key": "color",
-        "value": [
-          {
-            "key": "black",
-            "value": 7
-          },
-          {
-            "key": "gold",
-            "value": 7
-          },
-          {
-            "key": "pink",
-            "value": 4
-          },
-          {
-            "key": "white",
-            "value": 3
-          },
-          {
-            "key": "red",
-            "value": 2
-          },
-          {
-            "key": "blue",
-            "value": 1
-          } 
-        ] 
-      },
       {
         "key": "manufacturer",
         "value": [
@@ -521,6 +530,35 @@ it('return all docs, and show manufacturer and color categories', function (done
             "value": 1
           }
         ]
+      },
+      {
+        "key": "color",
+        "value": [
+          {
+            "key": "black",
+            "value": 7
+          },
+          {
+            "key": "gold",
+            "value": 7
+          },
+          {
+            "key": "pink",
+            "value": 4
+          },
+          {
+            "key": "white",
+            "value": 3
+          },
+          {
+            "key": "red",
+            "value": 2
+          },
+          {
+            "key": "blue",
+            "value": 1
+          } 
+        ] 
       }
     ])
     done()
