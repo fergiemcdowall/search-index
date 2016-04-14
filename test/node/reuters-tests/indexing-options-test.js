@@ -229,7 +229,7 @@ describe('indexing options: ', function () {
       AND: {'*': ['reuter']}
     }
     q.categories = [{
-      name: 'places'
+      field: 'places'
     }]
     si2.search(q, function (err, searchResults) {
       should.exist(searchResults)

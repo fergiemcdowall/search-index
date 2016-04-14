@@ -159,12 +159,12 @@ describe('Searching World Bank and Checking Faceting: ', function () {
     }
     q.categories = [
       {
-        name: 'totalamt',
+        field: 'totalamt',
         sort: 'valueAsc',
         limit: 2
       },
       {
-        name: 'mjtheme',
+        field: 'mjtheme',
         sort: 'valueDesc',
         limit: 3
       }
@@ -219,7 +219,7 @@ describe('Searching World Bank and Checking Faceting: ', function () {
       AND: [{'*': ['africa', 'bank']}]
     }
     q.categories = [{
-      name: 'totalamt',
+      field: 'totalamt',
       sort: 'keyDesc'
     }]
     q.buckets = [{

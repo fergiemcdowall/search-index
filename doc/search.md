@@ -125,7 +125,7 @@ q.query = {
   AND: {'*': ['reagan']}
 }
 q.categories = {
-  name: 'places'    
+  field: 'places'    
 }
 ```
 
@@ -138,7 +138,7 @@ q.query = {
   AND: {'*': ['reagan']}
 }
 q.categories = {
-  name: 'places',
+  field: 'places',
   limit: 10
 }
 ```
@@ -154,7 +154,7 @@ q.query = {
   AND: {'*': ['reagan']}
 }
 q.categories = {
-  name: 'places',
+  field: 'places',
   limit: 10,
   sort: keyDesc
 }

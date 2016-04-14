@@ -147,7 +147,7 @@ describe('Searching Reuters: ', function () {
     }
     // q.facets = {places: {}}
     q.categories = [{
-      name: 'places'
+      field: 'places'
     }]
     si.search(q, function (err, searchResults) {
 
@@ -214,7 +214,7 @@ describe('Searching Reuters: ', function () {
       AND: {'*': ['usa']}
     }
     q.categories = [{
-      name: 'places'
+      field: 'places'
     }]
     q.filter = [{
       field: 'places',
@@ -352,9 +352,9 @@ describe('Searching Reuters: ', function () {
       AND: {'*': ['reuter']}
     }
     q.categories = [
-      {name: 'topics'},
-      {name: 'places'},
-      {name: 'organisations'},
+      {field: 'topics'},
+      {field: 'places'},
+      {field: 'organisations'},
     ]
     q.filter = [
       {
@@ -496,9 +496,9 @@ describe('Searching Reuters: ', function () {
       AND:{'*': ['reuter']}
     }
     q.categories = [
-      {name: 'topics'},
-      {name: 'places'},
-      {name: 'organisations'},
+      {field: 'topics'},
+      {field: 'places'},
+      {field: 'organisations'},
     ]
     q.filter = [
       {

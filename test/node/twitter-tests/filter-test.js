@@ -37,9 +37,9 @@ it('should be able to search in twitter data', function (done) {
     AND: {'*': ['search']}
   }
   q.categories = [{
-    name: 'user'
+    field: 'user'
   }, {
-    name: 'tags'
+    field: 'tags'
   }]
   q.pageSize = 100
   si.search(q, function (err, results) {
@@ -113,9 +113,9 @@ it('should be able to filter by user', function (done) {
     AND: {'*': ['search']}
   }
   q.categories = [{
-    name: 'user'
+    field: 'user'
   }, {
-    name: 'tags'
+    field: 'tags'
   }]
   q.pageSize = 100
   q.filter = [
@@ -166,9 +166,9 @@ it('should be able to filter by tag', function (done) {
     AND: {'*': ['search']}
   }
   q.categories = [{
-    name: 'user'
+    field: 'user'
   }, {
-    name: 'tags'
+    field: 'tags'
   }]
   q.pageSize = 100
   q.filter = [
@@ -249,9 +249,9 @@ it('should be able to search on tokens that are only found in metadata', functio
     AND: {'*': ['eklem']}
   }
   q.categories = [{
-    name: 'user'
+    field: 'user'
   }, {
-    name: 'tags'
+    field: 'tags'
   }]
   q.pageSize = 100
   si.search(q, function (err, results) {

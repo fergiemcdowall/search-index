@@ -130,9 +130,9 @@ it('return all docs, and show manufacturer and color categories, filter on color
       }
     ],
     categories: [{
-      name: 'manufacturer'
+      field: 'manufacturer'
     }, {
-      name: 'color'
+      field: 'color'
     }],
     filter: [{
       field: 'color',
@@ -247,7 +247,7 @@ it('should be able to search in indexed data with faceting', function (done) {
   ]
   q.categories = [
     {
-      name: 'manufacturer'
+      field: 'manufacturer'
     }
   ]
   si.search(q, function (err, results) {
@@ -301,7 +301,7 @@ it('should be able to search in indexed data with faceting, using a different so
   ]
   q.categories = [
     {
-      name: 'manufacturer',
+      field: 'manufacturer',
       sort: 'keyDesc'
     }
   ]
@@ -356,7 +356,7 @@ it('should be able to search in indexed data with faceting, using a different so
   ]
   q.categories = [
     {
-      name: 'manufacturer',
+      field: 'manufacturer',
       sort: 'keyDesc',
       limit: 3
     }
@@ -406,7 +406,7 @@ it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and ret
       }
     ],
     categories: [{
-      name: 'manufacturer'
+      field: 'manufacturer'
     }]
   }, function (err, results) {
     ;(err === null).should.be.exactly(true)
@@ -445,7 +445,7 @@ it('search for "swiss" NOT "watch" and return categories for manufacturer', func
       }
     ],
     categories: [{
-      name: 'manufacturer'
+      field: 'manufacturer'
     }]
   }, function (err, results) {
     ;(err === null).should.be.exactly(true)
@@ -480,9 +480,9 @@ it('return all docs, and show manufacturer and color categories', function (done
       }
     ],
     categories: [{
-      name: 'manufacturer'
+      field: 'manufacturer'
     }, {
-      name: 'color'
+      field: 'color'
     }]
   }, function (err, results) {
     ;(err === null).should.be.exactly(true)

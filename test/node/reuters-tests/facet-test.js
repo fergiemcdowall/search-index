@@ -25,7 +25,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
     }
     q.categories = [
       {
-        name: 'places'
+        field: 'places'
       }
     ]
     q.pageSize = 100
@@ -225,7 +225,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
     // q.facets = {places: {sort: 'valueAsc'}}
     q.categories = [
       {
-        name: 'places',
+        field: 'places',
         sort: 'valueAsc'
       }
     ]
@@ -454,7 +454,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
       AND: {'*': ['reuter']}
     }
     q.categories = [{
-      name: 'places',
+      field: 'places',
       sort: 'keyAsc'
     }]
     q.pageSize = 100
@@ -683,7 +683,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
     }
     q.categories = [
       {
-        name: 'places',
+        field: 'places',
         sort: 'keyDesc'
       }
     ]
@@ -915,7 +915,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
     }
     q.categories = [
       {
-        name: 'places',
+        field: 'places',
         limit: 20
       }
     ]
@@ -936,7 +936,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
       AND: {'*': ['reuter', '1987']}
     }
     q.categories = [{
-      name: 'places'
+      field: 'places'
     }]
     q.filter = [{
       field: 'places',
@@ -1007,7 +1007,7 @@ describe('Searching Reuters and Checking Faceting: ', function () {
       AND: {'*': ['reuter', '1987']}
     }
     q.categories = [{
-      name: 'places'
+      field: 'places'
     }]
     q.filter = [
       {
