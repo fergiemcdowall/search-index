@@ -251,6 +251,7 @@ it('should be able to search in indexed data with faceting', function (done) {
     }
   ]
   si.search(q, function (err, results) {
+    // console.log(JSON.stringify(results.categories, null, 2))
     should.exist(results)
     ;(err === null).should.be.exactly(true)
     results.hits.length.should.be.exactly(6)
@@ -305,6 +306,7 @@ it('should be able to search in indexed data with faceting, using a different so
     }
   ]
   si.search(q, function (err, results) {
+    // console.log(JSON.stringify(results.categories, null, 2))
     should.exist(results)
     ;(err === null).should.be.exactly(true)
     results.hits.length.should.be.exactly(6)

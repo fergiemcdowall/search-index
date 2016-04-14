@@ -4,7 +4,9 @@ You can search in your index by passing a query object to the search
 function like so:
 
 ```javascript
-  q.query = {'*': ['usa']}; //search for string 'usa' in all ('*') fields
+  q.query = {
+     AND: [{'*': ['usa']}] //search for string 'usa' in all ('*') fields
+  }
   si.search(q, function (err, searchResults) {
     //do something with searchResults
   })
@@ -19,7 +21,7 @@ Use the wildcard token ('*') to do simple searches across all fields
 
 ```javascript
 q.query = {
-  '*': ['reagan']
+  AND: {'*': ['reagan']}
 }
 ```
 
@@ -34,9 +36,40 @@ results. In the example below, only documents containing the word *reagan*
 in the `title` field **AND** the word *usa* in the `body` field will be returned.
 
 ```javascript
-q.query = {
-  'title': ['reagan'],
-  'body':['usa']
+q.query = 
+  {
+    AND: [
+      {'title': ['reagan']},
+      {'body':['usa']}
+    ]
+  }
+}
+```
+
+### Boolean Search (AND, OR, NOT)
+
+You can construct boolean AND, OR and NOT queries:
+
+```javascript
+q.query = [                    // Each array element is an OR condition
+  {
+    AND: [             
+      {'title': ['reagan']},   // 'reagan' AND 'ussr'   
+      {'body':['ussr']}
+    ],
+    NOT: [
+      {'body':['usa']}         // but NOT 'usa' in the body field
+    ]
+  },
+  {                            // OR this condition
+    AND: [                  
+      {'title': ['gorbachev']},// 'gorbachev' AND 'ussr'
+      {'body':['ussr']}
+    ],
+    NOT: [
+      {'body':['usa']}         // NOT 'usa' in the body field
+    ]
+  }
 }
 ```
 
@@ -51,7 +84,7 @@ all of `[<searchterms>]` appear in `<fieldName>`
 
 ```javascript
 q.query = {
-  '*': ['usa', 'reagan']
+  AND: {'*': ['usa', 'reagan']}
 }
 ```
 
@@ -62,32 +95,38 @@ phrases if desired.
 
 ```javascript
 q.query = {
-  '*': ['ronald reagan']
+  AND: {'*': ['ronald reagan']}
 }
 ```
 
-##Faceting and filtering
+##Categories, Buckets and Filters
 
-You can add facets or filters onto any given search.
+You can add categories and buckets onto any given search. You can use
+the results to then create filters.
 
-**Facets** display agregations on the resultset. This could typically
-  be price, metadata, source, or some other form of categorisation
-  that can be used as a filter
+**Categories** display totals for each category in the resultset
+
+**Buckets** display totals for ranges defined in the query
 
 **Filters** are a way of limiting the resultset. Think of them as the
-  query that must be called when you select facets.
+  query that must be called when you select buckets/categories.
 
 
-### Simple facets
+### Simple categories
+
+To use categories, you must define filters when you index the data
+(TODO: describe indexing more here)
 
 The following query will display a count for every single place in the
 resultset
 
 ```javascript
 q.query = {
-  '*': ['reagan']
-};
-q.facets = {places: {}};
+  AND: {'*': ['reagan']}
+}
+q.categories = {
+  name: 'places'    
+}
 ```
 
 ### Limiting facet length
@@ -96,9 +135,12 @@ The following query will limit facet length
 
 ```javascript
 q.query = {
-  '*': ['reagan']
-};
-q.facets = {places: {limit: 10}};
+  AND: {'*': ['reagan']}
+}
+q.categories = {
+  name: 'places',
+  limit: 10
+}
 ```
 
 ### Sorting facets
@@ -109,45 +151,44 @@ order. Available sorts are `keyAsc`,`keyDesc`, `valueAsc`, and
 
 ```javascript
 q.query = {
-  '*': ['reagan']
-};
-q.facets = {places: {sort: 'keyDesc'}};
+  AND: {'*': ['reagan']}
+}
+q.categories = {
+  name: 'places',
+  limit: 10,
+  sort: keyDesc
+}
 ```
 
-### Range facets
+### Buckets
 
 The following query will display a count for every range of values
-that is defined in the query
+within the given buckets
 
 ```javascript
-
 q.query = {'*': ['africa', 'bank']};
-q.facets = {
-  totalamt: {
-    ranges:[
-      [
-        '000000000000000',
-        '000000050000000'
-      ],
-      [
-        '000000050000001',
-        '100000000000000'
-      ]
-    ]
+q.buckets = [
+  {
+    field: 'totalamt',
+    gte: '000000000000000',
+    lte: '000000050000000'
   },
-  mjtheme: {
-    ranges: [
-      [
-        'A',
-        'J'
-      ],
-      [
-        'K',
-        'Z'
-      ]
-    ]
-  }
-}
+  {
+    field: 'totalamt',
+    gte: '000000050000001',
+    lte: '100000000000000'
+  },
+  {
+    field: 'mjtheme',
+    gte: 'A',
+    lte: 'J'
+  },
+  {
+    field: 'mjtheme',
+    gte: 'K',
+    lte: 'Z'
+  }      
+]
 ```
 
 ## Some other query stuff
@@ -160,8 +201,8 @@ page size is 50:
 
 ```javascript
 q.query = {
-  '*': ['usa']
-};
+  AND:{'*': ['usa']}
+}
 q.offset = 100;
 q.pageSize = 50;
 ```
@@ -174,25 +215,28 @@ Simply specify the field to generate the teaser on like so:
 
 ```javascript
 q.query = {
-  '*': ['usa']
+  AND:{'*': ['usa']}
 };
 q.teaser = 'body';
 ```
 
 ### Common error when test-querying your search solution
 
-When you have indexed some documents, you want to check if your search is working, and do a couple of test queries. Remember then, to not use any of the stopwords. These are words that hold little meaning and are therefore left out of the index. This is [search-index' stopword list for English](https://github.com/fergiemcdowall/stopword/blob/master/lib/stopwords_en.js#L25-L38), and here are all the [available stopword languages](https://github.com/fergiemcdowall/stopword/tree/master/lib).
+When you have indexed some documents, you want to check if your search
+is working, and do a couple of test queries. Remember then, to not use
+any of the stopwords. These are words that hold little meaning and are
+therefore left out of the index. This is the [search-index stopword list for English](https://github.com/fergiemcdowall/stopword/blob/master/lib/stopwords_en.js#L25-L38), and here are all the [available stopword languages](https://github.com/fergiemcdowall/stopword/tree/master/lib).
 
 ```javascript
 q.query = {
-  '*': ['and']
-};
+  AND: {'*': ['and']}
+}
 ```
 
-And since there's an inherent logical `AND` when having multiple words in your query, it only takes one word from the stopword-list to get zero results back.
+And since there iss an inherent logical `AND` when having multiple words in your query, it only takes one word from the stopword-list to get zero results back.
 
 ```javascript
 q.query = {
-  '*': ['and', 'meaningful']
+  AND: {'*': ['and', 'meaningful']}
 };
 ```

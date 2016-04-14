@@ -2,6 +2,15 @@ const fs = require('fs')
 const test = require('tape')
 var server
 
+test('check size of bundle', function (t) {
+  t.plan(1)
+  fs.stat('./test/sandbox/bundle.js', function(err, stats) {
+    console.log(stats.size)
+    t.ok((stats.size < 1100000), 'bundle should be less than 1mb')
+  })
+})
+
+
 test('start server', function (t) {
   t.plan(1)
   server = require('http').createServer(function (req, res) {

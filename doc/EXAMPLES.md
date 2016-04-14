@@ -1,5 +1,9 @@
 # Examples
 
+
+
+(**WARNING: These examples are currently outdated- be aware of changes to the API in the latest version**)
+
 This folder contains examples of how you can use `search-index` to make cool apps.
 
 [search-index-indexing-in-browser](https://github.com/fergiemcdowall/search-index-indexing-in-browser) indexes data from the browser, into the browser.
