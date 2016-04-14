@@ -51,3 +51,7 @@ Find out how to use the `search-index` module here:
 [travis-url]: http://travis-ci.org/fergiemcdowall/search-index
 [travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat
 
+### Release notes
+
+* 0.7.0 : new constructor
+* 0.8.0 : new search API
