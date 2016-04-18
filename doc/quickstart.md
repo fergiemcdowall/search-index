@@ -31,7 +31,9 @@ Run a search query
 
 ```javascript
 var q = {};
-q.query = {'*': ['usa']};
+q.query = {
+  AND: {'*': ['usa', 'ussr']}
+}
 si.search(q, function (err, searchResults) {
   //do something with the searchResults here
 });
