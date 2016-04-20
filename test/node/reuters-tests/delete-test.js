@@ -69,15 +69,15 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('verifies recalibration after delete', function (done) {
-    si.options.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
+    si.options.indexes.get('DF￮*￮mccaw￮￮', function (err, value) {
       (err === null).should.be.exactly(false)
-      err.toString().should.be.exactly('NotFoundError: Key not found in database [TF￮*￮mccaw￮￮]')
+      err.toString().should.be.exactly('NotFoundError: Key not found in database [DF￮*￮mccaw￮￮]')
       done()
     })
   })
 
   it('verifies recalibration after delete', function (done) {
-    si.options.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+    si.options.indexes.get('DF￮*￮1987￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(999)
       done()
@@ -133,7 +133,7 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('verifies recalibration after document is REadded', function (done) {
-    si.options.indexes.get('TF￮*￮mccaw￮￮', function (err, value) {
+    si.options.indexes.get('DF￮*￮mccaw￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.should.have.lengthOf(1)
       value[0].should.be.exactly('747')
@@ -142,7 +142,7 @@ describe('deleting and reindexing: ', function () {
   })
 
   it('verifies recalibration after document is REadded', function (done) {
-    si.options.indexes.get('TF￮*￮1987￮￮', function (err, value) {
+    si.options.indexes.get('DF￮*￮1987￮￮', function (err, value) {
       (err === null).should.be.exactly(true)
       value.length.should.be.exactly(1000)
       si.close(function(err){
