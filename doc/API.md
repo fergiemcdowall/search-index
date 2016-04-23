@@ -192,51 +192,61 @@ si.search(q, function (err, searchResults) {
    can be used as a wildcard for either fieldname or terms
    `{'*': ['ronald', 'reagan']}` or `{'title': ['*']}`. If documents
    have been indexed with an nGram length of 2 or more, it is possible
-   to search for the phrase 'ronald reagan': `{'*': ['ronald reagan']}`
-
- * **facets** _Object_ An object that allows you to specify faceted
-   navigation. You must specify fields that were flagged with the
-   `filter` option during indexing. To simply collate values you can
-   do something like this `{totalamt: {}}`. You can also specify
-   buckets or ranges like so:
+   to search for the phrase 'ronald reagan': `{'*': ['ronald
+   reagan']}`. AND or NOT conditions can be specified, and queries can
+   be chained together to create OR statements:
 
    ```javascript
-   {
-     totalamt: {
-       sort: 'keyAsc',
-       ranges: [
-         [
-           '000000000000000',
-           '000000006000000'
-         ],
-         [
-           '000000006000001',
-           '010000000000000'
-         ]
-       ]
+   [
+     {
+       AND: {'*': ['watch', 'gold'] },
+       NOT: {'name': ['apple'] }
+     },
+     {
+       AND: {'*': ['apple', 'watch'] }
      }
-   }
+   ]
    ```
-   **facets** can take the following parameters:
-   * **ranges** _Array_ An array of arrays that describe value
-   ranges. If `ranges` is not specified, then the facet will collate
-   on every distinct value it finds.
-   * **sort** How the list is to be sorted- can be `keyAsc`,
-   `keyDesc`, `valueAsc`, `valueDesc`
+   Find "watch" AND "gold" in all ("*") fields OR "apple" and "watch"
+   in all fields
 
+ * **categories** _Array_ Allows you to collate counts for each
+     catgory that the documents are tagged with
 
- * **filters** _Object_ An object that can filter search
+   ```javascript
+   [
+     {
+       field: 'manufacturer'
+     }
+   ]
+   ```
+
+ * **buckets** _Array_ buckets are like categories, except ranges can
+     be defined with `gte` (greater than or equal to) and `lte` (less
+     than or equal to)
+
+   ```javascript
+   [{
+     field: 'price',
+     gte: '2',
+     lte: '3'
+   }]
+   ```
+
+ * **filters** _Array_ An object that can filter search
    results. Filters can only be applied to fields that have been
    flagged with the `filter` option during indexing. Filters are
-   commonly used in conjunction with the selection of facets.
+   commonly used in conjunction with the selection of catgories and
+   buckets.
 
    ```javascript
-   {
-     totalamt: [
-       ['000000000000000', '000000006000000']
-     ]
-   }
+   [{
+     field: 'price',
+     gte: '2',
+     lte: '3'
+   }]
    ```
+
  * **offset** _number_ Sets the start index of the results. In a
    scenario where you want to go to "page 2" in a resultset of 30
    results per page, you would set `offset` to `30`. Page 3 would
