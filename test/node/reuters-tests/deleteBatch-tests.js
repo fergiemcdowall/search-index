@@ -31,7 +31,7 @@ describe('deleting a batch: ', function () {
 
   it('it should delete documents 1, 3, 5, 7, 10', function (done) {
     si.del(['7', '10', '5', '1', '3'], function (err) {
-      (err === null).should.be.exactly(true)
+      (!err).should.be.exactly(true)
       done()
     })
   })

@@ -54,7 +54,7 @@ describe('deleting and reindexing: ', function () {
 
   it('should be able to delete documents from index (747)', function (done) {
     si.del('747', function (err) {
-      (err === null).should.be.exactly(true)
+      (!err).should.be.exactly(true)
       done()
     })
   })

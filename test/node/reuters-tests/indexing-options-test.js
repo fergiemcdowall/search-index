@@ -460,7 +460,7 @@ describe('indexing options: ', function () {
   it('SHOULD NOT be able to delete a doc', function (done) {
     si7.del('4', function (err) {
       should.exist(err)
-      err.toString().should.be.exactly('Error: this index is non-deleteable- set "deletable: true" in startup options')
+      err.toString().should.be.exactly('Error: this index is non-deleteable, and some of the documents you are deleting have IDs that are already present in the index. Either reinitialize index with "deletable: true" or alter the IDs of the new documents')
       done()
     })
   })

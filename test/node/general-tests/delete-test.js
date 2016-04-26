@@ -67,7 +67,7 @@ describe('deleting: ', function () {
 
   it('should be able to delete a document without throwing errorness', function (done) {
     si.del('2', function (err) {
-      (err === null).should.be.exactly(true)
+      ;(!err).should.be.exactly(true)
       done()
     })
   })
