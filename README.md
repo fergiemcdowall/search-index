@@ -58,7 +58,7 @@ Find out how to use the `search-index` module here:
 [travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat-square
 
 [gitter-url]: https://gitter.im/fergiemcdowall/search-index?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[gitter-image]: https://badges.gitter.im/fergiemcdowall/search-index.svg?style=flat-square
+[gitter-image]: https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square
 
 [js-standard-url]: https://github.com/feross/standard
 [js-standard-image]: https://img.shields.io/badge/code%20style-standard%20js-green.svg?style=flat-square
