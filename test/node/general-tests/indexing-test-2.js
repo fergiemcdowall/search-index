@@ -34,7 +34,10 @@ describe('Indexing API', function () { // jshint ignore:line
       indexPath: sandboxPath + '/indexing-test-2',
       logLevel: 'warn',
       fieldsToStore: ['id', 'title', 'content'],
-      fieldOptions: [{fieldName: 'year', filter: true}]
+      fieldOptions: [{
+        fieldName: 'year',
+        filter: true
+      }]
     }, function(err, si){
       si.add(batch, {}, function (err) {
         (err === null).should.be.exactly(true)

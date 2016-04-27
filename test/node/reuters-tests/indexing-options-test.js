@@ -102,6 +102,7 @@ describe('indexing options: ', function () {
     searchindex({
       indexPath: sandboxPath + '/si-reuters-10-indexing-ops-8',
       fieldedSearch: false,
+      store: false,
       deletable: false,
       logLevel: logLevel
     }, function (err, thisSi) {
@@ -116,6 +117,7 @@ describe('indexing options: ', function () {
       indexPath: sandboxPath + '/si-reuters-10-indexing-ops-9',
       fieldedSearch: false,
       deletable: false,
+      store: false,
       logLevel: logLevel
     }, function (err, thisSi) {
       if (err) false.should.eql(true)
@@ -485,10 +487,20 @@ describe('indexing options: ', function () {
   it('should index one file of test data and only store id and title (but allow all other fields to be searchable)', function (done) {
     this.timeout(5000)
     var opt = {}
-    opt.fieldsToStore = ['id', 'title']
+    // opt.fieldsToStore = ['id', 'title']
+    opt.fieldOptions = [
+      {
+        fieldName: 'id',
+        store: true
+      },
+      {
+        fieldName: 'title',
+        store: true
+      }
+    ]
     opt.batchName = 'reuters'
     si8.add(data, opt, function (err) {
-      (err === null).should.be.exactly(true)
+      ;(err === null).should.be.exactly(true)
       done()
     })
   })
@@ -517,10 +529,14 @@ describe('indexing options: ', function () {
   it('should index one file of test data and only store title (but allow all other fields to be searchable)', function (done) {
     this.timeout(5000)
     var opt = {}
-    opt.fieldsToStore = ['title']
+    // opt.fieldsToStore = ['title']
+    opt.fieldOptions = [{
+      fieldName: 'title',
+      store: true
+    }]
     opt.batchName = 'reuters'
     si9.add(data, opt, function (err) {
-      (err === null).should.be.exactly(true)
+      ;(err === null).should.be.exactly(true)
       done()
     })
   })
@@ -544,6 +560,7 @@ describe('indexing options: ', function () {
       done()
     })
   })
+
 })
 
 

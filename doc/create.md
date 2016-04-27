@@ -24,7 +24,7 @@ The defaults options are equivalent to this:
     logLevel: 'error',
     nGramLength: 1,
     stopwords: SearchIndex.getStopwords('en'),
-    fieldsToStore: 'all'
+    store: true
   }
 ```
 
@@ -59,9 +59,8 @@ searchable phrases.
 Words that are not indexed. The default is english (en), but you can choose
 any common and meaningless words for your language or domain.
 
-### fieldsToStore
+### store
 
-You may only want to store some of the fields in the document. For
-  example, and ID or a link to the actual document location. 'all'
-  means everything. An array of field names specifies the fields to
-  store.
+You may only want to store some of the fields in the
+document. Speciify which fields to store in `fieldOptions`. The value
+of `store` here becomes the default value for `fieldOptions`

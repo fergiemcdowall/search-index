@@ -39,9 +39,6 @@ require('search-index')(options, function(err, si) {
      individual document fields? Setting this to false saves space and
      makes the index faster.
 
- * **fieldsToStore** _array or 'all', default 'all'_ : which fields in
-     the incoming documents should be considered by the index.
-
  * **indexPath** _string, default:'si'_ : what should the index be
      called on disk.
 
@@ -88,8 +85,11 @@ indexed and can contain the following fields:
    * **weight** _number: default:0_ this number will be added to the
      score for the field allowing some fields to count more or less
      than others.
- * **fieldsToStore** _Array_ specifies which fields to store in index
-   that can then be retrieved with `get()`
+   * **store** _Array_ specifies which fields to store in index. You
+     may want to index fields that are not shown in results, for
+     example when dealing with synonyms
+
+
 
 
 

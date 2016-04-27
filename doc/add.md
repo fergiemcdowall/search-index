@@ -34,7 +34,7 @@ Default batch options are equivalent to:
 {
   batchName: 'my batch',
   fieldOptions: [],                                 //none
-  fieldsToStore: SearchIndex.options.fieldsToStore, //inherited from initialization options
+  store: true,                                      //inherited from initialization options
   defaultFieldOptions: defaultFieldOptions          //can be overrided per field
 }
 ```
@@ -49,6 +49,7 @@ Default field options are equivalent to:
   nGramLength: SearchIndex.options.nGramLength,     //inherited from initialization options
   searchable: true,
   weight: 1,
+  store: SearchIndex.options.store
   fieldedSearch: SearchIndex.options.fieldedSearch  //inherited from initialization options
 }
 ```
