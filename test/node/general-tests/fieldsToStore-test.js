@@ -129,7 +129,7 @@ it('documents returned by search should not have description fields', function (
 
 it('should do some simple indexing and ONLY store "description field"', function (done) {
   SearchIndex({
-    indexPath: sandboxPath + '/fieldstostore-test',
+    indexPath: sandboxPath + '/fieldstostore2-test',
     logLevel: 'warn',
     store: false
   }, function(err, thisSI){
