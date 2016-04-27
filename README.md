@@ -1,8 +1,12 @@
 # search-index
 ### A persistent full text search engine for the browser and Node.js
 
-[![Join the chat at https://gitter.im/fergiemcdowall/search-index](https://badges.gitter.im/fergiemcdowall/search-index.svg)](https://gitter.im/fergiemcdowall/search-index?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
+[![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
+[![NPM version][npm-version-image]][npm-url]
+[![NPM downloads][npm-downloads-image]][npm-url]
+[![MIT License][license-image]][license-url]
+[![Build Status][travis-image]][travis-url]
+[![js-standard-style][js-standard-image]]([js-standard-url]) 
 
 ```javascript
 var searchIndex = require('search-index')
@@ -43,15 +47,21 @@ Find out how to use the `search-index` module here:
 
  * [API reference](./doc/API.md)
 
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 
 [npm-url]: https://npmjs.org/package/search-index
-[npm-version-image]: http://img.shields.io/npm/v/search-index.svg?style=flat
-[npm-downloads-image]: http://img.shields.io/npm/dm/search-index.svg?style=flat
+[npm-version-image]: http://img.shields.io/npm/v/search-index.svg?style=flat-square
+[npm-downloads-image]: http://img.shields.io/npm/dm/search-index.svg?style=flat-square
 
 [travis-url]: http://travis-ci.org/fergiemcdowall/search-index
-[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat
+[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat-square
+
+[gitter-url]: https://gitter.im/fergiemcdowall/search-index?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitter-image]: https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square
+
+[js-standard-url]: https://github.com/feross/standard
+[js-standard-image]: https://img.shields.io/badge/code%20style-standard%20js-green.svg?style=flat-square
 
 ### Release notes
 
