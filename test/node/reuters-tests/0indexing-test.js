@@ -55,13 +55,12 @@ describe('Indexing Reuters reuters-000.json: ', function () {
       (err === null).should.be.exactly(true)
       should.exist(info)
       ;(info.totalDocs).should.be.exactly(1000)
-      info.options.indexPath.should.be.exactly('test/sandbox/si-reuters')
-      info.options.logLevel.should.be.exactly('error')
-      info.options.deletable.should.be.exactly(true)
-      info.options.fieldedSearch.should.be.exactly(true)
-      info.options.nGramLength.should.be.exactly(1)
-      info.options.fieldsToStore.should.be.exactly('all')
-      info.options.stopwords.should.eql(
+      info.indexPath.should.be.exactly('test/sandbox/si-reuters')
+      info.logLevel.should.be.exactly('error')
+      info.deletable.should.be.exactly(true)
+      info.fieldedSearch.should.be.exactly(true)
+      info.nGramLength.should.be.exactly(1)
+      info.stopwords.should.eql(
         [ '$',
           '0',
           '1',
