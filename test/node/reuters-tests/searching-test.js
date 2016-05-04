@@ -331,7 +331,7 @@ describe('Searching Reuters: ', function () {
       ;(err === null).should.be.exactly(true)
       searchResults.hits.length.should.be.exactly(3)
       searchResults.hits[0].document.teaser.should.be
-        .exactly('GREY <span class="sc-em">advertising</span> <GREY> FORMS NEW DIVISION')
+        .exactly('GREY <b>advertising</b> <GREY> FORMS NEW DIVISION')
       done()
     })
   })
