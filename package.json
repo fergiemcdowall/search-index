@@ -33,6 +33,8 @@
     "reuters-21578-json": "0.0.6",
     "selenium-webdriver": "^2.53.2",
     "should": "^8.3.1",
+    "sqldown": "^2.1.0",
+    "sqlite3": "^3.1.3",
     "stream-buffers": "^3.0.0",
     "tape": "^4.5.1",
     "term-vector": "0.0.18",
