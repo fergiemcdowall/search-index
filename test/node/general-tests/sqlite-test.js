@@ -6,6 +6,12 @@ const sqldown = require('sqldown')
 
 var db, si
 
+
+// NOTE: sqldown will look for a backend that isnt mentioned here you
+// need to do "npm install --save sqlite3" or similar, see
+// https://www.npmjs.com/package/sqldown for details
+
+
 it('should make a new levelup with sqlite', function (done) {
   levelup(sandbox + '/level-sqlite', {
     valueEncoding: 'json',
