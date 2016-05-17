@@ -1,5 +1,5 @@
 {
-  "name": "@ihenshaw/search-index",
+  "name": "ihenshaw-search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
   "version": "0.8.8",
   "homepage": "https://github.com/fergiemcdowall/search-index",
@@ -14,12 +14,12 @@
     "levelup": "^1.3.1",
     "lodash.defaults": "^4.0.1",
     "lodash.intersection": "^4.1.2",
-    "search-index-adder": "0.0.22",
+    "ihenshaw-search-index-adder": "0.0.22",
     "search-index-deleter": "0.0.9",
     "search-index-getter": "0.0.7",
     "search-index-matcher": "0.0.8",
     "search-index-replicator": "0.0.6",
-    "search-index-searcher": "0.0.15",
+    "ihenshaw-search-index-searcher": "0.0.15",
     "stopword": "0.0.6"
   },
   "devDependencies": {
