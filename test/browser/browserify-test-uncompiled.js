@@ -8,7 +8,10 @@ levelup('test/sandbox/simpleIndexing', {
 }, function (err, db) {
   if (err) console.log(err)
   SearchIndex({indexes: db}, function (err, si) { // causes woe in browsers
-    if (err) console.log(err)
+    if (err) {
+      console.log(err);
+      return;
+    }
     si.add(batch, {}, function (err) {
       if (err) console.log(err)
       si.get('4', function (err, doc) {
