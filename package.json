@@ -1,5 +1,5 @@
 {
-  "name": "search-index",
+  "name": "@ihenshaw/search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
   "version": "0.8.8",
   "homepage": "https://github.com/fergiemcdowall/search-index",
@@ -74,6 +74,9 @@
       "url": "https://github.com/mewwts"
     }
   ],
+  "publishConfig": {
+    "registry": "http://npm.thehenshaws.net/"
+  },
   "scripts": {
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
     "lint": "standard",
