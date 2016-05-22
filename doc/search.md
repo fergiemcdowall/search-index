@@ -108,8 +108,7 @@ the results to then create filters.
 
 **Buckets** display totals for ranges defined in the query
 
-**Filters** are a way of limiting the resultset. Think of them as the
-  query that must be called when you select buckets/categories.
+**Filters** are a way of limiting the resultset, using the categories/buckets that the same resultset makes available. Think of them as the query that must be called when you select buckets/categories.
 
 
 ### Simple categories
@@ -160,6 +159,17 @@ q.categories = {
 }
 ```
 
+### Filtering on categories
+```javascript
+q.filter = [
+  {
+    field: 'places',
+    gte: 'zaire',
+    lte: 'zaire'
+  }
+]
+```
+
 ### Buckets
 
 The following query will display a count for every range of values
@@ -188,6 +198,18 @@ q.buckets = [
     gte: 'K',
     lte: 'Z'
   }      
+]
+```
+
+### Filtering on buckets
+
+```javascript
+q.filter = [
+  {
+    field: 'totalamt',
+    gte: '000000050000001',
+    lte: '100000000000000'
+  }
 ]
 ```
 
