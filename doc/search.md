@@ -102,7 +102,7 @@ q.query = {
 ##Categories, Buckets and Filters
 
 You can add categories and buckets onto any given search. You can use
-the results to then create filters.
+the results to then filter on either buckets or categories.
 
 **Categories** display totals for each category in the resultset
 
@@ -110,11 +110,9 @@ the results to then create filters.
 
 **Filters** are a way of limiting the resultset, using the categories/buckets that the same resultset makes available. Think of them as the query that must be called when you select buckets/categories.
 
+To use categories or buckets, the docments you index must have at least one key/value pair where the value is an array of words, phrases or numbers. With categories you filter on one of the values in that array. With buckets you filter on a range values in that array .
 
 ### Simple categories
-
-To use categories, you must define filters when you index the data
-(TODO: describe indexing more here)
 
 The following query will display a count for every single place in the
 resultset
