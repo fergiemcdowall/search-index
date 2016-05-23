@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=3"
@@ -19,7 +19,7 @@
     "search-index-getter": "0.0.7",
     "search-index-matcher": "0.0.8",
     "search-index-replicator": "0.0.6",
-    "search-index-searcher": "0.0.15",
+    "search-index-searcher": "0.0.16",
     "stopword": "0.0.6"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "level-fsdown": "^3.2.3",
     "level-js": "^2.2.3",
     "lodash": "^4.11.2",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.0",
     "reuters-21578-json": "0.0.6",
     "selenium-webdriver": "^2.53.2",
     "should": "^8.3.1",
@@ -38,6 +38,7 @@
     "stream-buffers": "^3.0.0",
     "tape": "^4.5.1",
     "term-vector": "0.0.18",
+    "to-iso-string": "0.0.2",
     "uglifyjs": "^2.4.10",
     "world-bank-dataset": "0.0.1"
   },
