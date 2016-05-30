@@ -99,6 +99,22 @@ q.query = {
 }
 ```
 
+### Boosting
+
+You can boost an `OR` condition of your search string like so. The boost value is a positive or negative number that is summed into the final hit score.
+
+```javascript
+query: [
+  {
+    AND: [{'name': ['watch']}],
+    boost: 10
+  },
+  {
+    AND: [{'description': ['swiss', 'watch']}]
+  }
+]
+```
+
 ##Categories, Buckets and Filters
 
 You can add categories and buckets onto any given search. You can use
