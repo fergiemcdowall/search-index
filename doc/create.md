@@ -51,8 +51,7 @@ Specifies a [Bunyan](https://github.com/trentm/node-bunyan) log level
 ### nGramLength
 
 If you want to search for phrases, then the nGramLength has to be
-adjusted. The number represents to maximum length (in words) of
-searchable phrases.
+adjusted. The [array represents all](https://github.com/fergiemcdowall/search-index/blob/master/doc/add.md#ngramlength) lengths (in words) that the searchable phrases can contain.
 
 ### stopwords
 
