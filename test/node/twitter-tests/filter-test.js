@@ -69,6 +69,10 @@ it('should be able to search in twitter data', function (done) {
             "value": 5
           },
           {
+            "key": "null",
+            "value": 3
+          },
+          {
             "key": "engine",
             "value": 1
           },
@@ -133,22 +137,27 @@ it('should be able to filter by user', function (done) {
     results.totalHits.should.be.exactly(1)
     results.categories.should.eql([
       {
-        "key": "user",
-        "value": [
+        key: "user",
+        value: [
           {
-            "active": true,
-            "key": "GoogleforWork",
-            "value": 1
+            active: true,
+            key: "GoogleforWork",
+            value: 1
           },
           {
-            "key": "eklem",
-            "value": 1
+            key: "eklem",
+            value: 1
           }
         ]
       },
       {
-        "key": "tags",
-        "value": []
+        key: "tags",
+        value: [
+          {
+            key: "null",
+            value: 1
+          }
+        ]
       }
     ])
     results.hits.map(function (item) { return item.id }).should.eql(
