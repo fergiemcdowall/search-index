@@ -1,5 +1,5 @@
 # search-index
-### A persistent full text search engine for the browser and Node.js
+### A persistent full text search library for the browser and Node.js
 
 [![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
 [![NPM version][npm-version-image]][npm-url]
