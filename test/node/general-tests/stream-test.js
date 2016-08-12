@@ -3,7 +3,7 @@ const fs = require('fs')
 const should = require('should')
 const SearchIndex = require('../../../')
 const test = require('tape')
-const JSONstream = require('JSONstream')
+const JSONStream = require('JSONStream')
 
 var si
 
@@ -39,7 +39,7 @@ it('stream file to search-index', function (done) {
   this.timeout(5000);
   const filePath = './node_modules/reuters-21578-json/data/fullFileStream/justTen.str'
   fs.createReadStream(filePath)
-    .pipe(JSONstream.parse())
+    .pipe(JSONStream.parse())
     .pipe(si.createWriteStream())
     .on('data', function(data) {
 
