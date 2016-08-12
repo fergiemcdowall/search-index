@@ -23,6 +23,7 @@
     "stopword": "0.0.6"
   },
   "devDependencies": {
+    "JSONStream": "^1.1.4",
     "brfs": "^1.4.3",
     "browserify": "^13.1.0",
     "chromedriver": "^2.22.2",
