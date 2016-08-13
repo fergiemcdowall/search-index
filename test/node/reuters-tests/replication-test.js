@@ -5,6 +5,8 @@ const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
 const should = require('should')
 const fs = require('fs')
+const JSONStream = require('JSONStream')
+const zlib = require('zlib')
 
 describe('Replication: ', function () {
 
@@ -21,7 +23,6 @@ describe('Replication: ', function () {
     })
   })
 
-
   it('should index one file of test data', function (done) {
     this.timeout(5000)
     var data = require('../../../node_modules/reuters-21578-json/data/justTen/justTen.json')
@@ -35,16 +36,11 @@ describe('Replication: ', function () {
 
   it('should be able to create a snapshot', function (done) {
     this.timeout(5000)
-    si.snapShot(function (rs) {
-      rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
-        .on('close', function () {
-          (true).should.be.exactly(true)
-          done()
-        })
-        .on('error', function (err) {
-          (err === null).should.be.exactly(true)
-        })
-    })
+    si.DBReadStream({ gzip: true })
+      .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+      .on('close', function() {
+        done()
+      })
   })
 
   it('should empty the index', function (done) {
@@ -65,10 +61,13 @@ describe('Replication: ', function () {
 
   it('should be able to refeed from a snapshot', function (done) {
     this.timeout(5000)
-    si.replicate(fs.createReadStream(sandboxPath + '/backup.gz'), function (err) {
-      (err === undefined).should.be.exactly(true)
-      done()
-    })
+    fs.createReadStream(sandboxPath + '/backup.gz')
+      .pipe(zlib.createGunzip())
+      .pipe(JSONStream.parse())
+      .pipe(si.DBWriteStream())
+      .on('close', function() {
+        done()
+      })
   })
 
   it('should be able to display information about the index (index has 10 docs)', function (done) {

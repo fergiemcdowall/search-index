@@ -10,13 +10,12 @@ example](examples/browserify-replicate-full-index-to-browser).
 ## Create a Snapshot
 
 ```javascript
-//assumes that: var fs = require('fs')
-si.snapShot(function(readStream) {
-  readStream.pipe(fs.createWriteStream('backup.gz'))
-    .on('close', function() {
-    //a snapshot of the search-index now exists in the file 'backup.gz'
-  });
-});
+// assumes that: var fs = require('fs')
+si.DBReadStream({ gzip: true })
+  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .on('close', function() {
+    // done
+  })
 ```
 
 ## Replicate a snapshot file into another index
@@ -24,10 +23,14 @@ si.snapShot(function(readStream) {
 Note: the new index must be empty
 
 ```javascript
-//assumes that backup is in a file called 'backup.gz'
-si.replicate(fs.createReadStream('backup.gz'), function(msg){
-  that.completed = true;
-});
+// assumes that backup is in a file called 'backup.gz'
+fs.createReadStream(sandboxPath + '/backup.gz')
+  .pipe(zlib.createGunzip())
+  .pipe(JSONStream.parse())
+  .pipe(si.DBWriteStream())
+  .on('close', function() {
+    // done
+  })
 ```
 
 

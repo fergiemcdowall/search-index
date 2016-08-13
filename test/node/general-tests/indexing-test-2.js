@@ -41,18 +41,15 @@ describe('Indexing API', function () { // jshint ignore:line
     }, function(err, si){
       si.add(batch, {}, function (err) {
         (err === null).should.be.exactly(true)
-        si.snapShot(function (rs) {
-          rs.pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
-            .on('close', function () {
-              (true).should.be.exactly(true)
-              si.close(function(){
-                done()  
-              })
-            })
-            .on('error', function (err) {
-              (err === null).should.be.exactly(true)
-            })
-        })
+        var i = 0
+        si.DBReadStream()
+          .on('data', function(data) {
+            i++
+          })
+          .on('close', function(data) {
+            i.should.be.exactly(642)
+            done()
+          })        
       })
     })
   })

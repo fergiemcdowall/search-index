@@ -3,12 +3,12 @@
  * [add(...)](#add)
  * [close(...)](#close)
  * [get(...)](#get)
+ * [DBReadStream()](#DBReadStream)
+ * [DBWriteStream()](#DBWriteStream)
  * [del(...)](#del)
  * [flush(...)](#flush)
  * [match(...)](#match)
- * [replicate(...)](#replicate)
  * [search(...)](#search)
- * [snapShot(...)](#snapshot)
  * [tellMeAboutMySearchIndex(...)](#tellmeaboutmysearchindex)
 
 ## initialization
@@ -118,6 +118,52 @@ index.get('docID', function(err) {
 
 * **docID** is the ID of the document that should be retrieved
 
+
+### DBReadStream(...)
+
+Use `DBReadStream()` to create a stream of the underlying key-value
+store. This can be used to pipe indexes around. You can for example
+replicate indexes to file, or to other (empty) indexes
+
+`gzip` can be `true` or `false`
+
+```javascript
+// replicate an index to file
+si.DBReadStream({ 
+  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .on('close', function() {
+    // done
+  })
+```
+
+```javascript
+// replicate an index to another search-index
+replicator.DBReadStream({gzip: true})
+  .pipe(zlib.createGunzip())
+  .pipe(JSONStream.parse())
+  .pipe(replicatorTarget2.DBWriteStream())
+  .on('close', function () {
+    // done
+  })
+```
+
+
+### DBWriteStream(...)
+
+Use `DBWriteStream()` to read in an index created by
+`DBReadStream()`.
+
+`gzip` can be `true` or `false`
+
+```javascript
+si.DBReadStream({ gzip: true })
+  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .on('close', function() {
+    done()
+  })
+```
+
+
 ### del(...)
 
 Deletes one or more documents from the corpus
@@ -163,16 +209,6 @@ index.match(options, function(err, results) {
 * **type** _string default:'simple'_ the type of matcher to use, can
   only be 'simple' for the time being.
 
-### replicate(...)
-
-Use `replicate()` to read in indexes that have been serialized with
-`snapShot()`. [See also here](replicate.md)
-
-```javascript
-si.replicate(fs.createReadStream('/backup.gz'), function (err) {
-  if (!err) console.log('success!')
-});
-```
 
 ### search(...)
 
@@ -256,22 +292,7 @@ si.search(q, function (err, searchResults) {
 
  * **teaser** _string_ Specifies which field should be used to
    generate a teaser
-   
-### snapShot(...)
 
-Use `snapShot()` to serialize search indexes to disk.
-
-```javascript
-si.snapShot(function (rs) {
-  rs.pipe(fs.createWriteStream('/backup.gz'))
-    .on('close', function () {
-      console.log('success')
-    })
-    .on('error', function (err) {
-      console.log('failure')
-    });
-});
-```
 
 ### tellMeAboutMySearchIndex(...)
 

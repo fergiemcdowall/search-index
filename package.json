@@ -18,7 +18,7 @@
     "search-index-deleter": "0.0.10",
     "search-index-getter": "0.0.7",
     "search-index-matcher": "0.0.8",
-    "search-index-replicator": "0.0.6",
+    "search-index-replicator": "0.0.7",
     "search-index-searcher": "0.0.19",
     "stopword": "0.0.6"
   },
@@ -28,6 +28,7 @@
     "browserify": "^13.1.0",
     "chromedriver": "^2.22.2",
     "level-js": "^2.2.4",
+    "level-out": "0.0.6",
     "lodash": "^4.14.2",
     "mocha": "^3.0.2",
     "reuters-21578-json": "0.0.8",
