@@ -10,7 +10,22 @@ sudo: false
 
 language: node_js
 
+env:
+  - CXX=g++-4.8
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
+before_install: 
+  - export JOBS=max
+  - export prebuild_compile=true
+
 node_js:
+- '3'
 - '4'
 - '5'
 
