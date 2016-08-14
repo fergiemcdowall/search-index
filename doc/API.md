@@ -125,11 +125,9 @@ Use `DBReadStream()` to create a stream of the underlying key-value
 store. This can be used to pipe indexes around. You can for example
 replicate indexes to file, or to other (empty) indexes
 
-`gzip` can be `true` or `false`
-
 ```javascript
 // replicate an index to file
-si.DBReadStream({ 
+si.DBReadStream(options) 
   .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
   .on('close', function() {
     // done
@@ -147,21 +145,26 @@ replicator.DBReadStream({gzip: true})
   })
 ```
 
+**options** is an optional object that describes how the stream is formatted
+
+* **gzip** If set to `true`, the readstream will be compressed into the gzip format
 
 ### DBWriteStream(...)
 
 Use `DBWriteStream()` to read in an index created by
 `DBReadStream()`.
 
-`gzip` can be `true` or `false`
-
 ```javascript
-si.DBReadStream({ gzip: true })
+si.DBReadStream(options)
   .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
   .on('close', function() {
     done()
   })
 ```
+
+**options** is an optional object that describes how the stream will be written
+
+* **merge** If set to `true`, the writestream will merge this index with the existing one, if set to false the existing index must be empty
 
 
 ### del(...)
