@@ -65,7 +65,10 @@ describe('Replication: ', function () {
       .pipe(zlib.createGunzip())
       .pipe(JSONStream.parse())
       .pipe(si.DBWriteStream())
-      .on('close', function() {
+      .on('data', function() {
+        // data
+      })    
+      .on('end', function() {
         done()
       })
   })
