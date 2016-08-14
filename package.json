@@ -26,7 +26,7 @@
     "JSONStream": "^1.1.4",
     "brfs": "^1.4.3",
     "browserify": "^13.1.0",
-    "chromedriver": "2.22.2",
+    "chromedriver": "2.23.0",
     "level-js": "^2.2.4",
     "level-out": "0.0.6",
     "lodash": "^4.14.2",
