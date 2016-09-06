@@ -1,11 +1,13 @@
 /* global it */
 /* global describe */
 
-var fs = require('fs')
-var assert = require('assert')
-var should = require('should')
-var sandboxPath = 'test/sandbox'
-var searchindex = require('../../../')
+const fs = require('fs')
+const assert = require('assert')
+const should = require('should')
+const sandboxPath = 'test/sandbox'
+const searchindex = require('../../../')
+const Readable = require('stream').Readable
+const JSONStream = require('JSONStream')
 
 describe('Configuration: ', function () {
   it('should accept configuration', function (done) {
@@ -35,7 +37,6 @@ describe('Configuration: ', function () {
     })
   })
 
-
   it('does not leak variables', function () {
     (typeof countDocuments).should.be.exactly('undefined')
     ;(typeof _).should.be.exactly('undefined')
@@ -55,16 +56,23 @@ describe('Configuration: ', function () {
       logLevel: 'info'
     }, function(err, si) {
       should.exist(si.log)
-      si.add({
+      const s = new Readable()
+      s.push(JSON.stringify({
         id: 1,
         name: 'The First Doc',
         test: 'this is the first doc'
-      }, function (err) {
-        should(err).be.undefined
-        myStream.size().should.be.above(0)
-        done()
-      })
+      }))
+      s.push(null)  // needed?
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {
+          // data.toString().should.be.any('processing doc 1', 'batch replicated')
+        })
+        .on('end', function () {
+          myStream.size().should.be.above(0)
+          return done()
+        })
     })
   })
-
 })
