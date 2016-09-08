@@ -4,35 +4,37 @@
 var should = require('should')
 var sandboxPath = 'test/sandbox'
 var searchindex = require('../../../')
+var Readable = require('stream').Readable
+var JSONStream = require('JSONStream')
 
 describe('Instantiation: ', function () {
   describe('setting up different indexes with no pollution', function () {
 
-    var siOne, siTwo
+    var sOne = new Readable()
+    var sTwo = new Readable()
 
-    var data1 = [
-      {
-        id: 1,
-        name: 'The First Doc',
-        test: 'this is the first doc'
-      },
-      {
-        id: 2,
-        name: 'The Second Doc',
-        test: 'this is the second doc'
-      }]
-
-    var data2 = [
-      {
-        id: 3,
-        name: 'The Third Doc',
-        test: 'this is the third doc'
-      },
-      {
-        id: 4,
-        name: 'The Fourth Doc',
-        test: 'this is the fourth doc'
-      }]
+    sOne.push(JSON.stringify({
+      id: 1,
+      name: 'The First Doc',
+      test: 'this is the first doc'
+    }))
+    sOne.push(JSON.stringify({
+      id: 2,
+      name: 'The Second Doc',
+      test: 'this is the second doc'
+    }))
+    sOne.push(null)
+    sTwo.push(JSON.stringify({
+      id: 3,
+      name: 'The Third Doc',
+      test: 'this is the third doc'
+    }))
+    sTwo.push(JSON.stringify({
+      id: 4,
+      name: 'The Fourth Doc',
+      test: 'this is the fourth doc'
+    }))
+    sTwo.push(null)
 
     it('should initialize the first search index', function (done) {
       searchindex({
@@ -54,50 +56,77 @@ describe('Instantiation: ', function () {
       })
     })
 
-
     it('should index test data into the first index', function (done) {
-      siOne.add(data1, {}, function (err) {
-        (err === null).should.be.exactly(true)
-        done()
-      })
+      sOne.pipe(JSONStream.parse())
+        .pipe(siOne.defaultPipeline())
+        .pipe(siOne.add())
+        .on('data', function(data) {
+          
+        })
+        .on('end', function() {
+          return done()
+        })
     })
 
     it('should index test data into the second index', function (done) {
-      siTwo.add(data2, {}, function (err) {
-        (err === null).should.be.exactly(true)
-        done()
-      })
+      sTwo.pipe(JSONStream.parse())
+        .pipe(siTwo.defaultPipeline())
+        .pipe(siTwo.add())
+        .on('data', function(data) {
+          
+        })
+        .on('end', function() {
+          return done()
+        })
     })
 
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
-      var q = {}
-      q.query = {
-        AND: {'*': ['*']}
-      }
-      siOne.search(q, function (err, results) {
-        should.exist(results)
-        ;(err === null).should.be.exactly(true)
-        results.hits.length.should.be.exactly(2)
-        results.totalHits.should.be.exactly(2)
-        results.hits[0].id.should.be.exactly('2')
-        results.hits[1].id.should.be.exactly('1')
-        done()
+      results = [
+        {
+          id: '2',
+          name: 'The Second Doc',
+          test: 'this is the second doc'
+        },
+        {
+          id: '1',
+          name: 'The First Doc',
+          test: 'this is the first doc'
+        }
+      ]
+      siOne.search({
+        query: [{
+          AND: {'*': ['*']}
+        }]
+      }).on('data', function(data) {
+        JSON.parse(data).document.should.eql(results.shift())
+      }).on('end', function() {
+        results.length.should.be.exactly(0)
+        return done()
       })
     })
 
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
-      var q = {}
-      q.query = {
-        AND: {'*': ['*']}
-      }
-      siTwo.search(q, function (err, results) {
-        should.exist(results)
-        ;(err === null).should.be.exactly(true)
-        results.hits.length.should.be.exactly(2)
-        results.totalHits.should.be.exactly(2)
-        results.hits[0].id.should.be.exactly('4')
-        results.hits[1].id.should.be.exactly('3')
-        done()
+      results = [
+        {
+          id: '4',
+          name: 'The Fourth Doc',
+          test: 'this is the fourth doc'
+        },
+        {
+          id: '3',
+          name: 'The Third Doc',
+          test: 'this is the third doc'
+        }
+      ]
+      siTwo.search({
+        query: [{
+          AND: {'*': ['*']}
+        }]
+      }).on('data', function(data) {
+        JSON.parse(data).document.should.eql(results.shift())
+      }).on('end', function() {
+        results.length.should.be.exactly(0)
+        return done()
       })
     })
   })
