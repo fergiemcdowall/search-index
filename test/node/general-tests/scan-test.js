@@ -2,6 +2,7 @@ const SearchIndex = require('../../../')
 const test = require('tape')
 const sandbox = process.env.SANDBOX || 'test/sandbox'
 const should = require('should')
+const JSONStream = require('JSONStream')
 
 var si
 
@@ -75,33 +76,40 @@ const batch = [
     description: 'Endlessly sophisticated in materials and design, this Emporio Armani Swiss watch features high-end timekeeping with moon phase movement and calendar tracking.',
     price: '30000',
     age: '33342'
-  },
+  }
 ]
 
+var s = new require('stream').Readable()
+batch.forEach(function(item) {
+  s.push(JSON.stringify(item))
+})
+s.push(null)
+
 it('initialize a search index', function (done) {
+  var i = 0
   SearchIndex({
     indexPath: sandbox + '/si-scan'
   }, function(err, thisSi) {
     ;(err === null).should.be.exactly(true)
     si = thisSi
-    si.add(batch, {
-      fieldOptions: [{
-        fieldName: 'price',
-        filter: true
-      }]
-    }, function (err) {
-      ;(err === null).should.be.exactly(true)
-      done()
-    })
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline())
+      .pipe(si.add())
+      .on('data', function(data) {
+        i++
+      })
+      .on('end', function() {
+        i.should.be.exactly(11)
+        return done()
+      })
   })
 })
-
 
 it('do a simple scan', function (done) {
   var results = []
   si.scan({
     query: {
-      AND: [{'*': ['swiss', 'watch']}]
+      AND: {'*': ['swiss', 'watch']}
     }
   }).on('data', function (doc) {
     results.push(JSON.parse(doc).id)
@@ -115,7 +123,7 @@ it('do a simple scan with one word', function (done) {
   var results = []
   si.scan({
     query: {
-      AND: [{'*': ['watch']}]
+      AND: {'*': ['watch']}
     }
   }).on('data', function (doc) {
     results.push(JSON.parse(doc).id)
@@ -129,7 +137,7 @@ it('do a simple scan with one word on a given field', function (done) {
   var results = []
   si.scan({
     query: {
-      AND: [{'name': ['swiss']}]
+      AND: {'name': ['swiss']}
     }
   }).on('data', function (doc) {
     results.push(JSON.parse(doc).id)
@@ -139,19 +147,17 @@ it('do a simple scan with one word on a given field', function (done) {
   })
 })
 
-// TODO: make filters work
+// // TODO: make filters work
 
 it('do a simple scan with one word on a given field and filter', function (done) {
   var results = []
   si.scan({
     query: {
-      AND: [{'name': ['swiss']}]
-    },
-    filter: [{
-      field: 'price',
-      gte: '3',
-      lte: '9'
-    }]
+      AND: {
+        name: ['swiss'],
+        price: [{gte: '30000', lte: '9'}]
+      }
+    }
   }).on('data', function (doc) {
     results.push(JSON.parse(doc).id)
   }).on('end', function () {
