@@ -1,7 +1,8 @@
-const should = require('should')
+const JSONStream = require('JSONStream')
 const levelup = require('levelup')
-const searchIndex = require('../../../')
 const sandbox = 'test/sandbox'
+const searchIndex = require('../../../')
+const should = require('should')
 
 var db, si
 
@@ -19,24 +20,55 @@ describe('Making a search-index with a vanilla (leveldown) levelup: ', function 
       indexes: db
     }, function(err, thisSi) {
       si = thisSi
-      done()
+      return done()
     })
   })
 
   it('should be able to index and search as normal', function (done) { 
-    si.add([{
+    var i = 0
+    const s = new require('stream').Readable()
+    s.push(JSON.stringify({
       title: 'a realllly cool document',
       body: 'this is my doc'
-    }], function (err) {
-      si.search({
-        query: {
-          AND: {title: ['cool']}
-        }
-      }, function(err, results){
-        results.hits[0].document.body.should.equal('this is my doc')
-        done()
+    }))
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline())
+      .pipe(si.add())
+      .on('data', function(data) {
+        i++
       })
-    })
+      .on('end', function() {
+        i.should.be.exactly(2)
+        si.search({
+          query: [{
+            AND: {'*': ['now sadly defunct']}
+          }]
+        }).on('data', function(data) {
+          JSON.parse(data).document.body.should.equal('this is my doc')
+          return done()
+        })
+        return done()
+      })
+
+
+    // si.add([{
+    //   title: 'a realllly cool document',
+    //   body: 'this is my doc'
+    // }], function (err) {
+
+      // si.search({
+      //   query: {
+      //     AND: {title: ['cool']}
+      //   }
+      // }, function(err, results){
+      //   results.hits[0].document.body.should.equal('this is my doc')
+      //   done()
+      // })
+
+
+
+
   })
 
 })
