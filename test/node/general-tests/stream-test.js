@@ -40,7 +40,8 @@ it('stream file to search-index', function (done) {
   const filePath = './node_modules/reuters-21578-json/data/fullFileStream/justTen.str'
   fs.createReadStream(filePath)
     .pipe(JSONStream.parse())
-    .pipe(si.createWriteStream())
+    .pipe(si.defaultPipeline())
+    .pipe(si.add())
     .on('data', function(data) {
 
     }).on('end', function() {
@@ -50,15 +51,19 @@ it('stream file to search-index', function (done) {
 
 
 it('index should be searchable', function (done) {
+  var i = 0
+  var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
   si.search({
     query: {
-      AND: [{'*': ['*']}]
+      AND: {'*': ['*']}
     }
-  }, function (err, results) {
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
-    )
-    done()
+  }).on('data', function(data) {
+    i++
+    data = JSON.parse(data)
+    data.id.should.be.exactly(results.shift())
+  }).on('end', function() {
+    i.should.be.exactly(10)
+    return done()
   })
 })
 

@@ -3,6 +3,7 @@ const sandbox = 'test/sandbox'
 const searchIndex = require('../../../')
 const should = require('should')
 const sqldown = require('sqldown')
+const JSONStream = require('JSONStream')
 
 var db, si
 
@@ -32,17 +33,29 @@ it('should make a new search-index with the sqlite backed leveldb', function (do
 })
 
 it('should be able to index and search as normal', function (done) { 
-  si.add([{
-    title: 'a realllly cool document',
-    body: 'this is my doc'
-  }], function (err) {
-    si.search({
-      query: {
-        AND: {title: ['cool']}
-      }
-    }, function(err, results){
-      results.hits[0].document.body.should.equal('this is my doc')
-      done()
-    })
-  })
+    var i = 0
+    const s = new require('stream').Readable()
+    s.push(JSON.stringify({
+      title: 'a realllly cool document',
+      body: 'this is my doc'
+    }))
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline())
+      .pipe(si.add())
+      .on('data', function(data) {
+        i++
+      })
+      .on('end', function() {
+        i.should.be.exactly(2)
+        si.search({
+          query: [{
+            AND: {'*': ['cool']}
+          }]
+        }).on('data', function(data) {
+          JSON.parse(data).document.body.should.equal('this is my doc')
+          return done()
+        })
+        return done()
+      })
 })
