@@ -56,6 +56,5 @@ it('should be able to index and search as normal', function (done) {
           JSON.parse(data).document.body.should.equal('this is my doc')
           return done()
         })
-        return done()
       })
 })

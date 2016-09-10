@@ -197,7 +197,7 @@ it('search for watch NOT apple in name field', function (done) {
 })
 
 it('search for watch NOT apple in title field, but then add "apple watch" back in through an OR condition', function (done) {
-  var results = [ '9', '7', '3', '2', '10', '1' ]
+  var results = [ '1', '9', '7', '3', '2', '10' ]
   si.search({
     query: [{
       AND: {'*': ['watch'] },

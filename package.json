@@ -16,12 +16,8 @@
     "lodash.intersection": "4.1.2",
     "lodash.union": "^4.6.0",
     "search-index-adder": "0.1.4",
-    "search-index-deleter": "0.0.10",
-    "search-index-getter": "0.0.7",
-    "search-index-matcher": "0.0.8",
-    "search-index-replicator": "0.0.8",
     "search-index-searcher": "0.1.1",
-    "stopword": "0.0.6"
+    "stopword": "0.1.1"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",
@@ -70,19 +66,13 @@
       "name": "Fergus McDowall",
       "email": "fergusmcdowall@gmail.com",
       "url": "https://github.com/fergiemcdowall"
-    },
-    {
-      "name": "Mats Julian Olsen",
-      "email": "mats@plysjbyen.net",
-      "url": "https://github.com/mewwts"
     }
   ],
   "scripts": {
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
-    "lint": "standard",
     "test-browserify": "browserify test/browser/browserify-test-uncompiled.js | uglifyjs > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
-    "test-node": "mocha test/node --recursive --timeout 10000",
-    "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify"
+    "test-node": "mocha test/node/general-tests --recursive --timeout 10000",
+    "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify && standard"
   },
   "repository": {
     "type": "git",

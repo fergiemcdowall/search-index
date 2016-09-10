@@ -5,6 +5,8 @@ const sandboxPath = 'test/sandbox'
 const SearchIndex = require('../../../')
 const should = require('should')
 const _ = require('lodash')
+const JSONStream = require('JSONStream')
+
 var si
 
 const batch = [
@@ -18,7 +20,7 @@ const batch = [
   {
     id: '2',
     name: 'Victorinox Swiss Army',
-    description: 'You have the power to keep time moving with this Airboss automatic watch.',
+    description: 'You have the power to keep time moving with this Airboss automatic watch',
     price: 99,
     age: 33342
   },
@@ -67,7 +69,7 @@ const batch = [
   {
     id: '9',
     name: 'Victorinox Night Vision ',
-    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s! BOOM BOOM BOOM',
     price: 1000,
     age: 33342
   },
@@ -81,159 +83,235 @@ const batch = [
 ]
 
 
+const s = new require('stream').Readable()
+batch.forEach(function (item) {
+  s.push(JSON.stringify(item))
+})
+s.push(null)
+
 it('should do some simple indexing', function (done) {
+  var i = 0
   SearchIndex({
     indexPath: sandboxPath + '/sorting-test',
     logLevel: 'warn'
   }, function(err, thisSI){
     si = thisSI
-    si.add(batch, {}, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
-    })
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline({
+        fieldOptions: {
+          price: {
+            sortable: true
+          },
+          name: {
+            sortable: true,
+            separator: '%'
+          }
+        }
+      }))
+      .pipe(si.add())
+      .on('data', function(data) {
+        i++
+      })
+      .on('end', function() {
+        i.should.be.exactly(11)
+        true.should.be.exactly(true)
+        return done()
+      })
   })
 })
 
 
 it('simple search, sorted by ID', function (done) {
+  var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
   si.search({
-    query: {
+    query: [{
       AND: {'*': ['*']}
-    }
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ])
-    done()
+    }]
+  }).on('data', function(data) {
+    JSON.parse(data).id.should.eql(results.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    // console.log(results)
+    return done()
   })
 })
 
 
 it('simple search, sorted by relevance', function (done) {
+
+  var results = [ '7', '3', '2', '10', '1', '9' ]
   si.search({
-    query: {
+    query: [{
       AND: {'*': ['watch']}
-    }
-  }, function (err, results) {
-    ;(err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '1', '9', '7', '3', '2', '10' ])
-    done()
+    }]
+  }).on('data', function(data) {
+    JSON.parse(data).id.should.eql(results.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    // console.log(results)
+    return done()
   })
 })
 
 it('simple search, sorted by price', function (done) {
+  var i = 0
+  var results = [ '7', '10', '1', '3', '9', '2' ]
+  var prices = [ 33333, 30000, 20002, 4716, 1000, 99 ]
   si.search({
     query: {
       AND: {'*': ['watch']}
     },
-    sort:['price', 'desc']
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '7', '10', '1', '3', '9', '2' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ 33333, 30000, 20002, 4716, 1000, 99 ])
-    done()
+    sort: {
+      field: 'price',
+      direction: 'desc'
+    }
+  }).on('data', function(data) {
+    i++
+    // console.log(JSON.stringify(JSON.parse(data), null, 2))
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).score.should.eql(prices.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    prices.length.should.be.exactly(0)
+    i.should.be.exactly(6)
+    // console.log(results)
+    return done()
   })
 })
 
 it('simple search, sorted by name', function (done) {
+
+  var i = 0
+  var results = [ '1', '10', '7', '3', '9', '2' ]
+  var names = [
+    'Apple Watch',
+    'Armani Swiss Moon Phase',
+    'TW Steel',
+    'Versace Men\'s Swiss',
+    'Victorinox Night Vision ',
+    'Victorinox Swiss Army'
+  ]
   si.search({
     query: {
       AND: {'*': ['watch']}
     },
-    sort:['name', 'desc']
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '2', '9', '3', '7', '10', '1' ])
-    results.hits.map(function (item) { return item.document.name }).should.eql(
-      [ "Victorinox Swiss Army",
-        "Victorinox Night Vision ",
-        "Versace Men's Swiss",
-        "TW Steel",
-        "Armani Swiss Moon Phase",
-        "Apple Watch" ])
-    done()
+    sort: {
+      field: 'name',
+      direction: 'asc'
+    }
+  }).on('data', function(data) {
+    i++
+    // console.log(JSON.stringify(JSON.parse(data), null, 2))
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).document.name.should.eql(names.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    names.length.should.be.exactly(0)
+    i.should.be.exactly(6)
+    // console.log(results)
+    return done()
   })
 })
 
 it('simple search, two tokens, sorted by price', function (done) {
-  si.search({
-    query: {
-      AND: {'*': ['watch', 'swiss'] }
-    },
-    sort:['price', 'desc']
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '10', '3', '9', '2' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ 30000, 4716, 1000, 99 ] )
-    done()
-  })
-})
-
-it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
+  var i = 0
+  var results = [ '10', '3', '9']
+  var prices = [ 30000, 4716, 1000 ]
   si.search({
     query: {
       AND: {'*': ['watch', 'swiss']}
     },
-    pageSize: 2,
-    sort:['price', 'desc']
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '10', '3' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ 30000, 4716 ] )
-    done()
+    sort: {
+      field: 'price',
+      direction: 'desc'
+    }
+  }).on('data', function(data) {
+    i++
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).score.should.eql(prices.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    prices.length.should.be.exactly(0)
+    i.should.be.exactly(3)
+    return done()
+  })
+})
+
+it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
+  var i = 0
+  var results = [ '10', '3']
+  var prices = [ 30000, 4716 ]
+  si.search({
+    query: {
+      AND: {'*': ['watch', 'swiss']}
+    },
+    sort: {
+      field: 'price',
+      direction: 'desc'
+    },
+    pageSize: 2
+  }).on('data', function(data) {
+    i++
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).score.should.eql(prices.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    prices.length.should.be.exactly(0)
+    i.should.be.exactly(2)
+    return done()
   })
 })
 
 
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', function (done) {
+  var i = 0
+  var results = [ '3', '9']
+  var prices = [ 4716, 1000 ]
   si.search({
     query: {
       AND: {'*': ['watch', 'swiss']}
     },
+    sort: {
+      field: 'price',
+      direction: 'desc'
+    },
     offset: 1,
-    pageSize: 2,
-    sort:['price', 'desc']
-  }, function (err, results) {
-    ;(err === null).should.be.exactly(true)
-    should.exist(results)
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '3', '9' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ 4716, 1000 ] )
-    done()
+    pageSize: 2
+  }).on('data', function(data) {
+    i++
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).score.should.eql(prices.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    prices.length.should.be.exactly(0)
+    i.should.be.exactly(2)
+    return done()
   })
 })
 
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort asc', function (done) {
+  var i = 0
+  var results = [ '3', '10']
+  var prices = [ 4716, 30000 ]
   si.search({
     query: {
       AND: {'*': ['watch', 'swiss']}
     },
+    sort: {
+      field: 'price',
+      direction: 'asc'
+    },
     offset: 1,
-    pageSize: 2,
-    sort:['price', 'asc']
-  }, function (err, results) {
-    (err === null).should.be.exactly(true)
-    should.exist(results)
-//    console.log(JSON.stringify(results.hits, null, 2))
-    results.hits.map(function (item) { return item.id }).should.eql(
-      [ '9', '3' ])
-    results.hits.map(function (item) { return item.document.price }).should.eql(
-      [ 1000, 4716 ] )
-    done()
+    pageSize: 2
+  }).on('data', function(data) {
+    i++
+    JSON.parse(data).id.should.eql(results.shift())
+    JSON.parse(data).score.should.eql(prices.shift())
+  }).on('end', function() {
+    results.length.should.be.exactly(0)
+    prices.length.should.be.exactly(0)
+    i.should.be.exactly(2)
+    return done()
   })
+
 })
