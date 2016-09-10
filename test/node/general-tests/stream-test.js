@@ -1,9 +1,8 @@
+/* global it */
 
-const fs = require('fs')
-const should = require('should')
-const SearchIndex = require('../../../')
-const test = require('tape')
 const JSONStream = require('JSONStream')
+const SearchIndex = require('../../../')
+const fs = require('fs')
 
 var si
 
@@ -17,38 +16,33 @@ it('init indexer', function (done) {
   })
 })
 
-
 it('test stream file', function (done) {
-  this.timeout(5000);
+  this.timeout(5000)
   var i = 0
   const filePath = './node_modules/reuters-21578-json/data/fullFileStream/justTen.str'
   require('readline').createInterface({
     input: fs.createReadStream(filePath)
   })
-    .on('line', function(line) {
+    .on('line', function (line) {
       i++
     })
-    .on('close', function() {
+    .on('close', function () {
       i.should.be.exactly(10)
       done()
     })
 })
 
-
 it('stream file to search-index', function (done) {
-  this.timeout(5000);
+  this.timeout(5000)
   const filePath = './node_modules/reuters-21578-json/data/fullFileStream/justTen.str'
   fs.createReadStream(filePath)
     .pipe(JSONStream.parse())
     .pipe(si.defaultPipeline())
     .pipe(si.add())
-    .on('data', function(data) {
-
-    }).on('end', function() {
+    .on('data', function (data) {}).on('end', function () {
       done()
     })
 })
-
 
 it('index should be searchable', function (done) {
   var i = 0
@@ -57,14 +51,12 @@ it('index should be searchable', function (done) {
     query: {
       AND: {'*': ['*']}
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     data = JSON.parse(data)
     data.id.should.be.exactly(results.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     i.should.be.exactly(10)
     return done()
   })
 })
-
-

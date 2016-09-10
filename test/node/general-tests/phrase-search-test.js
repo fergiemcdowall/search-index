@@ -1,26 +1,24 @@
 /* global it */
 /* global describe */
 
-const logLevel = 'error'
-if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'info'
 const sandboxPath = 'test/sandbox'
-const should = require('should')
 
-const getDataStream = function() {
-  var s = new require('stream').Readable()
+const getDataStream = function () {
+  var s = new Readable()
   s.push(JSON.stringify({
     id: 1,
     name: 'Fish and chips',
     test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
-  })),
+  }))
   s.push(JSON.stringify({
     id: 2,
     name: 'Chips and curry sauce',
     test: 'A classic, the curry sauce may be substituted for gravy'
-  })),
+  }))
   s.push(JSON.stringify({
     id: 3,
     name: 'Haggisxandxchips',
@@ -31,14 +29,13 @@ const getDataStream = function() {
 }
 
 describe('ngrams (phrase search): ', function () {
-
   var si, si2, si3, si4
 
   it('should initialize search index', function (done) {
     var i = 0
     SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests',
-       logLevel: logLevel},
+      logLevel: logLevel},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
@@ -49,10 +46,10 @@ describe('ngrams (phrase search): ', function () {
             nGramLength: {gte: 1, lte: 3}
           }))
           .pipe(si.add())
-          .on('data', function(data) {
+          .on('data', function (data) {
             i++
           })
-          .on('end', function() {
+          .on('end', function () {
             i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
@@ -75,23 +72,23 @@ describe('ngrams (phrase search): ', function () {
           nGramLength: [1, 5]
         }))
         .pipe(si2.add())
-          .on('data', function(data) {
-            i++
-          })
-          .on('end', function() {
-            i.should.be.exactly(4)
-            true.should.be.exactly(true)
-            return done()
-          })
-      })
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(4)
+          true.should.be.exactly(true)
+          return done()
+        })
+    })
   })
 
   it('should initialize search index', function (done) {
     var i = 0
     SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests-3',
-       logLevel: logLevel,
-       stopwords: []},
+        logLevel: logLevel,
+      stopwords: []},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si3 = thisSi
@@ -108,10 +105,10 @@ describe('ngrams (phrase search): ', function () {
             }
           }))
           .pipe(si3.add())
-          .on('data', function(data) {
+          .on('data', function (data) {
             i++
           })
-          .on('end', function() {
+          .on('end', function () {
             i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
@@ -123,8 +120,8 @@ describe('ngrams (phrase search): ', function () {
     var i = 0
     SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests-4',
-       logLevel: logLevel,
-       stopwords: []},
+        logLevel: logLevel,
+      stopwords: []},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si4 = thisSi
@@ -138,10 +135,10 @@ describe('ngrams (phrase search): ', function () {
             }
           }))
           .pipe(si4.add())
-          .on('data', function(data) {
+          .on('data', function (data) {
             i++
           })
-          .on('end', function() {
+          .on('end', function () {
             i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
@@ -159,9 +156,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['now sadly defunct']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -177,9 +174,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['tastie bite']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -195,9 +192,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['curry']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -213,9 +210,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['curry', 'substituted for gravy']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -227,9 +224,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['now sadly defunct']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(0)
       return done()
     })
@@ -245,9 +242,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['curry sauce may be substituted']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -263,9 +260,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['curry sauce may be substituted', 'gravy']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -277,9 +274,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'*': ['curry sauce may be substituted', 'and curry sauce', 'gravy']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(0)
       return done()
     })
@@ -295,9 +292,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'name': ['chips and curry']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
@@ -309,9 +306,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'test': ['substituted for gravy']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(0)
       return done()
     })
@@ -327,16 +324,15 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'test': ['substituted']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })
   })
 
   it('should be able to confirm field level separator', function (done) {
-
     var results = [{
       id: '3',
       name: 'Haggisxandxchips',
@@ -346,9 +342,9 @@ describe('ngrams (phrase search): ', function () {
       query: [{
         AND: {'name': ['chips']}
       }]
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       JSON.parse(data).document.should.eql(results.shift())
-    }).on('end', function() {
+    }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
     })

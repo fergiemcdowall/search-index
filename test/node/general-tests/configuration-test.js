@@ -1,20 +1,23 @@
 /* global it */
 /* global describe */
 
-const fs = require('fs')
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 const assert = require('assert')
-const should = require('should')
+const fs = require('fs')
+const logLevel = process.env.NODE_ENV || 'info'
 const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
-const Readable = require('stream').Readable
-const JSONStream = require('JSONStream')
+const should = require('should')
 
 describe('Configuration: ', function () {
   it('should accept configuration', function (done) {
     const siPath = sandboxPath + '/si-config'
     searchindex({
-      indexPath: siPath
-    }, function(err, si) {
+      indexPath: siPath,
+      logLevel: logLevel
+    }, function (err, si) {
+      if (err) false.should.eql(true)
       should.exist(si)
       fs.existsSync(siPath).should.be.exactly(true)
       done()
@@ -30,7 +33,8 @@ describe('Configuration: ', function () {
   // })
 
   it('can be instantiated with an empty options object', function (done) {
-    searchindex({}, function(err, si) {
+    searchindex({}, function (err, si) {
+      if (err) false.should.eql(true)
       should.exist(si)
       fs.existsSync(si.options.indexPath).should.be.exactly(true)
       done()
@@ -53,8 +57,9 @@ describe('Configuration: ', function () {
     searchindex({
       indexPath: sandboxPath + '/test-log-index',
       log: log,
-      logLevel: 'info'
-    }, function(err, si) {
+      logLevel: logLevel
+    }, function (err, si) {
+      if (err) false.should.eql(true)
       should.exist(si.log)
       const s = new Readable()
       s.push(JSON.stringify({
@@ -62,7 +67,7 @@ describe('Configuration: ', function () {
         name: 'The First Doc',
         test: 'this is the first doc'
       }))
-      s.push(null)  // needed?
+      s.push(null) // needed?
       s.pipe(JSONStream.parse())
         .pipe(si.defaultPipeline())
         .pipe(si.add())

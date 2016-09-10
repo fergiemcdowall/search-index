@@ -3,13 +3,13 @@ const test = require('tape')
 var server
 
 test('check size of bundle', function (t) {
-  t.plan(1)
-  fs.stat('./test/sandbox/bundle.js', function(err, stats) {
+  t.plan(2)
+  fs.stat('./test/sandbox/bundle.js', function (err, stats) {
+    t.error(err)
     console.log(stats.size)
     t.ok((stats.size < 1100000), 'bundle should be less than 1mb')
   })
 })
-
 
 test('start server', function (t) {
   t.plan(1)
@@ -32,27 +32,25 @@ test('start server', function (t) {
   })
 })
 
-
 test('connect to test html page', function (t) {
   t.plan(2)
   var webdriver = require('selenium-webdriver')
   var browser
-
-  if (process.env.SAUCE_USERNAME != undefined) {
+  if (process.env.SAUCE_USERNAME !== undefined) {
     browser = new webdriver.Builder()
-      .usingServer('http://'+ process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub')
+      .usingServer('http://' + process.env.SAUCE_USERNAME + ':' + process.env.SAUCE_ACCESS_KEY + '@ondemand.saucelabs.com:80/wd/hub')
       .withCapabilities({
         'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
         build: process.env.TRAVIS_BUILD_NUMBER,
         username: process.env.SAUCE_USERNAME,
         accessKey: process.env.SAUCE_ACCESS_KEY,
-        browserName: "chrome"
-      }).build();
+        browserName: 'chrome'
+      }).build()
   } else {
     browser = new webdriver.Builder()
       .withCapabilities({
-        browserName: "chrome"
-      }).build();
+        browserName: 'chrome'
+      }).build()
   }
   browser.get('http://localhost:8080')
 

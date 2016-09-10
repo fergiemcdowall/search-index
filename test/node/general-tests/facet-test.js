@@ -1,15 +1,16 @@
 /* global it */
-/* global describe */
 
-const sandboxPath = 'test/sandbox'
-const SearchIndex = require('../../../')
-const should = require('should')
-const _ = require('lodash')
 const JSONStream = require('JSONStream')
+const SearchIndex = require('../../../')
+const sandboxPath = 'test/sandbox'
+const should = require('should')
+const Readable = require('stream').Readable
 
 var si
 
-const s = new require('stream').Readable()
+should
+
+const s = new Readable()
 s.push(JSON.stringify({
   id: '1',
   name: 'Apple Watch',
@@ -30,8 +31,8 @@ s.push(JSON.stringify({
 }))
 s.push(JSON.stringify({
   id: '3',
-  name: 'Versace Men\'s Swiss',
-  description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+  name: "Versace Men's Swiss",
+  description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
   manufacturer: 'versace',
   color: ['white', 'gold', 'black'],
   price: '4716',
@@ -39,7 +40,7 @@ s.push(JSON.stringify({
 }))
 s.push(JSON.stringify({
   id: '4',
-  name: 'CHARRIOL Men\'s Swiss Alexandre',
+  name: "CHARRIOL Men's Swiss Alexandre",
   description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
   manufacturer: ['charriol'],
   color: ['pink', 'gold', 'black'],
@@ -48,7 +49,7 @@ s.push(JSON.stringify({
 }))
 s.push(JSON.stringify({
   id: '5',
-  name: 'Ferragamo Men\'s Swiss 1898',
+  name: "Ferragamo Men's Swiss 1898",
   description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
   manufacturer: ['ferragamo'],
   color: ['pink', 'gold', 'black'],
@@ -76,7 +77,7 @@ s.push(JSON.stringify({
 s.push(JSON.stringify({
   id: '8',
   name: 'Invicta Bolt Zeus ',
-  description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+  description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
   manufacturer: ['invicta'],
   color: ['red', 'blue'],
   price: '8767',
@@ -85,7 +86,7 @@ s.push(JSON.stringify({
 s.push(JSON.stringify({
   id: '9',
   name: 'Victorinox Night Vision ',
-  description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+  description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's!",
   manufacturer: ['victorinox'],
   color: ['red'],
   price: '1000',
@@ -106,14 +107,13 @@ it('should do some simple indexing with filters', function (done) {
   SearchIndex({
     indexPath: sandboxPath + '/facet-test',
     logLevel: 'warn'
-  }, function(err, thisSI) {
+  }, function (err, thisSI) {
+    if (err) false.should.eql(true)
     si = thisSI
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function (data) {
-
-      })
+      .on('data', function (data) {})
       .on('end', function () {
         return done()
       })
@@ -144,9 +144,9 @@ it('return all docs, and show manufacturer category', function (done) {
     category: {
       field: 'manufacturer'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     return done()
   })
 })
@@ -176,13 +176,12 @@ it('return all docs, and show manufacturer category by set', function (done) {
       field: 'manufacturer',
       set: true
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     return done()
   })
 })
-
 
 it('return all docs, and show manufacturer category, filter on color: black', function (done) {
   var result = [
@@ -208,14 +207,13 @@ it('return all docs, and show manufacturer category, filter on color: black', fu
     category: {
       field: 'manufacturer'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
 })
-
 
 it('should be able to do simple filtering on price', function (done) {
   var result = [
@@ -238,15 +236,14 @@ it('should be able to do simple filtering on price', function (done) {
     category: {
       field: 'manufacturer'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     // console.log(data)
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
 })
-
 
 it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and return categories', function (done) {
   var result = [
@@ -269,10 +266,10 @@ it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and ret
     category: {
       field: 'manufacturer'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     // console.log(data)
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
@@ -294,10 +291,10 @@ it('search for "swiss" NOT "watch" and return categories for manufacturer', func
       field: 'manufacturer',
       set: true
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     // console.log(data)
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
@@ -321,15 +318,14 @@ it('return all docs, and show manufacturer and color categories', function (done
     category: {
       field: 'color'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     // console.log(data)
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
 })
-
 
 it('bucket on price', function (done) {
   var result = [
@@ -339,7 +335,7 @@ it('bucket on price', function (done) {
       'lte': '3',
       'set': false,
       'value': 4
-    } 
+    }
   ]
   si.buckets({
     query: [
@@ -353,9 +349,9 @@ it('bucket on price', function (done) {
       lte: '3',
       set: false
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })
@@ -369,15 +365,15 @@ it('return all items and bucket on price', function (done) {
       'lte': '5',
       'set': false,
       'value': 6
-    } 
+    }
   ]
   si.buckets({
     query: [
       {
-        AND: {'*': ['watch']},
+        AND: {'*': ['watch']}
       },
       {
-        AND: {'*': ['swiss']},
+        AND: {'*': ['swiss']}
       }
     ],
     buckets: [{
@@ -386,9 +382,9 @@ it('return all items and bucket on price', function (done) {
       lte: '5',
       set: false
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data.should.eql(result.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     result.length.should.be.exactly(0)
     return done()
   })

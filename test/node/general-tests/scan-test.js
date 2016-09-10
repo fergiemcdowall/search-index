@@ -1,8 +1,10 @@
+/* global it */
+
 const SearchIndex = require('../../../')
-const test = require('tape')
 const sandbox = process.env.SANDBOX || 'test/sandbox'
-const should = require('should')
+const logLevel = process.env.NODE_ENV || 'info'
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 
 var si
 
@@ -23,21 +25,21 @@ const batch = [
   },
   {
     id: '3',
-    name: 'Versace Men\'s Swiss',
-    description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+    name: "Versace Men's Swiss",
+    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
     price: '4716',
     age: '8293'
   },
   {
     id: '4',
-    name: 'CHARRIOL Men\'s Swiss Alexandre',
+    name: "CHARRIOL Men's Swiss Alexandre",
     description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
     price: '2132',
     age: '33342'
   },
   {
     id: '5',
-    name: 'Ferragamo Men\'s Swiss 1898',
+    name: "Ferragamo Men's Swiss 1898",
     description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
     price: '99999',
     age: '33342'
@@ -59,14 +61,14 @@ const batch = [
   {
     id: '8',
     name: 'Invicta Bolt Zeus ',
-    description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+    description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
     price: '8767',
     age: '33342'
   },
   {
     id: '9',
     name: 'Victorinox Night Vision ',
-    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+    description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's!",
     price: '1000',
     age: '33342'
   },
@@ -79,8 +81,8 @@ const batch = [
   }
 ]
 
-var s = new require('stream').Readable()
-batch.forEach(function(item) {
+var s = new Readable()
+batch.forEach(function (item) {
   s.push(JSON.stringify(item))
 })
 s.push(null)
@@ -88,17 +90,18 @@ s.push(null)
 it('initialize a search index', function (done) {
   var i = 0
   SearchIndex({
-    indexPath: sandbox + '/si-scan'
-  }, function(err, thisSi) {
+    indexPath: sandbox + '/si-scan',
+    logLevel: logLevel
+  }, function (err, thisSi) {
     ;(err === null).should.be.exactly(true)
     si = thisSi
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(11)
         return done()
       })

@@ -1,18 +1,19 @@
 /* global it */
 /* global describe */
 
-var should = require('should')
-var sandboxPath = 'test/sandbox'
-var searchindex = require('../../../')
-var Readable = require('stream').Readable
-var JSONStream = require('JSONStream')
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'info'
+const sandboxPath = 'test/sandbox'
+const searchindex = require('../../../')
+
+var sOne = new Readable()
+var sTwo = new Readable()
+
+var siOne, siTwo
 
 describe('Instantiation: ', function () {
   describe('setting up different indexes with no pollution', function () {
-
-    var sOne = new Readable()
-    var sTwo = new Readable()
-
     sOne.push(JSON.stringify({
       id: 1,
       name: 'The First Doc',
@@ -38,7 +39,8 @@ describe('Instantiation: ', function () {
 
     it('should initialize the first search index', function (done) {
       searchindex({
-        indexPath: sandboxPath + '/si-init-one'
+        indexPath: sandboxPath + '/si-init-one',
+        logLevel: logLevel
       }, function (err, thisSi) {
         if (err) false.should.eql(true)
         siOne = thisSi
@@ -60,10 +62,8 @@ describe('Instantiation: ', function () {
       sOne.pipe(JSONStream.parse())
         .pipe(siOne.defaultPipeline())
         .pipe(siOne.add())
-        .on('data', function(data) {
-          
-        })
-        .on('end', function() {
+        .on('data', function (data) {})
+        .on('end', function () {
           return done()
         })
     })
@@ -72,16 +72,14 @@ describe('Instantiation: ', function () {
       sTwo.pipe(JSONStream.parse())
         .pipe(siTwo.defaultPipeline())
         .pipe(siTwo.add())
-        .on('data', function(data) {
-          
-        })
-        .on('end', function() {
+        .on('data', function (data) {})
+        .on('end', function () {
           return done()
         })
     })
 
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
-      results = [
+      var results = [
         {
           id: '2',
           name: 'The Second Doc',
@@ -97,16 +95,16 @@ describe('Instantiation: ', function () {
         query: [{
           AND: {'*': ['*']}
         }]
-      }).on('data', function(data) {
+      }).on('data', function (data) {
         JSON.parse(data).document.should.eql(results.shift())
-      }).on('end', function() {
+      }).on('end', function () {
         results.length.should.be.exactly(0)
         return done()
       })
     })
 
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
-      results = [
+      var results = [
         {
           id: '4',
           name: 'The Fourth Doc',
@@ -122,9 +120,9 @@ describe('Instantiation: ', function () {
         query: [{
           AND: {'*': ['*']}
         }]
-      }).on('data', function(data) {
+      }).on('data', function (data) {
         JSON.parse(data).document.should.eql(results.shift())
-      }).on('end', function() {
+      }).on('end', function () {
         results.length.should.be.exactly(0)
         return done()
       })

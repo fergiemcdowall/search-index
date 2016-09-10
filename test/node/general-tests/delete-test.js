@@ -1,13 +1,14 @@
 /* global it */
 /* global describe */
 
-const logLevel = 'error'
-if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-const should = require('should')
-const searchIndex = require('../../../')
-const sandboxPath = 'test/sandbox'
-const Readable = require('stream').Readable
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'info'
+const sandboxPath = 'test/sandbox'
+const searchIndex = require('../../../')
+const should = require('should')
+
+should
 
 describe('deleting: ', function () {
   var si = null
@@ -49,9 +50,7 @@ describe('deleting: ', function () {
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
-        
-      }).on('end', function() {
+      .on('data', function (data) {}).on('end', function () {
         done()
       })
   })
@@ -62,10 +61,10 @@ describe('deleting: ', function () {
     q.query = {
       AND: {'*': ['*']}
     }
-    si.search(q).on('data', function(data) {
+    si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
-    }).on('end', function(end) {
-      result.map(function (item) {return item.document.id})
+    }).on('end', function (end) {
+      result.map(function (item) { return item.document.id })
         .should.eql(['4', '3', '2', '1'])
       return done()
     })
@@ -87,10 +86,10 @@ describe('deleting: ', function () {
     q.query = {
       AND: {'*': ['*']}
     }
-    si.search(q).on('data', function(data) {
+    si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
-    }).on('end', function(end) {
-      result.map(function (item) {return item.document.id})
+    }).on('end', function (end) {
+      result.map(function (item) { return item.document.id })
         .should.eql(['4', '3', '1'])
       return done()
     })
@@ -107,9 +106,7 @@ describe('deleting: ', function () {
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
-        
-      }).on('end', function() {
+      .on('data', function (data) {}).on('end', function () {
         done()
       })
   })
@@ -120,13 +117,12 @@ describe('deleting: ', function () {
     q.query = {
       AND: {'*': ['*']}
     }
-    si.search(q).on('data', function(data) {
+    si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
-    }).on('end', function(end) {
-      result.map(function (item) {return item.document.id})
+    }).on('end', function (end) {
+      result.map(function (item) { return item.document.id })
         .should.eql(['4', '3', '1'])
       return done()
-    })    
+    })
   })
-
 })

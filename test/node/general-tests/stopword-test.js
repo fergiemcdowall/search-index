@@ -1,20 +1,15 @@
 /* global it */
 /* global describe */
 
-var logLevel = 'error'
-if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-
-const sandboxPath = 'test/sandbox'
-const searchindex = require('../../../')
-const should = require('should')
-const sw = require('stopword')
-const tv = require('term-vector')
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'info'
+const sandboxPath = 'test/sandbox'
+const searchindex = require('../../../')
+const sw = require('stopword')
 
 describe('stopwords: ', function () {
-
-  const getDataStream = function() {
+  const getDataStream = function () {
     const data = [
       {
         id: 1,
@@ -37,14 +32,14 @@ describe('stopwords: ', function () {
         test: 'Ta en tur til Køben- dette blir stas!'
       }]
     var s = new Readable()
-    data.forEach(function(datum) {
+    data.forEach(function (datum) {
       s.push(JSON.stringify(datum))
     })
     s.push(null)
     return s
   }
 
-  const getFoodStream = function() {
+  const getFoodStream = function () {
     const data = [
       {
         id: 1,
@@ -55,33 +50,33 @@ describe('stopwords: ', function () {
         id: 2,
         name: 'Chips and curry sauce',
         test: 'A classic, the curry sauce may be substituted for gravy'
-      }      
+      }
     ]
     var s = new Readable()
-    data.forEach(function(datum) {
+    data.forEach(function (datum) {
       s.push(JSON.stringify(datum))
     })
     s.push(null)
     return s
   }
 
-  var si, siNO, siFood, siFood2
+  var si, siNO, siFood
 
   it('should initialize search index', function (done) {
     var i = 0
     searchindex(
       {indexPath: sandboxPath + '/si-stopwords-test-en',
-       logLevel: logLevel},
+      logLevel: logLevel},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
         getDataStream().pipe(JSONStream.parse())
           .pipe(si.defaultPipeline())
           .pipe(si.add())
-          .on('data', function(data) {
+          .on('data', function (data) {
             i++
           })
-          .on('end', function() {
+          .on('end', function () {
             i.should.be.exactly(5)
             true.should.be.exactly(true)
             return done()
@@ -96,12 +91,12 @@ describe('stopwords: ', function () {
       query: {
         AND: {'*': ['dette']}
       }
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(3)
       return done()
     })
@@ -121,10 +116,10 @@ describe('stopwords: ', function () {
           stopwords: sw.no
         }))
         .pipe(siNO.add())
-        .on('data', function(data) {
+        .on('data', function (data) {
           i++
         })
-        .on('end', function() {
+        .on('end', function () {
           i.should.be.exactly(5)
           true.should.be.exactly(true)
           return done()
@@ -139,17 +134,16 @@ describe('stopwords: ', function () {
       query: {
         AND: {'*': ['tur']}
       }
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(1)
       return done()
     })
   })
-
 
   it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
     var i = 0
@@ -157,10 +151,10 @@ describe('stopwords: ', function () {
       query: {
         AND: {'*': ['dette']}
       }
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       console.log(data)
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(0)
       return done()
     })
@@ -180,17 +174,16 @@ describe('stopwords: ', function () {
           stopwords: []
         }))
         .pipe(siFood.add())
-        .on('data', function(data) {
+        .on('data', function (data) {
           i++
         })
-        .on('end', function() {
+        .on('end', function () {
           i.should.be.exactly(3)
           true.should.be.exactly(true)
           return done()
         })
     })
   })
-
 
   it('should be able to return results for "fish and chips"', function (done) {
     var results = ['1']
@@ -199,12 +192,12 @@ describe('stopwords: ', function () {
       query: {
         AND: {'*': 'fish and chips'.split(' ')}
       }
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(1)
       return done()
     })
@@ -217,15 +210,14 @@ describe('stopwords: ', function () {
       query: {
         AND: {'*': ['and']}
       }
-    }).on('data', function(data) {
+    }).on('data', function (data) {
       console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
-    }).on('end', function() {
+    }).on('end', function () {
       i.should.be.exactly(2)
       return done()
     })
   })
-
 })

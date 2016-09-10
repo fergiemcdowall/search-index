@@ -1,17 +1,16 @@
 /* global it */
-/* global describe */
 
-const sandboxPath = 'test/sandbox'
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
+const sandboxPath = 'test/sandbox'
 const should = require('should')
-const _ = require('lodash')
+
 var si, si2
 
-const Readable = require('stream').Readable
-const JSONStream = require('JSONStream')
+should
 
-
-var getStream = function() {
+var getStream = function () {
   const s = new Readable()
   s.push(JSON.stringify({
     id: '1',
@@ -29,21 +28,21 @@ var getStream = function() {
   }))
   s.push(JSON.stringify({
     id: '3',
-    name: 'Versace Men\'s Swiss',
-    description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+    name: "Versace Men's Swiss",
+    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
     price: '4716',
     age: '8293'
   }))
   s.push(JSON.stringify({
     id: '4',
-    name: 'CHARRIOL Men\'s Swiss Alexandre',
+    name: "CHARRIOL Men's Swiss Alexandre",
     description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
     price: '2132',
     age: '33342'
   }))
   s.push(JSON.stringify({
     id: '5',
-    name: 'Ferragamo Men\'s Swiss 1898',
+    name: "Ferragamo Men's Swiss 1898",
     description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
     price: '99999',
     age: '33342'
@@ -65,14 +64,14 @@ var getStream = function() {
   s.push(JSON.stringify({
     id: '8',
     name: 'Invicta Bolt Zeus ',
-    description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+    description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
     price: '8767',
     age: '33342'
   }))
   s.push(JSON.stringify({
     id: '9',
     name: 'Victorinox Night Vision ',
-    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+    description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's!",
     price: '1000',
     age: '33342'
   }))
@@ -92,7 +91,8 @@ it('should do some simple indexing and not store "description field"', function 
   SearchIndex({
     indexPath: sandboxPath + '/fieldstostore-test',
     logLevel: 'warn'
-  }, function(err, thisSI){
+  }, function (err, thisSI) {
+    if (err) false.should.eql(true)
     si = thisSI
     getStream()
       .pipe(JSONStream.parse())
@@ -104,10 +104,10 @@ it('should do some simple indexing and not store "description field"', function 
         }
       }))
       .pipe(si.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(11)
         true.should.be.exactly(true)
         return done()
@@ -121,9 +121,9 @@ it('documents returned by search should not have description fields', function (
     { id: '8', name: 'Invicta Bolt Zeus ', price: '8767', age: '33342' },
     { id: '7', name: 'TW Steel', price: '33333', age: '33342' },
     { id: '6', name: 'Bulova AccuSwiss', price: '1313', age: '33342' },
-    { id: '5', name: 'Ferragamo Men\'s Swiss 1898', price: '99999', age: '33342' },
-    { id: '4', name: 'CHARRIOL Men\'s Swiss Alexandre', price: '2132', age: '33342' },
-    { id: '3', name: 'Versace Men\'s Swiss', price: '4716', age: '8293' },
+    { id: '5', name: "Ferragamo Men's Swiss 1898", price: '99999', age: '33342' },
+    { id: '4', name: "CHARRIOL Men's Swiss Alexandre", price: '2132', age: '33342' },
+    { id: '3', name: "Versace Men's Swiss", price: '4716', age: '8293' },
     { id: '2', name: 'Victorinox Swiss Army', price: '99', age: '33342' },
     { id: '10', name: 'Armani Swiss Moon Phase', price: '30000', age: '33342' },
     { id: '1', name: 'Apple Watch', price: '20002', age: '346' }
@@ -132,10 +132,10 @@ it('documents returned by search should not have description fields', function (
     query: [{
       AND: {'*': ['*']}
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data = JSON.parse(data)
     results.shift().should.eql(data.document)
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     return done()
   })
@@ -147,7 +147,8 @@ it('should do some simple indexing and ONLY store "name field"', function (done)
     indexPath: sandboxPath + '/fieldstostore2-test',
     logLevel: 'warn',
     storeable: false
-  }, function(err, thisSI){
+  }, function (err, thisSI) {
+    if (err) false.should.eql(true)
     si2 = thisSI
     getStream()
       .pipe(JSONStream.parse())
@@ -159,10 +160,10 @@ it('should do some simple indexing and ONLY store "name field"', function (done)
         }
       }))
       .pipe(si2.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(11)
         return done()
       })
@@ -175,9 +176,9 @@ it('documents returned by search should not have description fields', function (
     { name: 'Invicta Bolt Zeus ', id: '8' },
     { name: 'TW Steel', id: '7' },
     { name: 'Bulova AccuSwiss', id: '6' },
-    { name: 'Ferragamo Men\'s Swiss 1898', id: '5' },
-    { name: 'CHARRIOL Men\'s Swiss Alexandre', id: '4' },
-    { name: 'Versace Men\'s Swiss', id: '3' },
+    { name: "Ferragamo Men's Swiss 1898", id: '5' },
+    { name: "CHARRIOL Men's Swiss Alexandre", id: '4' },
+    { name: "Versace Men's Swiss", id: '3' },
     { name: 'Victorinox Swiss Army', id: '2' },
     { name: 'Armani Swiss Moon Phase', id: '10' },
     { name: 'Apple Watch', id: '1' }
@@ -186,12 +187,11 @@ it('documents returned by search should not have description fields', function (
     query: [{
       AND: {'*': ['*']}
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     data = JSON.parse(data)
     results.shift().should.eql(data.document)
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     return done()
   })
 })
-

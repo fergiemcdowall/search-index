@@ -33,6 +33,8 @@
     "should": "^10.0.0",
     "sqldown": "^2.1.0",
     "sqlite3": "^3.1.4",
+    "standard": "^8.0.0",
+    "standard-format": "^2.2.3",
     "stream-buffers": "^3.0.0",
     "tape": "^4.6.0",
     "term-vector": "0.1.2",

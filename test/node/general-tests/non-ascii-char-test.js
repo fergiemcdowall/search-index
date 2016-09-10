@@ -1,13 +1,15 @@
 /* global it */
 /* global describe */
 
-const should = require('should')
-const sandboxPath = 'test/sandbox'
-const SearchIndex = require('../../../')
-const s = new require('stream').Readable()
 const JSONStream = require('JSONStream')
-var si
+const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'info'
+const s = new Readable()
+const sandboxPath = 'test/sandbox'
+const should = require('should')
 
+var si
 
 describe('Indexing and searching non-ascii characters: ', function () {
   s.push(JSON.stringify({
@@ -21,12 +23,14 @@ describe('Indexing and searching non-ascii characters: ', function () {
     test: 'everything in names doc field smør should be searchable searchable searchable'
   }))
   s.push(null)
-  
+
   it('should initialize the first search index', function (done) {
     SearchIndex({
       indexPath: sandboxPath + '/si-non-ascii',
-      logLevel: 'error'
+      logLevel: logLevel
     }, function (err, thisSi) {
+      should.exist(thisSi)
+      ;(!err).should.be.exactly(true)
       si = thisSi
       return done()
     })
@@ -37,10 +41,10 @@ describe('Indexing and searching non-ascii characters: ', function () {
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(3)
         true.should.be.exactly(true)
         return done()
@@ -53,14 +57,14 @@ describe('Indexing and searching non-ascii characters: ', function () {
       AND: {'*': ['ståle', 'synnøve', 'kjærsti']}
     }
     si.search(q)
-      .on('data', function(data) {
+      .on('data', function (data) {
         JSON.parse(data).document.should.eql({
           id: '1',
           names: 'ståle synnøve Kjærsti',
           test: 'this doc should give hits smør for peaches peaches all of the tokens in the names field'
         })
       })
-      .on('end', function() {
+      .on('end', function () {
         return done()
       })
   })
@@ -71,14 +75,14 @@ describe('Indexing and searching non-ascii characters: ', function () {
       AND: {'*': ['gerät', 'grünnerløkka']}
     }
     si.search(q)
-      .on('data', function(data) {
+      .on('data', function (data) {
         JSON.parse(data).document.should.eql({
           id: '2',
           names: 'Gerät Grünnerløkka',
           test: 'everything in names doc field smør should be searchable searchable searchable'
         })
       })
-      .on('end', function() {
+      .on('end', function () {
         return done()
       })
   })

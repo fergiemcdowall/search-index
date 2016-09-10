@@ -10,7 +10,6 @@ batch.forEach(function (datum) {
 })
 s.push(null)
 
-
 levelup('test/sandbox/simpleIndexing', {
   valueEncoding: 'json',
   db: require('level-js')
@@ -23,9 +22,7 @@ levelup('test/sandbox/simpleIndexing', {
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
-        
-      }).on('end', function() {
+      .on('data', function (data) {}).on('end', function () {
         si.get('4', function (err, doc) {
           if (err) console.log(err)
           document.getElementById('result').innerHTML = doc.title

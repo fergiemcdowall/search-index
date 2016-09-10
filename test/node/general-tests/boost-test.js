@@ -1,12 +1,13 @@
-/* global it */
-/* global describe */
+/* eslint-env mocha */
 
-const sandboxPath = 'test/sandbox'
-const SearchIndex = require('../../../')
-const should = require('should')
-const _ = require('lodash')
-const Readable = require('stream').Readable
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'info'
+const sandboxPath = 'test/sandbox'
+const should = require('should')
+
+should
 
 const s = new Readable()
 
@@ -28,21 +29,21 @@ s.push(JSON.stringify({
 }))
 s.push(JSON.stringify({
   id: '3',
-  name: 'Versace Men\'s Swiss',
-  description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+  name: "Versace Men's Swiss",
+  description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
   price: '4716',
   age: '8293'
 }))
 s.push(JSON.stringify({
   id: '4',
-  name: 'CHARRIOL Men\'s Swiss Alexandre',
+  name: "CHARRIOL Men's Swiss Alexandre",
   description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
   price: '2132',
   age: '33342'
 }))
 s.push(JSON.stringify({
   id: '5',
-  name: 'Ferragamo Men\'s Swiss 1898',
+  name: "Ferragamo Men's Swiss 1898",
   description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
   price: '99999',
   age: '33342'
@@ -64,14 +65,14 @@ s.push(JSON.stringify({
 s.push(JSON.stringify({
   id: '8',
   name: 'Invicta Bolt Zeus ',
-  description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+  description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
   price: '8767',
   age: '33342'
 }))
 s.push(JSON.stringify({
   id: '9',
   name: 'Victorinox Night Vision ',
-  description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+  description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's!",
   price: '1000',
   age: '33342'
 }))
@@ -88,16 +89,17 @@ it('should do some simple indexing', function (done) {
   var i = 0
   SearchIndex({
     indexPath: sandboxPath + '/weight-test',
-    logLevel: 'warn'
-  }, function(err, thisSI){
+    logLevel: logLevel
+  }, function (err, thisSI) {
+    if (err) false.should.eql(true)
     si = thisSI
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(11)
         true.should.be.exactly(true)
         return done()
@@ -111,9 +113,9 @@ it('simple * search, sorted by ID', function (done) {
     query: [{
       AND: {'*': ['*']}
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     results.push(JSON.parse(data))
-  }).on('end', function() {
+  }).on('end', function () {
     // console.log(results)
     results.map(function (item) {
       return item.document.id
@@ -134,9 +136,9 @@ it('search for watch in "name" and "description" fields, unweighted', function (
         AND: {'description': ['watch']}
       }
     ]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     results.push(JSON.parse(data))
-  }).on('end', function() {
+  }).on('end', function () {
     // console.log(results)
     results.map(function (item) {
       return item.document.id
@@ -158,9 +160,9 @@ it('search for watch in "name" and "description" fields, weight description', fu
         BOOST: 10
       }
     ]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     results.push(JSON.parse(data))
-  }).on('end', function() {
+  }).on('end', function () {
     results.map(function (item) {
       return item.document.id
     }).should.eql(
@@ -179,11 +181,11 @@ it('search for watch in "name" and "description" fields, weight name', function 
       },
       {
         AND: {'description': ['swiss', 'watch']}
-      }    
+      }
     ]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     results.push(JSON.parse(data))
-  }).on('end', function() {
+  }).on('end', function () {
     results.map(function (item) {
       return item.document.id
     }).should.eql(
@@ -204,9 +206,9 @@ it('search for watch in "name" and "description" fields, negative weight name', 
         AND: {'description': ['swiss', 'watch']}
       }
     ]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     results.push(JSON.parse(data))
-  }).on('end', function() {
+  }).on('end', function () {
     // console.log(JSON.stringify(results, null, 2))
     results.map(function (item) {
       return item.document.id
@@ -214,6 +216,4 @@ it('search for watch in "name" and "description" fields, negative weight name', 
       [ '9', '3', '10', '1' ])
     return done()
   })
-
-
 })

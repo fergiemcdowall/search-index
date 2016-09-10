@@ -1,16 +1,15 @@
 /* global it */
 /* global describe */
 
-var logLevel = 'error'
-const should = require('should')
-const SearchIndex = require('../../../')
-const Readable = require('stream').Readable
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'info'
+const should = require('should')
 var s = new Readable()
 
 describe('Matching epub: ', function () {
   var index
-  var matcher
 
   it('should initialize the first search index', function (done) {
     SearchIndex({
@@ -29,25 +28,25 @@ describe('Matching epub: ', function () {
       title: 'Accessible EPUB 3',
       body: 'EPUB is great. epubxhighestsort',
       spineItemPath: 'epub_content/accessible_epub_3/EPUB/ch03s06.xhtml'
-    })),
+    }))
     s.push(JSON.stringify({
       id: 'doc102',
       title: 'Even More Accessible EPUBulation 3',
       body: 'EPUB is epubtastic, epubxhighestsort',
       spineItemPath: 'epub_content/accessible_epub_3/EPUB/ch03s07.xhtml'
-    })),
+    }))
     s.push(JSON.stringify({
       id: 'doc103',
       title: 'EPUB 3 FTW',
       body: 'EPUB is fantabulous, epubxhighestsort',
       spineItemPath: 'epub_content/accessible_epub_3/EPUB/ch03s08.xhtml'
-    })),
+    }))
     s.push(JSON.stringify({
       id: 'doc104',
       title: '中文的标题',
       body: '中文的字符',
       spineItemPath: 'epub_content/accessible_epub_3/EPUB/ch03s09.xhtml'
-    })),
+    }))
     s.push(JSON.stringify({
       id: 'doc105',
       title: 'another doc',
@@ -69,16 +68,15 @@ describe('Matching epub: ', function () {
         }
       }))
       .pipe(index.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(6)
         true.should.be.exactly(true)
         return done()
       })
   })
-
 
   it('should match on given field and get results, id not searchable', function (done) {
     var matches = [

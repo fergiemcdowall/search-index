@@ -1,11 +1,9 @@
 /* global it */
-/* global describe */
 
-const sandboxPath = 'test/sandbox'
-const SearchIndex = require('../../../')
-const should = require('should')
-const _ = require('lodash')
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const sandboxPath = 'test/sandbox'
 
 var si
 
@@ -26,21 +24,21 @@ const batch = [
   },
   {
     id: '3',
-    name: 'Versace Men\'s Swiss',
-    description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+    name: "Versace Men's Swiss",
+    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
     price: 4716,
     age: 8293
   },
   {
     id: '4',
-    name: 'CHARRIOL Men\'s Swiss Alexandre',
+    name: "CHARRIOL Men's Swiss Alexandre",
     description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
     price: 2132,
     age: 33342
   },
   {
     id: '5',
-    name: 'Ferragamo Men\'s Swiss 1898',
+    name: "Ferragamo Men's Swiss 1898",
     description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
     price: 99999,
     age: 33342
@@ -62,14 +60,14 @@ const batch = [
   {
     id: '8',
     name: 'Invicta Bolt Zeus ',
-    description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+    description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
     price: 8767,
     age: 33342
   },
   {
     id: '9',
     name: 'Victorinox Night Vision ',
-    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s! BOOM BOOM BOOM',
+    description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's! BOOM BOOM BOOM",
     price: 1000,
     age: 33342
   },
@@ -79,11 +77,10 @@ const batch = [
     description: 'Endlessly sophisticated in materials and design, this Emporio Armani Swiss watch features high-end timekeeping with moon phase movement and calendar tracking.',
     price: 30000,
     age: 33342
-  },
+  }
 ]
 
-
-const s = new require('stream').Readable()
+const s = new Readable()
 batch.forEach(function (item) {
   s.push(JSON.stringify(item))
 })
@@ -94,7 +91,8 @@ it('should do some simple indexing', function (done) {
   SearchIndex({
     indexPath: sandboxPath + '/sorting-test',
     logLevel: 'warn'
-  }, function(err, thisSI){
+  }, function (err, thisSI) {
+    ;(!err).should.be.exactly(true)
     si = thisSI
     s.pipe(JSONStream.parse())
       .pipe(si.defaultPipeline({
@@ -109,10 +107,10 @@ it('should do some simple indexing', function (done) {
         }
       }))
       .pipe(si.add())
-      .on('data', function(data) {
+      .on('data', function (data) {
         i++
       })
-      .on('end', function() {
+      .on('end', function () {
         i.should.be.exactly(11)
         true.should.be.exactly(true)
         return done()
@@ -120,33 +118,30 @@ it('should do some simple indexing', function (done) {
   })
 })
 
-
 it('simple search, sorted by ID', function (done) {
   var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
   si.search({
     query: [{
       AND: {'*': ['*']}
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     JSON.parse(data).id.should.eql(results.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     // console.log(results)
     return done()
   })
 })
 
-
 it('simple search, sorted by relevance', function (done) {
-
   var results = [ '7', '3', '2', '10', '1', '9' ]
   si.search({
     query: [{
       AND: {'*': ['watch']}
     }]
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     JSON.parse(data).id.should.eql(results.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     // console.log(results)
     return done()
@@ -165,12 +160,12 @@ it('simple search, sorted by price', function (done) {
       field: 'price',
       direction: 'desc'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     // console.log(JSON.stringify(JSON.parse(data), null, 2))
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).score.should.eql(prices.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     prices.length.should.be.exactly(0)
     i.should.be.exactly(6)
@@ -180,14 +175,13 @@ it('simple search, sorted by price', function (done) {
 })
 
 it('simple search, sorted by name', function (done) {
-
   var i = 0
   var results = [ '1', '10', '7', '3', '9', '2' ]
   var names = [
     'Apple Watch',
     'Armani Swiss Moon Phase',
     'TW Steel',
-    'Versace Men\'s Swiss',
+    "Versace Men's Swiss",
     'Victorinox Night Vision ',
     'Victorinox Swiss Army'
   ]
@@ -199,12 +193,12 @@ it('simple search, sorted by name', function (done) {
       field: 'name',
       direction: 'asc'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     // console.log(JSON.stringify(JSON.parse(data), null, 2))
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).document.name.should.eql(names.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     names.length.should.be.exactly(0)
     i.should.be.exactly(6)
@@ -215,21 +209,21 @@ it('simple search, sorted by name', function (done) {
 
 it('simple search, two tokens, sorted by price', function (done) {
   var i = 0
-  var results = [ '10', '3', '9']
+  var results = [ '10', '3', '9' ]
   var prices = [ 30000, 4716, 1000 ]
   si.search({
     query: {
-      AND: {'*': ['watch', 'swiss']}
+      AND: {'*': [ 'watch', 'swiss' ]}
     },
     sort: {
       field: 'price',
       direction: 'desc'
     }
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).score.should.eql(prices.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     prices.length.should.be.exactly(0)
     i.should.be.exactly(3)
@@ -239,7 +233,7 @@ it('simple search, two tokens, sorted by price', function (done) {
 
 it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
   var i = 0
-  var results = [ '10', '3']
+  var results = [ '10', '3' ]
   var prices = [ 30000, 4716 ]
   si.search({
     query: {
@@ -250,11 +244,11 @@ it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
       direction: 'desc'
     },
     pageSize: 2
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).score.should.eql(prices.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     prices.length.should.be.exactly(0)
     i.should.be.exactly(2)
@@ -262,10 +256,9 @@ it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
   })
 })
 
-
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', function (done) {
   var i = 0
-  var results = [ '3', '9']
+  var results = [ '3', '9' ]
   var prices = [ 4716, 1000 ]
   si.search({
     query: {
@@ -277,11 +270,11 @@ it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', functi
     },
     offset: 1,
     pageSize: 2
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).score.should.eql(prices.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     prices.length.should.be.exactly(0)
     i.should.be.exactly(2)
@@ -291,11 +284,13 @@ it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', functi
 
 it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort asc', function (done) {
   var i = 0
-  var results = [ '3', '10']
+  var results = [ '3', '10' ]
   var prices = [ 4716, 30000 ]
   si.search({
     query: {
-      AND: {'*': ['watch', 'swiss']}
+      AND: {
+        '*': [ 'watch', 'swiss' ]
+      }
     },
     sort: {
       field: 'price',
@@ -303,15 +298,14 @@ it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort as
     },
     offset: 1,
     pageSize: 2
-  }).on('data', function(data) {
+  }).on('data', function (data) {
     i++
     JSON.parse(data).id.should.eql(results.shift())
     JSON.parse(data).score.should.eql(prices.shift())
-  }).on('end', function() {
+  }).on('end', function () {
     results.length.should.be.exactly(0)
     prices.length.should.be.exactly(0)
     i.should.be.exactly(2)
     return done()
   })
-
 })

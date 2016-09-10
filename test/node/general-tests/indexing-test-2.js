@@ -1,11 +1,12 @@
 /* global it */
 /* global describe */
 
-var fs = require('fs')
-var should = require('should');
-var sandboxPath = 'test/sandbox'
-var s = new require('stream').Readable()
-var JSONStream = require('JSONStream')
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'info'
+const s = new Readable()
+const sandboxPath = 'test/sandbox'
+const should = require('should')
 
 s.push(JSON.stringify({
   id: 'a',
@@ -33,23 +34,24 @@ describe('Indexing API', function () { // jshint ignore:line
     var searchindex = require('../../../')
     searchindex({
       indexPath: sandboxPath + '/indexing-test-2',
-      logLevel: 'warn',
-    }, function(err, si){
+      logLevel: logLevel
+    }, function (err, si) {
+      should.exist(si)
+      if (err) false.should.eql(true)
       var i = 0
       s.pipe(JSONStream.parse())
         .pipe(si.defaultPipeline())
         .pipe(si.add())
-        .on('data', function(data) {
-        })
-        .on('end', function() {
-        si.DBReadStream()
-          .on('data', function(data) {
-            i++
-          })
-          .on('close', function(data) {
-            i.should.be.exactly(161)
-            return done()
-          })        
+        .on('data', function (data) {})
+        .on('end', function () {
+          si.DBReadStream()
+            .on('data', function (data) {
+              i++
+            })
+            .on('close', function (data) {
+              i.should.be.exactly(161)
+              return done()
+            })
         })
     })
   })
