@@ -44,7 +44,7 @@ describe('Indexing API', function () { // jshint ignore:line
         .pipe(si.add())
         .on('data', function (data) {})
         .on('end', function () {
-          si.DBReadStream()
+          si.dbReadStream()
             .on('data', function (data) {
               i++
             })

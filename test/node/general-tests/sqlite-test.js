@@ -6,7 +6,10 @@ const SearchIndex = require('../../../')
 const levelup = require('levelup')
 const logLevel = process.env.NODE_ENV || 'info'
 const sandbox = 'test/sandbox'
+const should = require('should')
 const sqldown = require('sqldown')
+
+should // keep linter happy
 
 var db, si
 
@@ -20,7 +23,7 @@ it('should make a new levelup with sqlite', function (done) {
     db: sqldown,
     logLevel: logLevel
   }, function (err, thisDb) {
-    ;(!err).should.be.exactly(true)
+    if (err) false.should.eql(true)
     db = thisDb
     done()
   })
@@ -30,7 +33,8 @@ it('should make a new search-index with the sqlite backed leveldb', function (do
   SearchIndex({
     indexes: db
   }, function (err, thisSi) {
-    ;(!err).should.be.exactly(true)
+    console.log(err)
+    if (err) false.should.eql(true)
     si = thisSi
     done()
   })

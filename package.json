@@ -8,15 +8,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "async": "^2.0.1",
     "bunyan": "1.8.1",
     "leveldown": "1.4.6",
     "levelup": "1.3.2",
     "lodash.defaults": "4.0.1",
-    "lodash.intersection": "4.1.2",
-    "lodash.union": "^4.6.0",
-    "search-index-adder": "0.1.4",
-    "search-index-searcher": "0.1.1",
+    "search-index-adder": "0.1.5",
+    "search-index-searcher": "0.1.3",
     "stopword": "0.1.1"
   },
   "devDependencies": {
@@ -72,7 +69,7 @@
   ],
   "scripts": {
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
-    "test-browserify": "browserify test/browser/browserify-test-uncompiled.js | uglifyjs > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
+    "test-browserify": "browserify --full-paths test/browser/browserify-test-uncompiled.js | uglifyjs > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
     "test-node": "mocha test/node/general-tests --recursive --timeout 10000",
     "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify && standard"
   },

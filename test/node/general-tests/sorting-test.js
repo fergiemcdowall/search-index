@@ -3,6 +3,7 @@
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'info'
 const sandboxPath = 'test/sandbox'
 
 var si
@@ -90,7 +91,7 @@ it('should do some simple indexing', function (done) {
   var i = 0
   SearchIndex({
     indexPath: sandboxPath + '/sorting-test',
-    logLevel: 'warn'
+    logLevel: logLevel
   }, function (err, thisSI) {
     ;(!err).should.be.exactly(true)
     si = thisSI

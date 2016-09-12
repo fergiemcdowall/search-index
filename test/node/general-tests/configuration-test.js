@@ -17,6 +17,7 @@ describe('Configuration: ', function () {
       indexPath: siPath,
       logLevel: logLevel
     }, function (err, si) {
+      console.log(err)
       if (err) false.should.eql(true)
       should.exist(si)
       fs.existsSync(siPath).should.be.exactly(true)
@@ -60,7 +61,7 @@ describe('Configuration: ', function () {
       logLevel: logLevel
     }, function (err, si) {
       if (err) false.should.eql(true)
-      should.exist(si.log)
+      should.exist(si.options.log)
       const s = new Readable()
       s.push(JSON.stringify({
         id: 1,
