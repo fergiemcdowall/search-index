@@ -51,7 +51,7 @@ require('search-index')(options, function(err, si) {
 
 `options` is an object that can take the following values:
 
- * **db** datastore, default:leveldown : a leveldown compatible datastore
+ * **db** _datastore, default:leveldown_ : a leveldown compatible datastore
 
  * **fieldedSearch** _boolean, default:true_ : Can you search on
      individual document fields? Setting this to false saves space and
