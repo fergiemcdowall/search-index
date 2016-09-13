@@ -68,7 +68,7 @@ describe('Configuration: ', function () {
         name: 'The First Doc',
         test: 'this is the first doc'
       }))
-      s.push(null) // needed?
+      s.push(null)
       s.pipe(JSONStream.parse())
         .pipe(si.defaultPipeline())
         .pipe(si.add())

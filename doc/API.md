@@ -1,17 +1,36 @@
 # API reference
 
- * [add(...)](#add)
+### Opening and Closing
+
+ * [require('search-index')](#initialization)
  * [close(...)](#close)
+
+### Reading
+
+ * [buckets](#buckets)
+ * [categorize](#categorize)
  * [get(...)](#get)
- * [DBReadStream(...)](#DBReadStream)
- * [DBWriteStream(...)](#DBWriteStream)
- * [del(...)](#del)
- * [flush(...)](#flush)
  * [match(...)](#match)
  * [search(...)](#search)
  * [tellMeAboutMySearchIndex(...)](#tellmeaboutmysearchindex)
 
-## initialization
+### Writing
+
+ * [add(...)](#add)
+ * [defaultPipline(...)](#defaultpipline)
+ * [del(...)](#del)
+ * [flush(...)](#flush)
+
+### Replication
+
+ * [dbReadStream(...)](#dbReadStream)
+ * [dbWriteStream(...)](#dbWriteStream)
+
+
+
+## Opening and Closing
+
+### Initialization
 
 Make sure that `search-index` is npm installed and then do either
 
@@ -55,42 +74,6 @@ require('search-index')(options, function(err, si) {
      words that are not considered for indexing. Typically they will
      be numbers, common words (english examples: 'is', 'a', 'and'), or
      otherwise "forbidden" words.
-      
-
-## Functions
-
-### add(...)
-
-Insert one or more documents into the index, and specify how they will
-be retrievable.
-
-```javascript
-index.add(docs, options, function(err) {
-  if (!err) console.log('success!')
-})
-```
-
-**options** is an object that describes how the documents will be
-indexed and can contain the following fields:
-
- * **batchName** _String_ make this batch identifiable in logs
- * **defaultFieldOptions** _Object_ default options to use for this
-   batch
- * **fieldOptions** _Object_ overrides `defaultFieldOptions`, can have
-   the following object values:
-   * **filter** _boolean default:false_ : can you filter on this field
-   * **nGramLength** _number, default:1_ : length of word sequences to
-     be indexed. Use this to capture phrases of more than one word.
-   * **searchable** _boolean default:true_ : is this field searchable
-   * **weight** _number: default:0_ this number will be added to the
-     score for the field allowing some fields to count more or less
-     than others.
-   * **store** _Array_ specifies which fields to store in index. You
-     may want to index fields that are not shown in results, for
-     example when dealing with synonyms
-
-
-
 
 
 
@@ -106,6 +89,66 @@ index.close(function(err) {
 })
 ```
 
+      
+
+## Reading
+
+### buckets(...)
+
+Return a readable stream of user defined aggregations, can be used to
+generate categories by price, age, etc.
+
+```javascript
+  si.buckets({
+    query: [
+      {
+        AND: {'*': ['*']}
+      }
+    ],
+    buckets: [
+      {
+        field: 'price',
+        gte: '2',
+        lte: '3',
+        set: false
+      }
+      {
+        field: 'price',
+        gte: '4',
+        lte: '7',
+        set: false
+      }
+    ]
+  }).on('data', function (data) {
+    // do something with the data
+  }).on('end', function () {
+    // finshed
+  })
+```
+
+
+### categorize(...)
+
+Collate documents under all possible values of the given field name,
+and return a readable stream
+
+```javascript
+  si.categorize({
+    query: [
+      {
+        AND: {'*': ['swiss', 'watch']}
+      }
+    ],
+    category: {
+      field: 'manufacturer'
+    }
+  }).on('data', function (data) {
+    // do something with the data
+  }).on('end', function () {
+    // finshed
+  })
+```
+
 ### get(...)
 
 Gets a document from the corpus
@@ -119,85 +162,18 @@ index.get('docID', function(err) {
 * **docID** is the ID of the document that should be retrieved
 
 
-### DBReadStream(...)
-
-Use `DBReadStream()` to create a stream of the underlying key-value
-store. This can be used to pipe indexes around. You can for example
-replicate indexes to file, or to other (empty) indexes
-
-```javascript
-// replicate an index to file
-si.DBReadStream(options) 
-  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
-  .on('close', function() {
-    // done
-  })
-```
-
-```javascript
-// replicate an index to another search-index
-replicator.DBReadStream({gzip: true})
-  .pipe(zlib.createGunzip())
-  .pipe(JSONStream.parse())
-  .pipe(replicatorTarget2.DBWriteStream())
-  .on('close', function () {
-    // done
-  })
-```
-
-**options** is an optional object that describes how the stream is formatted
-
-* **gzip** If set to `true`, the readstream will be compressed into the gzip format
-
-### DBWriteStream(...)
-
-Use `DBWriteStream()` to read in an index created by
-`DBReadStream()`.
-
-```javascript
-si.DBReadStream(options)
-  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
-  .on('close', function() {
-    done()
-  })
-```
-
-**options** is an optional object that describes how the stream will be written
-
-* **merge** If set to `true`, the writestream will merge this index with the existing one, if set to false the existing index must be empty
-
-
-### del(...)
-
-Deletes one or more documents from the corpus
-
-```javascript
-index.del('docID', function(err) {
-  if (!err) console.log('success!')
-})
-```
-
-* **docID** an array of document IDs that are to be deleted. A single
-    ID can also be used.
-
-### flush(...)
-
-Empties the index. Can be used during replication.
-
-```javascript
-index.flush(function(err) {
-  if (!err) console.log('success!')
-})
-```
-
 ### match(...)
 
 Use match to create autosuggest and autocomplete functionality. [See
 also here](./autosuggest.md)
 
 ```javascript
-index.match(options, function(err, results) {
-  if (!err) console.log('success!')
+index.match({
+  beginsWith: 'epub'
+}).on('data', function (data) {
+  data.should.be.exactly(matches.shift())
+}).on('end', function () {
+  done()
 })
 ```
 
@@ -218,8 +194,12 @@ index.match(options, function(err, results) {
 Searches in the index. [See also here](./search.md)
 
 ```javascript
-si.search(q, function (err, searchResults) {
-  // do something cool with searchResults
+si.search({
+  query: [{
+    AND: {'*': ['gigantic', 'teddy', 'bears']}
+  }]
+}).on('data', function (data) {
+  // do something cool with search results
 })
 ```
 
@@ -297,6 +277,7 @@ si.search(q, function (err, searchResults) {
    generate a teaser
 
 
+
 ### tellMeAboutMySearchIndex(...)
 
 Returns info about the state of the index
@@ -306,3 +287,119 @@ si.tellMeAboutMySearchIndex(function (err, info) {
   console.log(info)
 })
 ```
+
+
+## Writing
+
+### add(...)
+
+Returns a [writeable
+stream](https://nodejs.org/api/stream.html#stream_class_stream_writable)
+that can be used to index documents into the search index.
+
+```javascript
+s.pipe(JSONStream.parse())
+  .pipe(si.defaultPipeline(options))
+  .pipe(si.add())
+```
+
+
+### defaultPipeline(options)
+
+Prepares a "standard document" (an object where keys become field names,
+and values become corresponding field values) for indexing. Customised
+pipeline stages can be inserted before and after processing if required.
+
+**options** is an object that describes how the documents will be
+indexed and can contain the following fields:
+
+ * **defaultFieldOptions** _Object_ default options to use for this
+   batch
+ * **fieldOptions** _Object_ overrides `defaultFieldOptions`, can have
+   the following object values:
+   * **filter** _boolean default:false_ : can you filter on this field
+   * **nGramLength** _number, default:1_ : length of word sequences to
+     be indexed. Use this to capture phrases of more than one word.
+   * **searchable** _boolean default:true_ : is this field searchable
+   * **weight** _number: default:0_ this number will be added to the
+     score for the field allowing some fields to count more or less
+     than others.
+   * **store** _Array_ specifies which fields to store in index. You
+     may want to index fields that are not shown in results, for
+     example when dealing with synonyms
+
+
+### del(...)
+
+Deletes one or more documents from the corpus
+
+```javascript
+index.del('docID', function(err) {
+  if (!err) console.log('success!')
+})
+```
+
+* **docID** an array of document IDs that are to be deleted. A single
+    ID can also be used.
+
+### flush(...)
+
+Empties the index. Can be used during replication.
+
+```javascript
+index.flush(function(err) {
+  if (!err) console.log('success!')
+})
+```
+
+## Replication
+
+
+### dbReadStream(...)
+
+Use `dbReadStream()` to create a stream of the underlying key-value
+store. This can be used to pipe indexes around. You can for example
+replicate indexes to file, or to other (empty) indexes
+
+```javascript
+// replicate an index to file
+si.dbReadStream(options) 
+  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .on('close', function() {
+    // done
+  })
+```
+
+```javascript
+// replicate an index to another search-index
+replicator.dbReadStream({gzip: true})
+  .pipe(zlib.createGunzip())
+  .pipe(JSONStream.parse())
+  .pipe(replicatorTarget2.DBWriteStream())
+  .on('close', function () {
+    // done
+  })
+```
+
+**options** is an optional object that describes how the stream is formatted
+
+* **gzip** If set to `true`, the readstream will be compressed into the gzip format
+
+### dbWriteStream(...)
+
+Use `dbWriteStream()` to read in an index created by
+`DBReadStream()`.
+
+```javascript
+si.DBReadStream(options)
+  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .on('close', function() {
+    done()
+  })
+```
+
+**options** is an optional object that describes how the stream will be written
+
+* **merge** If set to `true`, the writestream will merge this index with the existing one, if set to false the existing index must be empty
+
+
