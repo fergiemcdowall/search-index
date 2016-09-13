@@ -7,8 +7,8 @@
 
 ### Reading
 
- * [buckets](#buckets)
- * [categorize](#categorize)
+ * [buckets(...)](#buckets)
+ * [categorize(...)](#categorize)
  * [get(...)](#get)
  * [match(...)](#match)
  * [search(...)](#search)
@@ -17,7 +17,7 @@
 ### Writing
 
  * [add(...)](#add)
- * [defaultPipline(...)](#defaultpipline)
+ * [defaultPipeline(...)](#defaultpipline)
  * [del(...)](#del)
  * [flush(...)](#flush)
 
@@ -81,7 +81,7 @@ require('search-index')(options, function(err, si) {
 
 Closes the index and the underlying data store. Generally this should
 happen automatically, and therefore this function need never be
-called.
+called. Only needed if you are doing very fast restarts.
 
 ```javascript
 index.close(function(err) {
@@ -304,7 +304,7 @@ s.pipe(JSONStream.parse())
 ```
 
 
-### defaultPipeline(options)
+### defaultPipeline(...)
 
 Prepares a "standard document" (an object where keys become field names,
 and values become corresponding field values) for indexing. Customised
