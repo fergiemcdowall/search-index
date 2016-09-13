@@ -17,14 +17,14 @@
 ### Writing
 
  * [add(...)](#add)
- * [defaultPipeline(...)](#defaultpipline)
+ * [defaultPipeline(...)](#defaultpipeline)
  * [del(...)](#del)
  * [flush(...)](#flush)
 
 ### Replication
 
- * [dbReadStream(...)](#dbReadStream)
- * [dbWriteStream(...)](#dbWriteStream)
+ * [dbReadStream(...)](#dbreadstream)
+ * [dbWriteStream(...)](#dbwritestream)
 
 
 
