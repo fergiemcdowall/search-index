@@ -51,8 +51,7 @@ require('search-index')(options, function(err, si) {
 
 `options` is an object that can take the following values:
 
- * **deletable** _boolean, default:true_ : is this index read-only? If
-     so it will be smaller but immuteable.
+ * **db** datastore, default:leveldown : a leveldown compatible datastore
 
  * **fieldedSearch** _boolean, default:true_ : Can you search on
      individual document fields? Setting this to false saves space and
@@ -70,7 +69,7 @@ require('search-index')(options, function(err, si) {
      the "string split" format
 
  * **stopwords** _Array, default:
-     require('term-vector').getStopwords('en').sort()_ : A list of
+     require('stopword').en_ : A list of
      words that are not considered for indexing. Typically they will
      be numbers, common words (english examples: 'is', 'a', 'and'), or
      otherwise "forbidden" words.
