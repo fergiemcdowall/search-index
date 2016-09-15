@@ -42,11 +42,13 @@ index.search({
 ```
 
 
-## Example app
+## Example app:
+
+Save this file as `index.js`, do `npm install JSONStream chalk request term-cluster`, and run in as `node index.js` to get a really basic CLI search engine for some old Reuters articles.
 
 ```javascript
 const JSONStream = require('JSONStream')
-const chalk = require('chalk');
+const chalk = require('chalk')
 const request = require('request')
 const tc = require('term-cluster')
 const url = 'https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/fullFileStream/justTen.str'
