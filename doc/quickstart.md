@@ -35,10 +35,10 @@ Run a search query
 index.search({
   query: [{
     AND: {
-      '*': rawQuery.toString().slice(0, -1).split(' ')
+      '*': ['search', 'words']   // search for "search" and "words" in all ("*") fields
     }
   }]
-}).on('data', printResults)   // make pretty results
+}).on('data', printResults)      // make pretty results
 ```
 
 
