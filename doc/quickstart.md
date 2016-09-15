@@ -44,7 +44,7 @@ index.search({
 
 ## Example app:
 
-Save this file as `index.js`, do `npm install JSONStream chalk request term-cluster`, and run in as `node index.js` to get a really basic CLI search engine for some old Reuters articles.
+Save this file as `index.js`, do `npm install JSONStream chalk request term-cluster`, and run it as `node index.js` to get a really basic CLI search engine for some old Reuters articles.
 
 ```javascript
 const JSONStream = require('JSONStream')
