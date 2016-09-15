@@ -7,22 +7,14 @@ the rest of the documentation for options and alternatives.
 ## Step 1:
 
 Find some data in the right format. You could for example index 1000
-old Reuters articles, [like the ones found here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/full/reuters-000.json)
+old Reuters articles, [like the ones found here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/fullFileStream/000.str)
 
 ## Step 2:
 
 Initialize a search index and add the data
 
 ```javascript
-var searchIndex = require('search-index')
-var data = require('path/to/data/file')
-searchIndex(options, function(err, si) {
-  si.add(data, opt, function (err) {
-    if (err) console.log('oops! ' + err)
-    else console.log('success!')
-  })
-})
-
+ // update this
 ```
 
 ## Step 3:
@@ -30,11 +22,77 @@ searchIndex(options, function(err, si) {
 Run a search query
 
 ```javascript
-var q = {};
-q.query = {
-  AND: {'*': ['usa', 'ussr']}
+
+ // update this
+```
+
+
+## Example app
+
+```javascript
+const JSONStream = require('JSONStream')
+const chalk = require('chalk');
+const request = require('request')
+const tc = require('../term-cluster')
+const url = 'https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/fullFileStream/justTen.str'
+
+const ops = {
+  indexPath: 'myCoolIndex',
+  logLevel: 'error'
 }
-si.search(q, function (err, searchResults) {
-  //do something with the searchResults here
-});
+
+var index
+
+const indexData = function(err, newIndex) {
+  if (!err) {
+    index = newIndex
+    request(url)
+      .pipe(JSONStream.parse())
+      .pipe(index.defaultPipeline())
+      .pipe(index.add())
+      .on('data', function(data) {})
+      .on('end', searchCLI)
+  }
+}
+
+const printPrompt = function () {
+  console.log()
+  console.log()
+  process.stdout.write('search > ')
+}
+
+const searchCLI = function () {
+  printPrompt()
+  process.stdin.resume()
+  process.stdin.on('data', search)
+}
+
+const search = function(rawQuery) {
+  index.search({
+    query: [{
+      AND: {
+        '*': rawQuery.toString().slice(0, -1).split(' ')
+      }
+    }]
+  })
+    .on('data', printResults)
+    .on('end', printPrompt)
+}
+
+const printResults = function (data) {
+  data = JSON.parse(data)
+  console.log()
+  console.log(chalk.blue(data.document.id) + ' : ' + chalk.blue(data.document.title))
+  const terms = Object.keys(data.scoringCriteria[0].df).map(function(item) {
+    return item.substring(2)
+  })  
+  for (var key in data.document) {
+    var teaser = tc(data.document[key], terms)
+    if (teaser) console.log(teaser)
+  }
+  console.log()
+}
+
+require('search-index')(ops, indexData)
+
 ```
