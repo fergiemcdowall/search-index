@@ -14,7 +14,17 @@ old Reuters articles, [like the ones found here](https://raw.githubusercontent.c
 Initialize a search index and add the data
 
 ```javascript
- // update this
+const indexData = function(err, newIndex) {
+  if (!err) {
+    index = newIndex
+    request(url)                      // get a stream of documents
+      .pipe(JSONStream.parse())       // turn into JSON
+      .pipe(index.defaultPipeline())  // vectorize
+      .pipe(index.add())              // index
+      .on('data', function(data) {})
+  }
+}
+require('search-index')(ops, indexData)
 ```
 
 ## Step 3:
@@ -22,8 +32,13 @@ Initialize a search index and add the data
 Run a search query
 
 ```javascript
-
- // update this
+index.search({
+  query: [{
+    AND: {
+      '*': rawQuery.toString().slice(0, -1).split(' ')
+    }
+  }]
+}).on('data', printResults)   // make pretty results
 ```
 
 
@@ -33,7 +48,7 @@ Run a search query
 const JSONStream = require('JSONStream')
 const chalk = require('chalk');
 const request = require('request')
-const tc = require('../term-cluster')
+const tc = require('term-cluster')
 const url = 'https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/fullFileStream/justTen.str'
 
 const ops = {
