@@ -23,10 +23,13 @@ levelup('test/sandbox/simpleIndexing', {
       .pipe(si.defaultPipeline())
       .pipe(si.add())
       .on('data', function (data) {}).on('end', function () {
-        si.get('4', function (err, doc) {
-          if (err) console.log(err)
-          document.getElementById('result').innerHTML = doc.title
-          console.log(doc)
+        si.get(['4']).on('data', function (data) {
+          data = JSON.parse(data)
+          console.log(data)
+          document.getElementById('result').innerHTML = data.title
+        })
+        .on('end', function () {
+          return
         })
       })
   })
