@@ -1,8 +1,9 @@
+/* global describe */
 /* global it */
 
 const JSONStream = require('JSONStream')
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'info'
+const logLevel = process.env.NODE_ENV || 'error'
 const s = require('stream').Readable()
 const sandboxPath = 'test/sandbox'
 const should = require('should')
@@ -83,149 +84,151 @@ s.push(JSON.stringify({
 }))
 s.push(null)
 
-it('should do some simple indexing', function (done) {
-  var i = 0
-  SearchIndex({
-    indexPath: sandboxPath + '/or-test',
-    logLevel: logLevel
-  }, function (err, thisSI) {
-    ;(!err).should.be.exactly(true)
-    si = thisSI
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {
-        i++
-      })
-      .on('end', function () {
-        i.should.be.exactly(11)
-        true.should.be.exactly(true)
-        return done()
-      })
+describe('OR-ing: ', function () {
+  it('should do some simple indexing', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandboxPath + '/or-test',
+      logLevel: logLevel
+    }, function (err, thisSI) {
+      ;(!err).should.be.exactly(true)
+      si = thisSI
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          true.should.be.exactly(true)
+          return done()
+        })
+    })
   })
-})
 
-it('simple * search, sorted by ID', function (done) {
-  var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
-  si.search({
-    query: [{
-      AND: { '*': [ '*' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).document.id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('simple * search, sorted by ID', function (done) {
+    var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
+    si.search({
+      query: [{
+        AND: { '*': [ '*' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('simple search, sorted by ID', function (done) {
-  var results = [ '7', '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'armani', 'watch' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).document.id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('simple search, sorted by ID', function (done) {
+    var results = [ '7', '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'armani', 'watch' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for Armarni AND TW', function (done) {
-  var results = [ '7', '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'armani', 'watch' ] }
-    }, {
-      AND: { '*': [ 'tw', 'watch' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  // console.log(data)
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for Armarni AND TW', function (done) {
+    var results = [ '7', '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'armani', 'watch' ] }
+      }, {
+        AND: { '*': [ 'tw', 'watch' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+      // console.log(data)
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch', function (done) {
-  var results = [ '9', '7', '2', '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'armani', 'watch' ] }
-    }, {
-      AND: { '*': [ 'victorinox', 'swiss' ] }
-    }, {
-      AND: { '*': [ 'tw', 'watch' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch', function (done) {
+    var results = [ '9', '7', '2', '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'armani', 'watch' ] }
+      }, {
+        AND: { '*': [ 'victorinox', 'swiss' ] }
+      }, {
+        AND: { '*': [ 'tw', 'watch' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for watch NOT armani', function (done) {
-  var results = [ '9', '3', '2', '1' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'watch' ] },
-      NOT: { '*': [ 'armani' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for watch NOT armani', function (done) {
+    var results = [ '9', '3', '2', '1' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'watch' ] },
+        NOT: { '*': [ 'armani' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for watch NOT apple in name field', function (done) {
-  var results = [ '9', '7', '3', '2', '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'watch' ] },
-      NOT: { 'name': [ 'apple' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for watch NOT apple in name field', function (done) {
+    var results = [ '9', '7', '3', '2', '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'watch' ] },
+        NOT: { 'name': [ 'apple' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for watch NOT apple in title field, but then add "apple watch" back in through an OR condition', function (done) {
-  var results = [ '1', '9', '7', '3', '2', '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'watch' ] },
-      NOT: { 'name': [ 'apple' ] }
-    }, {
-      AND: { '*': [ 'apple', 'watch' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for watch NOT apple in title field, but then add "apple watch" back in through an OR condition', function (done) {
+    var results = [ '1', '9', '7', '3', '2', '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'watch' ] },
+        NOT: { 'name': [ 'apple' ] }
+      }, {
+        AND: { '*': [ 'apple', 'watch' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for armani NOT TW', function (done) {
-  var results = [ '10' ]
-  si.search({
-    query: [{
-      AND: { '*': [ 'armani' ] },
-      NOT: { '*': [ 'tw' ] }
-    }]
-  }).on('data', function (data) {
-    JSON.parse(data).id.should.be.exactly(results.shift())
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('search for armani NOT TW', function (done) {
+    var results = [ '10' ]
+    si.search({
+      query: [{
+        AND: { '*': [ 'armani' ] },
+        NOT: { '*': [ 'tw' ] }
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).id.should.be.exactly(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
 })

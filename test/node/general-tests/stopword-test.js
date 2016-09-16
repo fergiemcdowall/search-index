@@ -3,7 +3,7 @@
 
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
-const logLevel = process.env.NODE_ENV || 'info'
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
 const sw = require('stopword')
@@ -92,7 +92,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['dette']}
       }
     }).on('data', function (data) {
-      console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
@@ -135,7 +134,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['tur']}
       }
     }).on('data', function (data) {
-      console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
@@ -152,7 +150,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['dette']}
       }
     }).on('data', function (data) {
-      console.log(data)
       i++
     }).on('end', function () {
       i.should.be.exactly(0)
@@ -193,7 +190,6 @@ describe('stopwords: ', function () {
         AND: {'*': 'fish and chips'.split(' ')}
       }
     }).on('data', function (data) {
-      console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
@@ -211,7 +207,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['and']}
       }
     }).on('data', function (data) {
-      console.log(data)
       data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++

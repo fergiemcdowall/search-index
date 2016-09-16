@@ -1,9 +1,9 @@
 /* global it */
 /* global describe */
 
-const logLevel = process.env.NODE_ENV || 'info'
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
 

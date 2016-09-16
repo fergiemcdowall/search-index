@@ -1,10 +1,12 @@
 /* global it */
+/* global describe */
 
 const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
-const Readable = require('stream').Readable
 
 var si
 
@@ -103,289 +105,291 @@ s.push(JSON.stringify({
 }))
 s.push(null)
 
-it('should do some simple indexing with filters', function (done) {
-  SearchIndex({
-    indexPath: sandboxPath + '/facet-test',
-    logLevel: 'warn'
-  }, function (err, thisSI) {
-    if (err) false.should.eql(true)
-    si = thisSI
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {})
-      .on('end', function () {
-        return done()
-      })
+describe('categories: ', function () {
+  it('should do some simple indexing with filters', function (done) {
+    SearchIndex({
+      indexPath: sandboxPath + '/facet-test',
+      logLevel: logLevel
+    }, function (err, thisSI) {
+      if (err) false.should.eql(true)
+      si = thisSI
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {})
+        .on('end', function () {
+          return done()
+        })
+    })
   })
-})
 
-it('return all docs, and show manufacturer category', function (done) {
-  var result = [
-    {
-      'key': 'armani',
-      'value': 1
-    },
-    {
-      'key': 'versace',
-      'value': 1
-    },
-    {
-      'key': 'victorinox',
-      'value': 2
-    }
-  ]
-  si.categorize({
-    query: [
+  it('return all docs, and show manufacturer category', function (done) {
+    var result = [
       {
-        AND: {'*': ['swiss', 'watch']}
+        'key': 'armani',
+        'value': 1
+      },
+      {
+        'key': 'versace',
+        'value': 1
+      },
+      {
+        'key': 'victorinox',
+        'value': 2
       }
-    ],
-    category: {
-      field: 'manufacturer'
-    }
-  }).on('data', function (data) {
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    return done()
-  })
-})
-
-it('return all docs, and show manufacturer category by set', function (done) {
-  var result = [
-    {
-      'key': 'armani',
-      'value': [ '10' ]
-    },
-    {
-      'key': 'versace',
-      'value': [ '3' ]
-    },
-    {
-      'key': 'victorinox',
-      'value': [ '2', '9' ]
-    }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {'*': ['swiss', 'watch']}
-      }
-    ],
-    category: {
-      field: 'manufacturer',
-      set: true
-    }
-  }).on('data', function (data) {
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    return done()
-  })
-})
-
-it('return all docs, and show manufacturer category, filter on color: black', function (done) {
-  var result = [
-    { key: 'apple', value: 1 },
-    { key: 'versace', value: 1 },
-    { key: 'victorinox', value: 1 }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {
-          '*': ['swiss', 'watch'],
-          'color': ['black']
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['swiss', 'watch']}
         }
+      ],
+      category: {
+        field: 'manufacturer'
+      }
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      return done()
+    })
+  })
+
+  it('return all docs, and show manufacturer category by set', function (done) {
+    var result = [
+      {
+        'key': 'armani',
+        'value': [ '10' ]
       },
       {
-        AND: {
-          '*': ['apple'],
-          'color': ['black']
+        'key': 'versace',
+        'value': [ '3' ]
+      },
+      {
+        'key': 'victorinox',
+        'value': [ '2', '9' ]
+      }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['swiss', 'watch']}
         }
+      ],
+      category: {
+        field: 'manufacturer',
+        set: true
       }
-    ],
-    category: {
-      field: 'manufacturer'
-    }
-  }).on('data', function (data) {
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      return done()
+    })
   })
-})
 
-it('should be able to do simple filtering on price', function (done) {
-  var result = [
-    { key: 'armani', value: 1 },
-    { key: 'versace', value: 1 },
-    { key: 'victorinox', value: 1 }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {
-          '*': ['swiss', 'watch'],
-          'price': [{
-            gte: '1000',
-            lte: '8'
-          }]
+  it('return all docs, and show manufacturer category, filter on color: black', function (done) {
+    var result = [
+      { key: 'apple', value: 1 },
+      { key: 'versace', value: 1 },
+      { key: 'victorinox', value: 1 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {
+            '*': ['swiss', 'watch'],
+            'color': ['black']
+          }
+        },
+        {
+          AND: {
+            '*': ['apple'],
+            'color': ['black']
+          }
         }
+      ],
+      category: {
+        field: 'manufacturer'
       }
-    ],
-    category: {
-      field: 'manufacturer'
-    }
-  }).on('data', function (data) {
-    // console.log(data)
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and return categories', function (done) {
-  var result = [
-    { key: 'armani', value: 2 },
-    { key: 'tw', value: 1 },
-    { key: 'victorinox', value: 2 }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {'*': ['armani', 'watch']}
-      },
-      {
-        AND: {'*': ['victorinox', 'swiss']}
-      },
-      {
-        AND: {'*': ['tw', 'watch']}
+  it('should be able to do simple filtering on price', function (done) {
+    var result = [
+      { key: 'armani', value: 1 },
+      { key: 'versace', value: 1 },
+      { key: 'victorinox', value: 1 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {
+            '*': ['swiss', 'watch'],
+            'price': [{
+              gte: '1000',
+              lte: '8'
+            }]
+          }
+        }
+      ],
+      category: {
+        field: 'manufacturer'
       }
-    ],
-    category: {
-      field: 'manufacturer'
-    }
-  }).on('data', function (data) {
-    // console.log(data)
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      // console.log(data)
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('search for "swiss" NOT "watch" and return categories for manufacturer', function (done) {
-  var result = [
-    { key: 'charriol', value: [ '4' ] },
-    { key: 'ferragamo', value: [ '5' ] }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {'*': ['swiss']},
-        NOT: {'*': ['watch']}
+  it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and return categories', function (done) {
+    var result = [
+      { key: 'armani', value: 2 },
+      { key: 'tw', value: 1 },
+      { key: 'victorinox', value: 2 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['armani', 'watch']}
+        },
+        {
+          AND: {'*': ['victorinox', 'swiss']}
+        },
+        {
+          AND: {'*': ['tw', 'watch']}
+        }
+      ],
+      category: {
+        field: 'manufacturer'
       }
-    ],
-    category: {
-      field: 'manufacturer',
-      set: true
-    }
-  }).on('data', function (data) {
-    // console.log(data)
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      // console.log(data)
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('return all docs, and show manufacturer and color categories', function (done) {
-  var result = [
-    { key: 'black', value: 6 },
-    { key: 'blue', value: 1 },
-    { key: 'gold', value: 7 },
-    { key: 'pink', value: 4 },
-    { key: 'red', value: 2 },
-    { key: 'white', value: 3 }
-  ]
-  si.categorize({
-    query: [
-      {
-        AND: {'*': ['*']}
+  it('search for "swiss" NOT "watch" and return categories for manufacturer', function (done) {
+    var result = [
+      { key: 'charriol', value: [ '4' ] },
+      { key: 'ferragamo', value: [ '5' ] }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['swiss']},
+          NOT: {'*': ['watch']}
+        }
+      ],
+      category: {
+        field: 'manufacturer',
+        set: true
       }
-    ],
-    category: {
-      field: 'color'
-    }
-  }).on('data', function (data) {
-    // console.log(data)
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      // console.log(data)
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('bucket on price', function (done) {
-  var result = [
-    {
-      'field': 'price',
-      'gte': '2',
-      'lte': '3',
-      'set': false,
-      'value': 4
-    }
-  ]
-  si.buckets({
-    query: [
-      {
-        AND: {'*': ['*']}
+  it('return all docs, and show manufacturer and color categories', function (done) {
+    var result = [
+      { key: 'black', value: 6 },
+      { key: 'blue', value: 1 },
+      { key: 'gold', value: 7 },
+      { key: 'pink', value: 4 },
+      { key: 'red', value: 2 },
+      { key: 'white', value: 3 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['*']}
+        }
+      ],
+      category: {
+        field: 'color'
       }
-    ],
-    buckets: [{
-      field: 'price',
-      gte: '2',
-      lte: '3',
-      set: false
-    }]
-  }).on('data', function (data) {
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    }).on('data', function (data) {
+      // console.log(data)
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('return all items and bucket on price', function (done) {
-  var result = [
-    {
-      'field': 'price',
-      'gte': '1',
-      'lte': '5',
-      'set': false,
-      'value': 6
-    }
-  ]
-  si.buckets({
-    query: [
+  it('bucket on price', function (done) {
+    var result = [
       {
-        AND: {'*': ['watch']}
-      },
-      {
-        AND: {'*': ['swiss']}
+        'field': 'price',
+        'gte': '2',
+        'lte': '3',
+        'set': false,
+        'value': 4
       }
-    ],
-    buckets: [{
-      field: 'price',
-      gte: '1',
-      lte: '5',
-      set: false
-    }]
-  }).on('data', function (data) {
-    data.should.eql(result.shift())
-  }).on('end', function () {
-    result.length.should.be.exactly(0)
-    return done()
+    ]
+    si.buckets({
+      query: [
+        {
+          AND: {'*': ['*']}
+        }
+      ],
+      buckets: [{
+        field: 'price',
+        gte: '2',
+        lte: '3',
+        set: false
+      }]
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('return all items and bucket on price', function (done) {
+    var result = [
+      {
+        'field': 'price',
+        'gte': '1',
+        'lte': '5',
+        'set': false,
+        'value': 6
+      }
+    ]
+    si.buckets({
+      query: [
+        {
+          AND: {'*': ['watch']}
+        },
+        {
+          AND: {'*': ['swiss']}
+        }
+      ],
+      buckets: [{
+        field: 'price',
+        gte: '1',
+        lte: '5',
+        set: false
+      }]
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
   })
 })

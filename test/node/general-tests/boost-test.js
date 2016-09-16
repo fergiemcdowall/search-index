@@ -3,7 +3,7 @@
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'info'
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
 
@@ -85,135 +85,134 @@ s.push(JSON.stringify({
 }))
 s.push(null)
 
-it('should do some simple indexing', function (done) {
-  var i = 0
-  SearchIndex({
-    indexPath: sandboxPath + '/weight-test',
-    logLevel: logLevel
-  }, function (err, thisSI) {
-    if (err) false.should.eql(true)
-    si = thisSI
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {
-        i++
-      })
-      .on('end', function () {
-        i.should.be.exactly(11)
-        true.should.be.exactly(true)
-        return done()
-      })
+describe('boosting', function () {
+  it('should do some simple indexing', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandboxPath + '/weight-test',
+      logLevel: logLevel
+    }, function (err, thisSI) {
+      if (err) false.should.eql(true)
+      si = thisSI
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          true.should.be.exactly(true)
+          return done()
+        })
+    })
   })
-})
 
-it('simple * search, sorted by ID', function (done) {
-  var results = []
-  si.search({
-    query: [{
-      AND: {'*': ['*']}
-    }]
-  }).on('data', function (data) {
-    results.push(JSON.parse(data))
-  }).on('end', function () {
-    // console.log(results)
-    results.map(function (item) {
-      return item.document.id
-    }).should.eql(
-      [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ])
-    return done()
+  it('simple * search, sorted by ID', function (done) {
+    var results = []
+    si.search({
+      query: [{
+        AND: {'*': ['*']}
+      }]
+    }).on('data', function (data) {
+      results.push(JSON.parse(data))
+    }).on('end', function () {
+      results.map(function (item) {
+        return item.document.id
+      }).should.eql(
+        [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ])
+      return done()
+    })
   })
-})
 
-it('search for watch in "name" and "description" fields, unweighted', function (done) {
-  var results = []
-  si.search({
-    query: [
-      {
-        AND: {'name': ['watch']}
-      },
-      {
-        AND: {'description': ['watch']}
-      }
-    ]
-  }).on('data', function (data) {
-    results.push(JSON.parse(data))
-  }).on('end', function () {
-    // console.log(results)
-    results.map(function (item) {
-      return item.document.id
-    }).should.eql(
-      [ '1', '9', '7', '3', '2', '10' ])
-    return done()
+  it('search for watch in "name" and "description" fields, unweighted', function (done) {
+    var results = []
+    si.search({
+      query: [
+        {
+          AND: {'name': ['watch']}
+        },
+        {
+          AND: {'description': ['watch']}
+        }
+      ]
+    }).on('data', function (data) {
+      results.push(JSON.parse(data))
+    }).on('end', function () {
+      results.map(function (item) {
+        return item.document.id
+      }).should.eql(
+        [ '1', '9', '7', '3', '2', '10' ])
+      return done()
+    })
   })
-})
 
-it('search for watch in "name" and "description" fields, weight description', function (done) {
-  var results = []
-  si.search({
-    query: [
-      {
-        AND: {'name': ['watch']}
-      },
-      {
-        AND: {'description': ['swiss', 'watch']},
-        BOOST: 10
-      }
-    ]
-  }).on('data', function (data) {
-    results.push(JSON.parse(data))
-  }).on('end', function () {
-    results.map(function (item) {
-      return item.document.id
-    }).should.eql(
-      [ '9', '3', '10', '1' ])
-    return done()
+  it('search for watch in "name" and "description" fields, weight description', function (done) {
+    var results = []
+    si.search({
+      query: [
+        {
+          AND: {'name': ['watch']}
+        },
+        {
+          AND: {'description': ['swiss', 'watch']},
+          BOOST: 10
+        }
+      ]
+    }).on('data', function (data) {
+      results.push(JSON.parse(data))
+    }).on('end', function () {
+      results.map(function (item) {
+        return item.document.id
+      }).should.eql(
+        [ '9', '3', '10', '1' ])
+      return done()
+    })
   })
-})
 
-it('search for watch in "name" and "description" fields, weight name', function (done) {
-  var results = []
-  si.search({
-    query: [
-      {
-        AND: {'name': ['watch']},
-        BOOST: 10
-      },
-      {
-        AND: {'description': ['swiss', 'watch']}
-      }
-    ]
-  }).on('data', function (data) {
-    results.push(JSON.parse(data))
-  }).on('end', function () {
-    results.map(function (item) {
-      return item.document.id
-    }).should.eql(
-      [ '1', '9', '3', '10' ])
-    return done()
+  it('search for watch in "name" and "description" fields, weight name', function (done) {
+    var results = []
+    si.search({
+      query: [
+        {
+          AND: {'name': ['watch']},
+          BOOST: 10
+        },
+        {
+          AND: {'description': ['swiss', 'watch']}
+        }
+      ]
+    }).on('data', function (data) {
+      results.push(JSON.parse(data))
+    }).on('end', function () {
+      results.map(function (item) {
+        return item.document.id
+      }).should.eql(
+        [ '1', '9', '3', '10' ])
+      return done()
+    })
   })
-})
 
-it('search for watch in "name" and "description" fields, negative weight name', function (done) {
-  var results = []
-  si.search({
-    query: [
-      {
-        AND: {'name': ['watch']},
-        BOOST: -10
-      },
-      {
-        AND: {'description': ['swiss', 'watch']}
-      }
-    ]
-  }).on('data', function (data) {
-    results.push(JSON.parse(data))
-  }).on('end', function () {
-    // console.log(JSON.stringify(results, null, 2))
-    results.map(function (item) {
-      return item.document.id
-    }).should.eql(
-      [ '9', '3', '10', '1' ])
-    return done()
+  it('search for watch in "name" and "description" fields, negative weight name', function (done) {
+    var results = []
+    si.search({
+      query: [
+        {
+          AND: {'name': ['watch']},
+          BOOST: -10
+        },
+        {
+          AND: {'description': ['swiss', 'watch']}
+        }
+      ]
+    }).on('data', function (data) {
+      results.push(JSON.parse(data))
+    }).on('end', function () {
+      results.map(function (item) {
+        return item.document.id
+      }).should.eql(
+        [ '9', '3', '10', '1' ])
+      return done()
+    })
   })
 })

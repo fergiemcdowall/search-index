@@ -1,8 +1,10 @@
+/* global describe */
 /* global it */
 
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
 
@@ -86,112 +88,114 @@ var getStream = function () {
   return s
 }
 
-it('should do some simple indexing and not store "description field"', function (done) {
-  var i = 0
-  SearchIndex({
-    indexPath: sandboxPath + '/fieldstostore-test',
-    logLevel: 'warn'
-  }, function (err, thisSI) {
-    if (err) false.should.eql(true)
-    si = thisSI
-    getStream()
-      .pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline({
-        fieldOptions: {
-          description: {
-            storeable: false
+describe('storing fields: ', function () {
+  it('should do some simple indexing and not store "description field"', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandboxPath + '/fieldstostore-test',
+      logLevel: logLevel
+    }, function (err, thisSI) {
+      if (err) false.should.eql(true)
+      si = thisSI
+      getStream()
+        .pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline({
+          fieldOptions: {
+            description: {
+              storeable: false
+            }
           }
-        }
-      }))
-      .pipe(si.add())
-      .on('data', function (data) {
-        i++
-      })
-      .on('end', function () {
-        i.should.be.exactly(11)
-        true.should.be.exactly(true)
-        return done()
-      })
+        }))
+        .pipe(si.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          true.should.be.exactly(true)
+          return done()
+        })
+    })
   })
-})
 
-it('documents returned by search should not have description fields', function (done) {
-  var results = [
-    { id: '9', name: 'Victorinox Night Vision ', price: '1000', age: '33342' },
-    { id: '8', name: 'Invicta Bolt Zeus ', price: '8767', age: '33342' },
-    { id: '7', name: 'TW Steel', price: '33333', age: '33342' },
-    { id: '6', name: 'Bulova AccuSwiss', price: '1313', age: '33342' },
-    { id: '5', name: "Ferragamo Men's Swiss 1898", price: '99999', age: '33342' },
-    { id: '4', name: "CHARRIOL Men's Swiss Alexandre", price: '2132', age: '33342' },
-    { id: '3', name: "Versace Men's Swiss", price: '4716', age: '8293' },
-    { id: '2', name: 'Victorinox Swiss Army', price: '99', age: '33342' },
-    { id: '10', name: 'Armani Swiss Moon Phase', price: '30000', age: '33342' },
-    { id: '1', name: 'Apple Watch', price: '20002', age: '346' }
-  ]
-  si.search({
-    query: [{
-      AND: {'*': ['*']}
-    }]
-  }).on('data', function (data) {
-    data = JSON.parse(data)
-    results.shift().should.eql(data.document)
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('documents returned by search should not have description fields', function (done) {
+    var results = [
+      { id: '9', name: 'Victorinox Night Vision ', price: '1000', age: '33342' },
+      { id: '8', name: 'Invicta Bolt Zeus ', price: '8767', age: '33342' },
+      { id: '7', name: 'TW Steel', price: '33333', age: '33342' },
+      { id: '6', name: 'Bulova AccuSwiss', price: '1313', age: '33342' },
+      { id: '5', name: "Ferragamo Men's Swiss 1898", price: '99999', age: '33342' },
+      { id: '4', name: "CHARRIOL Men's Swiss Alexandre", price: '2132', age: '33342' },
+      { id: '3', name: "Versace Men's Swiss", price: '4716', age: '8293' },
+      { id: '2', name: 'Victorinox Swiss Army', price: '99', age: '33342' },
+      { id: '10', name: 'Armani Swiss Moon Phase', price: '30000', age: '33342' },
+      { id: '1', name: 'Apple Watch', price: '20002', age: '346' }
+    ]
+    si.search({
+      query: [{
+        AND: {'*': ['*']}
+      }]
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.eql(data.document)
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
-})
 
-it('should do some simple indexing and ONLY store "name field"', function (done) {
-  var i = 0
-  SearchIndex({
-    indexPath: sandboxPath + '/fieldstostore2-test',
-    logLevel: 'warn',
-    storeable: false
-  }, function (err, thisSI) {
-    if (err) false.should.eql(true)
-    si2 = thisSI
-    getStream()
-      .pipe(JSONStream.parse())
-      .pipe(si2.defaultPipeline({
-        fieldOptions: {
-          name: {
-            storeable: true
+  it('should do some simple indexing and ONLY store "name field"', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandboxPath + '/fieldstostore2-test',
+      logLevel: logLevel,
+      storeable: false
+    }, function (err, thisSI) {
+      if (err) false.should.eql(true)
+      si2 = thisSI
+      getStream()
+        .pipe(JSONStream.parse())
+        .pipe(si2.defaultPipeline({
+          fieldOptions: {
+            name: {
+              storeable: true
+            }
           }
-        }
-      }))
-      .pipe(si2.add())
-      .on('data', function (data) {
-        i++
-      })
-      .on('end', function () {
-        i.should.be.exactly(11)
-        return done()
-      })
+        }))
+        .pipe(si2.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          return done()
+        })
+    })
   })
-})
 
-it('documents returned by search should not have description fields', function (done) {
-  var results = [
-    { name: 'Victorinox Night Vision ', id: '9' },
-    { name: 'Invicta Bolt Zeus ', id: '8' },
-    { name: 'TW Steel', id: '7' },
-    { name: 'Bulova AccuSwiss', id: '6' },
-    { name: "Ferragamo Men's Swiss 1898", id: '5' },
-    { name: "CHARRIOL Men's Swiss Alexandre", id: '4' },
-    { name: "Versace Men's Swiss", id: '3' },
-    { name: 'Victorinox Swiss Army', id: '2' },
-    { name: 'Armani Swiss Moon Phase', id: '10' },
-    { name: 'Apple Watch', id: '1' }
-  ]
-  si2.search({
-    query: [{
-      AND: {'*': ['*']}
-    }]
-  }).on('data', function (data) {
-    data = JSON.parse(data)
-    results.shift().should.eql(data.document)
-  }).on('end', function () {
-    results.length.should.be.exactly(0)
-    return done()
+  it('documents returned by search should not have description fields', function (done) {
+    var results = [
+      { name: 'Victorinox Night Vision ', id: '9' },
+      { name: 'Invicta Bolt Zeus ', id: '8' },
+      { name: 'TW Steel', id: '7' },
+      { name: 'Bulova AccuSwiss', id: '6' },
+      { name: "Ferragamo Men's Swiss 1898", id: '5' },
+      { name: "CHARRIOL Men's Swiss Alexandre", id: '4' },
+      { name: "Versace Men's Swiss", id: '3' },
+      { name: 'Victorinox Swiss Army', id: '2' },
+      { name: 'Armani Swiss Moon Phase', id: '10' },
+      { name: 'Apple Watch', id: '1' }
+    ]
+    si2.search({
+      query: [{
+        AND: {'*': ['*']}
+      }]
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.eql(data.document)
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
   })
 })

@@ -1,10 +1,11 @@
+/* global describe */
 /* global it */
 
-const SearchIndex = require('../../../')
-const sandbox = process.env.SANDBOX || 'test/sandbox'
-const logLevel = process.env.NODE_ENV || 'info'
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'error'
+const sandbox = process.env.SANDBOX || 'test/sandbox'
 
 var si
 
@@ -87,84 +88,86 @@ batch.forEach(function (item) {
 })
 s.push(null)
 
-it('initialize a search index', function (done) {
-  var i = 0
-  SearchIndex({
-    indexPath: sandbox + '/si-scan',
-    logLevel: logLevel
-  }, function (err, thisSi) {
-    ;(err === null).should.be.exactly(true)
-    si = thisSi
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {
-        i++
-      })
-      .on('end', function () {
-        i.should.be.exactly(11)
-        return done()
-      })
+describe('scanning: ', function () {
+  it('initialize a search index', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandbox + '/si-scan',
+      logLevel: logLevel
+    }, function (err, thisSi) {
+      ;(err === null).should.be.exactly(true)
+      si = thisSi
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          return done()
+        })
+    })
   })
-})
 
-it('do a simple scan', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: {'*': ['swiss', 'watch']}
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '9' ])
-    done()
-  })
-})
-
-it('do a simple scan with one word', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: {'*': ['watch']}
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '1', '10', '2', '3', '7', '9' ])
-    done()
-  })
-})
-
-it('do a simple scan with one word on a given field', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: {'name': ['swiss']}
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '4', '5' ])
-    done()
-  })
-})
-
-// // TODO: make filters work
-
-it('do a simple scan with one word on a given field and filter', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: {
-        name: ['swiss'],
-        price: [{gte: '30000', lte: '9'}]
+  it('do a simple scan', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'*': ['swiss', 'watch']}
       }
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '5' ])
-    done()
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '9' ])
+      done()
+    })
+  })
+
+  it('do a simple scan with one word', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'*': ['watch']}
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '1', '10', '2', '3', '7', '9' ])
+      done()
+    })
+  })
+
+  it('do a simple scan with one word on a given field', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'name': ['swiss']}
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '4', '5' ])
+      done()
+    })
+  })
+
+  // // TODO: make filters work
+
+  it('do a simple scan with one word on a given field and filter', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {
+          name: ['swiss'],
+          price: [{gte: '30000', lte: '9'}]
+        }
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '5' ])
+      done()
+    })
   })
 })
