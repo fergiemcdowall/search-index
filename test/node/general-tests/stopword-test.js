@@ -6,7 +6,10 @@ const Readable = require('stream').Readable
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
+const should = require('should')
 const sw = require('stopword')
+
+should
 
 describe('stopwords: ', function () {
   const getDataStream = function () {
