@@ -49,6 +49,15 @@ require('search-index')(options, function(err, si) {
 })
 ```
 
+or
+
+```javascript
+const getData = function(err, si) {
+  // si is now a new search index
+}
+require('search-index')(options, getData)
+```
+
 `options` is an object that can take the following values:
 
  * **db** _datastore, default:leveldown_ : a leveldown compatible datastore

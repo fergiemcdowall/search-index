@@ -9,43 +9,40 @@
 [![js-standard-style][js-standard-image]][js-standard-url] 
 
 ```javascript
-var searchIndex = require('search-index')
-
-searchIndex(options, function(err, si) {
-  si.add(data, opt, function (err) {
-    //add stuff to index
-  });
-
-  si.search(q, function (err, searchResults) {
-    //search in index
-  });
-});
+const getData = function(err, index) {
+  readStreamOfDocuments                   // <- a stream of documents to be indexed
+    .pipe(index.defaultPipeline())        // <- an extentable document processing pipeline
+    .pipe(index.add())                    // <- an index that can now be queried
+}
+require('search-index')(options, getData) // <- make a new index
 ```
 
-`search-index` is a freetext search library for JavaScript. You can use it to drop fantabulous search functionality into your node.js, HTML, OSX and Android applications.
-
-You can also generate search indexes and easily share them- you could for example make an index available on bittorrent, or you could push an index out to a browser. It is really easy to move indexes around, and create decentralised search engines.
-
-`search-index` uses LevelDB as a backend via the [LevelUp](https://github.com/Level/levelup) interface. These days, LevelDB-ish databases are installed pretty much everywhere, so `search-index` is really portable.
+`search-index` is a freetext search library for JavaScript. You can use it to drop fantabulous search functionality into your javascript applications
 
 Find out how to use the `search-index` module here:
 
 ### For the impatient
  * [Quickstart](./doc/quickstart.md)
 
-### Documentation
- * [Create an index](./doc/create.md)
- * [Add documents to an index](./doc/add.md)
- * [Search in an index](./doc/search.md)
- * [Matchers and autosuggest](./doc/autosuggest.md)
- * [Replicate an index](./doc/replicate.md)
-
-### Examples
- * [Examples](doc/EXAMPLES.md)
-
 ### API
 
  * [API reference](./doc/API.md)
+
+### Documentation
+ * [Create an index](./doc/create.md)
+ * [Add documents](./doc/add.md)
+ * [Search documents](./doc/search.md)
+ * [Aggregate documents (buckets and categories)]()
+ * [Set up autocomplete and query suggestions](./doc/autosuggest.md)
+ * [Replicate an index](./doc/replicate.md)
+ * [Run search-index in the browser](./doc/replicate.md)
+ * [Replicate from a server to a browser]()
+
+### Other How-tos and Articles on the Interwebs
+ * [Getting started with search-index]()
+ * [How to implement stemming in search-index]()
+ * [How to implement synonyms in search-index]()
+ * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
