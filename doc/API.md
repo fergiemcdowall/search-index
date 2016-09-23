@@ -21,11 +21,26 @@
  * [del(...)](#del)
  * [flush(...)](#flush)
 
-### Replication
+### Syncing
 
  * [dbReadStream(...)](#dbreadstream)
  * [dbWriteStream(...)](#dbwritestream)
 
+### Options and Settings
+ 
+ *  [batchSize](#batchsize)
+ *  [db](#db)
+ *  [fieldedSearch](#fieldedsearch)
+ *  [fieldOptions](#fieldoptions)
+ *  [preserveCase](#preservecase)
+ *  [storeable](#storeable)
+ *  [searchable](#searchable)
+ *  [indexPath](#indexpath)
+ *  [logLevel](#loglevel)
+ *  [nGramLength](#ngramlength)
+ *  [nGramSeparator](#ngramseparator)
+ *  [separator](#separator)
+ *  [stopwords](#stopwords)
 
 
 ## Opening and Closing
@@ -58,31 +73,8 @@ const getData = function(err, si) {
 require('search-index')(options, getData)
 ```
 
-`options` is an object that can take the following values:
-
- * **db** _datastore, default:leveldown_ : a leveldown compatible datastore
-
- * **fieldedSearch** _boolean, default:true_ : Can you search on
-     individual document fields? Setting this to false saves space and
-     makes the index faster.
-
- * **indexPath** _string, default:'si'_ : what should the index be
-     called on disk.
-
- * **logLevel** _string, default:'error'_ : a bunyan log level.
-
- * **nGramLength** _number, default:1_ : length of word sequences to
-     be indexed. Use this to capture phrases of more than one word.
-
- * **separator** _RegExp, default:/[\|' \.,\-|(\n)]+/_ : A RegExp in
-     the "string split" format
-
- * **stopwords** _Array, default:
-     require('stopword').en_ : A list of
-     words that are not considered for indexing. Typically they will
-     be numbers, common words (english examples: 'is', 'a', 'and'), or
-     otherwise "forbidden" words.
-
+`options` can be any [option](#options and settings) which will then form the defaults of the
+index until it is closed, or the options are changed.
 
 
 ### close(...)
@@ -116,15 +108,15 @@ generate categories by price, age, etc.
     buckets: [
       {
         field: 'price',
-        gte: '2',
-        lte: '3',
-        set: false
+        gte:   '2',
+        lte:   '3',
+        set:   false
       }
       {
         field: 'price',
-        gte: '4',
-        lte: '7',
-        set: false
+        gte:   '4',
+        lte:   '7',
+        set:   false
       }
     ]
   }).on('data', function (data) {
@@ -133,6 +125,19 @@ generate categories by price, age, etc.
     // finshed
   })
 ```
+
+**query** is a standard `search-index` query that will specify a set
+  of documents
+
+**buckets** is an array of buckets that must be an object with the
+  following 4 properties:
+
+  * **field** (mandatory) The field name
+  * **gte** "greater that or equal to"
+  * **limit** Limit the entries that will be returned
+  * **lte** "less than or equal to"
+  * **set** if true- return a set of IDs. If false or not set, return
+            a count
 
 
 ### categorize(...)
@@ -157,17 +162,29 @@ and return a readable stream
   })
 ```
 
+**query** is a standard `search-index` query that will specify a set
+  of documents
+
+**catogory** is an array of objects specifying fields to categorize
+  on:
+
+  * **field** Name of the field to categorize on
+  * **limit** Limit the entries that will be returned
+  * **set** if true- return a set of IDs. If false or not set, return
+            a count
+
 ### get(...)
 
 Gets a document from the corpus
 
 ```javascript
-index.get('docID', function(err) {
-  if (!err) console.log('success!')
+index.get(docIDs).on('data', function (doc) {
+  // doc is a document for each ID in docIDs
 })
+
 ```
 
-* **docID** is the ID of the document that should be retrieved
+* **docIDs** is and array of document IDs
 
 
 ### match(...)
@@ -226,39 +243,17 @@ si.search({
    ```javascript
    [
      {
-       AND: {'*': ['watch', 'gold'] },
+       AND: {'*':    ['watch', 'gold'] },
        NOT: {'name': ['apple'] }
      },
      {
-       AND: {'*': ['apple', 'watch'] }
+       AND: {'*':    ['apple', 'watch'] }
      }
    ]
    ```
    Find "watch" AND "gold" in all ("*") fields OR "apple" and "watch"
    in all fields
 
- * **categories** _Array_ Allows you to collate counts for each
-     catgory that the documents are tagged with
-
-   ```javascript
-   [
-     {
-       field: 'manufacturer'
-     }
-   ]
-   ```
-
- * **buckets** _Array_ buckets are like categories, except ranges can
-     be defined with `gte` (greater than or equal to) and `lte` (less
-     than or equal to)
-
-   ```javascript
-   [{
-     field: 'price',
-     gte: '2',
-     lte: '3'
-   }]
-   ```
 
  * **filters** _Array_ An object that can filter search
    results. Filters can only be applied to fields that have been
@@ -269,8 +264,8 @@ si.search({
    ```javascript
    [{
      field: 'price',
-     gte: '2',
-     lte: '3'
+     gte:   '2',
+     lte:   '3'
    }]
    ```
 
@@ -280,10 +275,6 @@ si.search({
    require an `offset` of `60`, and so on.
 
  * **pageSize** _number_ Sets the size of the resultset.
-
- * **teaser** _string_ Specifies which field should be used to
-   generate a teaser
-
 
 
 ### tellMeAboutMySearchIndex(...)
@@ -318,23 +309,30 @@ Prepares a "standard document" (an object where keys become field names,
 and values become corresponding field values) for indexing. Customised
 pipeline stages can be inserted before and after processing if required.
 
-**options** is an object that describes how the documents will be
-indexed and can contain the following fields:
+**options** is an object where each key corresponds to a field name in
+  the documents to be indexed and can contain the following settings:
 
  * **defaultFieldOptions** _Object_ default options to use for this
    batch
  * **fieldOptions** _Object_ overrides `defaultFieldOptions`, can have
    the following object values:
-   * **filter** _boolean default:false_ : can you filter on this field
+   * **fieldedSearch** _boolean, default:true_ : can searches be
+     carried out on this specific field
    * **nGramLength** _number, default:1_ : length of word sequences to
      be indexed. Use this to capture phrases of more than one word.
+   * **preserveCase** _boolean, default:true_ : preserve the case of
+     the text
    * **searchable** _boolean default:true_ : is this field searchable
+   * **separator**  _regex_ : A regex in the [String.split()](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/split) format
+     that will be used to tokenize this field
+   * **stopwords** _Array, default: require('stopword').en_ An array
+     of [stop words](https://en.wikipedia.org/wiki/Stop_words).
+   * **storeable** _Array_ specifies which fields to store in index. You
+     may want to index fields that are not shown in results, for
+     example when dealing with synonyms
    * **weight** _number: default:0_ this number will be added to the
      score for the field allowing some fields to count more or less
      than others.
-   * **store** _Array_ specifies which fields to store in index. You
-     may want to index fields that are not shown in results, for
-     example when dealing with synonyms
 
 
 ### del(...)
@@ -342,17 +340,21 @@ indexed and can contain the following fields:
 Deletes one or more documents from the corpus
 
 ```javascript
-index.del('docID', function(err) {
-  if (!err) console.log('success!')
-})
+si.del(docIDs)
+  .on('data', function (msg) {
+    // this doc is deleted
+  })
+  .on('end', function () {
+    // all docs are deleted
+  })
 ```
 
-* **docID** an array of document IDs that are to be deleted. A single
-    ID can also be used.
+* **docIDs** an array of document IDs referencing documents that are
+    to be deleted.
 
 ### flush(...)
 
-Empties the index. Can be used during replication.
+Empties the index. Deletes everything.
 
 ```javascript
 index.flush(function(err) {
@@ -360,8 +362,7 @@ index.flush(function(err) {
 })
 ```
 
-## Replication
-
+## Syncing
 
 ### dbReadStream(...)
 
@@ -410,4 +411,58 @@ si.DBReadStream(options)
 
 * **merge** If set to `true`, the writestream will merge this index with the existing one, if set to false the existing index must be empty
 
+## Options and Settings
 
+### batchsize
+_number_
+Specifies how many documents to process, before merging them into the
+index. When the end of the stream is reached all remaning documents
+will be merged, even if batchsize is not reached.
+
+### db
+_a levelup instance_
+The datastore.
+
+### fieldedSearch
+_boolean_
+If true, then the field is searchable.
+
+### fieldOptions
+_boolean_
+Contains field specific overrides to global settings
+
+### preserveCase
+_true_
+If true, case is preserved. For example: queries for "Potato" will not
+match "potato"
+
+### storeable
+_boolean_
+If true, a cache of the field is stored in the index
+
+### searchable
+_boolean_
+If true, this field will be searchable by wildcard ('*'). See also
+[fieldedSearch](#fieldedsearch)
+
+### indexPath
+_string_
+The location of the datastore. If `db` is specified, then indexPath is ignored
+
+### logLevel
+_string_
+A [bunyan](https://github.com/trentm/node-bunyan) log level.
+
+### nGramLength
+_number_ or _array_ or _object_
+Specifies how to split strings into phrases. See
+https://www.npmjs.com/package/term-vector for examples
+
+### separator
+_string_
+Specifies how strings are to be split, using a regex in the
+[String.split()](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/split) format
+
+### stopwords
+_array_
+An array of [stopwords](https://en.wikipedia.org/wiki/Stop_words)

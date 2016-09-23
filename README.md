@@ -43,6 +43,7 @@ Find out how to use the `search-index` module here:
  * [How to implement stemming in search-index]()
  * [How to implement synonyms in search-index]()
  * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
+ * [Functionality vs index size (how to shrink your index)]()
 
 ### Release notes
 
