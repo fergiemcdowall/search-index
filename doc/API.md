@@ -184,7 +184,7 @@ index.get(docIDs).on('data', function (doc) {
 
 ```
 
-* **docIDs** is and array of document IDs
+* **docIDs** an array of document IDs
 
 
 ### match(...)
@@ -415,51 +415,62 @@ si.DBReadStream(options)
 
 ### batchsize
 _number_
+
 Specifies how many documents to process, before merging them into the
 index. When the end of the stream is reached all remaning documents
 will be merged, even if batchsize is not reached.
 
 ### db
 _a levelup instance_
+
 The datastore.
 
 ### fieldedSearch
 _boolean_
+
 If true, then the field is searchable.
 
 ### fieldOptions
 _boolean_
+
 Contains field specific overrides to global settings
 
 ### preserveCase
 _true_
+
 If true, case is preserved. For example: queries for "Potato" will not
 match "potato"
 
 ### storeable
 _boolean_
+
 If true, a cache of the field is stored in the index
 
 ### searchable
 _boolean_
+
 If true, this field will be searchable by wildcard ('*'). See also
 [fieldedSearch](#fieldedsearch)
 
 ### indexPath
 _string_
+
 The location of the datastore. If `db` is specified, then indexPath is ignored
 
 ### logLevel
 _string_
+
 A [bunyan](https://github.com/trentm/node-bunyan) log level.
 
 ### nGramLength
 _number_ or _array_ or _object_
+
 Specifies how to split strings into phrases. See
 https://www.npmjs.com/package/term-vector for examples
 
 ### separator
 _string_
+
 Specifies how strings are to be split, using a regex in the
 [String.split()](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/split) format
 

@@ -19,21 +19,21 @@ SearchIndex(options, function(err, index) {
 The default options are equivalent to this:
 
 ```javascript
-  {
-    batchSize: 1000,
-    db: (a levelup db),
-    fieldedSearch: true,
-    fieldOptions: {},
-    preserveCase: false,
-    storeable: true,
-    searchable: true,
-    indexPath: 'si',
-    logLevel: 'error',
-    nGramLength: 1,
-    nGramSeparator: ' ',
-    separator: /[\|' \.,\-|(\n)]+/,
-    stopwords: require('stopword').en,
-  }
+{
+  batchSize: 1000,
+  db: (a levelup db),
+  fieldedSearch: true,
+  fieldOptions: {},
+  preserveCase: false,
+  storeable: true,
+  searchable: true,
+  indexPath: 'si',
+  logLevel: 'error',
+  nGramLength: 1,
+  nGramSeparator: ' ',
+  separator: /[\|' \.,\-|(\n)]+/,
+  stopwords: require('stopword').en,
+}
 ```
 
 See the [API docs](API.md) for a description of what each setting

@@ -44,12 +44,13 @@ Find out how to use the `search-index` module here:
  * [How to implement synonyms in search-index]()
  * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
  * [Functionality vs index size (how to shrink your index)]()
+ * [Teasers and Search Term Highlighting]
 
 ### Release notes
 
 * 0.7.0 : new constructor
 * 0.8.0 : new search API
-* 0.8.0 : Streaming API
+* 0.9.0 : Streaming API
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
