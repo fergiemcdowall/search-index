@@ -1,36 +1,44 @@
-# Replication
+# Syncing
 
-You can easily create a snapshot of an index or read in a snapshot
-from another index.
-
-For replication from a server to a browser [see this
-example](examples/browserify-replicate-full-index-to-browser).
+You can easily merge, replicate, and move around indexes
 
 
-## Create a Snapshot
+## Save index to file
 
 ```javascript
 // assumes that: var fs = require('fs')
-si.DBReadStream({ gzip: true })
-  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+si.dbReadStream({ gzip: true })
+  .pipe(fs.createWriteStream('backup.gz'))
   .on('close', function() {
     // done
   })
 ```
 
-## Replicate a snapshot file into another index
-
-Note: the new index must be empty
+## Merge saved file into index
 
 ```javascript
 // assumes that backup is in a file called 'backup.gz'
-fs.createReadStream(sandboxPath + '/backup.gz')
+fs.createReadStream('backup.gz')
   .pipe(zlib.createGunzip())
   .pipe(JSONStream.parse())
-  .pipe(si.DBWriteStream())
+  .pipe(si.dbWriteStream())
   .on('close', function() {
     // done
   })
 ```
 
+## Sync directly from one index to another
+
+```javascript
+// syncFrom is the index that is being read from
+// syncTo is the index that is being merged into
+syncFrom.dbReadStream({gzip: true})
+  .pipe(zlib.createGunzip())
+  .pipe(JSONStream.parse())
+  .pipe(syncTo.dbWriteStream())
+  .on('data', function () {})
+  .on('end', function () {
+    // done!
+  })
+```
 
