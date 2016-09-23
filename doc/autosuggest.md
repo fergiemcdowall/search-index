@@ -30,9 +30,13 @@ var options = {
 Basic use:
 
 ```javascript
-si.match(options, function (err, matches) {
-  //matches is an array of all the terms that match the input.
-})
+si.match(options)
+  .on('data', function (match) {
+    // a match
+  })
+  .end('end', function () {
+    // all matches returned
+  })
 ```
 
 
@@ -44,15 +48,22 @@ var options = {
   field: "city",
   threshold: 2
 }
-si.match(options, function (err, matches) {
-  //matches is an array of all the terms that match the input.
-})
+si.match(options)
+  .on('data', function (match) {
+    // a match
+  })
+  .end('end', function () {
+    // all matches returned
+  })
 ```
 
 ...might return:
 
 ```javascript
-['london', 'long beach', 'long island', 'lonsdale']
+'london'
+'long beach'
+'long island'
+'lonsdale'
 ```
 
 You can also set the `type` option to `ID` to return sets of IDs:
@@ -64,9 +75,13 @@ var options = {
   threshold: 2,
   type: 'ID'
 }
-si.match(options, function (err, matches) {
-  //matches is an array of all the terms that match the input.
-})
+si.match(options)
+  .on('data', function (match) {
+    // a match
+  })
+  .end('end', function () {
+    // all matches returned
+  })
 ```
 
 ...which would return a list of suggestions, together with the sets of IDs for
@@ -90,9 +105,13 @@ var options = {
   threshold: 2,
   type: 'count'
 }
-si.match(options, function (err, matches) {
-  //matches is an array of all the terms that match the input.
-})
+si.match(options)
+  .on('data', function (match) {
+    // a match
+  })
+  .end('end', function () {
+    // all matches returned
+  })
 ```
 
 ...returns a list of suggestions, together with the sets of IDs for

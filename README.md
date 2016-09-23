@@ -32,19 +32,19 @@ Find out how to use the `search-index` module here:
  * [Create an index](./doc/create.md)
  * [Add documents](./doc/add.md)
  * [Search documents](./doc/search.md)
- * [Aggregate documents (buckets and categories)]()
+ * [Aggregate documents (buckets and categories)](./doc/aggregations.md)
  * [Set up autocomplete and query suggestions](./doc/autosuggest.md)
  * [Sync an index](./doc/replicate.md)
- * [Run search-index in the browser](./doc/replicate.md)
- * [Sync from a server to a browser]()
+ * [Run search-index in the browser](./doc/browser.md)
+ * [Sync from a server to a browser](./doc/browsersync.md)
 
 ### Other How-tos and Articles on the Interwebs
- * [Getting started with search-index]()
- * [How to implement stemming in search-index]()
- * [How to implement synonyms in search-index]()
+ * [Getting started with search-index](todo)
+ * [How to implement stemming in search-index](todo)
+ * [How to implement synonyms in search-index](todo)
  * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
- * [Functionality vs index size (how to shrink your index)]()
- * [Teasers and Search Term Highlighting]
+ * [Functionality vs index size (how to shrink your index)](todo)
+ * [Teasers and Search Term Highlighting](todo)
 
 ### Release notes
 
