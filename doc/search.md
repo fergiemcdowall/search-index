@@ -131,17 +131,15 @@ query: [
   buckets/categories.
 
 ```javascript
-query: [
-  {
-    AND: {
-      'description': ['swiss', 'watch']
-      'price': [{
-         gte: '1000',
-         lte: '8'
-      }]
-    }
+query: {
+  AND: {
+    'description': ['swiss', 'watch']
+    'price': [{
+       gte: '1000',
+       lte: '8'
+    }]
   }
-]
+}
 ```
 
 * **gte**: greater than or equal to

@@ -36,6 +36,6 @@ The default options are equivalent to this:
 }
 ```
 
-See the [API docs](API.md) for a description of what each setting
+See the [API docs](API.md#options-and-settings-1) for a description of what each setting
 does. Options can be set for specific fields, and can be overridden
 everytime a document is added.
