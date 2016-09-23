@@ -1,118 +1,116 @@
-# Adding documents to search indexes
+# Add documents to a search index
 
-Documents can be added and deleted in batches of size 1-n. If the
-index is initialized with `deletable` set to `false` then the index is
-read-only.
-
-Indexing options can be set at a batch and at document level.
-
-
-### Adding
-
-The syntax for adding a batch of documents is:
+This is the typical way to add documents to a search index that have
+never been indexed before. If the documents already exist in another
+search index, it may be more appropriate to [sync your
+indices](replicate.md).
 
 ```javascript
-//options (can be left empty)
-var batchOptions = {};
-batchOptions.fieldOptions = [
-  {fieldName: 'field1', ...},
-  {fieldName: 'field2', ...},
-  ...
-];
-
-//add
-si.add(data, batchOptions, function (err) {
-  if (!err) console.log('success!');
-});
+request(url)                      // <- could also be something like fs.getReadStream
+  .pipe(JSONStream.parse())
+  .pipe(index.defaultPipeline())
+  .pipe(index.add())
 ```
 
-### Default batch options
+Indexing options can be set at a batch, document, or field level.
 
-Default batch options are equivalent to:
+## Prerequisites
+
+First [instantiate a search-index](create.md)
+
+## Data format
+
+An example file can be found [here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/fullFileStream/justTen.str)
+
+Documents can be added in arbitrarily sized batches as a standard node
+[readable
+stream](https://nodejs.org/api/stream.html#stream_readable_streams). `search-index`'s
+default processing pipeline expects a stream of contiguous javascript
+objects, and will attempt to process them as key:value pairs, where
+the key is a field name and the value is a field value
 
 ```javascript
 {
-  batchName: 'my batch',
-  fieldOptions: [],                                 //none
-  store: true,                                      //inherited from initialization options
-  defaultFieldOptions: defaultFieldOptions          //can be overrided per field
+  id: '1',
+  body: 'this is a cool document'
 }
-```
-
-### Default field options
-
-Default field options are equivalent to:
-
-```javascript
 {
-  filter: false,
-  nGramLength: SearchIndex.options.nGramLength,     //inherited from initialization options
-  searchable: true,
-  weight: 1,
-  store: SearchIndex.options.store
-  fieldedSearch: SearchIndex.options.fieldedSearch  //inherited from initialization options
+  id: '2',
+  body: 'No- wait! this document is even cooler!!'
 }
 ```
 
-#### filter
+## Get a Readable Stream
 
-Set this to `true` in order to be able to do faceting and filtering on
-this field
+### From a URL
+
+Use request and JSONStream
 
 ```javascript
-{
-  ...
-  fieldName: 'tags',
-  filter: true
-  ...
-}
+const request = require('request')
+const JSONStream = require('JSONStream')
+const url = 'http://link.to.my/data'
+
+request(url)
+  .pipe(JSONStream.parse())
 ```
 
-#### nGramLength
+### From a File
 
-Sets the length of the phrase search on this field. You need to add all the nGramLength you want in an array. If you want phrases of one and two words, you write:
+Use fs and JSONStream
+
 ```javascript
-{
-  ...
-  nGramLength: [1, 2],
-  ...
-}
-```
-If you want one, two and three words in the phrases, you write:
-```javascript
-{
-  ...
-  nGramLength: [1, 2, 3],
-  ...
-}
+const JSONStream = require('JSONStream')
+const fs = require('fs')
+
+fs.createReadStream('myDataFile.str')
+  .pipe(JSONStream.parse())
 ```
 
-#### searchable
+### From Native JavaScript
 
-Is field searchable? You might want to store a field in a document
-that will not be searchable.
-
-#### weight
-
-Specifies the relevancy weighting that this field gets at indexing
-time. Pre-weighting fields is the most effiecient way of creating
-relevancy models.
-
-#### fieldedSearch
-
-Is it possible to search on only this field?
-
-
-### Batch format
-
-Batches are arrays of objects that may or may not have an id field. If
-no id field is present, then one will be generated. [example batch here](https://raw.githubusercontent.com/fergiemcdowall/reuters-21578-json/master/data/full/reuters-000.json)
+Create a `Readable` stream and push documents to it.
 
 ```javascript
-[
-  {},
-  {},
-  {}
-]
+const Readable = require('stream').Readable
+const s = new Readable()
+
+s.push({
+  id: '3',
+  body: 'this doc has a great body'
+})
+// add as many docs as you want
+
+s.push(null)
+// s is now ready to be piped
+```
+## Document Processing Pipeline
+
+`.defaultPipeline()` converts these documents into a special vector
+format. As you become more advanced, you may want to manipulate these
+vectors in order to implement advanced features such as stemming or
+synonyms. However `search-index` ships with a default processing
+pipeline that allows you to send Plain Old JavaScript Objects to the
+index, and they will be treated as "field name": "field value"
+
+```javascript
+dataStream                       // <- stream of docs to be indexed
+  .pipe(index.defaultPipeline())    
+                                 // <- for mad science- put further
+                                 // transforms in here
+```
+
+The `.defaultPipeline()` takes several options relating to how the
+documents can be searched. [Check out the API](API.md#defaultpipeline) for more
+information.
+
+## Adder
+
+The `.add` is a writable stream that accepts the processed documents
+
+```javascript
+dataStream                       // <- stream of docs to be indexed
+  .pipe(index.defaultPipeline())
+  .pipe(index.add())
 ```
 

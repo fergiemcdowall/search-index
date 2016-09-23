@@ -34,15 +34,21 @@ Find out how to use the `search-index` module here:
  * [Search documents](./doc/search.md)
  * [Aggregate documents (buckets and categories)]()
  * [Set up autocomplete and query suggestions](./doc/autosuggest.md)
- * [Replicate an index](./doc/replicate.md)
+ * [Sync an index](./doc/replicate.md)
  * [Run search-index in the browser](./doc/replicate.md)
- * [Replicate from a server to a browser]()
+ * [Sync from a server to a browser]()
 
 ### Other How-tos and Articles on the Interwebs
  * [Getting started with search-index]()
  * [How to implement stemming in search-index]()
  * [How to implement synonyms in search-index]()
  * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
+
+### Release notes
+
+* 0.7.0 : new constructor
+* 0.8.0 : new search API
+* 0.8.0 : Streaming API
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
@@ -60,7 +66,3 @@ Find out how to use the `search-index` module here:
 [js-standard-url]: https://github.com/feross/standard
 [js-standard-image]: https://img.shields.io/badge/code%20style-standard%20js-green.svg?style=flat-square
 
-### Release notes
-
-* 0.7.0 : new constructor
-* 0.8.0 : new search API
