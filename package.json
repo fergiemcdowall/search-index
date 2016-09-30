@@ -12,8 +12,8 @@
     "leveldown": "1.4.6",
     "levelup": "1.3.2",
     "lodash.defaults": "4.2.0",
-    "search-index-adder": "0.1.7",
-    "search-index-searcher": "0.1.8",
+    "search-index-adder": "0.1.9",
+    "search-index-searcher": "0.1.9",
     "stopword": "0.1.1"
   },
   "devDependencies": {
