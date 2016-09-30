@@ -4,7 +4,7 @@ var server
 
 test('check size of bundle', function (t) {
   t.plan(2)
-  fs.stat('./test/sandbox/bundle.js', function (err, stats) {
+  fs.stat('./dist/' + process.env.LIBNAME + '.min.js', function (err, stats) {
     t.error(err)
     console.log(stats.size)
     t.ok((stats.size < 1100000), 'bundle should be less than 1mb')
@@ -13,9 +13,14 @@ test('check size of bundle', function (t) {
 
 test('start server', function (t) {
   t.plan(1)
+  console.log('process.env.LIBNAME is ' + process.env.LIBNAME)
   server = require('http').createServer(function (req, res) {
-    if (req.url === '/bundle.js') {
-      fs.readFile('./test/sandbox' + req.url, function (err, file) {
+    console.log(req.url)
+    if ((req.url === '/node_modules/highland/dist/highland.min.js')
+        || (req.url === '/test/browser/test.js')
+        || (req.url === '/dist/' + process.env.LIBNAME + '.min.js')
+       ) {
+      fs.readFile('.' + req.url, function (err, file) {
         if (err) console.log('problem setting up test server ' + err)
         res.writeHeader(200)
         res.write(file)
@@ -23,7 +28,9 @@ test('start server', function (t) {
       })
     } else {
       res.writeHeader(200, {'Content-Type': 'text/html'})
-      res.write('<script src="bundle.js"></script>')
+      res.write('<script src="/node_modules/highland/dist/highland.min.js"></script>')
+      res.write('<script src="/dist/' + process.env.LIBNAME + '.min.js"></script>')
+      res.write('<script src="/test/browser/test.js"></script>')
       res.write('<div name="result" id="result">waiting...</div>')
       res.end()
     }
@@ -54,19 +61,15 @@ test('connect to test html page', function (t) {
   }
   browser.get('http://localhost:8080')
 
-  // var browser = new webdriver.Builder()
-  //   .forBrowser('chrome')
-  //   .build()
-  // browser.get('http://localhost:8080')
   var resultDiv = browser.findElement(webdriver.By.id('result'))
   resultDiv.getInnerHtml().then(function (html) {
     t.equal(html, 'waiting...')
   })
-  browser.wait(webdriver.until.elementTextIs(resultDiv, 'TALKING POINT/BANKAMERICA EQUITY OFFER'), 30000)
+  browser.wait(webdriver.until.elementTextIs(resultDiv, 'this is a document from the search index'), 30000)
   resultDiv.getInnerHtml().then(function (html) {
-    t.equal(html, 'TALKING POINT/BANKAMERICA <bac> EQUITY OFFER</bac>')
+    t.equal(html, 'this is a document from the search index')
+    browser.quit()
   })
-  browser.quit()
 })
 
 test('teardown', function (t) {

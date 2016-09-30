@@ -21,6 +21,7 @@
     "brfs": "^1.4.3",
     "browserify": "^13.1.0",
     "chromedriver": "2.23.1",
+    "highland": "^2.10.0",
     "level-js": "^2.2.4",
     "level-out": "0.0.6",
     "mocha": "^3.0.2",
@@ -58,10 +59,13 @@
     }
   ],
   "scripts": {
+    "dist": "npm run set-env && browserify lib/index.js --standalone SearchIndex > dist/$LIBNAME.js",
+    "dist-min": "npm run dist && cat dist/$LIBNAME.js | uglifyjs -c dead_code > dist/$LIBNAME.min.js",
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
-    "test-browserify": "browserify --full-paths test/browser/browserify-test-uncompiled.js | uglifyjs > test/sandbox/bundle.js && tape test/browser/selenium-test.js",
-    "test-node": "mocha test/node/general-tests --recursive --timeout 10000",
-    "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify && standard"
+    "set-env": "export LIBNAME=search-index-$(node -e \"process.stdout.write(require('./package.json').version)\")",
+    "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browserify && standard test/* lib/*",
+    "test-browserify": "npm run dist-min && tape test/browser/selenium-test.js",
+    "test-node": "mocha test/node/general-tests --recursive --timeout 10000"
   },
   "repository": {
     "type": "git",
