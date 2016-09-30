@@ -39,7 +39,7 @@ test('start server', function (t) {
 })
 
 test('connect to test html page', function (t) {
-  t.plan(2)
+  t.plan(1)
   var webdriver = require('selenium-webdriver')
   var browser
   if (process.env.SAUCE_USERNAME !== undefined) {
@@ -61,9 +61,9 @@ test('connect to test html page', function (t) {
   browser.get('http://localhost:8080')
 
   var resultDiv = browser.findElement(webdriver.By.id('result'))
-  resultDiv.getInnerHtml().then(function (html) {
-    t.equal(html, 'waiting...')
-  })
+  // resultDiv.getInnerHtml().then(function (html) {
+    // t.equal(html, 'waiting...')
+  // })
   browser.wait(webdriver.until.elementTextIs(resultDiv, 'this is a document from the search index'), 30000)
   resultDiv.getInnerHtml().then(function (html) {
     t.equal(html, 'this is a document from the search index')
