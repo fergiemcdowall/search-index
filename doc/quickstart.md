@@ -85,13 +85,7 @@ const searchCLI = function () {
 }
 
 const search = function(rawQuery) {
-  index.search({
-    query: [{
-      AND: {
-        '*': rawQuery.toString().slice(0, -1).split(' ')
-      }
-    }]
-  })
+  index.search(rawQuery.toString().slice(0, -1))
     .on('data', printResults)
     .on('end', printPrompt)
 }

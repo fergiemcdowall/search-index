@@ -322,9 +322,11 @@ pipeline stages can be inserted before and after processing if required.
      be indexed. Use this to capture phrases of more than one word.
    * **preserveCase** _boolean, default:true_ : preserve the case of
      the text
-   * **searchable** _boolean default:true_ : is this field searchable
+   * **searchable** _boolean default:true_ : is this field searchable? 
    * **separator**  _regex_ : A regex in the [String.split()](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/split) format
      that will be used to tokenize this field
+   * **sortable** _boolean default:false_ : can this field be sorted
+     on? If true field is not searchable
    * **stopwords** _Array, default: require('stopword').en_ An array
      of [stop words](https://en.wikipedia.org/wiki/Stop_words).
    * **storeable** _Array_ specifies which fields to store in index. You

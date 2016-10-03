@@ -6,6 +6,7 @@ const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
+const should = require('should')
 
 var si
 
@@ -95,7 +96,7 @@ describe('sorting: ', function () {
       indexPath: sandboxPath + '/sorting-test',
       logLevel: logLevel
     }, function (err, thisSI) {
-      ;(!err).should.be.exactly(true)
+      should(err).not.ok
       si = thisSI
       s.pipe(JSONStream.parse())
         .pipe(si.defaultPipeline({
@@ -312,4 +313,12 @@ describe('sorting: ', function () {
       return done()
     })
   })
+
+  it('calculate total hits', function (done) {
+    si.totalHits('swiss watch', function (err, totalHits) {
+      totalHits.should.be.exactly(3)
+      return done()
+    })
+  })
+
 })

@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SearchIndex = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SearchIndex = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const _defaults = require('lodash.defaults')
 const bunyan = require('bunyan')
 const level = require('levelup')
@@ -49,6 +49,7 @@ const getSearcher = function (SearchIndex, done) {
     SearchIndex.match = searchIndexSearcher.match
     SearchIndex.scan = searchIndexSearcher.scan
     SearchIndex.search = searchIndexSearcher.search
+    SearchIndex.totalHits = searchIndexSearcher.totalHits
     done(err, SearchIndex)
   })
 }
@@ -76,7 +77,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/lib/siUtil.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","search-index-adder":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/index.js","search-index-searcher":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/lib/siUtil.js":[function(require,module,exports){
+},{"./siUtil.js":2,"bunyan":14,"leveldown":41,"levelup":54,"lodash.defaults":57,"search-index-adder":81,"search-index-searcher":86}],2:[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -118,7 +119,7 @@ module.exports = function(siOptions) {
   return siUtil
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/JSONStream/index.js":[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (process,Buffer){
 
 
@@ -366,7 +367,7 @@ if(!module.parent && process.title !== 'browser') {
 
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","jsonparse":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/jsonparse/jsonparse.js","through":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/through/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-chained-batch.js":[function(require,module,exports){
+},{"_process":68,"buffer":13,"jsonparse":29,"through":121}],4:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -449,7 +450,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-iterator.js":[function(require,module,exports){
+},{"_process":68}],5:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -502,7 +503,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-leveldown.js":[function(require,module,exports){
+},{"_process":68}],6:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -778,13 +779,13 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/index.js":[function(require,module,exports){
+},{"../is-buffer/index.js":26,"./abstract-chained-batch":4,"./abstract-iterator":5,"_process":68,"xtend":127}],7:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
 exports.isLevelDOWN          = require('./is-leveldown')
 
-},{"./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-iterator.js","./abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-leveldown.js","./is-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/is-leveldown.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/is-leveldown.js":[function(require,module,exports){
+},{"./abstract-chained-batch":4,"./abstract-iterator":5,"./abstract-leveldown":6,"./is-leveldown":8}],8:[function(require,module,exports){
 var AbstractLevelDOWN = require('./abstract-leveldown')
 
 function isLevelDOWN (db) {
@@ -800,7 +801,7 @@ function isLevelDOWN (db) {
 
 module.exports = isLevelDOWN
 
-},{"./abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-leveldown.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/assert/assert.js":[function(require,module,exports){
+},{"./abstract-leveldown":6}],9:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -1161,7 +1162,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/base64-js/index.js":[function(require,module,exports){
+},{"util/":126}],10:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1277,11 +1278,11 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browserify/lib/_empty.js":[function(require,module,exports){
-arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"][0].apply(exports,arguments)
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js":[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],13:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3074,7 +3075,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/base64-js/index.js","ieee754":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ieee754/index.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js":[function(require,module,exports){
+},{"base64-js":10,"ieee754":23,"isarray":27}],14:[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2015 Trent Mick.
@@ -4636,7 +4637,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","assert":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/assert/assert.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","fs":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browserify/lib/_empty.js","os":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/os-browserify/browser.js","safe-json-stringify":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/safe-json-stringify/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
+},{"../../is-buffer/index.js":26,"_process":68,"assert":9,"events":21,"fs":12,"os":66,"safe-json-stringify":80,"stream":117,"util":126}],15:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4747,7 +4748,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-iterator.js":[function(require,module,exports){
+},{"../../is-buffer/index.js":26}],16:[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -4783,7 +4784,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-leveldown.js":[function(require,module,exports){
+},{"abstract-leveldown":7,"util":126}],17:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -4843,7 +4844,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./deferred-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/custom.js":[function(require,module,exports){
+},{"../is-buffer/index.js":26,"./deferred-iterator":16,"_process":68,"abstract-leveldown":7,"util":126}],18:[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -4900,7 +4901,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/errno.js":[function(require,module,exports){
+},{"prr":20}],19:[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -5215,7 +5216,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/custom.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js":[function(require,module,exports){
+},{"./custom":18}],20:[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -5279,7 +5280,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js":[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5583,7 +5584,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/idb-wrapper/idbstore.js":[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -6990,7 +6991,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ieee754/index.js":[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -7076,7 +7077,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7101,7 +7102,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/intersect-arrays-to-stream/index.js":[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -7167,7 +7168,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js":[function(require,module,exports){
+},{"stream":117}],26:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -7190,14 +7191,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js":[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isbuffer/index.js":[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -7207,7 +7208,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/jsonparse/jsonparse.js":[function(require,module,exports){
+},{"buffer":13}],29:[function(require,module,exports){
 (function (Buffer){
 /*global Buffer*/
 // Named constants with unique integer values
@@ -7552,7 +7553,7 @@ Parser.C = C;
 module.exports = Parser;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/index.js":[function(require,module,exports){
+},{"buffer":13}],30:[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -7660,7 +7661,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/lib/encodings.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/lib/encodings.js":[function(require,module,exports){
+},{"./lib/encodings":31}],31:[function(require,module,exports){
 (function (Buffer){
 
 exports.utf8 = exports['utf-8'] = {
@@ -7740,7 +7741,7 @@ function isBinary(data){
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js":[function(require,module,exports){
+},{"buffer":13}],32:[function(require,module,exports){
 /* Copyright (c) 2012-2015 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -7764,7 +7765,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/errno.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/index.js":[function(require,module,exports){
+},{"errno":19}],33:[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -7822,12 +7823,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","readable-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/readable.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/isarray/index.js":[function(require,module,exports){
+},{"inherits":24,"level-errors":32,"readable-stream":40,"xtend":127}],34:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7920,7 +7921,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":37,"./_stream_writable":39,"_process":68,"core-util-is":15,"inherits":24}],36:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7968,7 +7969,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":38,"core-util-is":15,"inherits":24}],37:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8923,7 +8924,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/isarray/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","string_decoder/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"./_stream_duplex":35,"_process":68,"buffer":13,"core-util-is":15,"events":21,"inherits":24,"isarray":34,"stream":117,"string_decoder/":118,"util":11}],38:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9134,7 +9135,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"./_stream_duplex":35,"core-util-is":15,"inherits":24}],39:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9615,7 +9616,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/readable.js":[function(require,module,exports){
+},{"./_stream_duplex":35,"_process":68,"buffer":13,"core-util-is":15,"inherits":24,"stream":117}],40:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -9629,7 +9630,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":35,"./lib/_stream_passthrough.js":36,"./lib/_stream_readable.js":37,"./lib/_stream_transform.js":38,"./lib/_stream_writable.js":39,"_process":68,"stream":117}],41:[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -9807,7 +9808,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/iterator.js","abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","idb-wrapper":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/idb-wrapper/idbstore.js","isbuffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isbuffer/index.js","typedarray-to-buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/typedarray-to-buffer/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/iterator.js":[function(require,module,exports){
+},{"./iterator":42,"abstract-leveldown":45,"buffer":13,"idb-wrapper":22,"isbuffer":28,"typedarray-to-buffer":122,"util":126,"xtend":52}],42:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -9881,7 +9882,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js","ltgt":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ltgt/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-chained-batch.js":[function(require,module,exports){
+},{"abstract-leveldown":45,"ltgt":65,"util":126}],43:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -9965,9 +9966,9 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-iterator.js":[function(require,module,exports){
-arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/abstract-leveldown/abstract-iterator.js"][0].apply(exports,arguments)
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js":[function(require,module,exports){
+},{"_process":68}],44:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"_process":68,"dup":5}],45:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10227,7 +10228,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/node_modules/xtend/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/node_modules/xtend/index.js":[function(require,module,exports){
+},{"../../../is-buffer/index.js":26,"./abstract-chained-batch":43,"./abstract-iterator":44,"_process":68,"xtend":46}],46:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -10246,7 +10247,7 @@ function extend() {
     return target
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/foreach.js":[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -10288,11 +10289,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/index.js":[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/shim.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/isArguments.js":[function(require,module,exports){
+},{"./shim":50}],49:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -10310,7 +10311,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/shim.js":[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -10374,7 +10375,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/foreach.js","./isArguments":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/isArguments.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/has-keys.js":[function(require,module,exports){
+},{"./foreach":47,"./isArguments":49}],51:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -10383,7 +10384,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/index.js":[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -10410,7 +10411,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/has-keys.js","object-keys":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/batch.js":[function(require,module,exports){
+},{"./has-keys":51,"object-keys":48}],53:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -10495,7 +10496,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js":[function(require,module,exports){
+},{"./util":55,"level-errors":32}],54:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -10898,7 +10899,7 @@ module.exports.repair  = deprecate(
 
 
 }).call(this,require('_process'))
-},{"./batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/batch.js","./util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","deferred-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-leveldown.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","level-codec":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/index.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","level-iterator-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/index.js","prr":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/prr/prr.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js":[function(require,module,exports){
+},{"./batch":53,"./util":55,"_process":68,"deferred-leveldown":17,"events":21,"level-codec":30,"level-errors":32,"level-iterator-stream":33,"prr":69,"util":126,"xtend":127}],55:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -10977,7 +10978,7 @@ module.exports = {
   , isDefined       : isDefined
 }
 
-},{"../package.json":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/package.json","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","leveldown/package":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","semver":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/package.json":[function(require,module,exports){
+},{"../package.json":56,"level-errors":32,"leveldown":11,"leveldown/package":11,"semver":11,"util":126,"xtend":127}],56:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -11168,7 +11169,7 @@ module.exports={
   "version": "1.3.2"
 }
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js":[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -11838,7 +11839,7 @@ function keysIn(object) {
 
 module.exports = defaults;
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.difference/index.js":[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -13012,7 +13013,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js":[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -14081,7 +14082,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.isequal/index.js":[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -15734,7 +15735,7 @@ function keys(object) {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js":[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -15987,7 +15988,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.spread/index.js":[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16393,7 +16394,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.union/index.js":[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -17578,7 +17579,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.uniq/index.js":[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -18478,7 +18479,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ltgt/index.js":[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -18628,7 +18629,7 @@ exports.filter = function (range, compare) {
 }
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/os-browserify/browser.js":[function(require,module,exports){
+},{"../is-buffer/index.js":26}],66:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -18675,7 +18676,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js":[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18722,7 +18723,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js":[function(require,module,exports){
+},{"_process":68}],68:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -18904,12 +18905,12 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/prr/prr.js":[function(require,module,exports){
-arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js"][0].apply(exports,arguments)
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/duplex.js":[function(require,module,exports){
+},{}],69:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"dup":20}],70:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":71}],71:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -18985,7 +18986,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":73,"./_stream_writable":75,"core-util-is":15,"inherits":24,"process-nextick-args":67}],72:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -19012,7 +19013,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":74,"core-util-is":15,"inherits":24}],73:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19895,7 +19896,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js","string_decoder/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"./_stream_duplex":71,"_process":68,"buffer":13,"core-util-is":15,"events":21,"inherits":24,"isarray":27,"process-nextick-args":67,"string_decoder/":118,"util":11}],74:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -20076,7 +20077,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"./_stream_duplex":71,"core-util-is":15,"inherits":24}],75:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -20595,10 +20596,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js","util-deprecate":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util-deprecate/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
+},{"./_stream_duplex":71,"_process":68,"buffer":13,"core-util-is":15,"events":21,"inherits":24,"process-nextick-args":67,"util-deprecate":123}],76:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/readable.js":[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":72}],77:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -20612,13 +20613,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/transform.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":71,"./lib/_stream_passthrough.js":72,"./lib/_stream_readable.js":73,"./lib/_stream_transform.js":74,"./lib/_stream_writable.js":75}],78:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/writable.js":[function(require,module,exports){
+},{"./lib/_stream_transform.js":74}],79:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/safe-json-stringify/index.js":[function(require,module,exports){
+},{"./lib/_stream_writable.js":75}],80:[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -20679,7 +20680,7 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/index.js":[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 const DBEntries = require('./lib/delete.js').DBEntries
 const DocVector = require('./lib/delete.js').DocVector
 const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
@@ -20796,7 +20797,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/add.js","./lib/delete.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/delete.js","./lib/pipeline.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/pipeline.js","./lib/replicate.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/replicate.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","stopword":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopword.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/add.js":[function(require,module,exports){
+},{"./lib/add.js":82,"./lib/delete.js":83,"./lib/pipeline.js":84,"./lib/replicate.js":85,"bunyan":14,"leveldown":41,"levelup":54,"lodash.defaults":57,"stopword":102,"stream":117}],82:[function(require,module,exports){
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
@@ -20861,7 +20862,7 @@ IndexBatch.prototype._flush = function (end) {
     })
 }
 
-},{"JSONStream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/JSONStream/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/delete.js":[function(require,module,exports){
+},{"JSONStream":3,"stream":117,"util":126}],83:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -20976,7 +20977,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/pipeline.js":[function(require,module,exports){
+},{"stream":117,"util":126}],84:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _defaults = require('lodash.defaults')
 // const hash = require('object-hash')
@@ -21102,7 +21103,7 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","stopword":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopword.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","term-frequency":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-frequency/index.js","term-vector":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-vector/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/replicate.js":[function(require,module,exports){
+},{"lodash.defaults":57,"stopword":102,"stream":117,"term-frequency":119,"term-vector":120,"util":126}],85:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21169,12 +21170,13 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/index.js":[function(require,module,exports){
+},{"stream":117,"util":126}],86:[function(require,module,exports){
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
 const CalculateEntireResultSet = require('./lib/CalculateEntireResultSet.js').CalculateEntireResultSet
 const CalculateResultSetPerClause = require('./lib/CalculateResultSetPerClause.js').CalculateResultSetPerClause
 const CalculateTopScoringDocs = require('./lib/CalculateTopScoringDocs.js').CalculateTopScoringDocs
+const CalculateTotalHits = require('./lib/CalculateTotalHits.js').CalculateTotalHits
 const FetchDocsFromDB = require('./lib/FetchDocsFromDB.js').FetchDocsFromDB
 const FetchStoredDoc = require('./lib/FetchStoredDoc.js').FetchStoredDoc
 const GetIntersectionStream = require('./lib/GetIntersectionStream.js').GetIntersectionStream
@@ -21292,6 +21294,21 @@ const initModule = function (err, Searcher, moduleReady) {
       .pipe(new FetchDocsFromDB(Searcher.options))
   }
 
+  Searcher.totalHits = function (q, callback) {
+    q = siUtil.getQueryDefaults(q)
+    const s = new Readable()
+    q.query.forEach(function (clause) {
+      s.push(JSON.stringify(clause))
+    })
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
+      .pipe(new CalculateEntireResultSet(Searcher.options))
+      .pipe(new CalculateTotalHits(Searcher.options)).on('data', function (totalHits) {
+        return callback(null, totalHits)
+      })
+  }
+
   return moduleReady(err, Searcher)
 }
 
@@ -21330,7 +21347,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/CalculateBuckets.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateBuckets.js","./lib/CalculateCategories.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateCategories.js","./lib/CalculateEntireResultSet.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateEntireResultSet.js","./lib/CalculateResultSetPerClause.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateResultSetPerClause.js","./lib/CalculateTopScoringDocs.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTopScoringDocs.js","./lib/FetchDocsFromDB.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchDocsFromDB.js","./lib/FetchStoredDoc.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchStoredDoc.js","./lib/GetIntersectionStream.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/GetIntersectionStream.js","./lib/MergeOrConditions.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/MergeOrConditions.js","./lib/ScoreDocsOnField.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreDocsOnField.js","./lib/ScoreTopScoringDocsTFIDF.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreTopScoringDocsTFIDF.js","./lib/SortTopScoringDocs.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/SortTopScoringDocs.js","./lib/matcher.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/matcher.js","./lib/siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js","JSONStream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/JSONStream/index.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","stopword":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopword.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateBuckets.js":[function(require,module,exports){
+},{"./lib/CalculateBuckets.js":87,"./lib/CalculateCategories.js":88,"./lib/CalculateEntireResultSet.js":89,"./lib/CalculateResultSetPerClause.js":90,"./lib/CalculateTopScoringDocs.js":91,"./lib/CalculateTotalHits.js":92,"./lib/FetchDocsFromDB.js":93,"./lib/FetchStoredDoc.js":94,"./lib/GetIntersectionStream.js":95,"./lib/MergeOrConditions.js":96,"./lib/ScoreDocsOnField.js":97,"./lib/ScoreTopScoringDocsTFIDF.js":98,"./lib/SortTopScoringDocs.js":99,"./lib/matcher.js":100,"./lib/siUtil.js":101,"JSONStream":3,"bunyan":14,"levelup":54,"lodash.defaults":57,"stopword":102,"stream":117}],87:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -21344,7 +21361,7 @@ const CalculateBuckets = function (options, filter, requestedBuckets) {
 }
 exports.CalculateBuckets = CalculateBuckets
 util.inherits(CalculateBuckets, Transform)
-CalculateBuckets.prototype._transform = function (queryClause, encoding, end) {
+CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, end) {
   const that = this
   var bucketsProcessed = 0
   that.buckets.forEach(function (bucket) {
@@ -21352,7 +21369,7 @@ CalculateBuckets.prototype._transform = function (queryClause, encoding, end) {
     const lte = 'DF￮' + bucket.field + '￮' + bucket.lte + '￮'
     that.options.indexes.createReadStream({gte: gte, lte: lte})
       .on('data', function (data) {
-        var IDSet = _intersection(data.value, queryClause.set)
+        var IDSet = _intersection(data.value, mergedQueryClauses.set)
         if (IDSet.length > 0) {
           bucket.value = bucket.value || []
           bucket.value = _uniq(bucket.value.concat(IDSet).sort())
@@ -21370,7 +21387,7 @@ CalculateBuckets.prototype._transform = function (queryClause, encoding, end) {
   })
 }
 
-},{"lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","lodash.uniq":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.uniq/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateCategories.js":[function(require,module,exports){
+},{"lodash.intersection":59,"lodash.uniq":64,"stream":117,"util":126}],88:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -21383,23 +21400,14 @@ const CalculateCategories = function (options, category) {
 }
 exports.CalculateCategories = CalculateCategories
 util.inherits(CalculateCategories, Transform)
-CalculateCategories.prototype._transform = function (queryClause, encoding, end) {
+CalculateCategories.prototype._transform = function (mergedQueryClauses, encoding, end) {
   const that = this
-  // Shouldnt get every key in the AND set- should just get key with
-  // lowest frequency:
-  // get lowest frequency key
-  // const lowestFrequencyKey = Object.keys(queryClause.termFrequencies)
-  //   .map(function (key) {
-  //     return [key, queryClause.termFrequencies[key]]
-  //   }).sort(function (a, b) {
-  //     return a[1] - b[1]
-  //   })[0]
   const gte = 'DF￮' + this.category.field + '￮+'
   const lte = 'DF￮' + this.category.field + '￮￮'
   this.category.values = this.category.values || []
   that.options.indexes.createReadStream({gte: gte, lte: lte})
     .on('data', function (data) {
-      var IDSet = _intersection(data.value, queryClause.set)
+      var IDSet = _intersection(data.value, mergedQueryClauses.set)
       if (IDSet.length > 0) { // make this optional
         var key = data.key.split('￮')[2]
         var value = IDSet.length
@@ -21419,35 +21427,31 @@ CalculateCategories.prototype._transform = function (queryClause, encoding, end)
     })
 }
 
-},{"lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateEntireResultSet.js":[function(require,module,exports){
+},{"lodash.intersection":59,"stream":117,"util":126}],89:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const CalculateEntireResultSet = function (options) {
   this.options = options
   this.setSoFar = []
-  this.termFrequencies = {}
   Transform.call(this, { objectMode: true })
 }
 exports.CalculateEntireResultSet = CalculateEntireResultSet
 util.inherits(CalculateEntireResultSet, Transform)
 CalculateEntireResultSet.prototype._transform = function (queryClause, encoding, end) {
   queryClause = JSON.parse(queryClause)
-  this.termFrequencies = _defaults(this.termFrequencies, queryClause.termFrequencies)
   this.setSoFar = _union(queryClause.set, this.setSoFar)
   return end()
 }
 CalculateEntireResultSet.prototype._flush = function (end) {
   this.push({
-    set: this.setSoFar,
-    termFrequencies: this.termFrequencies
+    set: this.setSoFar
   })
   return end()
 }
 
-},{"lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","lodash.union":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.union/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateResultSetPerClause.js":[function(require,module,exports){
+},{"lodash.union":63,"stream":117,"util":126}],90:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -21553,7 +21557,7 @@ const uniqFast = function (a) {
   return out
 }
 
-},{"./siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js","lodash.difference":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.difference/index.js","lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","lodash.spread":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.spread/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTopScoringDocs.js":[function(require,module,exports){
+},{"./siUtil.js":101,"lodash.difference":58,"lodash.intersection":59,"lodash.spread":62,"stream":117,"util":126}],91:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -21605,7 +21609,25 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchDocsFromDB.js":[function(require,module,exports){
+},{"lodash.sortedindexof":61,"stream":117,"util":126}],92:[function(require,module,exports){
+const Transform = require('stream').Transform
+const util = require('util')
+
+const CalculateTotalHits = function (options, filter, requestedBuckets) {
+  this.buckets = requestedBuckets || []
+  this.filter = filter
+  this.options = options
+  Transform.call(this, { objectMode: true })
+}
+exports.CalculateTotalHits = CalculateTotalHits
+util.inherits(CalculateTotalHits, Transform)
+CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding, end) {
+  console.log(mergedQueryClauses)
+  this.push(mergedQueryClauses.set.length)
+  end()
+}
+
+},{"stream":117,"util":126}],93:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21625,7 +21647,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchStoredDoc.js":[function(require,module,exports){
+},{"stream":117,"util":126}],94:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21648,7 +21670,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/GetIntersectionStream.js":[function(require,module,exports){
+},{"stream":117,"util":126}],95:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -21683,7 +21705,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/intersect-arrays-to-stream/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/MergeOrConditions.js":[function(require,module,exports){
+},{"intersect-arrays-to-stream":25,"stream":117,"util":126}],96:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21716,7 +21738,7 @@ MergeOrConditions.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreDocsOnField.js":[function(require,module,exports){
+},{"stream":117,"util":126}],97:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -21754,7 +21776,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
     })
 }
 
-},{"lodash.sortedindexof":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreTopScoringDocsTFIDF.js":[function(require,module,exports){
+},{"lodash.sortedindexof":61,"stream":117,"util":126}],98:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21808,7 +21830,6 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
                 score: score - +clause.queryClause.BOOST
               }],
               score: score - +clause.queryClause.BOOST
-              // document: doc
             }
             that.push(document)
             if (++i === clause.topScoringDocs.length) {
@@ -21820,7 +21841,7 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
   })
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/SortTopScoringDocs.js":[function(require,module,exports){
+},{"stream":117,"util":126}],99:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21869,7 +21890,7 @@ SortTopScoringDocs.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/matcher.js":[function(require,module,exports){
+},{"stream":117,"util":126}],100:[function(require,module,exports){
 const Readable = require('stream').Readable
 const _defaults = require('lodash.defaults')
 
@@ -21941,7 +21962,7 @@ exports.match = function (q, options) {
   return s.pipe(new MatcherStream(q, options))
 }
 
-},{"lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js":[function(require,module,exports){
+},{"lodash.defaults":57,"stream":117,"util":126}],101:[function(require,module,exports){
 const _defaults = require('lodash.defaults')
 
 exports.getKeySet = function (clause) {
@@ -21977,7 +21998,7 @@ exports.getQueryDefaults = function (q) {
   })
 }
 
-},{"lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopword.js":[function(require,module,exports){
+},{"lodash.defaults":57}],102:[function(require,module,exports){
 const defaultStopwords = require('./stopwords_en.js').words
 
 exports.removeStopwords = function(tokens, stopwords) {
@@ -22007,7 +22028,7 @@ exports.ru = require('./stopwords_ru.js').words
 exports.sv = require('./stopwords_sv.js').words
 exports.zh = require('./stopwords_zh.js').words
 
-},{"./stopwords_da.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_da.js","./stopwords_en.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_en.js","./stopwords_es.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_es.js","./stopwords_fa.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_fa.js","./stopwords_fr.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_fr.js","./stopwords_it.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_it.js","./stopwords_ja.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_ja.js","./stopwords_nl.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_nl.js","./stopwords_no.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_no.js","./stopwords_pl.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_pl.js","./stopwords_pt.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_pt.js","./stopwords_ru.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_ru.js","./stopwords_sv.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_sv.js","./stopwords_zh.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_zh.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_da.js":[function(require,module,exports){
+},{"./stopwords_da.js":103,"./stopwords_en.js":104,"./stopwords_es.js":105,"./stopwords_fa.js":106,"./stopwords_fr.js":107,"./stopwords_it.js":108,"./stopwords_ja.js":109,"./stopwords_nl.js":110,"./stopwords_no.js":111,"./stopwords_pl.js":112,"./stopwords_pt.js":113,"./stopwords_ru.js":114,"./stopwords_sv.js":115,"./stopwords_zh.js":116}],103:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -22039,7 +22060,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_en.js":[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 
@@ -22079,7 +22100,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_es.js":[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22117,7 +22138,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_fa.js":[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
@@ -22157,7 +22178,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_fr.js":[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /*
  Copyright (c) 2014, Ismaël Héry
 
@@ -22353,7 +22374,7 @@ var words = ['être', 'avoir', 'faire',
 
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_it.js":[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22407,7 +22428,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_ja.js":[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 // Original copyright:
 /*
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -22468,7 +22489,7 @@ var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し
 // tell the world about the noise words.
 module.exports = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_nl.js":[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
 
@@ -22513,7 +22534,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_no.js":[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /*
 Copyright (c) 2014, Kristoffer Brabrand
 
@@ -22557,7 +22578,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_pl.js":[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 /*
 Copyright (c) 2013, Paweł Łaskarzewski
 
@@ -22621,7 +22642,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_pt.js":[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /*
 Copyright (c) 2011, Luís Rodrigues
 
@@ -22759,7 +22780,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_ru.js":[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 /*
 Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
 
@@ -22802,7 +22823,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_sv.js":[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -22834,7 +22855,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stopword/lib/stopwords_zh.js":[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22881,7 +22902,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js":[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23010,7 +23031,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/duplex.js","readable-stream/passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/readable.js","readable-stream/transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js":[function(require,module,exports){
+},{"events":21,"inherits":24,"readable-stream/duplex.js":70,"readable-stream/passthrough.js":76,"readable-stream/readable.js":77,"readable-stream/transform.js":78,"readable-stream/writable.js":79}],118:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23233,7 +23254,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-frequency/index.js":[function(require,module,exports){
+},{"buffer":13}],119:[function(require,module,exports){
 var _defaults = require('lodash.defaults')
 
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
@@ -23285,7 +23306,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{"lodash.defaults":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.defaults/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-vector/index.js":[function(require,module,exports){
+},{"lodash.defaults":57}],120:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -23351,7 +23372,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.isequal/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/through/index.js":[function(require,module,exports){
+},{"lodash.isequal":60}],121:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -23463,7 +23484,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/typedarray-to-buffer/index.js":[function(require,module,exports){
+},{"_process":68,"stream":117}],122:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -23486,7 +23507,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util-deprecate/browser.js":[function(require,module,exports){
+},{"buffer":13}],123:[function(require,module,exports){
 (function (global){
 
 /**
@@ -23557,16 +23578,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
-arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"][0].apply(exports,arguments)
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
+},{}],124:[function(require,module,exports){
+arguments[4][24][0].apply(exports,arguments)
+},{"dup":24}],125:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js":[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -24156,7 +24177,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/support/isBufferBrowser.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js":[function(require,module,exports){
+},{"./support/isBuffer":125,"_process":68,"inherits":124}],127:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -24177,5 +24198,5 @@ function extend() {
     return target
 }
 
-},{}]},{},["/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js"])("/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js")
+},{}]},{},[1])(1)
 });
