@@ -13,6 +13,7 @@
  * [match(...)](#match)
  * [search(...)](#search)
  * [tellMeAboutMySearchIndex(...)](#tellmeaboutmysearchindex)
+ * [totalHits(...)](#totalHits)
 
 ### Writing
 
@@ -287,6 +288,16 @@ si.tellMeAboutMySearchIndex(function (err, info) {
 })
 ```
 
+### totalHits(...)
+
+Returns a count of the documents for the given query including
+those hidden by pagination
+
+```javascript
+si.totalHits(q, function (err, count) {
+  console.log('the query ' + q + ' gives ' + count + ' results')
+})
+```
 
 ## Writing
 
