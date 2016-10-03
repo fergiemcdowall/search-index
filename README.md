@@ -36,7 +36,7 @@ Find out how to use the `search-index` module here:
  * [Set up autocomplete and query suggestions](./doc/autosuggest.md)
  * [Sync an index](./doc/replicate.md)
  * [Run search-index in the browser](./doc/browser.md)
- * [Sync from a server to a browser](./doc/browsersync.md)
+ * [Sync from a server to a browser](./doc/browserSync.md)
 
 ### Other How-tos and Articles on the Interwebs
  * [Getting started with search-index](todo)
