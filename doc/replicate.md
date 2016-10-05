@@ -32,7 +32,6 @@ fs.createReadStream('backup.json')
 // syncFrom is the index that is being read from
 // syncTo is the index that is being merged into
 syncFrom.dbReadStream()
-  .pipe(JSONStream.parse())
   .pipe(syncTo.dbWriteStream())
   .on('data', function () {})
   .on('end', function () {
