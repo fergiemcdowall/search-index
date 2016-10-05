@@ -1,5 +1,5 @@
 # search-index
-### A streaming, persistent full-text search library for the browser and Node.js
+### A streaming, network resilient, persistent full-text search library for the browser and Node.js
 
 [![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
 [![NPM version][npm-version-image]][npm-url]
@@ -39,12 +39,12 @@ Find out how to use the `search-index` module here:
  * [Sync from a server to a browser](./doc/browserSync.md)
 
 ### Other How-tos and Articles on the Interwebs
- * [Getting started with search-index](todo)
- * [How to implement stemming in search-index](todo)
- * [How to implement synonyms in search-index](todo)
- * [Create a Network-Resiliant Search Application](doc/EXAMPLES.md)
- * [Functionality vs index size (how to shrink your index)](todo)
- * [Teasers and Search Term Highlighting](todo)
+ * [Getting started with search-index](#)
+ * [How to implement stemming in search-index](#)
+ * [How to implement synonyms in search-index](#)
+ * [Create a Network-Resiliant Search Application](#)
+ * [Functionality vs index size (how to shrink your index)](#)
+ * [Teasers and Search Term Highlighting](#)
 
 ### Release notes
 
