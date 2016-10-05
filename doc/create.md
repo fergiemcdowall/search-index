@@ -1,12 +1,14 @@
 # Creating search indexes
 
-Search indexes are created by `require`-ing `search-index` and passing it startup options.
+Search indexes are created by `require`-ing `search-index` and
+instantiating with startup options.
+
 
 ```javascript
 var options = {} //put the startup options you want here
-var searchIndex = require('search-index')
-searchIndex(options, function(err, si) {
-  //do stuff with si
+var SearchIndex = require('search-index')
+SearchIndex(options, function(err, index) {
+  //do stuff with index
 });
 ```
 
@@ -14,52 +16,26 @@ searchIndex(options, function(err, si) {
 
 ### Defaults
 
-The defaults options are equivalent to this:
+The default options are equivalent to this:
 
 ```javascript
-  {
-    deletable: true,
-    fieldedSearch: true,
-    indexPath: 'si',
-    logLevel: 'error',
-    nGramLength: 1,
-    stopwords: SearchIndex.getStopwords('en'),
-    store: true
-  }
+{
+  batchSize: 1000,
+  db: (a levelup db),
+  fieldedSearch: true,
+  fieldOptions: {},
+  preserveCase: false,
+  storeable: true,
+  searchable: true,
+  indexPath: 'si',
+  logLevel: 'error',
+  nGramLength: 1,
+  nGramSeparator: ' ',
+  separator: /[\|' \.,\-|(\n)]+/,
+  stopwords: require('stopword').en,
+}
 ```
 
-### deletable
-
-Non-deletable indexes are smaller, so if file size is a consideration
-(for example: if the index is to be replicated), and deletion
-unnecessary set `deletable` to false.
-
-### fieldedSearch
-
-It may be desirable to search on individual fields, but this takes up
-lots of space in the index. Set `fieldedSearch` to false if fielded
-search is not needed, and file size is a consideration.
-
-### indexPath
-
-Specifies the name of the keystore on the system.
-
-### logLevel
-
-Specifies a [Bunyan](https://github.com/trentm/node-bunyan) log level
-
-### nGramLength
-
-If you want to search for phrases, then the nGramLength has to be
-adjusted. The [array represents all](https://github.com/fergiemcdowall/search-index/blob/master/doc/add.md#ngramlength) lengths (in words) that the searchable phrases can contain.
-
-### stopwords
-
-Words that are not indexed. The default is english (en), but you can choose
-any common and meaningless words for your language or domain.
-
-### store
-
-You may only want to store some of the fields in the
-document. Speciify which fields to store in `fieldOptions`. The value
-of `store` here becomes the default value for `fieldOptions`
+See the [API docs](API.md#options-and-settings-1) for a description of what each setting
+does. Options can be set for specific fields, and can be overridden
+everytime a document is added.

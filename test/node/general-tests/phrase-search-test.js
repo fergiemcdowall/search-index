@@ -1,295 +1,353 @@
 /* global it */
 /* global describe */
 
-var logLevel = 'error'
-if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-var should = require('should')
-var searchindex = require('../../../')
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const SearchIndex = require('../../../')
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
+const should = require('should')
+
+const getDataStream = function () {
+  var s = new Readable()
+  s.push(JSON.stringify({
+    id: 1,
+    name: 'Fish and chips',
+    test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
+  }))
+  s.push(JSON.stringify({
+    id: 2,
+    name: 'Chips and curry sauce',
+    test: 'A classic, the curry sauce may be substituted for gravy'
+  }))
+  s.push(JSON.stringify({
+    id: 3,
+    name: 'Haggisxandxchips',
+    test: 'Axseldomxdelicacy'
+  }))
+  s.push(null)
+  return s
+}
 
 describe('ngrams (phrase search): ', function () {
-  var food = [
-    {
-      id: 1,
-      name: 'Fish and chips',
-      test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
-    },
-    {
-      id: 2,
-      name: 'Chips and curry sauce',
-      test: 'A classic, the curry sauce may be substituted for gravy'
-    },
-    {
-      id: 3,
-      name: 'Haggisxandxchips',
-      test: 'Axseldomxdelicacy'
-    }]
-
   var si, si2, si3, si4
 
   it('should initialize search index', function (done) {
-    searchindex(
+    var i = 0
+    SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests',
-       logLevel: logLevel,
-       stopwords: [],
-       nGramLength: {gte: 1, lte: 3}},
+      logLevel: logLevel},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
-        done()
+        getDataStream()
+          .pipe(JSONStream.parse())
+          .pipe(si.defaultPipeline({
+            stopwords: [],
+            nGramLength: {gte: 1, lte: 3}
+          }))
+          .pipe(si.add())
+          .on('data', function (data) {
+            i++
+          })
+          .on('end', function () {
+            i.should.be.exactly(4)
+            true.should.be.exactly(true)
+            return done()
+          })
       })
   })
 
   it('should initialize search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-phrase-tests-2',
-       logLevel: logLevel,
-       stopwords: [],
-       nGramLength: [1, 5]},
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        si2 = thisSi
-        done()
-      })
-  })
-
-  it('should initialize search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-phrase-tests-3',
-       logLevel: logLevel,
-       stopwords: []},
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        si3 = thisSi
-        done()
-      })
-  })
-
-
-  it('should initialize search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-phrase-tests-4',
-       logLevel: logLevel,
-       stopwords: []},
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        si4 = thisSi
-        done()
-      })
-  })
-
-
-  it('should index test data into the index with phrases', function (done) {
-    si.add(food, {}, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
+    var i = 0
+    SearchIndex({
+      indexPath: sandboxPath + '/si-phrase-tests-2',
+      logLevel: logLevel
+    }, function (err, thisSi) {
+      if (err) false.should.eql(true)
+      si2 = thisSi
+      getDataStream()
+        .pipe(JSONStream.parse())
+        .pipe(si2.defaultPipeline({
+          stopwords: [],
+          nGramLength: [1, 5]
+        }))
+        .pipe(si2.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(4)
+          true.should.be.exactly(true)
+          return done()
+        })
     })
   })
 
+  it('should initialize search index', function (done) {
+    var i = 0
+    SearchIndex(
+      {indexPath: sandboxPath + '/si-phrase-tests-3',
+        logLevel: logLevel,
+      stopwords: []},
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        si3 = thisSi
+        getDataStream()
+          .pipe(JSONStream.parse())
+          .pipe(si3.defaultPipeline({
+            fieldOptions: {
+              name: {
+                nGramLength: {gte: 1, lte: 3}
+              },
+              body: {
+                nGramLength: 1
+              }
+            }
+          }))
+          .pipe(si3.add())
+          .on('data', function (data) {
+            i++
+          })
+          .on('end', function () {
+            i.should.be.exactly(4)
+            true.should.be.exactly(true)
+            return done()
+          })
+      })
+  })
+
+  it('should initialize search index', function (done) {
+    var i = 0
+    SearchIndex(
+      {indexPath: sandboxPath + '/si-phrase-tests-4',
+        logLevel: logLevel,
+      stopwords: []},
+      function (err, thisSi) {
+        if (err) false.should.eql(true)
+        si4 = thisSi
+        getDataStream()
+          .pipe(JSONStream.parse())
+          .pipe(si4.defaultPipeline({
+            fieldOptions: {
+              name: {
+                separator: 'x'
+              }
+            }
+          }))
+          .pipe(si4.add())
+          .on('data', function (data) {
+            i++
+          })
+          .on('end', function () {
+            i.should.be.exactly(4)
+            true.should.be.exactly(true)
+            return done()
+          })
+      })
+  })
+
   it('should be able to get hits for an ngram of length 3', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['now sadly defunct']}
-    }
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('1')
-      done()
+    var results = [{
+      id: 1,
+      name: 'Fish and chips',
+      test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
+    }]
+    si.search({
+      query: [{
+        AND: {'*': ['now sadly defunct']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be able to get hits for documents of ngram length 2', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['tastie bite']}
-    }
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('1')
-      done()
+    var results = [{
+      id: 1,
+      name: 'Fish and chips',
+      test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
+    }]
+    si.search({
+      query: [{
+        AND: {'*': ['tastie bite']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be able to get hits for documents of ngram length 1', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['curry']}
-    }
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('2')
-      done()
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si.search({
+      query: [{
+        AND: {'*': ['curry']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be able to get hits for multiple ngrams', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['curry', 'substituted for gravy']}
-    }
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('2')
-      done()
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si.search({
+      query: [{
+        AND: {'*': ['curry', 'substituted for gravy']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
-  it('should index test data into the index with ngrams of only 1 and 5 (nothing in between)', function (done) {
-    si2.add(food, {}, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
+  it('should not be able to get hits for an ngram of length 3 when indexing with ngram [1, 5]', function (done) {
+    var i = 0
+    si2.search({
+      query: [{
+        AND: {'*': ['now sadly defunct']}
+      }]
+    }).on('data', function (data) {
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(0)
+      return done()
     })
   })
 
-  it('should be able to get hits for an ngram of length 3', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['now sadly defunct']}
-    }
-    si2.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(0)
-      done()
-    })
-  })
-
-  it('should be able to get hits for documents of ngram length 5', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['curry sauce may be substituted']}
-    }
-    si2.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('2')
-      done()
+  it('should be able to get hits for documents of ngram length 5 ([1, 5])', function (done) {
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si2.search({
+      query: [{
+        AND: {'*': ['curry sauce may be substituted']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be able to get hits for documents with a search string of ngram length 5 and 1', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['curry sauce may be substituted', 'gravy']}
-    }
-    si2.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      done()
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si2.search({
+      query: [{
+        AND: {'*': ['curry sauce may be substituted', 'gravy']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be not able to get hits for documents with a search string of ngram length 5, 3 and 1', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['curry sauce may be substituted', 'and curry sauce', 'gravy']}
-    }
-    si2.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(0)
-      done()
-    })
-  })
-
-  it('should index test data with ngram length per field', function (done) {
-    var ops = {}
-    ops.fieldOptions = [
-      {fieldName: 'name', nGramLength: {gte: 1, lte: 3}},
-      {fieldName: 'body', nGramLength: 1}
-    ]
-    si3.add(food, ops, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
-    })
-  })
-
-  it('should be able to do fielded ngrams', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['chips and curry']}
-    }
-    si3.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('2')
-      done()
-    })
-  })
-
-  it('should be able to do fielded ngrams', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['substituted for gravy']}
-    }
-    si3.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(0)
-      done()
-    })
-  })
-
-  it('should be able to do fielded ngrams', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['substituted']}
-    }
-    si3.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      searchResults.hits[0].id.should.be.exactly('2')
-      done()
-    })
-  })
-
-  it('should index test data into the index with a separator set at field level', function (done) {
-    si4.add(food, {
-      fieldOptions: [{
-        fieldName: 'name',
-        separator: 'x'
+    var i = 0
+    si2.search({
+      query: [{
+        AND: {'*': ['curry sauce may be substituted', 'and curry sauce', 'gravy']}
       }]
-    }, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
+    }).on('data', function (data) {
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('should be able to do fielded ngrams', function (done) {
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si3.search({
+      query: [{
+        AND: {'name': ['chips and curry']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('should be able to do fielded ngrams', function (done) {
+    var i = 0
+    si3.search({
+      query: [{
+        AND: {'test': ['substituted for gravy']}
+      }]
+    }).on('data', function (data) {
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('should be able to do fielded ngrams', function (done) {
+    var results = [{
+      id: 2,
+      name: 'Chips and curry sauce',
+      test: 'A classic, the curry sauce may be substituted for gravy'
+    }]
+    si3.search({
+      query: [{
+        AND: {'test': ['substituted']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
 
   it('should be able to confirm field level separator', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['chips']}
-    }
-    si4.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(2)
-      searchResults.totalHits.should.be.exactly(2)
-      searchResults.hits[0].id.should.be.exactly('3')
-      searchResults.hits[1].id.should.be.exactly('1')
-      done()
+    var results = [{
+      id: 3,
+      name: 'Haggisxandxchips',
+      test: 'Axseldomxdelicacy'
+    }]
+    si4.search({
+      query: [{
+        AND: {'name': ['chips']}
+      }]
+    }).on('data', function (data) {
+      JSON.parse(data).document.should.eql(results.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      return done()
     })
   })
-
-
 })

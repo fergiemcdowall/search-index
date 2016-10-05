@@ -1,7 +1,11 @@
+/* global describe */
+/* global it */
+
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
-const test = require('tape')
+const logLevel = process.env.NODE_ENV || 'error'
 const sandbox = process.env.SANDBOX || 'test/sandbox'
-const should = require('should')
 
 var si
 
@@ -22,21 +26,21 @@ const batch = [
   },
   {
     id: '3',
-    name: 'Versace Men\'s Swiss',
-    description: 'Versace Men\'s Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch',
+    name: "Versace Men's Swiss",
+    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
     price: '4716',
     age: '8293'
   },
   {
     id: '4',
-    name: 'CHARRIOL Men\'s Swiss Alexandre',
+    name: "CHARRIOL Men's Swiss Alexandre",
     description: 'With CHARRIOLs signature twisted cables, the Alexander C timepiece collection is a must-have piece for lovers of the famed brand.',
     price: '2132',
     age: '33342'
   },
   {
     id: '5',
-    name: 'Ferragamo Men\'s Swiss 1898',
+    name: "Ferragamo Men's Swiss 1898",
     description: 'The 1898 timepiece collection from Ferragamo offers timeless luxury.',
     price: '99999',
     age: '33342'
@@ -58,14 +62,14 @@ const batch = [
   {
     id: '8',
     name: 'Invicta Bolt Zeus ',
-    description: 'Invicta offers an upscale timepiece that\'s as full of substance as it is style. From the Bolt Zeus collection.',
+    description: "Invicta offers an upscale timepiece that's as full of substance as it is style. From the Bolt Zeus collection.",
     price: '8767',
     age: '33342'
   },
   {
     id: '9',
     name: 'Victorinox Night Vision ',
-    description: 'Never get left in the dark with Victorinox Swiss Army\'s Night Vision watch. First at Macy\'s!',
+    description: "Never get left in the dark with Victorinox Swiss Army's Night Vision watch. First at Macy's!",
     price: '1000',
     age: '33342'
   },
@@ -75,87 +79,95 @@ const batch = [
     description: 'Endlessly sophisticated in materials and design, this Emporio Armani Swiss watch features high-end timekeeping with moon phase movement and calendar tracking.',
     price: '30000',
     age: '33342'
-  },
+  }
 ]
 
-it('initialize a search index', function (done) {
-  SearchIndex({
-    indexPath: sandbox + '/si-scan'
-  }, function(err, thisSi) {
-    ;(err === null).should.be.exactly(true)
-    si = thisSi
-    si.add(batch, {
-      fieldOptions: [{
-        fieldName: 'price',
-        filter: true
-      }]
-    }, function (err) {
+var s = new Readable()
+batch.forEach(function (item) {
+  s.push(JSON.stringify(item))
+})
+s.push(null)
+
+describe('scanning: ', function () {
+  it('initialize a search index', function (done) {
+    var i = 0
+    SearchIndex({
+      indexPath: sandbox + '/si-scan',
+      logLevel: logLevel
+    }, function (err, thisSi) {
       ;(err === null).should.be.exactly(true)
+      si = thisSi
+      s.pipe(JSONStream.parse())
+        .pipe(si.defaultPipeline())
+        .pipe(si.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(11)
+          return done()
+        })
+    })
+  })
+
+  it('do a simple scan', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'*': ['swiss', 'watch']}
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '9' ])
       done()
     })
   })
-})
 
-
-it('do a simple scan', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: [{'*': ['swiss', 'watch']}]
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '9' ])
-    done()
+  it('do a simple scan with one word', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'*': ['watch']}
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '1', '10', '2', '3', '7', '9' ])
+      done()
+    })
   })
-})
 
-it('do a simple scan with one word', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: [{'*': ['watch']}]
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '1', '10', '2', '3', '7', '9' ])
-    done()
+  it('do a simple scan with one word on a given field', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {'name': ['swiss']}
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '4', '5' ])
+      done()
+    })
   })
-})
 
-it('do a simple scan with one word on a given field', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: [{'name': ['swiss']}]
-    }
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '4', '5' ])
-    done()
-  })
-})
+  // // TODO: make filters work
 
-// TODO: make filters work
-
-it('do a simple scan with one word on a given field and filter', function (done) {
-  var results = []
-  si.scan({
-    query: {
-      AND: [{'name': ['swiss']}]
-    },
-    filter: [{
-      field: 'price',
-      gte: '3',
-      lte: '9'
-    }]
-  }).on('data', function (doc) {
-    results.push(JSON.parse(doc).id)
-  }).on('end', function () {
-    results.should.eql([ '10', '2', '3', '5' ])
-    done()
+  it('do a simple scan with one word on a given field and filter', function (done) {
+    var results = []
+    si.scan({
+      query: {
+        AND: {
+          name: ['swiss'],
+          price: [{gte: '30000', lte: '9'}]
+        }
+      }
+    }).on('data', function (doc) {
+      results.push(JSON.parse(doc).id)
+    }).on('end', function () {
+      results.should.eql([ '10', '2', '3', '5' ])
+      done()
+    })
   })
 })

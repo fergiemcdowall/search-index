@@ -1,210 +1,221 @@
 /* global it */
 /* global describe */
 
-var logLevel = 'error'
-if (process.env.NODE_ENV === 'TEST') logLevel = 'info'
-const should = require('should')
-const searchindex = require('../../../')
-const tv = require('term-vector')
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
+const searchindex = require('../../../')
+const should = require('should')
+const sw = require('stopword')
+
+should
 
 describe('stopwords: ', function () {
-  var food = [
-    {
-      id: 1,
-      name: 'Fish and chips',
-      test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
-    },
-    {
-      id: 2,
-      name: 'Chips and curry sauce',
-      test: 'A classic, the curry sauce may be substituted for gravy'
-    }]
-  var data = [
-    {
-      id: 1,
-      name: 'Norsk dokument',
-      test: 'Dette er et norsk dokument'
-    },
-    {
-      id: 2,
-      name: 'Harry Handel',
-      test: 'La oss dra til Svinesund for å kjøpe billige greier, dette blir kult'
-    },
-    {
-      id: 3,
-      name: 'Gulrekka',
-      test: 'Jeg har et A4 liv og ser på dårlig TV på en fredag kveld'
-    },
-    {
-      id: 4,
-      name: 'Danskebåten',
-      test: 'Ta en tur til Køben- dette blir stas!'
-    }]
+  const getDataStream = function () {
+    const data = [
+      {
+        id: 1,
+        name: 'Norsk dokument',
+        test: 'Dette er et norsk dokument'
+      },
+      {
+        id: 2,
+        name: 'Harry Handel',
+        test: 'La oss dra til Svinesund for å kjøpe billige greier, dette blir kult'
+      },
+      {
+        id: 3,
+        name: 'Gulrekka',
+        test: 'Jeg har et A4 liv og ser på dårlig TV på en fredag kveld'
+      },
+      {
+        id: 4,
+        name: 'Danskebåten',
+        test: 'Ta en tur til Køben- dette blir stas!'
+      }]
+    var s = new Readable()
+    data.forEach(function (datum) {
+      s.push(JSON.stringify(datum))
+    })
+    s.push(null)
+    return s
+  }
 
-  var si, siNO, siFood, siFood2
+  const getFoodStream = function () {
+    const data = [
+      {
+        id: 1,
+        name: 'Fish and chips',
+        test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
+      },
+      {
+        id: 2,
+        name: 'Chips and curry sauce',
+        test: 'A classic, the curry sauce may be substituted for gravy'
+      }
+    ]
+    var s = new Readable()
+    data.forEach(function (datum) {
+      s.push(JSON.stringify(datum))
+    })
+    s.push(null)
+    return s
+  }
+
+  var si, siNO, siFood
 
   it('should initialize search index', function (done) {
+    var i = 0
     searchindex(
       {indexPath: sandboxPath + '/si-stopwords-test-en',
-       logLevel: logLevel},
+      logLevel: logLevel},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
-        done()
+        getDataStream().pipe(JSONStream.parse())
+          .pipe(si.defaultPipeline())
+          .pipe(si.add())
+          .on('data', function (data) {
+            i++
+          })
+          .on('end', function () {
+            i.should.be.exactly(5)
+            true.should.be.exactly(true)
+            return done()
+          })
       })
-  })
-
-  it('should initialize norwegian search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-stopwords-test-no',
-       logLevel: logLevel,
-       stopwords: tv.getStopwords('no')
-      },
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        siNO = thisSi
-        done()
-      })
-  })
-
-  it('should initialize a food search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-stopwords-test-food',
-       logLevel: logLevel,
-       stopwords: []},
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        siFood = thisSi
-        done()
-      })
-  })
-
-  it('should initialize a food search index', function (done) {
-    searchindex(
-      {indexPath: sandboxPath + '/si-stopwords-test-food-2',
-       logLevel: logLevel},
-      function (err, thisSi) {
-        if (err) false.should.eql(true)
-        siFood2 = thisSi
-        done()
-      })
-  })
-
-
-
-  it('should index test data into the index with default (english) stopwords', function (done) {
-    si.add(data, {batchName: 'data1'}, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
-    })
   })
 
   it('should be able to return all documents that contain "dette" if indexing with english stopwords', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['dette']}
-    }
-    si.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(3)
-      searchResults.totalHits.should.be.exactly(3)
-      done()
+    var results = ['4', '2', '1']
+    var i = 0
+    si.search({
+      query: {
+        AND: {'*': ['dette']}
+      }
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.be.exactly(data.id)
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(3)
+      return done()
     })
   })
 
-  it('should index test data into the index with norwegian stopwords', function (done) {
-    siNO.add(data, {batchName: 'data1'}, function (err) {
-      ;(err === null).should.be.exactly(true)
-      done()
+  it('should initialize norwegian search index', function (done) {
+    var i = 0
+    searchindex({
+      indexPath: sandboxPath + '/si-stopwords-test-no',
+      logLevel: logLevel
+    }, function (err, thisSi) {
+      if (err) false.should.eql(true)
+      siNO = thisSi
+      getDataStream()
+        .pipe(JSONStream.parse())
+        .pipe(siNO.defaultPipeline({
+          stopwords: sw.no
+        }))
+        .pipe(siNO.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(5)
+          true.should.be.exactly(true)
+          return done()
+        })
     })
   })
 
   it('should be able to return all documents in index', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['tur']}
-    }
-    siNO.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      done()
+    var results = ['4']
+    var i = 0
+    siNO.search({
+      query: {
+        AND: {'*': ['tur']}
+      }
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.be.exactly(data.id)
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(1)
+      return done()
     })
   })
 
   it('"dette" should not give any results since it is blocked by the norwegian stopwords', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['dette']}
-    }
-    siNO.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(0)
-      done()
+    var i = 0
+    siNO.search({
+      query: {
+        AND: {'*': ['dette']}
+      }
+    }).on('data', function (data) {
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(0)
+      return done()
     })
   })
 
-  it('should create an index of fast food without stopwords', function (done) {
-    var sandboxPath = 'test/sandbox'
-    siFood.add(food, {batchName: 'data1'}, function (err) {
-      (err === null).should.be.exactly(true)
-      done()
+  it('should initialize a food search index', function (done) {
+    var i = 0
+    searchindex({
+      indexPath: sandboxPath + '/si-stopwords-test-food',
+      logLevel: logLevel
+    }, function (err, thisSi) {
+      if (err) false.should.eql(true)
+      siFood = thisSi
+      getFoodStream()
+        .pipe(JSONStream.parse())
+        .pipe(siFood.defaultPipeline({
+          stopwords: []
+        }))
+        .pipe(siFood.add())
+        .on('data', function (data) {
+          i++
+        })
+        .on('end', function () {
+          i.should.be.exactly(3)
+          true.should.be.exactly(true)
+          return done()
+        })
     })
   })
 
   it('should be able to return results for "fish and chips"', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': 'fish and chips'.split(' ')}
-    }
-    siFood.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      done()
+    var results = ['1']
+    var i = 0
+    siFood.search({
+      query: {
+        AND: {'*': 'fish and chips'.split(' ')}
+      }
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.be.exactly(data.id)
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(1)
+      return done()
     })
   })
 
   it('should be able to return results for "and"', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': ['and']}
-    }
-    siFood.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(2)
-      searchResults.totalHits.should.be.exactly(2)
-      done()
-    })
-  })
-
-  it('should create an index of fast food without stopwords', function (done) {
-    siFood2.add(food, {
-      batchName: 'food',
-      stopwords: []
-    }, function (err) {
-      ;(err === null).should.be.exactly(true)
-      done()
-    })
-  })
-
-  it('should be able to return "fish and chips"', function (done) {
-    var q = {}
-    q.query = {
-      AND: {'*': 'fish and chips'.split(' ')}
-    }
-    siFood2.search(q, function (err, searchResults) {
-      should.exist(searchResults)
-      ;(err === null).should.be.exactly(true)
-      searchResults.hits.length.should.be.exactly(1)
-      searchResults.totalHits.should.be.exactly(1)
-      done()
+    var results = ['2', '1']
+    var i = 0
+    siFood.search({
+      query: {
+        AND: {'*': ['and']}
+      }
+    }).on('data', function (data) {
+      data = JSON.parse(data)
+      results.shift().should.be.exactly(data.id)
+      i++
+    }).on('end', function () {
+      i.should.be.exactly(2)
+      return done()
     })
   })
 })

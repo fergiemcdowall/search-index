@@ -4,11 +4,12 @@ You can search in your index by passing a query object to the search
 function like so:
 
 ```javascript
-  q.query = {
-     AND: [{'*': ['usa']}] //search for string 'usa' in all ('*') fields
-  }
-  si.search(q, function (err, searchResults) {
-    //do something with searchResults
+q.query = {
+   AND: {'*': ['usa']}     // search for string 'usa' in all ('*') fields
+}
+si.search(q) // <- si is a readable stream that emits documents sorted by relevance
+  .on('data', function(doc) {
+    // do some stuff with doc
   })
 ```
 
@@ -25,6 +26,11 @@ q.query = {
 }
 ```
 
+(shhhh! search index will also accept "lazy" queries):
+
+```javascript
+q = 'reagan'  // the same as the query above
+```
 
 ### Fielded Search
 
@@ -38,10 +44,10 @@ in the `title` field **AND** the word *usa* in the `body` field will be returned
 ```javascript
 q.query = 
   {
-    AND: [
-      {'title': ['reagan']},
-      {'body':['usa']}
-    ]
+    AND: {
+      'title': ['reagan'],
+      'body':  ['usa']
+    }
   }
 }
 ```
@@ -51,24 +57,24 @@ q.query =
 You can construct boolean AND, OR and NOT queries:
 
 ```javascript
-q.query = [                    // Each array element is an OR condition
+q.query = [                   // Each array element is an OR condition
   {
-    AND: [             
-      {'title': ['reagan']},   // 'reagan' AND 'ussr'   
-      {'body':['ussr']}
-    ],
-    NOT: [
-      {'body':['usa']}         // but NOT 'usa' in the body field
-    ]
+    AND: {             
+      'title': ['reagan'],    // 'reagan' AND 'ussr'   
+      'body':  ['ussr']
+    },
+    NOT: {
+      'body':  ['usa']        // but NOT 'usa' in the body field
+    }
   },
-  {                            // OR this condition
-    AND: [                  
-      {'title': ['gorbachev']},// 'gorbachev' AND 'ussr'
-      {'body':['ussr']}
-    ],
-    NOT: [
-      {'body':['usa']}         // NOT 'usa' in the body field
-    ]
+  {                           // OR this condition
+    AND: {                  
+      'title': ['gorbachev'], // 'gorbachev' AND 'ussr'
+      'body':  ['ussr']
+    },
+    NOT: {
+      'body':  ['usa']        // NOT 'usa' in the body field
+    }
   }
 }
 ```
@@ -99,162 +105,62 @@ q.query = {
 }
 ```
 
-### Boosting
+### Boosted Search
 
-You can boost an `OR` condition of your search string like so. The boost value is a positive or negative number that is summed into the final hit score.
+You can boost an `OR` condition of your search string like so. The
+boost value is a positive or negative number that is summed into the
+final hit score.
 
 ```javascript
 query: [
   {
-    AND: [{'name': ['watch']}],
-    boost: 10
+    AND:   {'name':        ['watch']},
+    BOOST: 10
   },
   {
-    AND: [{'description': ['swiss', 'watch']}]
+    AND:   {'description': ['swiss', 'watch']}
   }
 ]
 ```
 
-##Categories, Buckets and Filters
+## Filters
 
-You can add categories and buckets onto any given search. You can use
-the results to then filter on either buckets or categories.
-
-**Categories** display totals for each category in the resultset
-
-**Buckets** display totals for ranges defined in the query
-
-**Filters** are a way of limiting the resultset, using the categories/buckets that the same resultset makes available. Think of them as the query that must be called when you select buckets/categories.
-
-To use categories or buckets, the docments you index must have at least one key/value pair where the value is an array of words, phrases or numbers. With categories you filter on one of the values in that array. With buckets you filter on a range values in that array .
-
-### Simple categories
-
-The following query will display a count for every single place in the
-resultset
+**Filters** are a way of limiting the resultset, using the
+  categories/buckets that the same resultset makes available. Think of
+  them as the query that must be called when you select
+  buckets/categories.
 
 ```javascript
-q.query = {
-  AND: {'*': ['reagan']}
-}
-q.categories = {
-  field: 'places'    
-}
-```
-
-### Limiting facet length
-
-The following query will limit facet length
-
-```javascript
-q.query = {
-  AND: {'*': ['reagan']}
-}
-q.categories = {
-  field: 'places',
-  limit: 10
-}
-```
-
-### Sorting facets
-
-The following query will sort a facet by its keys in a descending
-order. Available sorts are `keyAsc`,`keyDesc`, `valueAsc`, and
-`valueDesc`
-
-```javascript
-q.query = {
-  AND: {'*': ['reagan']}
-}
-q.categories = {
-  field: 'places',
-  limit: 10,
-  sort: keyDesc
-}
-```
-
-### Filtering on categories
-```javascript
-q.filter = [
-  {
-    field: 'places',
-    gte: 'zaire',
-    lte: 'zaire'
+query: {
+  AND: {
+    'description': ['swiss', 'watch']
+    'price': [{
+       gte: '1000',
+       lte: '8'
+    }]
   }
-]
+}
 ```
 
-### Buckets
+* **gte**: greater than or equal to
+* **lte**: less than or equal to
 
-The following query will display a count for every range of values
-within the given buckets
+Note that filters work by selecting ranges of strings- so the example
+above would return prices of '70000' for example
 
-```javascript
-q.query = {'*': ['africa', 'bank']};
-q.buckets = [
-  {
-    field: 'totalamt',
-    gte: '000000000000000',
-    lte: '000000050000000'
-  },
-  {
-    field: 'totalamt',
-    gte: '000000050000001',
-    lte: '100000000000000'
-  },
-  {
-    field: 'mjtheme',
-    gte: 'A',
-    lte: 'J'
-  },
-  {
-    field: 'mjtheme',
-    gte: 'K',
-    lte: 'Z'
-  }      
-]
-```
-
-### Filtering on buckets
-
-```javascript
-q.filter = [
-  {
-    field: 'totalamt',
-    gte: '000000050000001',
-    lte: '100000000000000'
-  }
-]
-```
-
-## Some other query stuff
-
-### Paging
+## Paging
 
 You can handle paging by setting an `offset` and a `pageSize`. For
 example, the following would give you page 3 of a resultset, where the
 page size is 50:
 
 ```javascript
-q.query = {
-  AND:{'*': ['usa']}
-}
-q.offset = 100;
+q.query    = {AND: {'*': ['usa']}}
+q.offset   = 100;
 q.pageSize = 50;
 ```
 
-### Teasers and Search Term Highlighting
-
-Search-index can generate a simple content preview in the search
-results (teasers). The teaser will contain highlighted search terms.
-Simply specify the field to generate the teaser on like so:
-
-```javascript
-q.query = {
-  AND:{'*': ['usa']}
-};
-q.teaser = 'body';
-```
+## Gotchas
 
 ### Common error when test-querying your search solution
 
@@ -274,5 +180,5 @@ And since there iss an inherent logical `AND` when having multiple words in your
 ```javascript
 q.query = {
   AND: {'*': ['and', 'meaningful']}
-};
+}
 ```

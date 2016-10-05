@@ -1,82 +1,100 @@
 /* global it */
 /* global describe */
 
-var assert = require('assert')
-var _ = require('lodash')
-var sandboxPath = 'test/sandbox'
-var should = require('should');
-
-var doc = {
-  id: undefined,
-  title: 'Mad Science is on the Rise',
-  body: 'Mad,  mad things are happening.'
-}
+const JSONStream = require('JSONStream')
+const Readable = require('stream').Readable
+const logLevel = process.env.NODE_ENV || 'error'
+const sandboxPath = 'test/sandbox'
+const should = require('should')
 
 describe('Indexing API', function () {
-
-  var si;
+  var si
 
   it('should initialize the search index', function (done) {
-    require('../../../')(
-      {indexPath: sandboxPath + '/indexing-test',
-       logLevel: 'error'}, function (err, thisSi) {
-         if (err) false.should.eql(true)
-         si = thisSi
-         done()
-       })
+    require('../../../')({
+      indexPath: sandboxPath + '/indexing-test',
+      logLevel: logLevel
+    }, function (err, thisSi) {
+      should.exist(thisSi)
+      if (err) false.should.eql(true)
+      si = thisSi
+      return done()
+    })
   })
 
-
-  it('should allow indexing a plain object (as opposed to an array)', function (done) {
-    si.add(_.assign(doc, {id: 1}), {}, function (err) {
-      assert.equal(err, null)
-      si.get(1, function (err, res) {
-        (err === null).should.be.exactly(true)
-        assert(_.isEqual(res, doc))
-        done()
+  it('should allow indexing a plain object (as opposed to an array) and options object omitted', function (done) {
+    var s = new Readable()
+    var doc = {
+      id: '1',
+      title: 'Mad Science is on the Rise',
+      body: 'Mad,  mad things are happening.'
+    }
+    s.push(JSON.stringify(doc))
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline()).pipe(si.add())
+      .on('data', function (data) {})
+      .on('end', function () {
+        si.get(['1']).on('data', function (data) {
+          data = JSON.parse(data)
+          data.should.eql(doc)
+        })
+        .on('end', function () {
+          return done()
+        })
       })
-    })
   })
 
   it('should allow indexing with undefined options object', function (done) {
-    si.add([_.assign(doc, {id: 2})], undefined, function (err) {
-      assert.equal(err, null)
-      si.get(2, function (err, res) {
-        (err === null).should.be.exactly(true)
-        assert(_.isEqual(res, doc))
-        done()
+    var s = new Readable()
+    var doc = {
+      id: '2',
+      title: 'Mad Science is on the Rise',
+      body: 'Mad,  mad things are happening.'
+    }
+    s.push(JSON.stringify(doc))
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline())
+      .pipe(si.add(undefined))
+      .on('data', function (data) {})
+      .on('end', function () {
+        si.get(['2']).on('data', function (data) {
+          data = JSON.parse(data)
+          data.should.eql(doc)
+        })
+        .on('end', function () {
+          return done()
+        })
       })
-    })
-  })
-
-  it('should allow indexing with options object omitted', function (done) {
-    si.add([_.assign(doc, {id: 3})], function (err) {
-      assert.equal(err, null)
-      si.get(3, function (err, res) {
-        (err === null).should.be.exactly(true)
-        assert(_.isEqual(res, doc))
-        done()
-      })
-    })
   })
 
   it('should allow indexing with a custom separator', function (done) {
-    si.add([{
-      id: 'testing',
+    var doc = {
+      id: '3',
       content: 'Nexion Smart ERP 14.2.1.0\n\nRelease de ejemplo'
-    }], {
-      separator: /[ (\n)]+/
-    }, function (err) {
-      assert.equal(err, null)
-      si.search({
-        query: {
-          AND: {'*': ['14.2.1.0']}
-        }
-      }, function (err, res) {
-        (err === null).should.be.exactly(true)
-        assert(res.totalHits === 1)
-        done()
+    }
+    var s = new Readable()
+    var i = 0
+    s.push(JSON.stringify(doc))
+    s.push(null)
+    s.pipe(JSONStream.parse())
+      .pipe(si.defaultPipeline({
+        separator: /[ (\n)]+/
+      })).pipe(si.add(undefined))
+      .on('data', function (data) {})
+      .on('end', function () {
+        si.search({
+          query: [{
+            AND: {'*': ['14.2.1.0']}
+          }]
+        }).on('data', function (data) {
+          i++
+          JSON.parse(data).document.should.eql(doc)
+        }).on('end', function () {
+          i.should.be.exactly(1)
+          return done()
+        })
       })
-    })
   })
 })
