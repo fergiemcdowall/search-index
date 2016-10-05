@@ -6,6 +6,7 @@ const SearchIndex = require('../../../')
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
+const sw = require('stopword')
 
 should
 
@@ -90,7 +91,8 @@ describe('boosting', function () {
     var i = 0
     SearchIndex({
       indexPath: sandboxPath + '/weight-test',
-      logLevel: logLevel
+      logLevel: logLevel,
+      stopwords: sw.en
     }, function (err, thisSI) {
       if (err) false.should.eql(true)
       si = thisSI
@@ -125,7 +127,7 @@ describe('boosting', function () {
     })
   })
 
-  it('search for watch in "name" and "description" fields, unweighted', function (done) {
+  it('search for watch in "name" OR "description" fields, unweighted', function (done) {
     var results = []
     si.search({
       query: [

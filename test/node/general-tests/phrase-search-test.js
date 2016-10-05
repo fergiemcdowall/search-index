@@ -6,6 +6,7 @@ const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
+const should = require('should')
 
 const getDataStream = function () {
   var s = new Readable()
@@ -148,7 +149,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for an ngram of length 3', function (done) {
     var results = [{
-      id: '1',
+      id: 1,
       name: 'Fish and chips',
       test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
     }]
@@ -166,7 +167,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 2', function (done) {
     var results = [{
-      id: '1',
+      id: 1,
       name: 'Fish and chips',
       test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
     }]
@@ -184,7 +185,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 1', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -202,7 +203,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for multiple ngrams', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -234,7 +235,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents of ngram length 5 ([1, 5])', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -252,7 +253,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to get hits for documents with a search string of ngram length 5 and 1', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -284,7 +285,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to do fielded ngrams', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -316,7 +317,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to do fielded ngrams', function (done) {
     var results = [{
-      id: '2',
+      id: 2,
       name: 'Chips and curry sauce',
       test: 'A classic, the curry sauce may be substituted for gravy'
     }]
@@ -334,7 +335,7 @@ describe('ngrams (phrase search): ', function () {
 
   it('should be able to confirm field level separator', function (done) {
     var results = [{
-      id: '3',
+      id: 3,
       name: 'Haggisxandxchips',
       test: 'Axseldomxdelicacy'
     }]

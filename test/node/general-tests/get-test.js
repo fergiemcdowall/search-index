@@ -58,7 +58,7 @@ describe('.get-ting: ', function () {
   it('should be able to return all documents in index', function (done) {
     var results = [
       {
-        id: '3',
+        id: 3,
         name: 'The Third Doc',
         test: 'this is the third doc doc'
       }
@@ -75,17 +75,17 @@ describe('.get-ting: ', function () {
   it('should be able to return all documents in index', function (done) {
     var results = [
       {
-        id: '3',
+        id: 3,
         name: 'The Third Doc',
         test: 'this is the third doc doc'
       },
       {
-        id: '1',
+        id: 1,
         name: 'The First Doc',
         test: 'this is the first doc'
       },
       {
-        id: '4',
+        id: 4,
         name: 'The Fourth Doc',
         test: 'this is the fourth doc'
       }

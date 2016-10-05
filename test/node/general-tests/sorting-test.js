@@ -7,6 +7,7 @@ const SearchIndex = require('../../../')
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
+const sw = require('stopword')
 
 var si
 
@@ -94,7 +95,8 @@ describe('sorting: ', function () {
     var i = 0
     SearchIndex({
       indexPath: sandboxPath + '/sorting-test',
-      logLevel: logLevel
+      logLevel: logLevel,
+      stopwords: sw.en
     }, function (err, thisSI) {
       should(err).not.ok
       si = thisSI
@@ -106,7 +108,7 @@ describe('sorting: ', function () {
             },
             name: {
               sortable: true,
-              separator: '%'
+              separator: '%'  // index field as one token
             }
           }
         }))
@@ -154,8 +156,8 @@ describe('sorting: ', function () {
 
   it('simple search, sorted by price', function (done) {
     var i = 0
-    var results = [ '7', '10', '1', '3', '9', '2' ]
-    var prices = [ 33333, 30000, 20002, 4716, 1000, 99 ]
+    var results = [ '2', '3', '7', '10', '1', '9' ]
+    var prices = [ '99', '4716', '33333', '30000', '20002', '1000' ]
     si.search({
       query: {
         AND: {'*': ['watch']}
@@ -173,7 +175,6 @@ describe('sorting: ', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)
       i.should.be.exactly(6)
-      // console.log(results)
       return done()
     })
   })
@@ -213,8 +214,8 @@ describe('sorting: ', function () {
 
   it('simple search, two tokens, sorted by price', function (done) {
     var i = 0
-    var results = [ '10', '3', '9' ]
-    var prices = [ 30000, 4716, 1000 ]
+    var results = [ '3', '10', '9' ]
+    var prices = [ '4716', '30000', '1000' ]
     si.search({
       query: {
         AND: {'*': [ 'watch', 'swiss' ]}
@@ -237,8 +238,8 @@ describe('sorting: ', function () {
 
   it('simple search, two tokens, sorted by price pagesize = 2', function (done) {
     var i = 0
-    var results = [ '10', '3' ]
-    var prices = [ 30000, 4716 ]
+    var results = [ '3', '10' ]
+    var prices = [ '4716', '30000' ]
     si.search({
       query: {
         AND: {'*': ['watch', 'swiss']}
@@ -262,8 +263,8 @@ describe('sorting: ', function () {
 
   it('simple search, two tokens, sorted by price pagesize = 2, offset = 1', function (done) {
     var i = 0
-    var results = [ '3', '9' ]
-    var prices = [ 4716, 1000 ]
+    var results = [ '10', '9' ]
+    var prices = [ '30000', '1000' ]
     si.search({
       query: {
         AND: {'*': ['watch', 'swiss']}
@@ -288,8 +289,8 @@ describe('sorting: ', function () {
 
   it('simple search, two tokens, sorted by price pagesize = 2, offset = 1, sort asc', function (done) {
     var i = 0
-    var results = [ '3', '10' ]
-    var prices = [ 4716, 30000 ]
+    var results = [ '10', '3' ]
+    var prices = [ '30000', '4716' ]
     si.search({
       query: {
         AND: {

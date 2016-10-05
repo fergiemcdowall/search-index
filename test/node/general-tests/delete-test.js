@@ -7,6 +7,7 @@ const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const searchIndex = require('../../../')
 const should = require('should')
+const sw = require('stopword')
 
 should
 
@@ -16,7 +17,8 @@ describe('deleting: ', function () {
   it('should initialize the search index', function (done) {
     searchIndex({
       indexPath: sandboxPath + '/si-delete-test',
-      logLevel: logLevel
+      logLevel: logLevel,
+      stopwords: sw.en
     }, function (err, thisSi) {
       if (err) false.should.eql(true)
       si = thisSi
@@ -64,7 +66,7 @@ describe('deleting: ', function () {
     si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
     }).on('end', function (end) {
-      result.map(function (item) { return item.document.id })
+      result.map(function (item) { return item.id })
         .should.eql(['4', '3', '2', '1'])
       return done()
     })
@@ -89,7 +91,7 @@ describe('deleting: ', function () {
     si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
     }).on('end', function (end) {
-      result.map(function (item) { return item.document.id })
+      result.map(function (item) { return item.id })
         .should.eql(['4', '3', '1'])
       return done()
     })
@@ -120,7 +122,7 @@ describe('deleting: ', function () {
     si.search(q).on('data', function (data) {
       result.push(JSON.parse(data))
     }).on('end', function (end) {
-      result.map(function (item) { return item.document.id })
+      result.map(function (item) { return item.id })
         .should.eql(['4', '3', '1'])
       return done()
     })

@@ -6,6 +6,7 @@ const Readable = require('stream').Readable
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
+const should = require('should')
 
 var sOne = new Readable()
 var sTwo = new Readable()
@@ -81,12 +82,12 @@ describe('Instantiation: ', function () {
     it('should be able to search in si-init-one without pollution from si-init-two', function (done) {
       var results = [
         {
-          id: '2',
+          id: 2,
           name: 'The Second Doc',
           test: 'this is the second doc'
         },
         {
-          id: '1',
+          id: 1,
           name: 'The First Doc',
           test: 'this is the first doc'
         }
@@ -106,12 +107,12 @@ describe('Instantiation: ', function () {
     it('should be able to search in si-init-two without pollution from si-init-one', function (done) {
       var results = [
         {
-          id: '4',
+          id: 4,
           name: 'The Fourth Doc',
           test: 'this is the fourth doc'
         },
         {
-          id: '3',
+          id: 3,
           name: 'The Third Doc',
           test: 'this is the third doc'
         }
