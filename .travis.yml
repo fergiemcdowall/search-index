@@ -12,7 +12,6 @@ sudo: false
 language: node_js
 
 node_js:
-- '3'
 - '4'
 - '5'
 - '6'
