@@ -7,8 +7,8 @@ You can easily merge, replicate, and move around indexes
 
 ```javascript
 // assumes that: var fs = require('fs')
-si.dbReadStream({ gzip: true })
-  .pipe(fs.createWriteStream('backup.gz'))
+si.dbReadStream()
+  .pipe(fs.createWriteStream('backup.json'))
   .on('close', function() {
     // done
   })
@@ -18,8 +18,7 @@ si.dbReadStream({ gzip: true })
 
 ```javascript
 // assumes that backup is in a file called 'backup.gz'
-fs.createReadStream('backup.gz')
-  .pipe(zlib.createGunzip())
+fs.createReadStream('backup.json')
   .pipe(JSONStream.parse())
   .pipe(si.dbWriteStream())
   .on('close', function() {
@@ -32,9 +31,7 @@ fs.createReadStream('backup.gz')
 ```javascript
 // syncFrom is the index that is being read from
 // syncTo is the index that is being merged into
-syncFrom.dbReadStream({gzip: true})
-  .pipe(zlib.createGunzip())
-  .pipe(JSONStream.parse())
+syncFrom.dbReadStream()
   .pipe(syncTo.dbWriteStream())
   .on('data', function () {})
   .on('end', function () {
