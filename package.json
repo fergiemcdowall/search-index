@@ -12,7 +12,7 @@
     "leveldown": "1.5.0",
     "levelup": "1.3.3",
     "lodash.defaults": "4.2.0",
-    "search-index-adder": "0.1.12",
+    "search-index-adder": "0.1.13",
     "search-index-searcher": "0.1.10",
     "stopword": "0.1.1"
   },

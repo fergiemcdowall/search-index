@@ -77,7 +77,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":2,"bunyan":9,"leveldown":46,"levelup":59,"lodash.defaults":62,"search-index-adder":89,"search-index-searcher":104}],2:[function(require,module,exports){
+},{"./siUtil.js":2,"bunyan":9,"leveldown":58,"levelup":71,"lodash.defaults":74,"search-index-adder":101,"search-index-searcher":105}],2:[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -367,7 +367,7 @@ if(!module.parent && process.title !== 'browser') {
 
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":74,"buffer":8,"jsonparse":34,"through":140}],4:[function(require,module,exports){
+},{"_process":86,"buffer":8,"jsonparse":46,"through":141}],4:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -728,7 +728,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":145}],5:[function(require,module,exports){
+},{"util/":146}],5:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2641,7 +2641,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":5,"ieee754":28,"isarray":32}],9:[function(require,module,exports){
+},{"base64-js":5,"ieee754":40,"isarray":44}],9:[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2015 Trent Mick.
@@ -4203,7 +4203,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":31,"_process":74,"assert":4,"events":26,"fs":7,"os":72,"safe-json-stringify":88,"stream":135,"util":145}],10:[function(require,module,exports){
+},{"../../is-buffer/index.js":43,"_process":86,"assert":4,"events":38,"fs":7,"os":84,"safe-json-stringify":100,"stream":136,"util":146}],10:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4314,7 +4314,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":31}],11:[function(require,module,exports){
+},{"../../is-buffer/index.js":43}],11:[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -4350,7 +4350,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":16,"util":145}],12:[function(require,module,exports){
+},{"abstract-leveldown":16,"util":146}],12:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -4410,7 +4410,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":31,"./deferred-iterator":11,"_process":74,"abstract-leveldown":16,"util":145}],13:[function(require,module,exports){
+},{"../is-buffer/index.js":43,"./deferred-iterator":11,"_process":86,"abstract-leveldown":16,"util":146}],13:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4493,7 +4493,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":74}],14:[function(require,module,exports){
+},{"_process":86}],14:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4546,7 +4546,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":74}],15:[function(require,module,exports){
+},{"_process":86}],15:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4822,7 +4822,7 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":31,"./abstract-chained-batch":13,"./abstract-iterator":14,"_process":74,"xtend":147}],16:[function(require,module,exports){
+},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":13,"./abstract-iterator":14,"_process":86,"xtend":148}],16:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
@@ -4845,6 +4845,395 @@ function isLevelDOWN (db) {
 module.exports = isLevelDOWN
 
 },{"./abstract-leveldown":15}],18:[function(require,module,exports){
+const bunyan = require('bunyan')
+const pumpify = require('pumpify')
+const _defaults = require('lodash.defaults')
+
+const CalculateTermFrequency = exports.CalculateTermFrequency =
+  require('./pipeline/CalculateTermFrequency.js')
+
+const CreateCompositeVector = exports.CreateCompositeVector =
+  require('./pipeline/CreateCompositeVector.js')
+
+const CreateSortVectors = exports.CreateSortVectors =
+  require('./pipeline/CreateSortVectors.js')
+
+const CreateStoredDocument = exports.CreateStoredDocument =
+  require('./pipeline/CreateStoredDocument.js')
+
+const FieldedSearch = exports.FieldedSearch =
+  require('./pipeline/FieldedSearch.js')
+
+const IngestDoc = exports.IngestDoc =
+  require('./pipeline/IngestDoc.js')
+
+const LowCase = exports.LowCase =
+  require('./pipeline/LowCase.js')
+
+const NormaliseFields = exports.NormaliseFields =
+  require('./pipeline/NormaliseFields.js')
+
+const RemoveStopWords = exports.RemoveStopWords =
+  require('./pipeline/RemoveStopWords.js')
+
+const Spy = exports.Spy =
+  require('./pipeline/Spy.js')
+
+Spy  // appease linter
+
+const Tokeniser = exports.Tokeniser =
+  require('./pipeline/Tokeniser.js')
+
+exports.pipeline = function (options) {
+  options = _defaults(options || {}, {
+    log: bunyan.createLogger({
+      name: 'pipeline',
+      level: 'error'
+    }),
+    separator: ' ',
+    searchable: true,
+    nGramLength: 1,
+    fieldedSearch: true
+  })
+  var pl = [
+    new IngestDoc(options),
+    new CreateStoredDocument(options),
+    new NormaliseFields(options),
+    new LowCase(options),
+    new Tokeniser(options),
+    new RemoveStopWords(options),
+    new CalculateTermFrequency(options),
+    new CreateCompositeVector(options),
+    new CreateSortVectors(options),
+    new FieldedSearch(options)
+  ]
+  return pumpify.obj.apply(this, pl)
+}
+
+
+},{"./pipeline/CalculateTermFrequency.js":19,"./pipeline/CreateCompositeVector.js":20,"./pipeline/CreateSortVectors.js":21,"./pipeline/CreateStoredDocument.js":22,"./pipeline/FieldedSearch.js":23,"./pipeline/IngestDoc.js":24,"./pipeline/LowCase.js":25,"./pipeline/NormaliseFields.js":26,"./pipeline/RemoveStopWords.js":27,"./pipeline/Spy.js":28,"./pipeline/Tokeniser.js":29,"bunyan":9,"lodash.defaults":74,"pumpify":89}],19:[function(require,module,exports){
+const tv = require('term-vector')
+const tf = require('term-frequency')
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+// convert term-frequency vectors into object maps
+const objectify = function (result, item) {
+  result[item[0].join(' ')] = item[1]
+  return result
+}
+
+const CalculateTermFrequency = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = CalculateTermFrequency
+util.inherits(CalculateTermFrequency, Transform)
+CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.normalised) {
+    var field = doc.normalised[fieldName]
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        fieldedSearch: this.options.fieldedSearch, // can search on this field individually
+        nGramLength: this.options.nGramLength,
+        searchable: this.options.searchable,       // included in the wildcard search ('*')
+        weight: this.options.weight
+      })
+
+    if (fieldOptions.fieldedSearch || fieldOptions.searchable) {
+      doc.vector[fieldName] = tf.getTermFrequency(
+        tv.getVector(field, fieldOptions.nGramLength), {
+          scheme: tf.doubleNormalization0point5,
+          weight: fieldOptions.weight
+        }
+      ).reduce(objectify, {})
+      doc.vector[fieldName]['*'] = 1  // wildcard search
+    }
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"term-frequency":139,"term-vector":140,"util":146}],20:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const CreateCompositeVector = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = CreateCompositeVector
+util.inherits(CreateCompositeVector, Transform)
+CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
+  doc.vector['*'] = {}
+  for (var fieldName in doc.vector) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        searchable: this.options.searchable // Should this field be searchable in the composite field
+      })
+    if (fieldOptions.searchable) {
+      var vec = doc.vector[fieldName]
+      for (var token in vec) {
+        doc.vector['*'][token] = doc.vector['*'][token] || vec[token]
+        doc.vector['*'][token] = (doc.vector['*'][token] + vec[token]) / 2
+      }
+    }
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],21:[function(require,module,exports){
+const tf = require('term-frequency')
+const tv = require('term-vector')
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+// convert term-frequency vectors into object maps
+const objectify = function (result, item) {
+  result[item[0]] = item[1]
+  return result
+}
+
+const CreateSortVectors = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = CreateSortVectors
+util.inherits(CreateSortVectors, Transform)
+CreateSortVectors.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.vector) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        sortable: this.options.sortable // Should this field be sortable
+      })
+    if (fieldOptions.sortable) {
+      doc.vector[fieldName] = tf.getTermFrequency(
+        tv.getVector(doc.normalised[fieldName]),
+        { scheme: tf.selfString }
+      ).reduce(objectify, {})
+    }
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"term-frequency":139,"term-vector":140,"util":146}],22:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const CreateStoredDocument = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = CreateStoredDocument
+util.inherits(CreateStoredDocument, Transform)
+CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.raw) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        storeable: this.options.storeable // Store a cache of this field in the index
+      })
+    if (fieldName === 'id') fieldOptions.storeable = true
+    if (fieldOptions.storeable) {
+      doc.stored[fieldName] = doc.raw[fieldName]
+    }
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],23:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const FieldedSearch = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = FieldedSearch
+util.inherits(FieldedSearch, Transform)
+FieldedSearch.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.vector) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        fieldedSearch: this.options.fieldedSearch // can this field be searched on?
+      })
+    if (!fieldOptions.fieldedSearch && fieldName !== '*') delete doc.vector[fieldName]
+  }
+  // console.log(JSON.stringify(doc, null, 2))
+  // this.push(JSON.stringify(doc))
+  this.push(doc)
+
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],24:[function(require,module,exports){
+const util = require('util')
+const Transform = require('stream').Transform
+
+const IngestDoc = function (options) {
+  this.options = options
+  this.i = 0
+  Transform.call(this, { objectMode: true })
+}
+module.exports = IngestDoc
+util.inherits(IngestDoc, Transform)
+IngestDoc.prototype._transform = function (doc, encoding, end) {
+  var ingestedDoc = {
+    id: String(String(doc.id) || (Date.now() + '-' + ++this.i)),
+    vector: {},
+    stored: {},
+    raw: JSON.parse(JSON.stringify(doc)),
+    normalised: doc
+  }
+  this.push(ingestedDoc)  // should this actually be stringified?
+  return end()
+}
+
+
+},{"stream":136,"util":146}],25:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const LowCase = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  options.log.info('Pipeline stage: LowCase')
+  Transform.call(this, { objectMode: true })
+}
+module.exports = LowCase
+util.inherits(LowCase, Transform)
+LowCase.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.normalised) {
+    if (fieldName === 'id') continue  // dont lowcase ID field
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        preserveCase: this.options.preserveCase
+      })
+    if (!fieldOptions.preserveCase) {
+      doc.normalised[fieldName] = doc.normalised[fieldName].toLowerCase()
+    }
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],26:[function(require,module,exports){
+const util = require('util')
+const Transform = require('stream').Transform
+
+const NormaliseFields = function (options) {
+  this.options = options
+  Transform.call(this, { objectMode: true })
+}
+module.exports = NormaliseFields
+util.inherits(NormaliseFields, Transform)
+NormaliseFields.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.normalised) {
+    // if the input object is not a string: jsonify and split on JSON
+    // characters
+    if (Object.prototype.toString.call(doc.normalised[fieldName]) !== '[object String]') {
+      doc.normalised[fieldName] = JSON.stringify(doc.normalised[fieldName])
+        .split(/[\[\],{}:"]+/).join(' ')
+    }
+    doc.normalised[fieldName] = doc.normalised[fieldName].trim()
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"stream":136,"util":146}],27:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const RemoveStopWords = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = RemoveStopWords
+util.inherits(RemoveStopWords, Transform)
+RemoveStopWords.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.normalised) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        stopwords: this.options.stopwords || []
+      })
+    // remove stopwords
+    doc.normalised[fieldName] =
+      doc.normalised[fieldName].filter(function (item) {
+        return (fieldOptions.stopwords.indexOf(item) === -1)
+      }).filter(function (i) {  // strip out empty elements
+        return i
+      })
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],28:[function(require,module,exports){
+const Transform = require('stream').Transform
+const util = require('util')
+
+const Spy = function () {
+  Transform.call(this, { objectMode: true })
+}
+module.exports = Spy
+util.inherits(Spy, Transform)
+Spy.prototype._transform = function (doc, encoding, end) {
+  doc = JSON.parse(doc)
+  console.log(JSON.stringify(doc, null, 2))
+  this.push(JSON.stringify(doc))
+  return end()
+}
+
+},{"stream":136,"util":146}],29:[function(require,module,exports){
+const Transform = require('stream').Transform
+const _defaults = require('lodash.defaults')
+const util = require('util')
+
+const Tokeniser = function (options) {
+  this.options = options || {}
+  this.options.fieldOptions = this.options.fieldOptions || {}
+  Transform.call(this, { objectMode: true })
+}
+module.exports = Tokeniser
+util.inherits(Tokeniser, Transform)
+Tokeniser.prototype._transform = function (doc, encoding, end) {
+  for (var fieldName in doc.normalised) {
+    var fieldOptions = _defaults(
+      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
+      {
+        separator: this.options.separator // A string.split() expression to tokenize raw field input
+      })
+    doc.normalised[fieldName] =
+      doc.normalised[fieldName].split(fieldOptions.separator)
+  }
+  this.push(doc)
+  return end()
+}
+
+},{"lodash.defaults":74,"stream":136,"util":146}],30:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -5075,7 +5464,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":74,"buffer":8,"end-of-stream":19,"inherits":29,"readable-stream":85,"stream-shift":136}],19:[function(require,module,exports){
+},{"_process":86,"buffer":8,"end-of-stream":31,"inherits":41,"readable-stream":97,"stream-shift":137}],31:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -5148,7 +5537,7 @@ var eos = function(stream, opts, callback) {
 };
 
 module.exports = eos;
-},{"once":20}],20:[function(require,module,exports){
+},{"once":32}],32:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 
@@ -5171,7 +5560,7 @@ function once (fn) {
   return f
 }
 
-},{"wrappy":146}],21:[function(require,module,exports){
+},{"wrappy":147}],33:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -5255,9 +5644,9 @@ var eos = function(stream, opts, callback) {
 };
 
 module.exports = eos;
-},{"once":22}],22:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"dup":20,"wrappy":146}],23:[function(require,module,exports){
+},{"once":34}],34:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"dup":32,"wrappy":147}],35:[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -5314,7 +5703,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":25}],24:[function(require,module,exports){
+},{"prr":37}],36:[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -5629,7 +6018,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":23}],25:[function(require,module,exports){
+},{"./custom":35}],37:[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -5693,7 +6082,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],26:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5997,7 +6386,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],27:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -7404,7 +7793,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],28:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -7490,7 +7879,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],29:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7515,7 +7904,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],30:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -7581,7 +7970,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":135}],31:[function(require,module,exports){
+},{"stream":136}],43:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -7604,14 +7993,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],32:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],33:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -7621,7 +8010,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":8}],34:[function(require,module,exports){
+},{"buffer":8}],46:[function(require,module,exports){
 (function (Buffer){
 /*global Buffer*/
 // Named constants with unique integer values
@@ -7966,7 +8355,7 @@ Parser.C = C;
 module.exports = Parser;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],35:[function(require,module,exports){
+},{"buffer":8}],47:[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -8074,7 +8463,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":36}],36:[function(require,module,exports){
+},{"./lib/encodings":48}],48:[function(require,module,exports){
 (function (Buffer){
 
 exports.utf8 = exports['utf-8'] = {
@@ -8154,7 +8543,7 @@ function isBinary(data){
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],37:[function(require,module,exports){
+},{"buffer":8}],49:[function(require,module,exports){
 /* Copyright (c) 2012-2015 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -8178,7 +8567,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":24}],38:[function(require,module,exports){
+},{"errno":36}],50:[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -8236,12 +8625,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":29,"level-errors":37,"readable-stream":45,"xtend":147}],39:[function(require,module,exports){
+},{"inherits":41,"level-errors":49,"readable-stream":57,"xtend":148}],51:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],40:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8334,7 +8723,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":42,"./_stream_writable":44,"_process":74,"core-util-is":10,"inherits":29}],41:[function(require,module,exports){
+},{"./_stream_readable":54,"./_stream_writable":56,"_process":86,"core-util-is":10,"inherits":41}],53:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8382,7 +8771,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":43,"core-util-is":10,"inherits":29}],42:[function(require,module,exports){
+},{"./_stream_transform":55,"core-util-is":10,"inherits":41}],54:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9337,7 +9726,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":40,"_process":74,"buffer":8,"core-util-is":10,"events":26,"inherits":29,"isarray":39,"stream":135,"string_decoder/":137,"util":6}],43:[function(require,module,exports){
+},{"./_stream_duplex":52,"_process":86,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"isarray":51,"stream":136,"string_decoder/":138,"util":6}],55:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9548,7 +9937,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":40,"core-util-is":10,"inherits":29}],44:[function(require,module,exports){
+},{"./_stream_duplex":52,"core-util-is":10,"inherits":41}],56:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10029,7 +10418,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":40,"_process":74,"buffer":8,"core-util-is":10,"inherits":29,"stream":135}],45:[function(require,module,exports){
+},{"./_stream_duplex":52,"_process":86,"buffer":8,"core-util-is":10,"inherits":41,"stream":136}],57:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -10043,7 +10432,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":40,"./lib/_stream_passthrough.js":41,"./lib/_stream_readable.js":42,"./lib/_stream_transform.js":43,"./lib/_stream_writable.js":44,"_process":74,"stream":135}],46:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":52,"./lib/_stream_passthrough.js":53,"./lib/_stream_readable.js":54,"./lib/_stream_transform.js":55,"./lib/_stream_writable.js":56,"_process":86,"stream":136}],58:[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -10221,7 +10610,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":47,"abstract-leveldown":50,"buffer":8,"idb-wrapper":27,"isbuffer":33,"typedarray-to-buffer":141,"util":145,"xtend":57}],47:[function(require,module,exports){
+},{"./iterator":59,"abstract-leveldown":62,"buffer":8,"idb-wrapper":39,"isbuffer":45,"typedarray-to-buffer":142,"util":146,"xtend":69}],59:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -10295,7 +10684,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":50,"ltgt":70,"util":145}],48:[function(require,module,exports){
+},{"abstract-leveldown":62,"ltgt":82,"util":146}],60:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10379,9 +10768,9 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":74}],49:[function(require,module,exports){
+},{"_process":86}],61:[function(require,module,exports){
 arguments[4][14][0].apply(exports,arguments)
-},{"_process":74,"dup":14}],50:[function(require,module,exports){
+},{"_process":86,"dup":14}],62:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10641,7 +11030,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":31,"./abstract-chained-batch":48,"./abstract-iterator":49,"_process":74,"xtend":51}],51:[function(require,module,exports){
+},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":60,"./abstract-iterator":61,"_process":86,"xtend":63}],63:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -10660,7 +11049,7 @@ function extend() {
     return target
 }
 
-},{}],52:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -10702,11 +11091,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],53:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":55}],54:[function(require,module,exports){
+},{"./shim":67}],66:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -10724,7 +11113,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],55:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -10788,7 +11177,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":52,"./isArguments":54}],56:[function(require,module,exports){
+},{"./foreach":64,"./isArguments":66}],68:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -10797,7 +11186,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],57:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -10824,7 +11213,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":56,"object-keys":53}],58:[function(require,module,exports){
+},{"./has-keys":68,"object-keys":65}],70:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -10909,7 +11298,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":60,"level-errors":37}],59:[function(require,module,exports){
+},{"./util":72,"level-errors":49}],71:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -11312,7 +11701,7 @@ module.exports.repair  = deprecate(
 
 
 }).call(this,require('_process'))
-},{"./batch":58,"./util":60,"_process":74,"deferred-leveldown":12,"events":26,"level-codec":35,"level-errors":37,"level-iterator-stream":38,"prr":75,"util":145,"xtend":147}],60:[function(require,module,exports){
+},{"./batch":70,"./util":72,"_process":86,"deferred-leveldown":12,"events":38,"level-codec":47,"level-errors":49,"level-iterator-stream":50,"prr":87,"util":146,"xtend":148}],72:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -11391,36 +11780,36 @@ module.exports = {
   , isDefined       : isDefined
 }
 
-},{"../package.json":61,"level-errors":37,"leveldown":6,"leveldown/package":6,"semver":6,"util":145,"xtend":147}],61:[function(require,module,exports){
+},{"../package.json":73,"level-errors":49,"leveldown":6,"leveldown/package":6,"semver":6,"util":146,"xtend":148}],73:[function(require,module,exports){
 module.exports={
   "_args": [
     [
-      "levelup@1.3.2",
+      "levelup@1.3.3",
       "/Users/fergusmcdowall/Desktop/node/search-index"
     ]
   ],
-  "_from": "levelup@1.3.2",
-  "_id": "levelup@1.3.2",
+  "_from": "levelup@1.3.3",
+  "_id": "levelup@1.3.3",
   "_inCache": true,
   "_installable": true,
   "_location": "/levelup",
-  "_nodeVersion": "6.1.0",
+  "_nodeVersion": "4.4.7",
   "_npmOperationalInternal": {
-    "host": "packages-16-east.internal.npmjs.com",
-    "tmp": "tmp/levelup-1.3.2.tgz_1463496525467_0.4644940535072237"
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/levelup-1.3.3.tgz_1476029541340_0.44339725002646446"
   },
   "_npmUser": {
-    "email": "ralphtheninja@riseup.net",
-    "name": "ralphtheninja"
+    "email": "julian@juliangruber.com",
+    "name": "juliangruber"
   },
-  "_npmVersion": "3.8.6",
+  "_npmVersion": "2.15.8",
   "_phantomChildren": {},
   "_requested": {
     "name": "levelup",
-    "raw": "levelup@1.3.2",
-    "rawSpec": "1.3.2",
+    "raw": "levelup@1.3.3",
+    "rawSpec": "1.3.3",
     "scope": null,
-    "spec": "1.3.2",
+    "spec": "1.3.3",
     "type": "version"
   },
   "_requiredBy": [
@@ -11428,10 +11817,10 @@ module.exports={
     "/search-index-adder",
     "/search-index-searcher"
   ],
-  "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.2.tgz",
-  "_shasum": "b321d3071f0e75c2dfaf2f0fe8864e5b9a387bc9",
+  "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.3.tgz",
+  "_shasum": "bf9db62bdb6188d08eaaa2efcf6cc311916f41fd",
   "_shrinkwrap": null,
-  "_spec": "levelup@1.3.2",
+  "_spec": "levelup@1.3.3",
   "_where": "/Users/fergusmcdowall/Desktop/node/search-index",
   "browser": {
     "leveldown": false,
@@ -11539,10 +11928,10 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "b321d3071f0e75c2dfaf2f0fe8864e5b9a387bc9",
-    "tarball": "https://registry.npmjs.org/levelup/-/levelup-1.3.2.tgz"
+    "shasum": "bf9db62bdb6188d08eaaa2efcf6cc311916f41fd",
+    "tarball": "https://registry.npmjs.org/levelup/-/levelup-1.3.3.tgz"
   },
-  "gitHead": "bcc242cfc4ec035f9228a5cd54903cb126659a00",
+  "gitHead": "cced27dc9f0095823be5ed388ec601ec2bfe7366",
   "homepage": "https://github.com/level/levelup",
   "keywords": [
     "leveldb",
@@ -11579,10 +11968,10 @@ module.exports={
   "scripts": {
     "test": "tape test/*-test.js | faucet"
   },
-  "version": "1.3.2"
+  "version": "1.3.3"
 }
 
-},{}],62:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -12252,7 +12641,7 @@ function keysIn(object) {
 
 module.exports = defaults;
 
-},{}],63:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -13426,7 +13815,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],64:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -14495,7 +14884,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],65:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -16148,7 +16537,7 @@ function keys(object) {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],66:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16401,7 +16790,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],67:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16807,7 +17196,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],68:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -17992,7 +18381,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],69:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -18892,7 +19281,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],70:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -19042,7 +19431,7 @@ exports.filter = function (range, compare) {
 }
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":31}],71:[function(require,module,exports){
+},{"../is-buffer/index.js":43}],83:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -19086,7 +19475,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":146}],72:[function(require,module,exports){
+},{"wrappy":147}],84:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -19133,7 +19522,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],73:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19180,7 +19569,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":74}],74:[function(require,module,exports){
+},{"_process":86}],86:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19362,9 +19751,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],75:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"dup":25}],76:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"dup":37}],88:[function(require,module,exports){
 var once = require('once')
 var eos = require('end-of-stream')
 var fs = require('fs') // we only need fs to get the ReadStream and WriteStream prototypes
@@ -19445,7 +19834,7 @@ var pump = function () {
 
 module.exports = pump
 
-},{"end-of-stream":21,"fs":7,"once":71}],77:[function(require,module,exports){
+},{"end-of-stream":33,"fs":7,"once":83}],89:[function(require,module,exports){
 var pump = require('pump')
 var inherits = require('inherits')
 var Duplexify = require('duplexify')
@@ -19502,10 +19891,10 @@ var define = function(opts) {
 module.exports = define({destroy:false})
 module.exports.obj = define({destroy:false, objectMode:true, highWaterMark:16})
 
-},{"duplexify":18,"inherits":29,"pump":76}],78:[function(require,module,exports){
+},{"duplexify":30,"inherits":41,"pump":88}],90:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":79}],79:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":91}],91:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -19581,7 +19970,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":81,"./_stream_writable":83,"core-util-is":10,"inherits":29,"process-nextick-args":73}],80:[function(require,module,exports){
+},{"./_stream_readable":93,"./_stream_writable":95,"core-util-is":10,"inherits":41,"process-nextick-args":85}],92:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -19608,7 +19997,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":82,"core-util-is":10,"inherits":29}],81:[function(require,module,exports){
+},{"./_stream_transform":94,"core-util-is":10,"inherits":41}],93:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -20491,7 +20880,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":79,"_process":74,"buffer":8,"core-util-is":10,"events":26,"inherits":29,"isarray":32,"process-nextick-args":73,"string_decoder/":137,"util":6}],82:[function(require,module,exports){
+},{"./_stream_duplex":91,"_process":86,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"isarray":44,"process-nextick-args":85,"string_decoder/":138,"util":6}],94:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -20672,7 +21061,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":79,"core-util-is":10,"inherits":29}],83:[function(require,module,exports){
+},{"./_stream_duplex":91,"core-util-is":10,"inherits":41}],95:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -21191,10 +21580,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":79,"_process":74,"buffer":8,"core-util-is":10,"events":26,"inherits":29,"process-nextick-args":73,"util-deprecate":142}],84:[function(require,module,exports){
+},{"./_stream_duplex":91,"_process":86,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"process-nextick-args":85,"util-deprecate":143}],96:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":80}],85:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":92}],97:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -21208,13 +21597,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":79,"./lib/_stream_passthrough.js":80,"./lib/_stream_readable.js":81,"./lib/_stream_transform.js":82,"./lib/_stream_writable.js":83}],86:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":91,"./lib/_stream_passthrough.js":92,"./lib/_stream_readable.js":93,"./lib/_stream_transform.js":94,"./lib/_stream_writable.js":95}],98:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":82}],87:[function(require,module,exports){
+},{"./lib/_stream_transform.js":94}],99:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":83}],88:[function(require,module,exports){
+},{"./lib/_stream_writable.js":95}],100:[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -21275,7 +21664,7 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],89:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 const DBEntries = require('./lib/delete.js').DBEntries
 const DocVector = require('./lib/delete.js').DocVector
 const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
@@ -21286,30 +21675,15 @@ const DBWriteMergeStream = require('./lib/replicate.js').DBWriteMergeStream
 
 
 const IndexBatch = require('./lib/add.js').IndexBatch
+const Readable = require('stream').Readable
 const _defaults = require('lodash.defaults')
 const bunyan = require('bunyan')
 const deleter = require('./lib/delete.js')
+const docProc = require('docproc')
 const leveldown = require('leveldown')
 const levelup = require('levelup')
 const pumpify = require('pumpify')
 const sw = require('stopword')
-const Readable = require('stream').Readable
-
-
-const pipeline = {}
-pipeline.IngestDoc = require('./pipeline/IngestDoc.js').IngestDoc
-pipeline.LowCase = require('./pipeline/LowCase.js').LowCase
-pipeline.NormaliseFields = require('./pipeline/NormaliseFields.js').NormaliseFields
-pipeline.Tokeniser = require('./pipeline/Tokeniser.js').Tokeniser
-pipeline.RemoveStopWords = require('./pipeline/RemoveStopWords.js').RemoveStopWords
-pipeline.CreateStoredDocument = require('./pipeline/CreateStoredDocument.js').CreateStoredDocument
-pipeline.CreateCompositeVector = require('./pipeline/CreateCompositeVector.js').CreateCompositeVector
-pipeline.CreateSortVectors = require('./pipeline/CreateSortVectors.js').CreateSortVectors
-pipeline.CalculateTermFrequency = require('./pipeline/CalculateTermFrequency.js').CalculateTermFrequency
-pipeline.FieldedSearch = require('./pipeline/FieldedSearch.js').FieldedSearch
-pipeline.Spy = require('./pipeline/Spy.js').Spy
-
-
 
 module.exports = function (givenOptions, callback) {
   getOptions(givenOptions, function (err, options) {
@@ -21346,18 +21720,7 @@ module.exports = function (givenOptions, callback) {
 
     Indexer.defaultPipeline = function (batchOptions) {
       batchOptions = _defaults(batchOptions || {}, options)
-      return pumpify.obj(
-        new pipeline.IngestDoc(batchOptions),
-        new pipeline.CreateStoredDocument(batchOptions),
-        new pipeline.NormaliseFields(batchOptions),
-        new pipeline.LowCase(batchOptions),
-        new pipeline.Tokeniser(batchOptions),
-        new pipeline.RemoveStopWords(batchOptions),
-        new pipeline.CalculateTermFrequency(batchOptions),
-        new pipeline.CreateCompositeVector(batchOptions),
-        new pipeline.CreateSortVectors(batchOptions),
-        new pipeline.FieldedSearch(batchOptions)
-      )
+      return docProc.pipeline(batchOptions)
     }
 
     Indexer.deleteBatch = function (deleteBatch, APICallback) {
@@ -21382,8 +21745,6 @@ module.exports = function (givenOptions, callback) {
         return APICallback(err)
       })
     }
-
-    Indexer.pipeline = pipeline
 
     //  return Indexer
     return callback(err, Indexer)
@@ -21424,8 +21785,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":90,"./lib/delete.js":91,"./lib/replicate.js":92,"./pipeline/CalculateTermFrequency.js":93,"./pipeline/CreateCompositeVector.js":94,"./pipeline/CreateSortVectors.js":95,"./pipeline/CreateStoredDocument.js":96,"./pipeline/FieldedSearch.js":97,"./pipeline/IngestDoc.js":98,"./pipeline/LowCase.js":99,"./pipeline/NormaliseFields.js":100,"./pipeline/RemoveStopWords.js":101,"./pipeline/Spy.js":102,"./pipeline/Tokeniser.js":103,"bunyan":9,"leveldown":46,"levelup":59,"lodash.defaults":62,"pumpify":77,"stopword":120,"stream":135}],90:[function(require,module,exports){
-const JSONStream = require('JSONStream')
+},{"./lib/add.js":102,"./lib/delete.js":103,"./lib/replicate.js":104,"bunyan":9,"docproc":18,"leveldown":58,"levelup":71,"lodash.defaults":74,"pumpify":89,"stopword":121,"stream":136}],102:[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const sep = '￮'
@@ -21442,7 +21802,7 @@ exports.IndexBatch = IndexBatch
 util.inherits(IndexBatch, Transform)
 IndexBatch.prototype._transform = function (ingestedDoc, encoding, end) {
   var that = this
-  ingestedDoc = JSON.parse(ingestedDoc)
+  // ingestedDoc = JSON.parse(ingestedDoc)
   this.indexer.deleter([ingestedDoc.id])
     .on('data', function (data) {
       // what to do here..?
@@ -21470,16 +21830,15 @@ IndexBatch.prototype._transform = function (ingestedDoc, encoding, end) {
 IndexBatch.prototype._flush = function (end) {
   var that = this
   // merge this index into main index
-  var s = new Readable()
+  var s = new Readable({ objectMode: true })
   for (var key in this.deltaIndex) {
-    s.push(JSON.stringify({
+    s.push({
       key: key,
       value: this.deltaIndex[key]
-    }) + '\n')
+    })
   }
   s.push(null)
-  s.pipe(JSONStream.parse())
-    .pipe(this.indexer.dbWriteStream({merge: true}))
+  s.pipe(this.indexer.dbWriteStream({merge: true}))
     .on('data', function (data) {
 
     })
@@ -21489,7 +21848,7 @@ IndexBatch.prototype._flush = function (end) {
     })
 }
 
-},{"JSONStream":3,"stream":135,"util":145}],91:[function(require,module,exports){
+},{"stream":136,"util":146}],103:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -21604,7 +21963,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],92:[function(require,module,exports){
+},{"stream":136,"util":146}],104:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21671,336 +22030,7 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":135,"util":145}],93:[function(require,module,exports){
-const tv = require('term-vector')
-const tf = require('term-frequency')
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-// convert term-frequency vectors into object maps
-const objectify = function (result, item) {
-  result[item[0].join(' ')] = item[1]
-  return result
-}
-
-const CalculateTermFrequency = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.CalculateTermFrequency = CalculateTermFrequency
-util.inherits(CalculateTermFrequency, Transform)
-CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.normalised) {
-    var field = doc.normalised[fieldName]
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        fieldedSearch: this.options.fieldedSearch, // can search on this field individually
-        nGramLength: this.options.nGramLength,
-        searchable: this.options.searchable,       // included in the wildcard search ('*')
-        weight: this.options.weight
-      })
-
-    if (fieldOptions.fieldedSearch || fieldOptions.searchable) {
-      doc.vector[fieldName] = tf.getTermFrequency(
-        tv.getVector(field, fieldOptions.nGramLength), {
-          scheme: tf.doubleNormalization0point5,
-          weight: fieldOptions.weight
-        }
-      ).reduce(objectify, {})
-      doc.vector[fieldName]['*'] = 1  // wildcard search
-    }
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"term-frequency":138,"term-vector":139,"util":145}],94:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const CreateCompositeVector = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.CreateCompositeVector = CreateCompositeVector
-util.inherits(CreateCompositeVector, Transform)
-CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  doc.vector['*'] = {}
-  for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        searchable: this.options.searchable // Should this field be searchable in the composite field
-      })
-    if (fieldOptions.searchable) {
-      var vec = doc.vector[fieldName]
-      for (var token in vec) {
-        doc.vector['*'][token] = doc.vector['*'][token] || vec[token]
-        doc.vector['*'][token] = (doc.vector['*'][token] + vec[token]) / 2
-      }
-    }
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"util":145}],95:[function(require,module,exports){
-const tf = require('term-frequency')
-const tv = require('term-vector')
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-// convert term-frequency vectors into object maps
-const objectify = function (result, item) {
-  result[item[0]] = item[1]
-  return result
-}
-
-const CreateSortVectors = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.CreateSortVectors = CreateSortVectors
-util.inherits(CreateSortVectors, Transform)
-CreateSortVectors.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        sortable: this.options.sortable // Should this field be sortable
-      })
-    if (fieldOptions.sortable) {
-      doc.vector[fieldName] = tf.getTermFrequency(
-        tv.getVector(doc.normalised[fieldName]),
-        { scheme: tf.selfString }
-      ).reduce(objectify, {})
-    }
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"term-frequency":138,"term-vector":139,"util":145}],96:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const CreateStoredDocument = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.CreateStoredDocument = CreateStoredDocument
-util.inherits(CreateStoredDocument, Transform)
-CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.raw) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        storeable: this.options.storeable // Store a cache of this field in the index
-      })
-    if (fieldName === 'id') fieldOptions.storeable = true
-    if (fieldOptions.storeable) {
-      doc.stored[fieldName] = doc.raw[fieldName]
-    }
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"util":145}],97:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const FieldedSearch = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.FieldedSearch = FieldedSearch
-util.inherits(FieldedSearch, Transform)
-FieldedSearch.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        fieldedSearch: this.options.fieldedSearch // can this field be searched on?
-      })
-    if (!fieldOptions.fieldedSearch && fieldName !== '*') delete doc.vector[fieldName]
-  }
-  // console.log(JSON.stringify(doc, null, 2))
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-
-},{"lodash.defaults":62,"stream":135,"util":145}],98:[function(require,module,exports){
-const util = require('util')
-const Transform = require('stream').Transform
-
-const IngestDoc = function (options) {
-  this.options = options
-  this.i = 0
-  Transform.call(this, { objectMode: true })
-}
-exports.IngestDoc = IngestDoc
-util.inherits(IngestDoc, Transform)
-IngestDoc.prototype._transform = function (doc, encoding, end) {
-  var ingestedDoc = {
-    id: String(String(doc.id) || (Date.now() + '-' + ++this.i)),
-    vector: {},
-    stored: {},
-    raw: doc,
-    normalised: doc
-  }
-  this.push(JSON.stringify(ingestedDoc))
-  return end()
-}
-
-
-},{"stream":135,"util":145}],99:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const LowCase = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.LowCase = LowCase
-util.inherits(LowCase, Transform)
-LowCase.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.normalised) {
-    if (fieldName === 'id') continue  // dont lowcase ID field
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        preserveCase: this.options.preserveCase
-      })
-    if (!fieldOptions.preserveCase) {
-      doc.normalised[fieldName] = doc.normalised[fieldName].toLowerCase()
-    }
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"util":145}],100:[function(require,module,exports){
-const util = require('util')
-const Transform = require('stream').Transform
-
-const NormaliseFields = function (options) {
-  this.options = options
-  Transform.call(this, { objectMode: true })
-}
-exports.NormaliseFields = NormaliseFields
-util.inherits(NormaliseFields, Transform)
-NormaliseFields.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.normalised) {
-    // if the input object is not a string: jsonify and split on JSON
-    // characters
-    if (Object.prototype.toString.call(doc.normalised[fieldName]) !== '[object String]') {
-      doc.normalised[fieldName] = JSON.stringify(doc.normalised[fieldName])
-        .split(/[\[\],{}:"]+/).join(' ')
-    }
-    doc.normalised[fieldName] = doc.normalised[fieldName].trim()
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"stream":135,"util":145}],101:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const RemoveStopWords = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.RemoveStopWords = RemoveStopWords
-util.inherits(RemoveStopWords, Transform)
-RemoveStopWords.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.normalised) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        stopwords: this.options.stopwords || []
-      })
-    // remove stopwords
-    doc.normalised[fieldName] =
-      doc.normalised[fieldName].filter(function (item) {
-        return (fieldOptions.stopwords.indexOf(item) === -1)
-      }).filter(function (i) {  // strip out empty elements
-        return i
-      })
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"util":145}],102:[function(require,module,exports){
-const Transform = require('stream').Transform
-const util = require('util')
-
-const Spy = function () {
-  Transform.call(this, { objectMode: true })
-}
-exports.Spy = Spy
-util.inherits(Spy, Transform)
-Spy.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  console.log(JSON.stringify(doc, null, 2))
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"stream":135,"util":145}],103:[function(require,module,exports){
-const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
-const util = require('util')
-
-const Tokeniser = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  Transform.call(this, { objectMode: true })
-}
-exports.Tokeniser = Tokeniser
-util.inherits(Tokeniser, Transform)
-Tokeniser.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
-  for (var fieldName in doc.normalised) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        separator: this.options.separator // A string.split() expression to tokenize raw field input
-      })
-    doc.normalised[fieldName] =
-      doc.normalised[fieldName].split(fieldOptions.separator)
-  }
-  this.push(JSON.stringify(doc))
-  return end()
-}
-
-},{"lodash.defaults":62,"stream":135,"util":145}],104:[function(require,module,exports){
+},{"stream":136,"util":146}],105:[function(require,module,exports){
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
 const CalculateEntireResultSet = require('./lib/CalculateEntireResultSet.js').CalculateEntireResultSet
@@ -22177,7 +22207,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/CalculateBuckets.js":105,"./lib/CalculateCategories.js":106,"./lib/CalculateEntireResultSet.js":107,"./lib/CalculateResultSetPerClause.js":108,"./lib/CalculateTopScoringDocs.js":109,"./lib/CalculateTotalHits.js":110,"./lib/FetchDocsFromDB.js":111,"./lib/FetchStoredDoc.js":112,"./lib/GetIntersectionStream.js":113,"./lib/MergeOrConditions.js":114,"./lib/ScoreDocsOnField.js":115,"./lib/ScoreTopScoringDocsTFIDF.js":116,"./lib/SortTopScoringDocs.js":117,"./lib/matcher.js":118,"./lib/siUtil.js":119,"JSONStream":3,"bunyan":9,"levelup":59,"lodash.defaults":62,"stopword":120,"stream":135}],105:[function(require,module,exports){
+},{"./lib/CalculateBuckets.js":106,"./lib/CalculateCategories.js":107,"./lib/CalculateEntireResultSet.js":108,"./lib/CalculateResultSetPerClause.js":109,"./lib/CalculateTopScoringDocs.js":110,"./lib/CalculateTotalHits.js":111,"./lib/FetchDocsFromDB.js":112,"./lib/FetchStoredDoc.js":113,"./lib/GetIntersectionStream.js":114,"./lib/MergeOrConditions.js":115,"./lib/ScoreDocsOnField.js":116,"./lib/ScoreTopScoringDocsTFIDF.js":117,"./lib/SortTopScoringDocs.js":118,"./lib/matcher.js":119,"./lib/siUtil.js":120,"JSONStream":3,"bunyan":9,"levelup":71,"lodash.defaults":74,"stopword":121,"stream":136}],106:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -22217,7 +22247,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":64,"lodash.uniq":69,"stream":135,"util":145}],106:[function(require,module,exports){
+},{"lodash.intersection":76,"lodash.uniq":81,"stream":136,"util":146}],107:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -22257,7 +22287,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
     })
 }
 
-},{"lodash.intersection":64,"stream":135,"util":145}],107:[function(require,module,exports){
+},{"lodash.intersection":76,"stream":136,"util":146}],108:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -22281,7 +22311,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":68,"stream":135,"util":145}],108:[function(require,module,exports){
+},{"lodash.union":80,"stream":136,"util":146}],109:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -22387,7 +22417,7 @@ const uniqFast = function (a) {
   return out
 }
 
-},{"./siUtil.js":119,"lodash.difference":63,"lodash.intersection":64,"lodash.spread":67,"stream":135,"util":145}],109:[function(require,module,exports){
+},{"./siUtil.js":120,"lodash.difference":75,"lodash.intersection":76,"lodash.spread":79,"stream":136,"util":146}],110:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -22439,7 +22469,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":66,"stream":135,"util":145}],110:[function(require,module,exports){
+},{"lodash.sortedindexof":78,"stream":136,"util":146}],111:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22457,7 +22487,7 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":135,"util":145}],111:[function(require,module,exports){
+},{"stream":136,"util":146}],112:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22477,7 +22507,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],112:[function(require,module,exports){
+},{"stream":136,"util":146}],113:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22500,7 +22530,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],113:[function(require,module,exports){
+},{"stream":136,"util":146}],114:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -22535,7 +22565,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":30,"stream":135,"util":145}],114:[function(require,module,exports){
+},{"intersect-arrays-to-stream":42,"stream":136,"util":146}],115:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22568,7 +22598,7 @@ MergeOrConditions.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":135,"util":145}],115:[function(require,module,exports){
+},{"stream":136,"util":146}],116:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -22606,7 +22636,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
     })
 }
 
-},{"lodash.sortedindexof":66,"stream":135,"util":145}],116:[function(require,module,exports){
+},{"lodash.sortedindexof":78,"stream":136,"util":146}],117:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22671,7 +22701,7 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
   })
 }
 
-},{"stream":135,"util":145}],117:[function(require,module,exports){
+},{"stream":136,"util":146}],118:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22720,7 +22750,7 @@ SortTopScoringDocs.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":135,"util":145}],118:[function(require,module,exports){
+},{"stream":136,"util":146}],119:[function(require,module,exports){
 const Readable = require('stream').Readable
 const _defaults = require('lodash.defaults')
 
@@ -22792,7 +22822,7 @@ exports.match = function (q, options) {
   return s.pipe(new MatcherStream(q, options))
 }
 
-},{"lodash.defaults":62,"stream":135,"util":145}],119:[function(require,module,exports){
+},{"lodash.defaults":74,"stream":136,"util":146}],120:[function(require,module,exports){
 const _defaults = require('lodash.defaults')
 
 exports.getKeySet = function (clause) {
@@ -22828,7 +22858,7 @@ exports.getQueryDefaults = function (q) {
   })
 }
 
-},{"lodash.defaults":62}],120:[function(require,module,exports){
+},{"lodash.defaults":74}],121:[function(require,module,exports){
 const defaultStopwords = require('./stopwords_en.js').words
 
 exports.removeStopwords = function(tokens, stopwords) {
@@ -22858,7 +22888,7 @@ exports.ru = require('./stopwords_ru.js').words
 exports.sv = require('./stopwords_sv.js').words
 exports.zh = require('./stopwords_zh.js').words
 
-},{"./stopwords_da.js":121,"./stopwords_en.js":122,"./stopwords_es.js":123,"./stopwords_fa.js":124,"./stopwords_fr.js":125,"./stopwords_it.js":126,"./stopwords_ja.js":127,"./stopwords_nl.js":128,"./stopwords_no.js":129,"./stopwords_pl.js":130,"./stopwords_pt.js":131,"./stopwords_ru.js":132,"./stopwords_sv.js":133,"./stopwords_zh.js":134}],121:[function(require,module,exports){
+},{"./stopwords_da.js":122,"./stopwords_en.js":123,"./stopwords_es.js":124,"./stopwords_fa.js":125,"./stopwords_fr.js":126,"./stopwords_it.js":127,"./stopwords_ja.js":128,"./stopwords_nl.js":129,"./stopwords_no.js":130,"./stopwords_pl.js":131,"./stopwords_pt.js":132,"./stopwords_ru.js":133,"./stopwords_sv.js":134,"./stopwords_zh.js":135}],122:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -22890,7 +22920,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 
@@ -22930,7 +22960,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22968,7 +22998,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
@@ -23008,7 +23038,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /*
  Copyright (c) 2014, Ismaël Héry
 
@@ -23204,7 +23234,7 @@ var words = ['être', 'avoir', 'faire',
 
 exports.words = words
 
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -23258,7 +23288,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 // Original copyright:
 /*
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -23319,7 +23349,7 @@ var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し
 // tell the world about the noise words.
 module.exports = words
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
 
@@ -23364,7 +23394,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /*
 Copyright (c) 2014, Kristoffer Brabrand
 
@@ -23408,7 +23438,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /*
 Copyright (c) 2013, Paweł Łaskarzewski
 
@@ -23472,7 +23502,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /*
 Copyright (c) 2011, Luís Rodrigues
 
@@ -23610,7 +23640,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 /*
 Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
 
@@ -23653,7 +23683,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -23685,7 +23715,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],134:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -23732,7 +23762,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],135:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23861,7 +23891,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":26,"inherits":29,"readable-stream/duplex.js":78,"readable-stream/passthrough.js":84,"readable-stream/readable.js":85,"readable-stream/transform.js":86,"readable-stream/writable.js":87}],136:[function(require,module,exports){
+},{"events":38,"inherits":41,"readable-stream/duplex.js":90,"readable-stream/passthrough.js":96,"readable-stream/readable.js":97,"readable-stream/transform.js":98,"readable-stream/writable.js":99}],137:[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -23883,7 +23913,7 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],137:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24106,7 +24136,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":8}],138:[function(require,module,exports){
+},{"buffer":8}],139:[function(require,module,exports){
 var _defaults = require('lodash.defaults')
 
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
@@ -24158,7 +24188,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{"lodash.defaults":62}],139:[function(require,module,exports){
+},{"lodash.defaults":74}],140:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -24224,7 +24254,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":65}],140:[function(require,module,exports){
+},{"lodash.isequal":77}],141:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -24336,7 +24366,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":74,"stream":135}],141:[function(require,module,exports){
+},{"_process":86,"stream":136}],142:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -24359,7 +24389,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],142:[function(require,module,exports){
+},{"buffer":8}],143:[function(require,module,exports){
 (function (global){
 
 /**
@@ -24430,16 +24460,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],143:[function(require,module,exports){
-arguments[4][29][0].apply(exports,arguments)
-},{"dup":29}],144:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41}],145:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],145:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -25029,7 +25059,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":144,"_process":74,"inherits":143}],146:[function(require,module,exports){
+},{"./support/isBuffer":145,"_process":86,"inherits":144}],147:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -25064,7 +25094,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],147:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
