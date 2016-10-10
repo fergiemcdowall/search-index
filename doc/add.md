@@ -73,7 +73,7 @@ Create a `Readable` stream and push documents to it.
 
 ```javascript
 const Readable = require('stream').Readable
-const s = new Readable()
+const s = new Readable( {objectMode: true} )
 
 s.push({
   id: '3',
