@@ -86,8 +86,10 @@ s.push(null)
 ```
 ## Document Processing Pipeline
 
-`.defaultPipeline()` converts these documents into a special vector
-format. As you become more advanced, you may want to manipulate these
+`.defaultPipeline()` uses [docProc](https://github.com/fergiemcdowall/docproc).
+
+`.defaultPipeline()` converts these documents into a [special vector
+format](https://github.com/fergiemcdowall/docproc). As you become more advanced, you may want to manipulate these
 vectors in order to implement advanced features such as stemming or
 synonyms. However `search-index` ships with a default processing
 pipeline that allows you to send Plain Old JavaScript Objects to the
