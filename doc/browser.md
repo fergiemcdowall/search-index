@@ -19,19 +19,20 @@ const paintResultDiv = function(result) {
 }
 
 // index some data
-const indexData = function(err, index) {
-  index.flush(function(err) {
+const indexData = function(err, myCoolSearchIndex) {
+  myCoolSearchIndex.flush(function(err) {
     highland([{
       id: '1',
-      body: 'this is a document from the search index'
+      body: 'this is a document from the search index about pickled onions'
     }])
-      .pipe(index.defaultPipeline())
-      .pipe(index.add())
+      .pipe(myCoolSearchIndex.defaultPipeline())
+      .pipe(myCoolSearchIndex.add())
       .on('data', function(data) {
         console.log(data)
       })     
       .on('end', function() {
-        index.search().on('data', paintResultDiv)
+        // now you can perform search queries
+        myCoolSearchIndex.search('pickled onions').on('data', paintResultDiv)
       })     
   })
 }
