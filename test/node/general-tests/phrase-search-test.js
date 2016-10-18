@@ -1,30 +1,30 @@
 /* global it */
 /* global describe */
 
-const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
+const stopwords = require('stopword').en
 
 const getDataStream = function () {
-  var s = new Readable()
-  s.push(JSON.stringify({
+  var s = new Readable({ objectMode: true })
+  s.push({
     id: 1,
     name: 'Fish and chips',
     test: 'The best fish and chips were from the now sadly defunct Tastie Bite'
-  }))
-  s.push(JSON.stringify({
+  })
+  s.push({
     id: 2,
     name: 'Chips and curry sauce',
     test: 'A classic, the curry sauce may be substituted for gravy'
-  }))
-  s.push(JSON.stringify({
+  })
+  s.push({
     id: 3,
     name: 'Haggisxandxchips',
     test: 'Axseldomxdelicacy'
-  }))
+  })
   s.push(null)
   return s
 }
@@ -33,25 +33,24 @@ describe('ngrams (phrase search): ', function () {
   var si, si2, si3, si4
 
   it('should initialize search index', function (done) {
-    var i = 0
-    SearchIndex(
-      {indexPath: sandboxPath + '/si-phrase-tests',
-      logLevel: logLevel},
+    SearchIndex({
+      indexPath: sandboxPath + '/si-phrase-tests',
+      logLevel: logLevel,
+      stopwords: stopwords
+    },
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
         getDataStream()
-          .pipe(JSONStream.parse())
           .pipe(si.defaultPipeline({
             stopwords: [],
             nGramLength: {gte: 1, lte: 3}
           }))
           .pipe(si.add())
           .on('data', function (data) {
-            i++
+
           })
           .on('end', function () {
-            i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
           })
@@ -59,7 +58,6 @@ describe('ngrams (phrase search): ', function () {
   })
 
   it('should initialize search index', function (done) {
-    var i = 0
     SearchIndex({
       indexPath: sandboxPath + '/si-phrase-tests-2',
       logLevel: logLevel
@@ -67,17 +65,15 @@ describe('ngrams (phrase search): ', function () {
       if (err) false.should.eql(true)
       si2 = thisSi
       getDataStream()
-        .pipe(JSONStream.parse())
         .pipe(si2.defaultPipeline({
           stopwords: [],
           nGramLength: [1, 5]
         }))
         .pipe(si2.add())
         .on('data', function (data) {
-          i++
+
         })
         .on('end', function () {
-          i.should.be.exactly(4)
           true.should.be.exactly(true)
           return done()
         })
@@ -85,7 +81,6 @@ describe('ngrams (phrase search): ', function () {
   })
 
   it('should initialize search index', function (done) {
-    var i = 0
     SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests-3',
         logLevel: logLevel,
@@ -94,7 +89,6 @@ describe('ngrams (phrase search): ', function () {
         if (err) false.should.eql(true)
         si3 = thisSi
         getDataStream()
-          .pipe(JSONStream.parse())
           .pipe(si3.defaultPipeline({
             fieldOptions: {
               name: {
@@ -107,10 +101,9 @@ describe('ngrams (phrase search): ', function () {
           }))
           .pipe(si3.add())
           .on('data', function (data) {
-            i++
+
           })
           .on('end', function () {
-            i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
           })
@@ -118,7 +111,6 @@ describe('ngrams (phrase search): ', function () {
   })
 
   it('should initialize search index', function (done) {
-    var i = 0
     SearchIndex(
       {indexPath: sandboxPath + '/si-phrase-tests-4',
         logLevel: logLevel,
@@ -127,7 +119,6 @@ describe('ngrams (phrase search): ', function () {
         if (err) false.should.eql(true)
         si4 = thisSi
         getDataStream()
-          .pipe(JSONStream.parse())
           .pipe(si4.defaultPipeline({
             fieldOptions: {
               name: {
@@ -137,10 +128,9 @@ describe('ngrams (phrase search): ', function () {
           }))
           .pipe(si4.add())
           .on('data', function (data) {
-            i++
+
           })
           .on('end', function () {
-            i.should.be.exactly(4)
             true.should.be.exactly(true)
             return done()
           })

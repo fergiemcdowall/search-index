@@ -35,6 +35,7 @@ const getAdder = function (SearchIndex, done) {
     SearchIndex.dbWriteStream = searchIndexAdder.dbWriteStream
     SearchIndex.defaultPipeline = searchIndexAdder.defaultPipeline
     SearchIndex.del = searchIndexAdder.deleter
+    SearchIndex.deleteStream = searchIndexAdder.deleteStream
     SearchIndex.flush = searchIndexAdder.flush
     done(err, SearchIndex)
   })
@@ -56,10 +57,10 @@ const getSearcher = function (SearchIndex, done) {
 
 const getOptions = function (options, done) {
   var SearchIndex = {}
-  SearchIndex.options = _defaults(options, {
+  SearchIndex.options = Object.assign({}, {
     indexPath: 'si',
     logLevel: 'error'
-  })
+  }, options)
   options.log = bunyan.createLogger({
     name: 'search-index',
     level: options.logLevel
@@ -4847,7 +4848,7 @@ module.exports = isLevelDOWN
 },{"./abstract-leveldown":15}],18:[function(require,module,exports){
 const bunyan = require('bunyan')
 const pumpify = require('pumpify')
-const _defaults = require('lodash.defaults')
+const stopwords = []
 
 const CalculateTermFrequency = exports.CalculateTermFrequency =
   require('./pipeline/CalculateTermFrequency.js')
@@ -4885,15 +4886,16 @@ const Tokeniser = exports.Tokeniser =
   require('./pipeline/Tokeniser.js')
 
 exports.pipeline = function (options) {
-  options = _defaults(options || {}, {
-    log: bunyan.createLogger({
-      name: 'pipeline',
-      level: 'error'
-    }),
-    separator: ' ',
+  options = Object.assign({}, {
+    separator: /[\|' \.,\-|(\\\n)]+/,
     searchable: true,
+    stopwords: stopwords,
     nGramLength: 1,
     fieldedSearch: true
+  }, options)
+  options.log = bunyan.createLogger({
+    name: 'pipeline',
+    level: options.logLevel || 'error'
   })
   var pl = [
     new IngestDoc(options),
@@ -4910,12 +4912,14 @@ exports.pipeline = function (options) {
   return pumpify.obj.apply(this, pl)
 }
 
+exports.customPipeline = function (pl) {
+  return pumpify.obj.apply(this, pl)
+}
 
-},{"./pipeline/CalculateTermFrequency.js":19,"./pipeline/CreateCompositeVector.js":20,"./pipeline/CreateSortVectors.js":21,"./pipeline/CreateStoredDocument.js":22,"./pipeline/FieldedSearch.js":23,"./pipeline/IngestDoc.js":24,"./pipeline/LowCase.js":25,"./pipeline/NormaliseFields.js":26,"./pipeline/RemoveStopWords.js":27,"./pipeline/Spy.js":28,"./pipeline/Tokeniser.js":29,"bunyan":9,"lodash.defaults":74,"pumpify":89}],19:[function(require,module,exports){
+},{"./pipeline/CalculateTermFrequency.js":19,"./pipeline/CreateCompositeVector.js":20,"./pipeline/CreateSortVectors.js":21,"./pipeline/CreateStoredDocument.js":22,"./pipeline/FieldedSearch.js":23,"./pipeline/IngestDoc.js":24,"./pipeline/LowCase.js":25,"./pipeline/NormaliseFields.js":26,"./pipeline/RemoveStopWords.js":27,"./pipeline/Spy.js":28,"./pipeline/Tokeniser.js":29,"bunyan":9,"pumpify":89}],19:[function(require,module,exports){
 const tv = require('term-vector')
 const tf = require('term-frequency')
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 // convert term-frequency vectors into object maps
@@ -4925,25 +4929,25 @@ const objectify = function (result, item) {
 }
 
 const CalculateTermFrequency = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    nGramLength: 1,
+    searchable: true,
+    weight: 0
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = CalculateTermFrequency
 util.inherits(CalculateTermFrequency, Transform)
 CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
-  for (var fieldName in doc.normalised) {
-    var field = doc.normalised[fieldName]
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        fieldedSearch: this.options.fieldedSearch, // can search on this field individually
-        nGramLength: this.options.nGramLength,
-        searchable: this.options.searchable,       // included in the wildcard search ('*')
-        weight: this.options.weight
-      })
-
-    if (fieldOptions.fieldedSearch || fieldOptions.searchable) {
+  for (var fieldName in doc.tokenised) {
+    var fieldOptions = Object.assign({}, {
+      nGramLength: this.options.nGramLength,
+      searchable: this.options.searchable,
+      weight: this.options.weight
+    }, this.options.fieldOptions[fieldName])
+    var field = doc.tokenised[fieldName]
+    if (fieldOptions.searchable) {
       doc.vector[fieldName] = tf.getTermFrequency(
         tv.getVector(field, fieldOptions.nGramLength), {
           scheme: tf.doubleNormalization0point5,
@@ -4957,14 +4961,15 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"term-frequency":139,"term-vector":140,"util":146}],20:[function(require,module,exports){
+},{"stream":136,"term-frequency":139,"term-vector":140,"util":146}],20:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const CreateCompositeVector = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    searchable: true
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = CreateCompositeVector
@@ -4972,11 +4977,9 @@ util.inherits(CreateCompositeVector, Transform)
 CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   doc.vector['*'] = {}
   for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        searchable: this.options.searchable // Should this field be searchable in the composite field
-      })
+    var fieldOptions = Object.assign({}, {
+      searchable: this.options.searchable
+    }, this.options.fieldOptions[fieldName])
     if (fieldOptions.searchable) {
       var vec = doc.vector[fieldName]
       for (var token in vec) {
@@ -4989,11 +4992,10 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],21:[function(require,module,exports){
+},{"stream":136,"util":146}],21:[function(require,module,exports){
 const tf = require('term-frequency')
 const tv = require('term-vector')
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 // convert term-frequency vectors into object maps
@@ -5003,22 +5005,22 @@ const objectify = function (result, item) {
 }
 
 const CreateSortVectors = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    sortable: false
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = CreateSortVectors
 util.inherits(CreateSortVectors, Transform)
 CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        sortable: this.options.sortable // Should this field be sortable
-      })
+    var fieldOptions = Object.assign({}, {
+      sortable: this.options.sortable
+    }, this.options.fieldOptions[fieldName])
     if (fieldOptions.sortable) {
       doc.vector[fieldName] = tf.getTermFrequency(
-        tv.getVector(doc.normalised[fieldName]),
+        tv.getVector(doc.tokenised[fieldName]),
         { scheme: tf.selfString }
       ).reduce(objectify, {})
     }
@@ -5027,63 +5029,60 @@ CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"term-frequency":139,"term-vector":140,"util":146}],22:[function(require,module,exports){
+},{"stream":136,"term-frequency":139,"term-vector":140,"util":146}],22:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const CreateStoredDocument = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    storeable: true
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = CreateStoredDocument
 util.inherits(CreateStoredDocument, Transform)
 CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.raw) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        storeable: this.options.storeable // Store a cache of this field in the index
-      })
+    var fieldOptions = Object.assign({}, {
+      // Store a cache of this field in the index
+      storeable: this.options.storeable
+    }, this.options.fieldOptions[fieldName])
     if (fieldName === 'id') fieldOptions.storeable = true
     if (fieldOptions.storeable) {
-      doc.stored[fieldName] = doc.raw[fieldName]
+      doc.stored[fieldName] = JSON.parse(JSON.stringify(doc.raw[fieldName]))
     }
   }
   this.push(doc)
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],23:[function(require,module,exports){
+},{"stream":136,"util":146}],23:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const FieldedSearch = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    fieldedSearch: true
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = FieldedSearch
 util.inherits(FieldedSearch, Transform)
 FieldedSearch.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.vector) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        fieldedSearch: this.options.fieldedSearch // can this field be searched on?
-      })
+    var fieldOptions = Object.assign({}, {
+      fieldedSearch: this.options.fieldedSearch
+    }, this.options.fieldOptions[fieldName]) // can this field be searched on?
     if (!fieldOptions.fieldedSearch && fieldName !== '*') delete doc.vector[fieldName]
   }
-  // console.log(JSON.stringify(doc, null, 2))
-  // this.push(JSON.stringify(doc))
+  if (this.options.log) this.options.log.info(doc)
   this.push(doc)
-
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],24:[function(require,module,exports){
+},{"stream":136,"util":146}],24:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -5097,10 +5096,11 @@ util.inherits(IngestDoc, Transform)
 IngestDoc.prototype._transform = function (doc, encoding, end) {
   var ingestedDoc = {
     id: String(String(doc.id) || (Date.now() + '-' + ++this.i)),
-    vector: {},
-    stored: {},
+    normalised: {},
     raw: JSON.parse(JSON.stringify(doc)),
-    normalised: doc
+    stored: {},
+    tokenised: {},
+    vector: {}
   }
   this.push(ingestedDoc)  // should this actually be stringified?
   return end()
@@ -5109,13 +5109,13 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
 
 },{"stream":136,"util":146}],25:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const LowCase = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
-  options.log.info('Pipeline stage: LowCase')
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    preserveCase: false
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = LowCase
@@ -5123,11 +5123,9 @@ util.inherits(LowCase, Transform)
 LowCase.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.normalised) {
     if (fieldName === 'id') continue  // dont lowcase ID field
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        preserveCase: this.options.preserveCase
-      })
+    var fieldOptions = Object.assign({}, {
+      preserveCase: this.options.preserveCase
+    }, this.options.fieldOptions[fieldName])
     if (!fieldOptions.preserveCase) {
       doc.normalised[fieldName] = doc.normalised[fieldName].toLowerCase()
     }
@@ -5136,22 +5134,21 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],26:[function(require,module,exports){
+},{"stream":136,"util":146}],26:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
-const NormaliseFields = function (options) {
-  this.options = options
+const NormaliseFields = function () {
   Transform.call(this, { objectMode: true })
 }
 module.exports = NormaliseFields
 util.inherits(NormaliseFields, Transform)
 NormaliseFields.prototype._transform = function (doc, encoding, end) {
-  for (var fieldName in doc.normalised) {
+  for (var fieldName in doc.raw) {
     // if the input object is not a string: jsonify and split on JSON
     // characters
     if (Object.prototype.toString.call(doc.normalised[fieldName]) !== '[object String]') {
-      doc.normalised[fieldName] = JSON.stringify(doc.normalised[fieldName])
+      doc.normalised[fieldName] = JSON.stringify(doc.raw[fieldName])
         .split(/[\[\],{}:"]+/).join(' ')
     }
     doc.normalised[fieldName] = doc.normalised[fieldName].trim()
@@ -5162,26 +5159,25 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
 
 },{"stream":136,"util":146}],27:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const RemoveStopWords = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    stopwords: []
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = RemoveStopWords
 util.inherits(RemoveStopWords, Transform)
 RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.normalised) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        stopwords: this.options.stopwords || []
-      })
+    var fieldOptions = Object.assign({}, {
+      stopwords: this.options.stopwords
+    }, this.options.fieldOptions[fieldName])
     // remove stopwords
-    doc.normalised[fieldName] =
-      doc.normalised[fieldName].filter(function (item) {
+    doc.tokenised[fieldName] =
+      doc.tokenised[fieldName].filter(function (item) {
         return (fieldOptions.stopwords.indexOf(item) === -1)
       }).filter(function (i) {  // strip out empty elements
         return i
@@ -5191,7 +5187,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],28:[function(require,module,exports){
+},{"stream":136,"util":146}],28:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5201,39 +5197,38 @@ const Spy = function () {
 module.exports = Spy
 util.inherits(Spy, Transform)
 Spy.prototype._transform = function (doc, encoding, end) {
-  doc = JSON.parse(doc)
   console.log(JSON.stringify(doc, null, 2))
-  this.push(JSON.stringify(doc))
+  this.push(doc)
   return end()
 }
 
 },{"stream":136,"util":146}],29:[function(require,module,exports){
 const Transform = require('stream').Transform
-const _defaults = require('lodash.defaults')
 const util = require('util')
 
 const Tokeniser = function (options) {
-  this.options = options || {}
-  this.options.fieldOptions = this.options.fieldOptions || {}
+  this.options = Object.assign({}, {
+    fieldOptions: {},
+    separator: /\\n|[\|' ><\.,\-|]+|\\u0003/
+  }, options)
   Transform.call(this, { objectMode: true })
 }
 module.exports = Tokeniser
 util.inherits(Tokeniser, Transform)
 Tokeniser.prototype._transform = function (doc, encoding, end) {
   for (var fieldName in doc.normalised) {
-    var fieldOptions = _defaults(
-      this.options.fieldOptions[fieldName] || {},  // TODO- this is wrong
-      {
-        separator: this.options.separator // A string.split() expression to tokenize raw field input
-      })
-    doc.normalised[fieldName] =
+    var fieldOptions = Object.assign({}, {
+      // A string.split() expression to tokenize raw field input
+      separator: this.options.separator
+    }, this.options.fieldOptions[fieldName])
+    doc.tokenised[fieldName] =
       doc.normalised[fieldName].split(fieldOptions.separator)
   }
   this.push(doc)
   return end()
 }
 
-},{"lodash.defaults":74,"stream":136,"util":146}],30:[function(require,module,exports){
+},{"stream":136,"util":146}],30:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -11784,7 +11779,15 @@ module.exports = {
 module.exports={
   "_args": [
     [
-      "levelup@1.3.3",
+      {
+        "raw": "levelup@1.3.3",
+        "scope": null,
+        "escapedName": "levelup",
+        "name": "levelup",
+        "rawSpec": "1.3.3",
+        "spec": "1.3.3",
+        "type": "version"
+      },
       "/Users/fergusmcdowall/Desktop/node/search-index"
     ]
   ],
@@ -11799,16 +11802,17 @@ module.exports={
     "tmp": "tmp/levelup-1.3.3.tgz_1476029541340_0.44339725002646446"
   },
   "_npmUser": {
-    "email": "julian@juliangruber.com",
-    "name": "juliangruber"
+    "name": "juliangruber",
+    "email": "julian@juliangruber.com"
   },
   "_npmVersion": "2.15.8",
   "_phantomChildren": {},
   "_requested": {
-    "name": "levelup",
     "raw": "levelup@1.3.3",
-    "rawSpec": "1.3.3",
     "scope": null,
+    "escapedName": "levelup",
+    "name": "levelup",
+    "rawSpec": "1.3.3",
     "spec": "1.3.3",
     "type": "version"
   },
@@ -11832,73 +11836,73 @@ module.exports={
   },
   "contributors": [
     {
-      "email": "r@va.gg",
       "name": "Rod Vagg",
+      "email": "r@va.gg",
       "url": "https://github.com/rvagg"
     },
     {
-      "email": "john@chesl.es",
       "name": "John Chesley",
+      "email": "john@chesl.es",
       "url": "https://github.com/chesles/"
     },
     {
-      "email": "raynos2@gmail.com",
       "name": "Jake Verbaten",
+      "email": "raynos2@gmail.com",
       "url": "https://github.com/raynos"
     },
     {
-      "email": "dominic.tarr@gmail.com",
       "name": "Dominic Tarr",
+      "email": "dominic.tarr@gmail.com",
       "url": "https://github.com/dominictarr"
     },
     {
-      "email": "max@maxogden.com",
       "name": "Max Ogden",
+      "email": "max@maxogden.com",
       "url": "https://github.com/maxogden"
     },
     {
-      "email": "ralphtheninja@riseup.net",
       "name": "Lars-Magnus Skog",
+      "email": "ralphtheninja@riseup.net",
       "url": "https://github.com/ralphtheninja"
     },
     {
-      "email": "david.bjorklund@gmail.com",
       "name": "David Björklund",
+      "email": "david.bjorklund@gmail.com",
       "url": "https://github.com/kesla"
     },
     {
-      "email": "julian@juliangruber.com",
       "name": "Julian Gruber",
+      "email": "julian@juliangruber.com",
       "url": "https://github.com/juliangruber"
     },
     {
-      "email": "paolo@async.ly",
       "name": "Paolo Fragomeni",
+      "email": "paolo@async.ly",
       "url": "https://github.com/0x00a"
     },
     {
-      "email": "anton.whalley@nearform.com",
       "name": "Anton Whalley",
+      "email": "anton.whalley@nearform.com",
       "url": "https://github.com/No9"
     },
     {
-      "email": "matteo.collina@gmail.com",
       "name": "Matteo Collina",
+      "email": "matteo.collina@gmail.com",
       "url": "https://github.com/mcollina"
     },
     {
-      "email": "pedro.teixeira@gmail.com",
       "name": "Pedro Teixeira",
+      "email": "pedro.teixeira@gmail.com",
       "url": "https://github.com/pgte"
     },
     {
-      "email": "mail@substack.net",
       "name": "James Halliday",
+      "email": "mail@substack.net",
       "url": "https://github.com/substack"
     },
     {
-      "email": "jcrugzz@gmail.com",
       "name": "Jarrett Cruger",
+      "email": "jcrugzz@gmail.com",
       "url": "https://github.com/jcrugzz"
     }
   ],
@@ -11946,16 +11950,16 @@ module.exports={
   "main": "lib/levelup.js",
   "maintainers": [
     {
-      "email": "rod@vagg.org",
-      "name": "rvagg"
+      "name": "rvagg",
+      "email": "rod@vagg.org"
     },
     {
-      "email": "ralphtheninja@riseup.net",
-      "name": "ralphtheninja"
+      "name": "ralphtheninja",
+      "email": "ralphtheninja@riseup.net"
     },
     {
-      "email": "julian@juliangruber.com",
-      "name": "juliangruber"
+      "name": "juliangruber",
+      "email": "julian@juliangruber.com"
     }
   ],
   "name": "levelup",
@@ -21666,24 +21670,18 @@ module.exports.ensureProperties = ensureProperties;
 
 },{}],101:[function(require,module,exports){
 const DBEntries = require('./lib/delete.js').DBEntries
-const DocVector = require('./lib/delete.js').DocVector
-const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
-
 const DBWriteCleanStream = require('./lib/replicate.js').DBWriteCleanStream
 const DBWriteMergeStream = require('./lib/replicate.js').DBWriteMergeStream
-// const IngestDoc = require('./lib/pipeline.js').IngestDoc
-
-
+const DocVector = require('./lib/delete.js').DocVector
 const IndexBatch = require('./lib/add.js').IndexBatch
 const Readable = require('stream').Readable
-const _defaults = require('lodash.defaults')
+const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
 const bunyan = require('bunyan')
 const deleter = require('./lib/delete.js')
 const docProc = require('docproc')
 const leveldown = require('leveldown')
 const levelup = require('levelup')
 const pumpify = require('pumpify')
-const sw = require('stopword')
 
 module.exports = function (givenOptions, callback) {
   getOptions(givenOptions, function (err, options) {
@@ -21691,10 +21689,11 @@ module.exports = function (givenOptions, callback) {
     Indexer.options = options
 
     Indexer.add = function (batchOptions) {
-      batchOptions = _defaults(batchOptions || {}, options)
-      // this should probably not be instantiated on every call in
-      // order to better deal with concurrent adds
-      return new IndexBatch(batchOptions, Indexer)
+      batchOptions = Object.assign({}, options, batchOptions)
+      return pumpify.obj(
+        new IndexBatch(batchOptions, Indexer),
+        new DBWriteMergeStream(batchOptions)
+      )
     }
 
     Indexer.close = function (callback) {
@@ -21710,8 +21709,8 @@ module.exports = function (givenOptions, callback) {
     }
 
     Indexer.dbWriteStream = function (streamOps) {
-      streamOps = _defaults(streamOps || {}, { merge: true })
-      if (streamOps.merge === true) {
+      streamOps = Object.assign({}, { merge: true }, streamOps)
+      if (streamOps.merge) {
         return new DBWriteMergeStream(options)
       } else {
         return new DBWriteCleanStream(options)
@@ -21719,25 +21718,31 @@ module.exports = function (givenOptions, callback) {
     }
 
     Indexer.defaultPipeline = function (batchOptions) {
-      batchOptions = _defaults(batchOptions || {}, options)
+      batchOptions = Object.assign({}, options, batchOptions)
       return docProc.pipeline(batchOptions)
     }
 
-    Indexer.deleteBatch = function (deleteBatch, APICallback) {
-      deleter.tryDeleteDoc(options, deleteBatch, function (err) {
-        return APICallback(err)
-      })
+    Indexer.deleteStream = function (options) {
+      return pumpify.obj(
+        new DocVector(options),
+        new DBEntries(options),
+        new RecalibrateDB(options)
+      )
     }
 
-    Indexer.deleter = function (docIds) {
+    Indexer.deleter = function (docIds, done) {
       const s = new Readable()
       docIds.forEach(function (docId) {
         s.push(JSON.stringify(docId))
       })
       s.push(null)
-      return s.pipe(new DocVector(options))
-        .pipe(new DBEntries(options))
-        .pipe(new RecalibrateDB(options))
+      s.pipe(Indexer.deleteStream(options))
+        .on('data', function () {
+          // nowt
+        })
+        .on('end', function () {
+          done(null)
+        })
     }
 
     Indexer.flush = function (APICallback) {
@@ -21752,9 +21757,9 @@ module.exports = function (givenOptions, callback) {
 }
 
 const getOptions = function (options, done) {
-  options = _defaults(options, {
+  options = Object.assign({}, {
     deletable: true,
-    batchSize: 1000,
+    batchSize: 100000,
     fieldedSearch: true,
     fieldOptions: {},
     preserveCase: false,
@@ -21764,10 +21769,10 @@ const getOptions = function (options, done) {
     logLevel: 'error',
     nGramLength: 1,
     nGramSeparator: ' ',
-    separator: /[\|' \.,\-|(\n)]+/,
-    stopwords: sw.en,
+    separator: /\\n|[\|' ><\.,\-|]+|\\u0003/,
+    stopwords: [],
     weight: 0
-  })
+  }, options)
   options.log = bunyan.createLogger({
     name: 'search-index',
     level: options.logLevel
@@ -21785,11 +21790,20 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":102,"./lib/delete.js":103,"./lib/replicate.js":104,"bunyan":9,"docproc":18,"leveldown":58,"levelup":71,"lodash.defaults":74,"pumpify":89,"stopword":121,"stream":136}],102:[function(require,module,exports){
-const Readable = require('stream').Readable
+},{"./lib/add.js":102,"./lib/delete.js":103,"./lib/replicate.js":104,"bunyan":9,"docproc":18,"leveldown":58,"levelup":71,"pumpify":89,"stream":136}],102:[function(require,module,exports){
 const Transform = require('stream').Transform
 const sep = '￮'
 const util = require('util')
+
+const emitIndexKeys = function (s) {
+  for (var key in s.deltaIndex) {
+    s.push({
+      key: key,
+      value: s.deltaIndex[key]
+    })
+  }
+  s.deltaIndex = {}
+}
 
 const IndexBatch = function (batchOptions, indexer) {
   this.indexer = indexer
@@ -21802,50 +21816,36 @@ exports.IndexBatch = IndexBatch
 util.inherits(IndexBatch, Transform)
 IndexBatch.prototype._transform = function (ingestedDoc, encoding, end) {
   var that = this
-  // ingestedDoc = JSON.parse(ingestedDoc)
-  this.indexer.deleter([ingestedDoc.id])
-    .on('data', function (data) {
-      // what to do here..?
-    })
-    .on('end', function () {
-      that.indexer.options.log.info('processing doc ' + ingestedDoc.id)
-      that.push('processing doc ' + ingestedDoc.id)
-      that.deltaIndex['DOCUMENT' + sep + ingestedDoc.id + sep] = ingestedDoc.stored
-      for (var fieldName in ingestedDoc.vector) {
-        for (var token in ingestedDoc.vector[fieldName]) {
-          var vMagnitude = ingestedDoc.vector[fieldName][token]
-          var tfKeyName = 'TF' + sep + fieldName + sep + token + sep + sep + sep
-          var dfKeyName = 'DF' + sep + fieldName + sep + token + sep + sep + sep
-          that.deltaIndex[tfKeyName] = that.deltaIndex[tfKeyName] || []
-          that.deltaIndex[tfKeyName].push([vMagnitude, ingestedDoc.id])
-          that.deltaIndex[dfKeyName] = that.deltaIndex[dfKeyName] || []
-          that.deltaIndex[dfKeyName].push(ingestedDoc.id)
-        }
-        that.deltaIndex['DOCUMENT-VECTOR' + sep + ingestedDoc.id + sep + fieldName + sep] =
-          ingestedDoc.vector[fieldName]
+  this.indexer.deleter([ingestedDoc.id], function (err) {
+    if (err) that.indexer.log.info(err)
+    that.indexer.options.log.info('processing doc ' + ingestedDoc.id)
+    that.deltaIndex['DOCUMENT' + sep + ingestedDoc.id + sep] = ingestedDoc.stored
+    for (var fieldName in ingestedDoc.vector) {
+      for (var token in ingestedDoc.vector[fieldName]) {
+        var vMagnitude = ingestedDoc.vector[fieldName][token]
+        var tfKeyName = 'TF' + sep + fieldName + sep + token + sep + sep + sep
+        var dfKeyName = 'DF' + sep + fieldName + sep + token + sep + sep + sep
+        that.deltaIndex[tfKeyName] = that.deltaIndex[tfKeyName] || []
+        that.deltaIndex[tfKeyName].push([vMagnitude, ingestedDoc.id])
+        that.deltaIndex[dfKeyName] = that.deltaIndex[dfKeyName] || []
+        that.deltaIndex[dfKeyName].push(ingestedDoc.id)
       }
-      return end()
-    })
+      that.deltaIndex['DOCUMENT-VECTOR' + sep + ingestedDoc.id + sep + fieldName + sep] =
+        ingestedDoc.vector[fieldName]
+    }
+    if (Object.keys(that.deltaIndex).length > that.batchOptions.batchSize) {
+      that.batchOptions.log.info(
+        'deltaIndex is ' + Object.keys(that.deltaIndex).length +
+          ' long, emitting')
+      emitIndexKeys(that)
+    }
+    return end()
+  })
 }
 IndexBatch.prototype._flush = function (end) {
-  var that = this
   // merge this index into main index
-  var s = new Readable({ objectMode: true })
-  for (var key in this.deltaIndex) {
-    s.push({
-      key: key,
-      value: this.deltaIndex[key]
-    })
-  }
-  s.push(null)
-  s.pipe(this.indexer.dbWriteStream({merge: true}))
-    .on('data', function (data) {
-
-    })
-    .on('end', function () {
-      that.push('batch replicated')
-      return end()
-    })
+  emitIndexKeys(this)
+  return end()
 }
 
 },{"stream":136,"util":146}],103:[function(require,module,exports){
@@ -21998,7 +21998,6 @@ DBWriteMergeStream.prototype._transform = function (data, encoding, end) {
 }
 
 const DBWriteCleanStream = function (options) {
-  this.batchSize = 1000
   this.currentBatch = []
   this.options = options
   Transform.call(this, { objectMode: true })
@@ -22007,7 +22006,7 @@ util.inherits(DBWriteCleanStream, Transform)
 DBWriteCleanStream.prototype._transform = function (data, encoding, end) {
   var that = this
   this.currentBatch.push(data)
-  if (this.currentBatch.length % this.batchSize === 0) {
+  if (this.currentBatch.length % this.options.batchSize === 0) {
     this.options.indexes.batch(this.currentBatch, function (err) {
       // TODO: some nice error handling if things go wrong
       err

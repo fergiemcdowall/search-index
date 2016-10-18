@@ -1,7 +1,6 @@
 /* global describe */
 /* global it */
 
-const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const levelup = require('levelup')
 const logLevel = process.env.NODE_ENV || 'error'
@@ -33,21 +32,18 @@ describe('Making a search-index with a vanilla (leveldown) levelup: ', function 
   })
 
   it('should be able to index and search as normal', function (done) {
-    var i = 0
-    const s = new Readable()
-    s.push(JSON.stringify({
+    const s = new Readable({ objectMode: true })
+    s.push({
       title: 'a realllly cool document',
       body: 'this is my doc'
-    }))
+    })
     s.push(null)
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
+    s.pipe(si.defaultPipeline())
       .pipe(si.add())
       .on('data', function (data) {
-        i++
+
       })
       .on('end', function () {
-        i.should.be.exactly(2)
         si.search({
           query: [{
             AND: {'*': ['now sadly defunct']}

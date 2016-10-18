@@ -1,7 +1,6 @@
 /* global it */
 /* global describe */
 
-const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const logLevel = process.env.NODE_ENV || 'error'
 const sandboxPath = 'test/sandbox'
@@ -34,9 +33,9 @@ describe('stopwords: ', function () {
         name: 'Danskebåten',
         test: 'Ta en tur til Køben- dette blir stas!'
       }]
-    var s = new Readable()
+    var s = new Readable({ objectMode: true })
     data.forEach(function (datum) {
-      s.push(JSON.stringify(datum))
+      s.push(datum)
     })
     s.push(null)
     return s
@@ -55,9 +54,9 @@ describe('stopwords: ', function () {
         test: 'A classic, the curry sauce may be substituted for gravy'
       }
     ]
-    var s = new Readable()
+    var s = new Readable({ objectMode: true })
     data.forEach(function (datum) {
-      s.push(JSON.stringify(datum))
+      s.push(datum)
     })
     s.push(null)
     return s
@@ -66,21 +65,18 @@ describe('stopwords: ', function () {
   var si, siNO, siFood
 
   it('should initialize search index', function (done) {
-    var i = 0
     searchindex(
       {indexPath: sandboxPath + '/si-stopwords-test-en',
       logLevel: logLevel},
       function (err, thisSi) {
         if (err) false.should.eql(true)
         si = thisSi
-        getDataStream().pipe(JSONStream.parse())
+        getDataStream()
           .pipe(si.defaultPipeline())
           .pipe(si.add())
           .on('data', function (data) {
-            i++
           })
           .on('end', function () {
-            i.should.be.exactly(5)
             true.should.be.exactly(true)
             return done()
           })
@@ -105,7 +101,6 @@ describe('stopwords: ', function () {
   })
 
   it('should initialize norwegian search index', function (done) {
-    var i = 0
     searchindex({
       indexPath: sandboxPath + '/si-stopwords-test-no',
       logLevel: logLevel
@@ -113,16 +108,13 @@ describe('stopwords: ', function () {
       if (err) false.should.eql(true)
       siNO = thisSi
       getDataStream()
-        .pipe(JSONStream.parse())
         .pipe(siNO.defaultPipeline({
           stopwords: sw.no
         }))
         .pipe(siNO.add())
         .on('data', function (data) {
-          i++
         })
         .on('end', function () {
-          i.should.be.exactly(5)
           true.should.be.exactly(true)
           return done()
         })
@@ -161,7 +153,6 @@ describe('stopwords: ', function () {
   })
 
   it('should initialize a food search index', function (done) {
-    var i = 0
     searchindex({
       indexPath: sandboxPath + '/si-stopwords-test-food',
       logLevel: logLevel
@@ -169,16 +160,13 @@ describe('stopwords: ', function () {
       if (err) false.should.eql(true)
       siFood = thisSi
       getFoodStream()
-        .pipe(JSONStream.parse())
         .pipe(siFood.defaultPipeline({
           stopwords: []
         }))
         .pipe(siFood.add())
         .on('data', function (data) {
-          i++
         })
         .on('end', function () {
-          i.should.be.exactly(3)
           true.should.be.exactly(true)
           return done()
         })

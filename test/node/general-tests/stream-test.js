@@ -5,6 +5,7 @@ const JSONStream = require('JSONStream')
 const SearchIndex = require('../../../')
 const fs = require('fs')
 const logLevel = process.env.NODE_ENV || 'error'
+const should = require('should')
 
 var si
 

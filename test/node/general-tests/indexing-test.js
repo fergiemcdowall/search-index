@@ -74,14 +74,13 @@ describe('Indexing API', function () {
       id: '3',
       content: 'Nexion Smart ERP 14.2.1.0\n\nRelease de ejemplo'
     }
-    var s = new Readable()
+    var s = new Readable({ objectMode: true })
     var i = 0
-    s.push(JSON.stringify(doc))
+    s.push(doc)
     s.push(null)
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline({
-        separator: /[ (\n)]+/
-      })).pipe(si.add(undefined))
+    s.pipe(si.defaultPipeline({
+      separator: /\\n| /
+    })).pipe(si.add())
       .on('data', function (data) {})
       .on('end', function () {
         si.search({

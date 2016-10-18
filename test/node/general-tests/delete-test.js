@@ -72,13 +72,9 @@ describe('deleting: ', function () {
   })
 
   it('should be able to delete a document without throwing errorness', function (done) {
-    si.del(['2'])
-      .on('data', function (data) {
-        console.log(data)
-      })
-      .on('end', function () {
-        return done()
-      })
+    si.del(['2'], function(err) {
+      return done()
+    })
   })
 
   it('should be able to return all documents in index, with one document deleted', function (done) {
