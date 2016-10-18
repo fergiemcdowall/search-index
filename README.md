@@ -9,10 +9,10 @@
 [![js-standard-style][js-standard-image]][js-standard-url] 
 
 ```javascript
-const getData = function(err, index) {
+const getData = function(err, myIndex) {
   readStreamOfDocuments                   // <- a stream of documents to be indexed
-    .pipe(index.defaultPipeline())        // <- an extentable document processing pipeline
-    .pipe(index.add())                    // <- an index that can now be queried
+    .pipe(myIndex.defaultPipeline())        // <- an extentable document processing pipeline
+    .pipe(myIndex.add())                    // <- an index that can now be queried
 }
 require('search-index')(options, getData) // <- make a new index
 ```
