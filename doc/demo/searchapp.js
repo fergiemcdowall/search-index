@@ -3,7 +3,6 @@ var mySearchIndex
 
 // display search results in a div
 const paintResultDiv = function(result) {
-  console.log('Boom')
   result = JSON.parse(result)
   var node = document.createElement('div')
   node.innerHTML = '<b>' + result.document.title + '</b><br>'
