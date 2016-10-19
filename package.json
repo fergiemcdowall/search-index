@@ -4,16 +4,13 @@
   "version": "0.9.2",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
-    "node": ">=3"
+    "node": ">=4"
   },
   "license": "MIT",
   "dependencies": {
-    "bunyan": "1.8.1",
-    "leveldown": "1.5.0",
-    "levelup": "1.3.3",
-    "search-index-adder": "0.1.16",
-    "search-index-searcher": "0.1.12",
-    "stopword": "0.1.1"
+    "bunyan": "^1.8.1",
+    "search-index-adder": "0.1.17",
+    "search-index-searcher": "0.1.13"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",

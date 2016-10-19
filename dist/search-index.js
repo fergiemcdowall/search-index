@@ -58,6 +58,7 @@ const getOptions = function (options, done) {
   var SearchIndex = {}
   SearchIndex.options = Object.assign({}, {
     indexPath: 'si',
+    keySeparator: '￮',
     logLevel: 'error'
   }, options)
   options.log = bunyan.createLogger({
@@ -77,7 +78,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":2,"bunyan":9,"leveldown":58,"levelup":71,"search-index-adder":100,"search-index-searcher":104}],2:[function(require,module,exports){
+},{"./siUtil.js":2,"bunyan":10,"leveldown":57,"levelup":70,"search-index-adder":102,"search-index-searcher":106}],2:[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -367,7 +368,7 @@ if(!module.parent && process.title !== 'browser') {
 
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":85,"buffer":8,"jsonparse":46,"through":140}],4:[function(require,module,exports){
+},{"_process":84,"buffer":9,"jsonparse":45,"through":142}],4:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -728,7 +729,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":145}],5:[function(require,module,exports){
+},{"util/":147}],5:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -849,6 +850,118 @@ function fromByteArray (uint8) {
 },{}],7:[function(require,module,exports){
 arguments[4][6][0].apply(exports,arguments)
 },{"dup":6}],8:[function(require,module,exports){
+(function (global){
+'use strict';
+
+var buffer = require('buffer');
+var Buffer = buffer.Buffer;
+var SlowBuffer = buffer.SlowBuffer;
+var MAX_LEN = buffer.kMaxLength || 2147483647;
+exports.alloc = function alloc(size, fill, encoding) {
+  if (typeof Buffer.alloc === 'function') {
+    return Buffer.alloc(size, fill, encoding);
+  }
+  if (typeof encoding === 'number') {
+    throw new TypeError('encoding must not be number');
+  }
+  if (typeof size !== 'number') {
+    throw new TypeError('size must be a number');
+  }
+  if (size > MAX_LEN) {
+    throw new RangeError('size is too large');
+  }
+  var enc = encoding;
+  var _fill = fill;
+  if (_fill === undefined) {
+    enc = undefined;
+    _fill = 0;
+  }
+  var buf = new Buffer(size);
+  if (typeof _fill === 'string') {
+    var fillBuf = new Buffer(_fill, enc);
+    var flen = fillBuf.length;
+    var i = -1;
+    while (++i < size) {
+      buf[i] = fillBuf[i % flen];
+    }
+  } else {
+    buf.fill(_fill);
+  }
+  return buf;
+}
+exports.allocUnsafe = function allocUnsafe(size) {
+  if (typeof Buffer.allocUnsafe === 'function') {
+    return Buffer.allocUnsafe(size);
+  }
+  if (typeof size !== 'number') {
+    throw new TypeError('size must be a number');
+  }
+  if (size > MAX_LEN) {
+    throw new RangeError('size is too large');
+  }
+  return new Buffer(size);
+}
+exports.from = function from(value, encodingOrOffset, length) {
+  if (typeof Buffer.from === 'function' && (!global.Uint8Array || Uint8Array.from !== Buffer.from)) {
+    return Buffer.from(value, encodingOrOffset, length);
+  }
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number');
+  }
+  if (typeof value === 'string') {
+    return new Buffer(value, encodingOrOffset);
+  }
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    var offset = encodingOrOffset;
+    if (arguments.length === 1) {
+      return new Buffer(value);
+    }
+    if (typeof offset === 'undefined') {
+      offset = 0;
+    }
+    var len = length;
+    if (typeof len === 'undefined') {
+      len = value.byteLength - offset;
+    }
+    if (offset >= value.byteLength) {
+      throw new RangeError('\'offset\' is out of bounds');
+    }
+    if (len > value.byteLength - offset) {
+      throw new RangeError('\'length\' is out of bounds');
+    }
+    return new Buffer(value.slice(offset, offset + len));
+  }
+  if (Buffer.isBuffer(value)) {
+    var out = new Buffer(value.length);
+    value.copy(out, 0, 0, value.length);
+    return out;
+  }
+  if (value) {
+    if (Array.isArray(value) || (typeof ArrayBuffer !== 'undefined' && value.buffer instanceof ArrayBuffer) || 'length' in value) {
+      return new Buffer(value);
+    }
+    if (value.type === 'Buffer' && Array.isArray(value.data)) {
+      return new Buffer(value.data);
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ' + 'ArrayBuffer, Array, or array-like object.');
+}
+exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
+  if (typeof Buffer.allocUnsafeSlow === 'function') {
+    return Buffer.allocUnsafeSlow(size);
+  }
+  if (typeof size !== 'number') {
+    throw new TypeError('size must be a number');
+  }
+  if (size >= MAX_LEN) {
+    throw new RangeError('size is too large');
+  }
+  return new SlowBuffer(size);
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"buffer":9}],9:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -2641,7 +2754,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":5,"ieee754":40,"isarray":44}],9:[function(require,module,exports){
+},{"base64-js":5,"ieee754":39,"isarray":43}],10:[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2015 Trent Mick.
@@ -2653,7 +2766,7 @@ function isnan (val) {
  * vim: expandtab:ts=4:sw=4
  */
 
-var VERSION = '1.8.1';
+var VERSION = '1.8.3';
 
 /*
  * Bunyan log format version. This becomes the 'v' field on all log records.
@@ -3625,7 +3738,13 @@ function mkLogEmitter(minLevel) {
                 msgArgs[0] = util.inspect(msgArgs[0]);
             } else {  // `log.<level>(fields, msg, ...)`
                 fields = args[0];
-                msgArgs = Array.prototype.slice.call(args, 1);
+                if (fields && args.length === 1 && fields.err &&
+                    fields.err instanceof Error)
+                {
+                    msgArgs = [fields.err.message];
+                } else {
+                    msgArgs = Array.prototype.slice.call(args, 1);
+                }
             }
 
             // Build up the record object.
@@ -4203,7 +4322,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":43,"_process":85,"assert":4,"events":38,"fs":7,"os":83,"safe-json-stringify":99,"stream":135,"util":145}],10:[function(require,module,exports){
+},{"../../is-buffer/index.js":42,"_process":84,"assert":4,"events":37,"fs":7,"os":82,"safe-json-stringify":101,"stream":137,"util":147}],11:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4314,7 +4433,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":43}],11:[function(require,module,exports){
+},{"../../is-buffer/index.js":42}],12:[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -4350,7 +4469,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":16,"util":145}],12:[function(require,module,exports){
+},{"abstract-leveldown":17,"util":147}],13:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -4410,7 +4529,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":43,"./deferred-iterator":11,"_process":85,"abstract-leveldown":16,"util":145}],13:[function(require,module,exports){
+},{"../is-buffer/index.js":42,"./deferred-iterator":12,"_process":84,"abstract-leveldown":17,"util":147}],14:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4493,7 +4612,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":85}],14:[function(require,module,exports){
+},{"_process":84}],15:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4546,7 +4665,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":85}],15:[function(require,module,exports){
+},{"_process":84}],16:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4822,13 +4941,13 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":13,"./abstract-iterator":14,"_process":85,"xtend":147}],16:[function(require,module,exports){
+},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":14,"./abstract-iterator":15,"_process":84,"xtend":149}],17:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
 exports.isLevelDOWN          = require('./is-leveldown')
 
-},{"./abstract-chained-batch":13,"./abstract-iterator":14,"./abstract-leveldown":15,"./is-leveldown":17}],17:[function(require,module,exports){
+},{"./abstract-chained-batch":14,"./abstract-iterator":15,"./abstract-leveldown":16,"./is-leveldown":18}],18:[function(require,module,exports){
 var AbstractLevelDOWN = require('./abstract-leveldown')
 
 function isLevelDOWN (db) {
@@ -4844,7 +4963,7 @@ function isLevelDOWN (db) {
 
 module.exports = isLevelDOWN
 
-},{"./abstract-leveldown":15}],18:[function(require,module,exports){
+},{"./abstract-leveldown":16}],19:[function(require,module,exports){
 const bunyan = require('bunyan')
 const pumpify = require('pumpify')
 const stopwords = []
@@ -4915,7 +5034,7 @@ exports.customPipeline = function (pl) {
   return pumpify.obj.apply(this, pl)
 }
 
-},{"./pipeline/CalculateTermFrequency.js":19,"./pipeline/CreateCompositeVector.js":20,"./pipeline/CreateSortVectors.js":21,"./pipeline/CreateStoredDocument.js":22,"./pipeline/FieldedSearch.js":23,"./pipeline/IngestDoc.js":24,"./pipeline/LowCase.js":25,"./pipeline/NormaliseFields.js":26,"./pipeline/RemoveStopWords.js":27,"./pipeline/Spy.js":28,"./pipeline/Tokeniser.js":29,"bunyan":9,"pumpify":88}],19:[function(require,module,exports){
+},{"./pipeline/CalculateTermFrequency.js":20,"./pipeline/CreateCompositeVector.js":21,"./pipeline/CreateSortVectors.js":22,"./pipeline/CreateStoredDocument.js":23,"./pipeline/FieldedSearch.js":24,"./pipeline/IngestDoc.js":25,"./pipeline/LowCase.js":26,"./pipeline/NormaliseFields.js":27,"./pipeline/RemoveStopWords.js":28,"./pipeline/Spy.js":29,"./pipeline/Tokeniser.js":30,"bunyan":10,"pumpify":89}],20:[function(require,module,exports){
 const tv = require('term-vector')
 const tf = require('term-frequency')
 const Transform = require('stream').Transform
@@ -4960,7 +5079,7 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"term-frequency":138,"term-vector":139,"util":145}],20:[function(require,module,exports){
+},{"stream":137,"term-frequency":140,"term-vector":141,"util":147}],21:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -4991,7 +5110,7 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],21:[function(require,module,exports){
+},{"stream":137,"util":147}],22:[function(require,module,exports){
 const tf = require('term-frequency')
 const tv = require('term-vector')
 const Transform = require('stream').Transform
@@ -5028,7 +5147,7 @@ CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"term-frequency":138,"term-vector":139,"util":145}],22:[function(require,module,exports){
+},{"stream":137,"term-frequency":140,"term-vector":141,"util":147}],23:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5056,7 +5175,7 @@ CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],23:[function(require,module,exports){
+},{"stream":137,"util":147}],24:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5081,7 +5200,7 @@ FieldedSearch.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],24:[function(require,module,exports){
+},{"stream":137,"util":147}],25:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -5094,19 +5213,29 @@ module.exports = IngestDoc
 util.inherits(IngestDoc, Transform)
 IngestDoc.prototype._transform = function (doc, encoding, end) {
   var ingestedDoc = {
-    id: String(String(doc.id) || (Date.now() + '-' + ++this.i)),
     normalised: {},
     raw: JSON.parse(JSON.stringify(doc)),
     stored: {},
     tokenised: {},
     vector: {}
   }
+
+  // if there is no id, generate a a stringified one that is sorted
+  // by time (higher values more recent), so that a natural sort will
+  // yeild the most recent docs first
+  if (!doc.id) {
+    // TODO ++this.i should be left padded
+    ingestedDoc.id = Date.now() + '-' + ++this.i
+  } else {
+    ingestedDoc.id = String(doc.id)
+  }
+
   this.push(ingestedDoc)  // should this actually be stringified?
   return end()
 }
 
 
-},{"stream":135,"util":145}],25:[function(require,module,exports){
+},{"stream":137,"util":147}],26:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5133,7 +5262,7 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],26:[function(require,module,exports){
+},{"stream":137,"util":147}],27:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -5156,7 +5285,7 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],27:[function(require,module,exports){
+},{"stream":137,"util":147}],28:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5186,7 +5315,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],28:[function(require,module,exports){
+},{"stream":137,"util":147}],29:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5201,7 +5330,7 @@ Spy.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],29:[function(require,module,exports){
+},{"stream":137,"util":147}],30:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5227,7 +5356,7 @@ Tokeniser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":135,"util":145}],30:[function(require,module,exports){
+},{"stream":137,"util":147}],31:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -5390,6 +5519,7 @@ Duplexify.prototype._forward = function() {
   var data
 
   while ((data = shift(this._readable2)) !== null) {
+    if (this.destroyed) continue
     this._drained = this.push(data)
   }
 
@@ -5458,7 +5588,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":85,"buffer":8,"end-of-stream":31,"inherits":41,"readable-stream":96,"stream-shift":136}],31:[function(require,module,exports){
+},{"_process":84,"buffer":9,"end-of-stream":32,"inherits":40,"readable-stream":98,"stream-shift":138}],32:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -5531,7 +5661,7 @@ var eos = function(stream, opts, callback) {
 };
 
 module.exports = eos;
-},{"once":32}],32:[function(require,module,exports){
+},{"once":33}],33:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 
@@ -5554,93 +5684,7 @@ function once (fn) {
   return f
 }
 
-},{"wrappy":146}],33:[function(require,module,exports){
-var once = require('once');
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var isChildProcess = function(stream) {
-	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback();
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback();
-	};
-
-	var onexit = function(exitCode) {
-		callback(exitCode ? new Error('exited with error code: ' + exitCode) : null);
-	};
-
-	var onclose = function() {
-		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
-		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
-	}
-
-	if (isChildProcess(stream)) stream.on('exit', onexit);
-
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', callback);
-	stream.on('close', onclose);
-
-	return function() {
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('exit', onexit);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', callback);
-		stream.removeListener('close', onclose);
-	};
-};
-
-module.exports = eos;
-},{"once":34}],34:[function(require,module,exports){
-arguments[4][32][0].apply(exports,arguments)
-},{"dup":32,"wrappy":146}],35:[function(require,module,exports){
+},{"wrappy":148}],34:[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -5697,7 +5741,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":37}],36:[function(require,module,exports){
+},{"prr":36}],35:[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -6012,7 +6056,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":35}],37:[function(require,module,exports){
+},{"./custom":34}],36:[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -6076,7 +6120,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6380,7 +6424,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -7787,7 +7831,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -7873,7 +7917,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7898,7 +7942,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -7964,7 +8008,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":135}],43:[function(require,module,exports){
+},{"stream":137}],42:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -7987,14 +8031,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],44:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -8004,7 +8048,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":8}],46:[function(require,module,exports){
+},{"buffer":9}],45:[function(require,module,exports){
 (function (Buffer){
 /*global Buffer*/
 // Named constants with unique integer values
@@ -8349,7 +8393,7 @@ Parser.C = C;
 module.exports = Parser;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],47:[function(require,module,exports){
+},{"buffer":9}],46:[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -8457,7 +8501,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":48}],48:[function(require,module,exports){
+},{"./lib/encodings":47}],47:[function(require,module,exports){
 (function (Buffer){
 
 exports.utf8 = exports['utf-8'] = {
@@ -8537,7 +8581,7 @@ function isBinary(data){
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],49:[function(require,module,exports){
+},{"buffer":9}],48:[function(require,module,exports){
 /* Copyright (c) 2012-2015 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -8561,7 +8605,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":36}],50:[function(require,module,exports){
+},{"errno":35}],49:[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -8619,12 +8663,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":41,"level-errors":49,"readable-stream":57,"xtend":147}],51:[function(require,module,exports){
+},{"inherits":40,"level-errors":48,"readable-stream":56,"xtend":149}],50:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8717,7 +8761,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":54,"./_stream_writable":56,"_process":85,"core-util-is":10,"inherits":41}],53:[function(require,module,exports){
+},{"./_stream_readable":53,"./_stream_writable":55,"_process":84,"core-util-is":11,"inherits":40}],52:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8765,7 +8809,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":55,"core-util-is":10,"inherits":41}],54:[function(require,module,exports){
+},{"./_stream_transform":54,"core-util-is":11,"inherits":40}],53:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9720,7 +9764,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":52,"_process":85,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"isarray":51,"stream":135,"string_decoder/":137,"util":6}],55:[function(require,module,exports){
+},{"./_stream_duplex":51,"_process":84,"buffer":9,"core-util-is":11,"events":37,"inherits":40,"isarray":50,"stream":137,"string_decoder/":139,"util":6}],54:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9931,7 +9975,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":52,"core-util-is":10,"inherits":41}],56:[function(require,module,exports){
+},{"./_stream_duplex":51,"core-util-is":11,"inherits":40}],55:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10412,7 +10456,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":52,"_process":85,"buffer":8,"core-util-is":10,"inherits":41,"stream":135}],57:[function(require,module,exports){
+},{"./_stream_duplex":51,"_process":84,"buffer":9,"core-util-is":11,"inherits":40,"stream":137}],56:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -10426,7 +10470,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":52,"./lib/_stream_passthrough.js":53,"./lib/_stream_readable.js":54,"./lib/_stream_transform.js":55,"./lib/_stream_writable.js":56,"_process":85,"stream":135}],58:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":51,"./lib/_stream_passthrough.js":52,"./lib/_stream_readable.js":53,"./lib/_stream_transform.js":54,"./lib/_stream_writable.js":55,"_process":84,"stream":137}],57:[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -10604,7 +10648,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":59,"abstract-leveldown":62,"buffer":8,"idb-wrapper":39,"isbuffer":45,"typedarray-to-buffer":141,"util":145,"xtend":69}],59:[function(require,module,exports){
+},{"./iterator":58,"abstract-leveldown":61,"buffer":9,"idb-wrapper":38,"isbuffer":44,"typedarray-to-buffer":143,"util":147,"xtend":68}],58:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -10678,7 +10722,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":62,"ltgt":81,"util":145}],60:[function(require,module,exports){
+},{"abstract-leveldown":61,"ltgt":80,"util":147}],59:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10762,9 +10806,9 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":85}],61:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"_process":85,"dup":14}],62:[function(require,module,exports){
+},{"_process":84}],60:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{"_process":84,"dup":15}],61:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -11024,7 +11068,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":60,"./abstract-iterator":61,"_process":85,"xtend":63}],63:[function(require,module,exports){
+},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":59,"./abstract-iterator":60,"_process":84,"xtend":62}],62:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -11043,7 +11087,7 @@ function extend() {
     return target
 }
 
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -11085,11 +11129,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":67}],66:[function(require,module,exports){
+},{"./shim":66}],65:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -11107,7 +11151,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -11171,7 +11215,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":64,"./isArguments":66}],68:[function(require,module,exports){
+},{"./foreach":63,"./isArguments":65}],67:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -11180,7 +11224,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -11207,7 +11251,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":68,"object-keys":65}],70:[function(require,module,exports){
+},{"./has-keys":67,"object-keys":64}],69:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -11292,7 +11336,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":72,"level-errors":49}],71:[function(require,module,exports){
+},{"./util":71,"level-errors":48}],70:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -11695,7 +11739,7 @@ module.exports.repair  = deprecate(
 
 
 }).call(this,require('_process'))
-},{"./batch":70,"./util":72,"_process":85,"deferred-leveldown":12,"events":38,"level-codec":47,"level-errors":49,"level-iterator-stream":50,"prr":86,"util":145,"xtend":147}],72:[function(require,module,exports){
+},{"./batch":69,"./util":71,"_process":84,"deferred-leveldown":13,"events":37,"level-codec":46,"level-errors":48,"level-iterator-stream":49,"prr":85,"util":147,"xtend":149}],71:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -11774,23 +11818,23 @@ module.exports = {
   , isDefined       : isDefined
 }
 
-},{"../package.json":73,"level-errors":49,"leveldown":6,"leveldown/package":6,"semver":6,"util":145,"xtend":147}],73:[function(require,module,exports){
+},{"../package.json":72,"level-errors":48,"leveldown":6,"leveldown/package":6,"semver":6,"util":147,"xtend":149}],72:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       {
-        "raw": "levelup@1.3.3",
+        "raw": "levelup@^1.3.3",
         "scope": null,
         "escapedName": "levelup",
         "name": "levelup",
-        "rawSpec": "1.3.3",
-        "spec": "1.3.3",
-        "type": "version"
+        "rawSpec": "^1.3.3",
+        "spec": ">=1.3.3 <2.0.0",
+        "type": "range"
       },
-      "/Users/fergusmcdowall/Desktop/node/search-index"
+      "/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder"
     ]
   ],
-  "_from": "levelup@1.3.3",
+  "_from": "levelup@>=1.3.3 <2.0.0",
   "_id": "levelup@1.3.3",
   "_inCache": true,
   "_installable": true,
@@ -11807,24 +11851,23 @@ module.exports={
   "_npmVersion": "2.15.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "levelup@1.3.3",
+    "raw": "levelup@^1.3.3",
     "scope": null,
     "escapedName": "levelup",
     "name": "levelup",
-    "rawSpec": "1.3.3",
-    "spec": "1.3.3",
-    "type": "version"
+    "rawSpec": "^1.3.3",
+    "spec": ">=1.3.3 <2.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "/",
     "/search-index-adder",
     "/search-index-searcher"
   ],
   "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.3.tgz",
   "_shasum": "bf9db62bdb6188d08eaaa2efcf6cc311916f41fd",
   "_shrinkwrap": null,
-  "_spec": "levelup@1.3.3",
-  "_where": "/Users/fergusmcdowall/Desktop/node/search-index",
+  "_spec": "levelup@^1.3.3",
+  "_where": "/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder",
   "browser": {
     "leveldown": false,
     "leveldown/package": false,
@@ -11974,7 +12017,7 @@ module.exports={
   "version": "1.3.3"
 }
 
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -13148,7 +13191,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -14217,7 +14260,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -15870,7 +15913,7 @@ function keys(object) {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16123,7 +16166,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16529,7 +16572,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],79:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -17714,7 +17757,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -18614,7 +18657,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],81:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -18764,7 +18807,7 @@ exports.filter = function (range, compare) {
 }
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":43}],82:[function(require,module,exports){
+},{"../is-buffer/index.js":42}],81:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -18808,7 +18851,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":146}],83:[function(require,module,exports){
+},{"wrappy":148}],82:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -18855,7 +18898,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18902,7 +18945,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":85}],85:[function(require,module,exports){
+},{"_process":84}],84:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19084,9 +19127,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],86:[function(require,module,exports){
-arguments[4][37][0].apply(exports,arguments)
-},{"dup":37}],87:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"dup":36}],86:[function(require,module,exports){
 var once = require('once')
 var eos = require('end-of-stream')
 var fs = require('fs') // we only need fs to get the ReadStream and WriteStream prototypes
@@ -19167,7 +19210,93 @@ var pump = function () {
 
 module.exports = pump
 
-},{"end-of-stream":33,"fs":7,"once":82}],88:[function(require,module,exports){
+},{"end-of-stream":87,"fs":7,"once":81}],87:[function(require,module,exports){
+var once = require('once');
+
+var noop = function() {};
+
+var isRequest = function(stream) {
+	return stream.setHeader && typeof stream.abort === 'function';
+};
+
+var isChildProcess = function(stream) {
+	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
+};
+
+var eos = function(stream, opts, callback) {
+	if (typeof opts === 'function') return eos(stream, null, opts);
+	if (!opts) opts = {};
+
+	callback = once(callback || noop);
+
+	var ws = stream._writableState;
+	var rs = stream._readableState;
+	var readable = opts.readable || (opts.readable !== false && stream.readable);
+	var writable = opts.writable || (opts.writable !== false && stream.writable);
+
+	var onlegacyfinish = function() {
+		if (!stream.writable) onfinish();
+	};
+
+	var onfinish = function() {
+		writable = false;
+		if (!readable) callback();
+	};
+
+	var onend = function() {
+		readable = false;
+		if (!writable) callback();
+	};
+
+	var onexit = function(exitCode) {
+		callback(exitCode ? new Error('exited with error code: ' + exitCode) : null);
+	};
+
+	var onclose = function() {
+		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
+		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
+	};
+
+	var onrequest = function() {
+		stream.req.on('finish', onfinish);
+	};
+
+	if (isRequest(stream)) {
+		stream.on('complete', onfinish);
+		stream.on('abort', onclose);
+		if (stream.req) onrequest();
+		else stream.on('request', onrequest);
+	} else if (writable && !ws) { // legacy streams
+		stream.on('end', onlegacyfinish);
+		stream.on('close', onlegacyfinish);
+	}
+
+	if (isChildProcess(stream)) stream.on('exit', onexit);
+
+	stream.on('end', onend);
+	stream.on('finish', onfinish);
+	if (opts.error !== false) stream.on('error', callback);
+	stream.on('close', onclose);
+
+	return function() {
+		stream.removeListener('complete', onfinish);
+		stream.removeListener('abort', onclose);
+		stream.removeListener('request', onrequest);
+		if (stream.req) stream.req.removeListener('finish', onfinish);
+		stream.removeListener('end', onlegacyfinish);
+		stream.removeListener('close', onlegacyfinish);
+		stream.removeListener('finish', onfinish);
+		stream.removeListener('exit', onexit);
+		stream.removeListener('end', onend);
+		stream.removeListener('error', callback);
+		stream.removeListener('close', onclose);
+	};
+};
+
+module.exports = eos;
+},{"once":88}],88:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33,"wrappy":148}],89:[function(require,module,exports){
 var pump = require('pump')
 var inherits = require('inherits')
 var Duplexify = require('duplexify')
@@ -19224,10 +19353,10 @@ var define = function(opts) {
 module.exports = define({destroy:false})
 module.exports.obj = define({destroy:false, objectMode:true, highWaterMark:16})
 
-},{"duplexify":30,"inherits":41,"pump":87}],89:[function(require,module,exports){
+},{"duplexify":31,"inherits":40,"pump":86}],90:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":90}],90:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":91}],91:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -19303,7 +19432,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":92,"./_stream_writable":94,"core-util-is":10,"inherits":41,"process-nextick-args":84}],91:[function(require,module,exports){
+},{"./_stream_readable":93,"./_stream_writable":95,"core-util-is":11,"inherits":40,"process-nextick-args":83}],92:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -19330,7 +19459,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":93,"core-util-is":10,"inherits":41}],92:[function(require,module,exports){
+},{"./_stream_transform":94,"core-util-is":11,"inherits":40}],93:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19344,15 +19473,11 @@ var processNextTick = require('process-nextick-args');
 var isArray = require('isarray');
 /*</replacement>*/
 
-/*<replacement>*/
-var Buffer = require('buffer').Buffer;
-/*</replacement>*/
-
 Readable.ReadableState = ReadableState;
 
-var EE = require('events');
-
 /*<replacement>*/
+var EE = require('events').EventEmitter;
+
 var EElistenerCount = function (emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -19370,6 +19495,9 @@ var Stream;
 /*</replacement>*/
 
 var Buffer = require('buffer').Buffer;
+/*<replacement>*/
+var bufferShim = require('buffer-shims');
+/*</replacement>*/
 
 /*<replacement>*/
 var util = require('core-util-is');
@@ -19378,7 +19506,7 @@ util.inherits = require('inherits');
 
 /*<replacement>*/
 var debugUtil = require('util');
-var debug = undefined;
+var debug = void 0;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -19386,9 +19514,22 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
+var BufferList = require('./internal/streams/BufferList');
 var StringDecoder;
 
 util.inherits(Readable, Stream);
+
+function prependListener(emitter, event, fn) {
+  if (typeof emitter.prependListener === 'function') {
+    return emitter.prependListener(event, fn);
+  } else {
+    // This is a hack to make sure that our error handler is attached before any
+    // userland ones.  NEVER DO THIS. This is here only because this code needs
+    // to continue to work with older versions of Node.js that do not include
+    // the prependListener() method. The goal is to eventually remove this hack.
+    if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
+  }
+}
 
 var Duplex;
 function ReadableState(options, stream) {
@@ -19411,7 +19552,10 @@ function ReadableState(options, stream) {
   // cast to ints.
   this.highWaterMark = ~ ~this.highWaterMark;
 
-  this.buffer = [];
+  // A linked list is used to store data chunks instead of an array because the
+  // linked list can remove elements from the beginning faster than
+  // array.shift()
+  this.buffer = new BufferList();
   this.length = 0;
   this.pipes = null;
   this.pipesCount = 0;
@@ -19483,7 +19627,7 @@ Readable.prototype.push = function (chunk, encoding) {
   if (!state.objectMode && typeof chunk === 'string') {
     encoding = encoding || state.defaultEncoding;
     if (encoding !== state.encoding) {
-      chunk = new Buffer(chunk, encoding);
+      chunk = bufferShim.from(chunk, encoding);
       encoding = '';
     }
   }
@@ -19513,8 +19657,8 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
       var e = new Error('stream.push() after EOF');
       stream.emit('error', e);
     } else if (state.endEmitted && addToFront) {
-      var e = new Error('stream.unshift() after end event');
-      stream.emit('error', e);
+      var _e = new Error('stream.unshift() after end event');
+      stream.emit('error', _e);
     } else {
       var skipAdd;
       if (state.decoder && !addToFront && !encoding) {
@@ -19574,7 +19718,8 @@ function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     n = MAX_HWM;
   } else {
-    // Get the next highest power of 2
+    // Get the next highest power of 2 to prevent increasing hwm excessively in
+    // tiny amounts
     n--;
     n |= n >>> 1;
     n |= n >>> 2;
@@ -19586,44 +19731,34 @@ function computeNewHighWaterMark(n) {
   return n;
 }
 
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
 function howMuchToRead(n, state) {
-  if (state.length === 0 && state.ended) return 0;
-
-  if (state.objectMode) return n === 0 ? 0 : 1;
-
-  if (n === null || isNaN(n)) {
-    // only flow one buffer at a time
-    if (state.flowing && state.buffer.length) return state.buffer[0].length;else return state.length;
+  if (n <= 0 || state.length === 0 && state.ended) return 0;
+  if (state.objectMode) return 1;
+  if (n !== n) {
+    // Only flow one buffer at a time
+    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
   }
-
-  if (n <= 0) return 0;
-
-  // If we're asking for more than the target buffer level,
-  // then raise the water mark.  Bump up to the next highest
-  // power of 2, to prevent increasing it excessively in tiny
-  // amounts.
+  // If we're asking for more than the current hwm, then raise the hwm.
   if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
-
-  // don't have that much.  return null, unless we've ended.
-  if (n > state.length) {
-    if (!state.ended) {
-      state.needReadable = true;
-      return 0;
-    } else {
-      return state.length;
-    }
+  if (n <= state.length) return n;
+  // Don't have enough
+  if (!state.ended) {
+    state.needReadable = true;
+    return 0;
   }
-
-  return n;
+  return state.length;
 }
 
 // you can override either this method, or the async _read(n) below.
 Readable.prototype.read = function (n) {
   debug('read', n);
+  n = parseInt(n, 10);
   var state = this._readableState;
   var nOrig = n;
 
-  if (typeof n !== 'number' || n > 0) state.emittedReadable = false;
+  if (n !== 0) state.emittedReadable = false;
 
   // if we're doing read(0) to trigger a readable event, but we
   // already have a bunch of data in the buffer, then just trigger
@@ -19679,9 +19814,7 @@ Readable.prototype.read = function (n) {
   if (state.ended || state.reading) {
     doRead = false;
     debug('reading or ended', doRead);
-  }
-
-  if (doRead) {
+  } else if (doRead) {
     debug('do read');
     state.reading = true;
     state.sync = true;
@@ -19690,11 +19823,10 @@ Readable.prototype.read = function (n) {
     // call internal read method
     this._read(state.highWaterMark);
     state.sync = false;
+    // If _read pushed data synchronously, then `reading` will be false,
+    // and we need to re-evaluate how much data we can return to the user.
+    if (!state.reading) n = howMuchToRead(nOrig, state);
   }
-
-  // If _read pushed data synchronously, then `reading` will be false,
-  // and we need to re-evaluate how much data we can return to the user.
-  if (doRead && !state.reading) n = howMuchToRead(nOrig, state);
 
   var ret;
   if (n > 0) ret = fromList(n, state);else ret = null;
@@ -19702,16 +19834,18 @@ Readable.prototype.read = function (n) {
   if (ret === null) {
     state.needReadable = true;
     n = 0;
+  } else {
+    state.length -= n;
   }
 
-  state.length -= n;
+  if (state.length === 0) {
+    // If we have nothing in the buffer, then we want to know
+    // as soon as we *do* get something into the buffer.
+    if (!state.ended) state.needReadable = true;
 
-  // If we have nothing in the buffer, then we want to know
-  // as soon as we *do* get something into the buffer.
-  if (state.length === 0 && !state.ended) state.needReadable = true;
-
-  // If we tried to read() past the EOF, then emit end on the next tick.
-  if (nOrig !== n && state.ended && state.length === 0) endReadable(this);
+    // If we tried to read() past the EOF, then emit end on the next tick.
+    if (nOrig !== n && state.ended) endReadable(this);
+  }
 
   if (ret !== null) this.emit('data', ret);
 
@@ -19859,17 +19993,25 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
   }
 
+  // If the user pushes more data while we're writing to dest then we'll end up
+  // in ondata again. However, we only want to increase awaitDrain once because
+  // dest will only emit one 'drain' event for the multiple writes.
+  // => Introduce a guard on increasing awaitDrain.
+  var increasedAwaitDrain = false;
   src.on('data', ondata);
   function ondata(chunk) {
     debug('ondata');
+    increasedAwaitDrain = false;
     var ret = dest.write(chunk);
-    if (false === ret) {
+    if (false === ret && !increasedAwaitDrain) {
       // If the user unpiped during `dest.write()`, it is possible
       // to get stuck in a permanently paused state if that write
       // also returned false.
-      if (state.pipesCount === 1 && state.pipes[0] === dest && src.listenerCount('data') === 1 && !cleanedUp) {
+      // => Check whether `dest` is still a piping destination.
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
         debug('false write response, pause', src._readableState.awaitDrain);
         src._readableState.awaitDrain++;
+        increasedAwaitDrain = true;
       }
       src.pause();
     }
@@ -19883,9 +20025,9 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     dest.removeListener('error', onerror);
     if (EElistenerCount(dest, 'error') === 0) dest.emit('error', er);
   }
-  // This is a brutally ugly hack to make sure that our error handler
-  // is attached before any userland ones.  NEVER DO THIS.
-  if (!dest._events || !dest._events.error) dest.on('error', onerror);else if (isArray(dest._events.error)) dest._events.error.unshift(onerror);else dest._events.error = [onerror, dest._events.error];
+
+  // Make sure our error handler is attached before userland ones.
+  prependListener(dest, 'error', onerror);
 
   // Both close and finish should trigger unpipe, but only once.
   function onclose() {
@@ -19983,18 +20125,14 @@ Readable.prototype.unpipe = function (dest) {
 Readable.prototype.on = function (ev, fn) {
   var res = Stream.prototype.on.call(this, ev, fn);
 
-  // If listening to data, and it has not explicitly been paused,
-  // then call resume to start the flow of data on the next tick.
-  if (ev === 'data' && false !== this._readableState.flowing) {
-    this.resume();
-  }
-
-  if (ev === 'readable' && !this._readableState.endEmitted) {
+  if (ev === 'data') {
+    // Start flowing on next tick if stream isn't explicitly paused
+    if (this._readableState.flowing !== false) this.resume();
+  } else if (ev === 'readable') {
     var state = this._readableState;
-    if (!state.readableListening) {
-      state.readableListening = true;
+    if (!state.endEmitted && !state.readableListening) {
+      state.readableListening = state.needReadable = true;
       state.emittedReadable = false;
-      state.needReadable = true;
       if (!state.reading) {
         processNextTick(nReadingNextTick, this);
       } else if (state.length) {
@@ -20038,6 +20176,7 @@ function resume_(stream, state) {
   }
 
   state.resumeScheduled = false;
+  state.awaitDrain = 0;
   stream.emit('resume');
   flow(stream);
   if (state.flowing && !state.reading) stream.read(0);
@@ -20056,11 +20195,7 @@ Readable.prototype.pause = function () {
 function flow(stream) {
   var state = stream._readableState;
   debug('flow', state.flowing);
-  if (state.flowing) {
-    do {
-      var chunk = stream.read();
-    } while (null !== chunk && state.flowing);
-  }
+  while (state.flowing && stream.read() !== null) {}
 }
 
 // wrap an old-style stream as the async data source.
@@ -20131,50 +20266,101 @@ Readable._fromList = fromList;
 
 // Pluck off n bytes from an array of buffers.
 // Length is the combined lengths of all the buffers in the list.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
 function fromList(n, state) {
-  var list = state.buffer;
-  var length = state.length;
-  var stringMode = !!state.decoder;
-  var objectMode = !!state.objectMode;
+  // nothing buffered
+  if (state.length === 0) return null;
+
   var ret;
-
-  // nothing in the list, definitely empty.
-  if (list.length === 0) return null;
-
-  if (length === 0) ret = null;else if (objectMode) ret = list.shift();else if (!n || n >= length) {
-    // read it all, truncate the array.
-    if (stringMode) ret = list.join('');else if (list.length === 1) ret = list[0];else ret = Buffer.concat(list, length);
-    list.length = 0;
+  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+    // read it all, truncate the list
+    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
+    state.buffer.clear();
   } else {
-    // read just some of it.
-    if (n < list[0].length) {
-      // just take a part of the first list item.
-      // slice is the same for buffers and strings.
-      var buf = list[0];
-      ret = buf.slice(0, n);
-      list[0] = buf.slice(n);
-    } else if (n === list[0].length) {
-      // first list is a perfect match
-      ret = list.shift();
-    } else {
-      // complex case.
-      // we have enough to cover it, but it spans past the first buffer.
-      if (stringMode) ret = '';else ret = new Buffer(n);
-
-      var c = 0;
-      for (var i = 0, l = list.length; i < l && c < n; i++) {
-        var buf = list[0];
-        var cpy = Math.min(n - c, buf.length);
-
-        if (stringMode) ret += buf.slice(0, cpy);else buf.copy(ret, c, 0, cpy);
-
-        if (cpy < buf.length) list[0] = buf.slice(cpy);else list.shift();
-
-        c += cpy;
-      }
-    }
+    // read part of list
+    ret = fromListPartial(n, state.buffer, state.decoder);
   }
 
+  return ret;
+}
+
+// Extracts only enough buffered data to satisfy the amount requested.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function fromListPartial(n, list, hasStrings) {
+  var ret;
+  if (n < list.head.data.length) {
+    // slice is the same for buffers and strings
+    ret = list.head.data.slice(0, n);
+    list.head.data = list.head.data.slice(n);
+  } else if (n === list.head.data.length) {
+    // first chunk is a perfect match
+    ret = list.shift();
+  } else {
+    // result spans more than one buffer
+    ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
+  }
+  return ret;
+}
+
+// Copies a specified amount of characters from the list of buffered data
+// chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBufferString(n, list) {
+  var p = list.head;
+  var c = 1;
+  var ret = p.data;
+  n -= ret.length;
+  while (p = p.next) {
+    var str = p.data;
+    var nb = n > str.length ? str.length : n;
+    if (nb === str.length) ret += str;else ret += str.slice(0, n);
+    n -= nb;
+    if (n === 0) {
+      if (nb === str.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = str.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
+  return ret;
+}
+
+// Copies a specified amount of bytes from the list of buffered data chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBuffer(n, list) {
+  var ret = bufferShim.allocUnsafe(n);
+  var p = list.head;
+  var c = 1;
+  p.data.copy(ret);
+  n -= p.data.length;
+  while (p = p.next) {
+    var buf = p.data;
+    var nb = n > buf.length ? buf.length : n;
+    buf.copy(ret, ret.length - n, 0, nb);
+    n -= nb;
+    if (n === 0) {
+      if (nb === buf.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = buf.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
   return ret;
 }
 
@@ -20183,7 +20369,7 @@ function endReadable(stream) {
 
   // If we get here before consuming all the bytes, then that is a
   // bug in node.  Should never happen.
-  if (state.length > 0) throw new Error('endReadable called on non-empty stream');
+  if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
 
   if (!state.endEmitted) {
     state.ended = true;
@@ -20213,7 +20399,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":90,"_process":85,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"isarray":44,"process-nextick-args":84,"string_decoder/":137,"util":6}],93:[function(require,module,exports){
+},{"./_stream_duplex":91,"./internal/streams/BufferList":96,"_process":84,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":37,"inherits":40,"isarray":43,"process-nextick-args":83,"string_decoder/":139,"util":6}],94:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -20350,7 +20536,7 @@ Transform.prototype.push = function (chunk, encoding) {
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
 Transform.prototype._transform = function (chunk, encoding, cb) {
-  throw new Error('not implemented');
+  throw new Error('Not implemented');
 };
 
 Transform.prototype._write = function (chunk, encoding, cb) {
@@ -20388,13 +20574,13 @@ function done(stream, er) {
   var ws = stream._writableState;
   var ts = stream._transformState;
 
-  if (ws.length) throw new Error('calling transform done when ws.length != 0');
+  if (ws.length) throw new Error('Calling transform done when ws.length != 0');
 
-  if (ts.transforming) throw new Error('calling transform done when still transforming');
+  if (ts.transforming) throw new Error('Calling transform done when still transforming');
 
   return stream.push(null);
 }
-},{"./_stream_duplex":90,"core-util-is":10,"inherits":41}],94:[function(require,module,exports){
+},{"./_stream_duplex":91,"core-util-is":11,"inherits":40}],95:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -20410,10 +20596,6 @@ var processNextTick = require('process-nextick-args');
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
-/*</replacement>*/
-
-/*<replacement>*/
-var Buffer = require('buffer').Buffer;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
@@ -20441,6 +20623,9 @@ var Stream;
 /*</replacement>*/
 
 var Buffer = require('buffer').Buffer;
+/*<replacement>*/
+var bufferShim = require('buffer-shims');
+/*</replacement>*/
 
 util.inherits(Writable, Stream);
 
@@ -20544,10 +20729,9 @@ function WritableState(options, stream) {
   // count buffered requests
   this.bufferedRequestCount = 0;
 
-  // create the two objects needed to store the corked requests
-  // they are not a linked list, as no new elements are inserted in there
+  // allocate the first CorkedRequest, there is always
+  // one allocated and free to use, and we maintain at most two
   this.corkedRequestsFree = new CorkedRequest(this);
-  this.corkedRequestsFree.next = new CorkedRequest(this);
 }
 
 WritableState.prototype.getBuffer = function writableStateGetBuffer() {
@@ -20594,7 +20778,7 @@ function Writable(options) {
 
 // Otherwise people can pipe Writable streams, which is just wrong.
 Writable.prototype.pipe = function () {
-  this.emit('error', new Error('Cannot pipe. Not readable.'));
+  this.emit('error', new Error('Cannot pipe, not readable'));
 };
 
 function writeAfterEnd(stream, cb) {
@@ -20611,9 +20795,16 @@ function writeAfterEnd(stream, cb) {
 // how many bytes or characters.
 function validChunk(stream, state, chunk, cb) {
   var valid = true;
-
-  if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
-    var er = new TypeError('Invalid non-string/buffer chunk');
+  var er = false;
+  // Always throw error if a null is written
+  // if we are not in object mode then throw
+  // if it is not a buffer, string, or undefined.
+  if (chunk === null) {
+    er = new TypeError('May not write null values to stream');
+  } else if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  if (er) {
     stream.emit('error', er);
     processNextTick(cb, er);
     valid = false;
@@ -20663,11 +20854,12 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   if (typeof encoding === 'string') encoding = encoding.toLowerCase();
   if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
   this._writableState.defaultEncoding = encoding;
+  return this;
 };
 
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
-    chunk = new Buffer(chunk, encoding);
+    chunk = bufferShim.from(chunk, encoding);
   }
   return chunk;
 }
@@ -20790,12 +20982,16 @@ function clearBuffer(stream, state) {
 
     doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
-    // doWrite is always async, defer these to save a bit of time
+    // doWrite is almost always async, defer these to save a bit of time
     // as the hot path ends with doWrite
     state.pendingcb++;
     state.lastBufferedRequest = null;
-    state.corkedRequestsFree = holder.next;
-    holder.next = null;
+    if (holder.next) {
+      state.corkedRequestsFree = holder.next;
+      holder.next = null;
+    } else {
+      state.corkedRequestsFree = new CorkedRequest(state);
+    }
   } else {
     // Slow case, write chunks one-by-one
     while (entry) {
@@ -20913,10 +21109,76 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":90,"_process":85,"buffer":8,"core-util-is":10,"events":38,"inherits":41,"process-nextick-args":84,"util-deprecate":142}],95:[function(require,module,exports){
+},{"./_stream_duplex":91,"_process":84,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":37,"inherits":40,"process-nextick-args":83,"util-deprecate":144}],96:[function(require,module,exports){
+'use strict';
+
+var Buffer = require('buffer').Buffer;
+/*<replacement>*/
+var bufferShim = require('buffer-shims');
+/*</replacement>*/
+
+module.exports = BufferList;
+
+function BufferList() {
+  this.head = null;
+  this.tail = null;
+  this.length = 0;
+}
+
+BufferList.prototype.push = function (v) {
+  var entry = { data: v, next: null };
+  if (this.length > 0) this.tail.next = entry;else this.head = entry;
+  this.tail = entry;
+  ++this.length;
+};
+
+BufferList.prototype.unshift = function (v) {
+  var entry = { data: v, next: this.head };
+  if (this.length === 0) this.tail = entry;
+  this.head = entry;
+  ++this.length;
+};
+
+BufferList.prototype.shift = function () {
+  if (this.length === 0) return;
+  var ret = this.head.data;
+  if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+  --this.length;
+  return ret;
+};
+
+BufferList.prototype.clear = function () {
+  this.head = this.tail = null;
+  this.length = 0;
+};
+
+BufferList.prototype.join = function (s) {
+  if (this.length === 0) return '';
+  var p = this.head;
+  var ret = '' + p.data;
+  while (p = p.next) {
+    ret += s + p.data;
+  }return ret;
+};
+
+BufferList.prototype.concat = function (n) {
+  if (this.length === 0) return bufferShim.alloc(0);
+  if (this.length === 1) return this.head.data;
+  var ret = bufferShim.allocUnsafe(n >>> 0);
+  var p = this.head;
+  var i = 0;
+  while (p) {
+    p.data.copy(ret, i);
+    i += p.data.length;
+    p = p.next;
+  }
+  return ret;
+};
+},{"buffer":9,"buffer-shims":8}],97:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":91}],96:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":92}],98:[function(require,module,exports){
+(function (process){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -20930,13 +21192,18 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":90,"./lib/_stream_passthrough.js":91,"./lib/_stream_readable.js":92,"./lib/_stream_transform.js":93,"./lib/_stream_writable.js":94}],97:[function(require,module,exports){
+if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
+  module.exports = Stream;
+}
+
+}).call(this,require('_process'))
+},{"./lib/_stream_duplex.js":91,"./lib/_stream_passthrough.js":92,"./lib/_stream_readable.js":93,"./lib/_stream_transform.js":94,"./lib/_stream_writable.js":95,"_process":84}],99:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":93}],98:[function(require,module,exports){
+},{"./lib/_stream_transform.js":94}],100:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":94}],99:[function(require,module,exports){
+},{"./lib/_stream_writable.js":95}],101:[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -20997,7 +21264,15 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],100:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
+/*
+search-index-adder
+
+The module that adds documents into search-index' can also be run as a
+standalone
+
+*/
+
 const DBEntries = require('./lib/delete.js').DBEntries
 const DBWriteCleanStream = require('./lib/replicate.js').DBWriteCleanStream
 const DBWriteMergeStream = require('./lib/replicate.js').DBWriteMergeStream
@@ -21092,6 +21367,7 @@ const getOptions = function (options, done) {
     fieldedSearch: true,
     fieldOptions: {},
     preserveCase: false,
+    keySeparator: '￮',
     storeable: true,
     searchable: true,
     indexPath: 'si',
@@ -21119,9 +21395,8 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":101,"./lib/delete.js":102,"./lib/replicate.js":103,"bunyan":9,"docproc":18,"leveldown":58,"levelup":71,"pumpify":88,"stream":135}],101:[function(require,module,exports){
+},{"./lib/add.js":103,"./lib/delete.js":104,"./lib/replicate.js":105,"bunyan":10,"docproc":19,"leveldown":57,"levelup":70,"pumpify":89,"stream":137}],103:[function(require,module,exports){
 const Transform = require('stream').Transform
-const sep = '￮'
 const util = require('util')
 
 const emitIndexKeys = function (s) {
@@ -21144,6 +21419,7 @@ const IndexBatch = function (batchOptions, indexer) {
 exports.IndexBatch = IndexBatch
 util.inherits(IndexBatch, Transform)
 IndexBatch.prototype._transform = function (ingestedDoc, encoding, end) {
+  const sep = this.indexer.options.keySeparator
   var that = this
   this.indexer.deleter([ingestedDoc.id], function (err) {
     if (err) that.indexer.log.info(err)
@@ -21177,17 +21453,17 @@ IndexBatch.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":135,"util":145}],102:[function(require,module,exports){
+},{"stream":137,"util":147}],104:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
 const Transform = require('stream').Transform
-const sep = '￮'
 
 // Remove all keys in DB
 exports.flush = function (options, callback) {
+  const sep = options.keySeparator
   var deleteOps = []
-  options.indexes.createKeyStream({gte: '0', lte: '￮'})
+  options.indexes.createKeyStream({gte: '0', lte: sep})
     .on('data', function (data) {
       deleteOps.push({type: 'del', key: data})
     })
@@ -21208,6 +21484,7 @@ exports.DocVector = DocVector
 util.inherits(DocVector, Transform)
 DocVector.prototype._transform = function (docId, encoding, end) {
   docId = JSON.parse(docId)
+  const sep = this.options.keySeparator
   var that = this
   this.options.indexes.createReadStream({
     gte: 'DOCUMENT-VECTOR' + sep + docId + sep,
@@ -21226,6 +21503,7 @@ const DBEntries = function (options) {
 exports.DBEntries = DBEntries
 util.inherits(DBEntries, Transform)
 DBEntries.prototype._transform = function (vector, encoding, end) {
+  const sep = this.options.keySeparator
   var docId
   for (var k in vector.value) {
     docId = vector.key.split(sep)[1]
@@ -21254,6 +21532,7 @@ const RecalibrateDB = function (options) {
 exports.RecalibrateDB = RecalibrateDB
 util.inherits(RecalibrateDB, Transform)
 RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
+  const sep = this.options.keySeparator
   var that = this
   this.options.indexes.get(dbEntry.key, function (err, value) {
     if (err) that.options.log.info(err)
@@ -21292,7 +21571,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],103:[function(require,module,exports){
+},{"stream":137,"util":147}],105:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21303,16 +21582,17 @@ const DBWriteMergeStream = function (options) {
 exports.DBWriteMergeStream = DBWriteMergeStream
 util.inherits(DBWriteMergeStream, Transform)
 DBWriteMergeStream.prototype._transform = function (data, encoding, end) {
+  const sep = this.options.keySeparator
   var that = this
   this.options.indexes.get(data.key, function (err, val) {
     err // do something with this error
     var newVal
     // concat to existing values (only if they exist)
-    if (data.key.substring(0, 3) === 'TF￮') {
+    if (data.key.substring(0, 3) === 'TF' + sep) {
       newVal = data.value.concat(val || []).sort(function (a, b) {
         return b[0] - a[0]
       })
-    } else if (data.key.substring(0, 3) === 'DF￮') {
+    } else if (data.key.substring(0, 3) === 'DF' + sep) {
       newVal = data.value.concat(val || []).sort()
     } else if (data.key === 'DOCUMENT-COUNT') {
       newVal = (+val) + (+data.value || 0)
@@ -21358,7 +21638,7 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":135,"util":145}],104:[function(require,module,exports){
+},{"stream":137,"util":147}],106:[function(require,module,exports){
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
 const CalculateEntireResultSet = require('./lib/CalculateEntireResultSet.js').CalculateEntireResultSet
@@ -21478,7 +21758,7 @@ const initModule = function (err, Searcher, moduleReady) {
     s.push('init')
     s.push(null)
     return s.pipe(
-      new GetIntersectionStream(Searcher.options, siUtil.getKeySet(q.query.AND)))
+      new GetIntersectionStream(Searcher.options, siUtil.getKeySet(q.query.AND, Searcher.options.keySeparator)))
       .pipe(new FetchDocsFromDB(Searcher.options))
   }
 
@@ -21507,6 +21787,7 @@ const getOptions = function (options, done) {
     fieldedSearch: true,
     store: true,
     indexPath: 'si',
+    keySeparator: '￮',
     logLevel: 'error',
     nGramLength: 1,
     nGramSeparator: ' ',
@@ -21535,7 +21816,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/CalculateBuckets.js":105,"./lib/CalculateCategories.js":106,"./lib/CalculateEntireResultSet.js":107,"./lib/CalculateResultSetPerClause.js":108,"./lib/CalculateTopScoringDocs.js":109,"./lib/CalculateTotalHits.js":110,"./lib/FetchDocsFromDB.js":111,"./lib/FetchStoredDoc.js":112,"./lib/GetIntersectionStream.js":113,"./lib/MergeOrConditions.js":114,"./lib/ScoreDocsOnField.js":115,"./lib/ScoreTopScoringDocsTFIDF.js":116,"./lib/SortTopScoringDocs.js":117,"./lib/matcher.js":118,"./lib/siUtil.js":119,"JSONStream":3,"bunyan":9,"levelup":71,"stopword":120,"stream":135}],105:[function(require,module,exports){
+},{"./lib/CalculateBuckets.js":107,"./lib/CalculateCategories.js":108,"./lib/CalculateEntireResultSet.js":109,"./lib/CalculateResultSetPerClause.js":110,"./lib/CalculateTopScoringDocs.js":111,"./lib/CalculateTotalHits.js":112,"./lib/FetchDocsFromDB.js":113,"./lib/FetchStoredDoc.js":114,"./lib/GetIntersectionStream.js":115,"./lib/MergeOrConditions.js":116,"./lib/ScoreDocsOnField.js":117,"./lib/ScoreTopScoringDocsTFIDF.js":118,"./lib/SortTopScoringDocs.js":119,"./lib/matcher.js":120,"./lib/siUtil.js":121,"JSONStream":3,"bunyan":10,"levelup":70,"stopword":122,"stream":137}],107:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -21551,10 +21832,11 @@ exports.CalculateBuckets = CalculateBuckets
 util.inherits(CalculateBuckets, Transform)
 CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, end) {
   const that = this
+  const sep = this.options.keySeparator
   var bucketsProcessed = 0
   that.buckets.forEach(function (bucket) {
-    const gte = 'DF￮' + bucket.field + '￮' + bucket.gte
-    const lte = 'DF￮' + bucket.field + '￮' + bucket.lte + '￮'
+    const gte = 'DF' + sep + bucket.field + sep + bucket.gte
+    const lte = 'DF' + sep + bucket.field + sep + bucket.lte + sep
     that.options.indexes.createReadStream({gte: gte, lte: lte})
       .on('data', function (data) {
         var IDSet = _intersection(data.value, mergedQueryClauses.set)
@@ -21575,7 +21857,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":75,"lodash.uniq":80,"stream":135,"util":145}],106:[function(require,module,exports){
+},{"lodash.intersection":74,"lodash.uniq":79,"stream":137,"util":147}],108:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -21589,15 +21871,16 @@ const CalculateCategories = function (options, category) {
 exports.CalculateCategories = CalculateCategories
 util.inherits(CalculateCategories, Transform)
 CalculateCategories.prototype._transform = function (mergedQueryClauses, encoding, end) {
+  const sep = this.options.keySeparator
   const that = this
-  const gte = 'DF￮' + this.category.field + '￮+'
-  const lte = 'DF￮' + this.category.field + '￮￮'
+  const gte = 'DF' + sep + this.category.field + sep + '+'
+  const lte = 'DF' + sep + this.category.field + sep + sep
   this.category.values = this.category.values || []
   that.options.indexes.createReadStream({gte: gte, lte: lte})
     .on('data', function (data) {
       var IDSet = _intersection(data.value, mergedQueryClauses.set)
       if (IDSet.length > 0) { // make this optional
-        var key = data.key.split('￮')[2]
+        var key = data.key.split(sep)[2]
         var value = IDSet.length
         if (that.category.set) {
           value = IDSet
@@ -21615,7 +21898,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
     })
 }
 
-},{"lodash.intersection":75,"stream":135,"util":145}],107:[function(require,module,exports){
+},{"lodash.intersection":74,"stream":137,"util":147}],109:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -21639,7 +21922,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":79,"stream":135,"util":145}],108:[function(require,module,exports){
+},{"lodash.union":78,"stream":137,"util":147}],110:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -21654,13 +21937,14 @@ const CalculateResultSetPerClause = function (options) {
 exports.CalculateResultSetPerClause = CalculateResultSetPerClause
 util.inherits(CalculateResultSetPerClause, Transform)
 CalculateResultSetPerClause.prototype._transform = function (queryClause, encoding, end) {
+  const sep = this.options.keySeparator
   const that = this
   const frequencies = []
   var NOT = function (includeResults) {
     const bigIntersect = _spread(_intersection)
     var include = bigIntersect(includeResults)
     // if there are no NOT conditions, simply end()
-    if (siUtil.getKeySet(queryClause.NOT).length === 0) {
+    if (siUtil.getKeySet(queryClause.NOT, sep).length === 0) {
       that.push(JSON.stringify({
         queryClause: queryClause,
         set: include,
@@ -21672,9 +21956,9 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
       // if there ARE "NOT"-conditions, remove all IDs specified by NOT
       var i = 0
       var excludeResults = []
-      siUtil.getKeySet(queryClause.NOT).forEach(function (item) {
+      siUtil.getKeySet(queryClause.NOT, sep).forEach(function (item) {
         var exclude = []
-        that.options.indexes.createReadStream({gte: item[0], lte: item[1] + '￮'})
+        that.options.indexes.createReadStream({gte: item[0], lte: item[1] + sep})
           .on('data', function (data) {
             exclude = uniqFast(exclude.concat(data.value))
           })
@@ -21683,7 +21967,7 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
           })
           .on('end', function () {
             excludeResults.push(exclude.sort())
-            if (++i === siUtil.getKeySet(queryClause.NOT).length) {
+            if (++i === siUtil.getKeySet(queryClause.NOT, sep).length) {
               excludeResults.forEach(function (excludeSet) {
                 include = _difference(include, excludeSet)
               })
@@ -21701,10 +21985,10 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
   }
   // Get all of the IDs in the AND conditions
   var IDSets = []
-  siUtil.getKeySet(queryClause.AND).forEach(function (item) {
+  siUtil.getKeySet(queryClause.AND, sep).forEach(function (item) {
     var include = []
     var setLength = 0
-    that.options.indexes.createReadStream({gte: item[0], lte: item[1] + '￮'})
+    that.options.indexes.createReadStream({gte: item[0], lte: item[1] + sep})
       .on('data', function (data) {
         setLength += data.value.length
         include = uniqFast(include.concat(data.value))
@@ -21714,13 +21998,13 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
       })
       .on('end', function () {
         frequencies.push({
-          gte: item[0].split('￮')[1] + '￮' + item[0].split('￮')[2],
-          lte: item[1].split('￮')[1] + '￮' + item[1].split('￮')[2],
+          gte: item[0].split(sep)[1] + sep + item[0].split(sep)[2],
+          lte: item[1].split(sep)[1] + sep + item[1].split(sep)[2],
           tf: include.length, // actual term frequency across docs
           setLength: setLength // number of array elements that need to be traversed
         })
         IDSets.push(include.sort())
-        if (IDSets.length === siUtil.getKeySet(queryClause.AND).length) {
+        if (IDSets.length === siUtil.getKeySet(queryClause.AND, sep).length) {
           NOT(IDSets)
         }
       })
@@ -21744,7 +22028,7 @@ const uniqFast = function (a) {
   return out
 }
 
-},{"./siUtil.js":119,"lodash.difference":74,"lodash.intersection":75,"lodash.spread":78,"stream":135,"util":145}],109:[function(require,module,exports){
+},{"./siUtil.js":121,"lodash.difference":73,"lodash.intersection":74,"lodash.spread":77,"stream":137,"util":147}],111:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -21757,6 +22041,7 @@ const CalculateTopScoringDocs = function (options, seekLimit) {
 exports.CalculateTopScoringDocs = CalculateTopScoringDocs
 util.inherits(CalculateTopScoringDocs, Transform)
 CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, end) {
+  const sep = this.options.keySeparator
   clauseSet = JSON.parse(clauseSet)
   const that = this
 
@@ -21764,8 +22049,8 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     return a.setLength - b.setLength
   })[0]
 
-  const gte = 'TF￮' + lowestFrequency.gte + '￮￮'
-  const lte = 'TF￮' + lowestFrequency.lte + '￮￮￮'
+  const gte = 'TF' + sep + lowestFrequency.gte + sep + sep
+  const lte = 'TF' + sep + lowestFrequency.lte + sep + sep + sep
 
   // walk down the DF array of lowest frequency hit until (offset +
   // pagesize) hits have been found
@@ -21796,7 +22081,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":77,"stream":135,"util":145}],110:[function(require,module,exports){
+},{"lodash.sortedindexof":76,"stream":137,"util":147}],112:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21814,7 +22099,7 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":135,"util":145}],111:[function(require,module,exports){
+},{"stream":137,"util":147}],113:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21825,8 +22110,9 @@ const FetchDocsFromDB = function (options) {
 exports.FetchDocsFromDB = FetchDocsFromDB
 util.inherits(FetchDocsFromDB, Transform)
 FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
+  const sep = this.options.keySeparator
   const that = this
-  this.options.indexes.get('DOCUMENT￮' + line.toString() + '￮', function (err, doc) {
+  this.options.indexes.get('DOCUMENT' + sep + line.toString() + sep, function (err, doc) {
     if (!err) {
       that.push(JSON.stringify(doc) + '\n')
     }
@@ -21834,7 +22120,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],112:[function(require,module,exports){
+},{"stream":137,"util":147}],114:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21845,9 +22131,10 @@ const FetchStoredDoc = function (options) {
 exports.FetchStoredDoc = FetchStoredDoc
 util.inherits(FetchStoredDoc, Transform)
 FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
+  const sep = this.options.keySeparator
   var that = this
   doc = JSON.parse(doc)
-  that.options.indexes.get('DOCUMENT￮' + doc.id + '￮', function (err, stored) {
+  that.options.indexes.get('DOCUMENT' + sep + doc.id + sep, function (err, stored) {
     if (err) {
       that.options.log.debug(err)
     }
@@ -21857,7 +22144,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":135,"util":145}],113:[function(require,module,exports){
+},{"stream":137,"util":147}],115:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -21892,7 +22179,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":42,"stream":135,"util":145}],114:[function(require,module,exports){
+},{"intersect-arrays-to-stream":41,"stream":137,"util":147}],116:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21925,7 +22212,7 @@ MergeOrConditions.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":135,"util":145}],115:[function(require,module,exports){
+},{"stream":137,"util":147}],117:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -21939,11 +22226,12 @@ const ScoreDocsOnField = function (options, seekLimit, sort) {
 exports.ScoreDocsOnField = ScoreDocsOnField
 util.inherits(ScoreDocsOnField, Transform)
 ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
+  const sep = this.options.keySeparator
   clauseSet = JSON.parse(clauseSet)
   const that = this
 
-  const gte = 'TF￮' + this.sort.field + '￮'
-  const lte = 'TF￮' + this.sort.field + '￮￮'
+  const gte = 'TF' + sep + this.sort.field + sep
+  const lte = 'TF' + sep + this.sort.field + sep + sep
 
   // walk down the DF array of lowest frequency hit until (offset +
   // pagesize) hits have been found
@@ -21963,7 +22251,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
     })
 }
 
-},{"lodash.sortedindexof":77,"stream":135,"util":145}],116:[function(require,module,exports){
+},{"lodash.sortedindexof":76,"stream":137,"util":147}],118:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21974,6 +22262,7 @@ const ScoreTopScoringDocsTFIDF = function (options) {
 exports.ScoreTopScoringDocsTFIDF = ScoreTopScoringDocsTFIDF
 util.inherits(ScoreTopScoringDocsTFIDF, Transform)
 ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end) {
+  const sep = this.options.keySeparator
   const that = this
   clause = JSON.parse(clause)
   clause.queryClause.BOOST = clause.queryClause.BOOST || 0 // put this somewhere better
@@ -21989,11 +22278,11 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
     var vectors = []
     fields.forEach(function (field) {
       that.options.indexes.get(
-        'DOCUMENT-VECTOR￮' + docID + '￮' + field + '￮', function (err, docVector) {
+        'DOCUMENT-VECTOR' + sep + docID + sep + field + sep, function (err, docVector) {
           err // TODO something clever with err
           var vector = {}
           clause.queryClause.AND[field].forEach(function (token) {
-            vector[field + '￮' + token] = docVector[token]
+            vector[field + sep + token] = docVector[token]
           })
           vectors.push(vector)
           if (vectors.length === fields.length) {
@@ -22028,7 +22317,7 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
   })
 }
 
-},{"stream":135,"util":145}],117:[function(require,module,exports){
+},{"stream":137,"util":147}],119:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22077,7 +22366,7 @@ SortTopScoringDocs.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":135,"util":145}],118:[function(require,module,exports){
+},{"stream":137,"util":147}],120:[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const util = require('util')
@@ -22088,17 +22377,18 @@ const MatcherStream = function (q, options) {
 }
 util.inherits(MatcherStream, Transform)
 MatcherStream.prototype._transform = function (q, encoding, end) {
+  const sep = this.options.keySeparator
   q = JSON.parse(q)
   const that = this
   var results = []
 
   const formatMatches = function (item) {
     if (q.type === 'ID') {
-      that.push([item.key.split('￮')[2], item.value])
+      that.push([item.key.split(sep)[2], item.value])
     } else if (q.type === 'count') {
-      that.push([item.key.split('￮')[2], item.value.length])
+      that.push([item.key.split(sep)[2], item.value.length])
     } else {
-      that.push(item.key.split('￮')[2])
+      that.push(item.key.split(sep)[2])
     }
   }
 
@@ -22113,8 +22403,8 @@ MatcherStream.prototype._transform = function (q, encoding, end) {
   }
 
   this.options.indexes.createReadStream({
-    start: 'DF￮' + q.field + '￮' + q.beginsWith,
-    end: 'DF￮' + q.field + '￮' + q.beginsWith + '￮￮￮'
+    start: 'DF' + sep + q.field + sep + q.beginsWith,
+    end: 'DF' + sep + q.field + sep + q.beginsWith + sep + sep + sep
   })
   .on('data', function (data) {
     results.push(data)
@@ -22146,16 +22436,16 @@ exports.match = function (q, options) {
   return s.pipe(new MatcherStream(q, options))
 }
 
-},{"stream":135,"util":145}],119:[function(require,module,exports){
-exports.getKeySet = function (clause) {
+},{"stream":137,"util":147}],121:[function(require,module,exports){
+exports.getKeySet = function (clause, sep) {
   var keySet = []
   for (var fieldName in clause) {
     clause[fieldName].forEach(function (token) {
       var gte = token.gte || token
       var lte = token.lte || token
       keySet.push([
-        'DF￮' + fieldName + '￮' + gte + '￮￮',
-        'DF￮' + fieldName + '￮' + lte + '￮￮￮'
+        'DF' + sep + fieldName + sep + gte + sep + sep,
+        'DF' + sep + fieldName + sep + lte + sep + sep + sep
       ])
     })
   }
@@ -22180,7 +22470,7 @@ exports.getQueryDefaults = function (q) {
   }, q)
 }
 
-},{}],120:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 const defaultStopwords = require('./stopwords_en.js').words
 
 exports.removeStopwords = function(tokens, stopwords) {
@@ -22210,7 +22500,7 @@ exports.ru = require('./stopwords_ru.js').words
 exports.sv = require('./stopwords_sv.js').words
 exports.zh = require('./stopwords_zh.js').words
 
-},{"./stopwords_da.js":121,"./stopwords_en.js":122,"./stopwords_es.js":123,"./stopwords_fa.js":124,"./stopwords_fr.js":125,"./stopwords_it.js":126,"./stopwords_ja.js":127,"./stopwords_nl.js":128,"./stopwords_no.js":129,"./stopwords_pl.js":130,"./stopwords_pt.js":131,"./stopwords_ru.js":132,"./stopwords_sv.js":133,"./stopwords_zh.js":134}],121:[function(require,module,exports){
+},{"./stopwords_da.js":123,"./stopwords_en.js":124,"./stopwords_es.js":125,"./stopwords_fa.js":126,"./stopwords_fr.js":127,"./stopwords_it.js":128,"./stopwords_ja.js":129,"./stopwords_nl.js":130,"./stopwords_no.js":131,"./stopwords_pl.js":132,"./stopwords_pt.js":133,"./stopwords_ru.js":134,"./stopwords_sv.js":135,"./stopwords_zh.js":136}],123:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -22242,7 +22532,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],122:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 
@@ -22282,7 +22572,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],123:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22320,7 +22610,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],124:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
@@ -22360,7 +22650,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],125:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /*
  Copyright (c) 2014, Ismaël Héry
 
@@ -22556,7 +22846,7 @@ var words = ['être', 'avoir', 'faire',
 
 exports.words = words
 
-},{}],126:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -22610,7 +22900,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],127:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 // Original copyright:
 /*
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -22671,7 +22961,7 @@ var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し
 // tell the world about the noise words.
 module.exports = words
 
-},{}],128:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
 
@@ -22716,7 +23006,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],129:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /*
 Copyright (c) 2014, Kristoffer Brabrand
 
@@ -22760,7 +23050,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],130:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /*
 Copyright (c) 2013, Paweł Łaskarzewski
 
@@ -22824,7 +23114,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],131:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 /*
 Copyright (c) 2011, Luís Rodrigues
 
@@ -22962,7 +23252,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],132:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /*
 Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
 
@@ -23005,7 +23295,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],133:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -23037,7 +23327,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],134:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -23084,7 +23374,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],135:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23213,7 +23503,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":38,"inherits":41,"readable-stream/duplex.js":89,"readable-stream/passthrough.js":95,"readable-stream/readable.js":96,"readable-stream/transform.js":97,"readable-stream/writable.js":98}],136:[function(require,module,exports){
+},{"events":37,"inherits":40,"readable-stream/duplex.js":90,"readable-stream/passthrough.js":97,"readable-stream/readable.js":98,"readable-stream/transform.js":99,"readable-stream/writable.js":100}],138:[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -23235,7 +23525,7 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],137:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23458,7 +23748,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":8}],138:[function(require,module,exports){
+},{"buffer":9}],140:[function(require,module,exports){
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
 exports.logNormalization = 'logNormalization'
 exports.raw = 'raw'
@@ -23508,7 +23798,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{}],139:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -23574,7 +23864,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":76}],140:[function(require,module,exports){
+},{"lodash.isequal":75}],142:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -23686,7 +23976,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":85,"stream":135}],141:[function(require,module,exports){
+},{"_process":84,"stream":137}],143:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -23709,7 +23999,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],142:[function(require,module,exports){
+},{"buffer":9}],144:[function(require,module,exports){
 (function (global){
 
 /**
@@ -23780,16 +24070,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],143:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"dup":41}],144:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],146:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],145:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -24379,7 +24669,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":144,"_process":85,"inherits":143}],146:[function(require,module,exports){
+},{"./support/isBuffer":146,"_process":84,"inherits":145}],148:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -24414,7 +24704,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],147:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
