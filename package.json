@@ -9,6 +9,8 @@
   "license": "MIT",
   "dependencies": {
     "bunyan": "^1.8.1",
+    "leveldown": "^1.5.0",
+    "levelup": "^1.3.3",
     "search-index-adder": "0.1.17",
     "search-index-searcher": "0.1.13"
   },
