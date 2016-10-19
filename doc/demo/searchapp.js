@@ -32,7 +32,7 @@ const indexData = function (data) {
 // initialize search-index
 SearchIndex({
   indexPath: 'si-demo',
-  keySeparator: '~'
+  keySeparator: '~' // this is a websafe separator for most languages- change if weirdness occurs
 }, initIndex)
 
 // PAGE CONTROLLERS
