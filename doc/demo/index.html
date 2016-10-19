@@ -1,0 +1,35 @@
+<div align="center">
+  <a id="showAdd" href="#">add</a> | <a id="showSearch" href="#">search</a>
+  <div id="add">
+    <h1>Add docs to the index</h1>
+    <p>
+      enter some title text<br>
+      <textarea id="title"></textarea>
+    </p>
+    <p>
+      enter some body text<br>
+      <textarea id="body"></textarea>
+    </p>
+    <input type="button" value="add" id="a" />
+  </div>
+  <div id="search" style="display:none">
+    <h1>Search the index</h1>
+    <p>
+      <input id="s">
+    </p>
+    <p>
+      <a id="sa" href="#">show all docs in index</a>
+    </p>
+  </div>
+  <br>
+  <br>
+  <div id="result"></ul>
+</div>
+
+<script src="https://cdn.rawgit.com/caolan/highland/2.10.0/dist/highland.min.js"></script>
+<!-- This link is just tmp -->
+<script src="https://rawgit.com/fergiemcdowall/search-index/master/dist/search-index.min.js"></script>
+<!-- This is the correct link to use, but it is still being synced up
+<script src="https://cdn.rawgit.com/fergiemcdowall/search-index/master/dist/search-index.min.js"></script>
+-->
+<script src="searchapp.js"></script>
