@@ -108,10 +108,10 @@ module.exports = function(siOptions) {
     siOptions.indexes.close(function (err) {
       while (!siOptions.indexes.isClosed()) {
         //log not always working here- investigate
-       siOptions.log.info('closing...')
+        if (siOptions.log) siOptions.log.info('closing...')
       }
       if (siOptions.indexes.isClosed()) {
-       siOptions.log.info('closed...')
+        if (siOptions.log) siOptions.log.info('closed...')
         callback(err)
       }
     })
@@ -11823,18 +11823,18 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "levelup@^1.3.3",
+        "raw": "levelup",
         "scope": null,
         "escapedName": "levelup",
         "name": "levelup",
-        "rawSpec": "^1.3.3",
-        "spec": ">=1.3.3 <2.0.0",
-        "type": "range"
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
       },
-      "/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder"
+      "/Users/fergusmcdowall/Desktop/node/search-index"
     ]
   ],
-  "_from": "levelup@>=1.3.3 <2.0.0",
+  "_from": "levelup@latest",
   "_id": "levelup@1.3.3",
   "_inCache": true,
   "_installable": true,
@@ -11851,23 +11851,25 @@ module.exports={
   "_npmVersion": "2.15.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "levelup@^1.3.3",
+    "raw": "levelup",
     "scope": null,
     "escapedName": "levelup",
     "name": "levelup",
-    "rawSpec": "^1.3.3",
-    "spec": ">=1.3.3 <2.0.0",
-    "type": "range"
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
   },
   "_requiredBy": [
+    "#USER",
+    "/",
     "/search-index-adder",
     "/search-index-searcher"
   ],
   "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.3.tgz",
   "_shasum": "bf9db62bdb6188d08eaaa2efcf6cc311916f41fd",
   "_shrinkwrap": null,
-  "_spec": "levelup@^1.3.3",
-  "_where": "/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder",
+  "_spec": "levelup",
+  "_where": "/Users/fergusmcdowall/Desktop/node/search-index",
   "browser": {
     "leveldown": false,
     "leveldown/package": false,
