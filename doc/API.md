@@ -18,6 +18,7 @@
 ### Writing
 
  * [add(...)](#add)
+ * [callbackyAdd(...)](#callbackyadd)
  * [defaultPipeline(...)](#defaultpipeline)
  * [del(...)](#del)
  * [flush(...)](#flush)
@@ -307,12 +308,28 @@ Returns a [writeable
 stream](https://nodejs.org/api/stream.html#stream_class_stream_writable)
 that can be used to index documents into the search index.
 
+ * **batchOptions** is an object describing [indexing options](#defaultpipeline)
+
 ```javascript
 s.pipe(JSONStream.parse())
-  .pipe(si.defaultPipeline(options))
+  .pipe(si.defaultPipeline(batchOptions))
   .pipe(si.add())
 ```
 
+### callbackyAdd(...)
+
+An alternative to `.add(...)` that allows adding by passing an array
+of documents and waiting for a callback. Useful for environments where
+node streams cannot be constructed (such as browsers)
+
+ * **data** is an array of documents
+ * **batchOptions** is an object describing [indexing options](#defaultpipeline)
+
+```javascript
+mySearchIndex.callbackyAdd(batchOptions, data, function(err) {
+  // docs added
+})
+```
 
 ### defaultPipeline(...)
 

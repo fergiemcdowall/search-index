@@ -22,11 +22,10 @@ const initIndex = function (err, index) {
 
 // index some data
 const indexData = function (data) {
-  highland([data])
-    .pipe(mySearchIndex.defaultPipeline())
-    .pipe(mySearchIndex.add())
-    .on('data', function(data) {})
-    .on('end', search)
+  mySearchIndex.callbackyAdd({}, data, function(err) {
+    // and then show search results (defaults to everything)
+    search()
+  })
 }
 
 // initialize search-index
@@ -41,7 +40,7 @@ SearchIndex({
 document.getElementById("a").onmousedown = function() {
   const t = document.getElementById("title").value
   const b = document.getElementById("body").value
-  if ((t + b).length > 0) indexData({ title: t, body: b })
+  if ((t + b).length > 0) indexData([{ title: t, body: b }])
 }
 
 // show the search panel
