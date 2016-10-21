@@ -7,3 +7,5 @@ backup.gz
 .idea
 bundle.js
 test/sandbox
+dist/out.html
+dist/search-index-full-paths.js

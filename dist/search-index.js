@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SearchIndex = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SearchIndex = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js":[function(require,module,exports){
 const bunyan = require('bunyan')
 const level = require('levelup')
 const down = require('leveldown')
@@ -78,7 +78,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":2,"bunyan":10,"leveldown":57,"levelup":70,"search-index-adder":102,"search-index-searcher":106}],2:[function(require,module,exports){
+},{"./siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/lib/siUtil.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","search-index-adder":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/index.js","search-index-searcher":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/lib/siUtil.js":[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -120,255 +120,7 @@ module.exports = function(siOptions) {
   return siUtil
 }
 
-},{}],3:[function(require,module,exports){
-(function (process,Buffer){
-
-
-'use strict'
-
-var Parser = require('jsonparse')
-  , through = require('through')
-
-/*
-
-  the value of this.stack that creationix's jsonparse has is weird.
-
-  it makes this code ugly, but his problem is way harder that mine,
-  so i'll forgive him.
-
-*/
-
-exports.parse = function (path, map) {
-  var header, footer
-  var parser = new Parser()
-  var stream = through(function (chunk) {
-    if('string' === typeof chunk)
-      chunk = new Buffer(chunk)
-    parser.write(chunk)
-  },
-  function (data) {
-    if(data)
-      stream.write(data)
-    if (header)
-        stream.emit('header', header)
-    if (footer)
-      stream.emit('footer', footer)
-    stream.queue(null)
-  })
-
-  if('string' === typeof path)
-    path = path.split('.').map(function (e) {
-      if (e === '$*')
-        return {emitKey: true}
-      else if (e === '*')
-        return true
-      else if (e === '') // '..'.split('.') returns an empty string
-        return {recurse: true}
-      else
-        return e
-    })
-
-
-  var count = 0, _key
-  if(!path || !path.length)
-    path = null
-
-  parser.onValue = function (value) {
-    if (!this.root)
-      stream.root = value
-
-    if(! path) return
-
-    var i = 0 // iterates on path
-    var j  = 0 // iterates on stack
-    var emitKey = false;
-    while (i < path.length) {
-      var key = path[i]
-      var c
-      j++
-
-      if (key && !key.recurse) {
-        c = (j === this.stack.length) ? this : this.stack[j]
-        if (!c) return
-        if (! check(key, c.key)) {
-          setHeaderFooter(c.key, value)
-          return
-        }
-        emitKey = !!key.emitKey;
-        i++
-      } else {
-        i++
-        var nextKey = path[i]
-        if (! nextKey) return
-        while (true) {
-          c = (j === this.stack.length) ? this : this.stack[j]
-          if (!c) return
-          if (check(nextKey, c.key)) {
-            i++;
-            if (!Object.isFrozen(this.stack[j]))
-              this.stack[j].value = null
-            break
-          } else {
-            setHeaderFooter(c.key, value)
-          }
-          j++
-        }
-      }
-
-    }
-    if (j !== this.stack.length) return
-
-    count ++
-    var actualPath = this.stack.slice(1).map(function(element) { return element.key }).concat([this.key])
-    var data = this.value[this.key]
-    if(null != data)
-      if(null != (data = map ? map(data, actualPath) : data)) {
-        data = emitKey ? { value: data, key: this.key } : data;
-        stream.queue(data)
-      }
-    delete this.value[this.key]
-    for(var k in this.stack)
-      if (!Object.isFrozen(this.stack[k]))
-        this.stack[k].value = null
-
-    // emit header
-    if (header) {
-      stream.emit('header', header);
-      header = false;
-    }
-  }
-  parser._onToken = parser.onToken;
-
-  parser.onToken = function (token, value) {
-    parser._onToken(token, value);
-    if (this.stack.length === 0) {
-      if (stream.root) {
-        if(!path)
-          stream.queue(stream.root)
-        count = 0;
-        stream.root = null;
-      }
-    }
-  }
-
-  parser.onError = function (err) {
-    if(err.message.indexOf("at position") > -1)
-      err.message = "Invalid JSON (" + err.message + ")";
-    stream.emit('error', err)
-  }
-
-  return stream
-
-  function setHeaderFooter(key, value) {
-    // header has not been emitted yet
-    if (header !== false) {
-      header = header || {}
-      header[key] = value
-    }
-
-    // footer has not been emitted yet but header has
-    if (footer !== false && header === false) {
-      footer = footer || {}
-      footer[key] = value
-    }
-  }
-}
-
-function check (x, y) {
-  if ('string' === typeof x)
-    return y == x
-  else if (x && 'function' === typeof x.exec)
-    return x.exec(y)
-  else if ('boolean' === typeof x || 'object' === typeof x)
-    return x
-  else if ('function' === typeof x)
-    return x(y)
-  return false
-}
-
-exports.stringify = function (op, sep, cl, indent) {
-  indent = indent || 0
-  if (op === false){
-    op = ''
-    sep = '\n'
-    cl = ''
-  } else if (op == null) {
-
-    op = '[\n'
-    sep = '\n,\n'
-    cl = '\n]\n'
-
-  }
-
-  //else, what ever you like
-
-  var stream
-    , first = true
-    , anyData = false
-  stream = through(function (data) {
-    anyData = true
-    try {
-      var json = JSON.stringify(data, null, indent)
-    } catch (err) {
-      return stream.emit('error', err)
-    }
-    if(first) { first = false ; stream.queue(op + json)}
-    else stream.queue(sep + json)
-  },
-  function (data) {
-    if(!anyData)
-      stream.queue(op)
-    stream.queue(cl)
-    stream.queue(null)
-  })
-
-  return stream
-}
-
-exports.stringifyObject = function (op, sep, cl, indent) {
-  indent = indent || 0
-  if (op === false){
-    op = ''
-    sep = '\n'
-    cl = ''
-  } else if (op == null) {
-
-    op = '{\n'
-    sep = '\n,\n'
-    cl = '\n}\n'
-
-  }
-
-  //else, what ever you like
-
-  var first = true
-  var anyData = false
-  var stream = through(function (data) {
-    anyData = true
-    var json = JSON.stringify(data[0]) + ':' + JSON.stringify(data[1], null, indent)
-    if(first) { first = false ; this.queue(op + json)}
-    else this.queue(sep + json)
-  },
-  function (data) {
-    if(!anyData) this.queue(op)
-    this.queue(cl)
-
-    this.queue(null)
-  })
-
-  return stream
-}
-
-if(!module.parent && process.title !== 'browser') {
-  process.stdin
-    .pipe(exports.parse(process.argv[2]))
-    .pipe(exports.stringify('[', ',\n', ']\n', 2))
-    .pipe(process.stdout)
-}
-
-
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":84,"buffer":9,"jsonparse":45,"through":142}],4:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/assert/assert.js":[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -729,7 +481,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":147}],5:[function(require,module,exports){
+},{"util/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/base64-js/index.js":[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -845,123 +597,11 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],6:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js":[function(require,module,exports){
 
-},{}],7:[function(require,module,exports){
-arguments[4][6][0].apply(exports,arguments)
-},{"dup":6}],8:[function(require,module,exports){
-(function (global){
-'use strict';
-
-var buffer = require('buffer');
-var Buffer = buffer.Buffer;
-var SlowBuffer = buffer.SlowBuffer;
-var MAX_LEN = buffer.kMaxLength || 2147483647;
-exports.alloc = function alloc(size, fill, encoding) {
-  if (typeof Buffer.alloc === 'function') {
-    return Buffer.alloc(size, fill, encoding);
-  }
-  if (typeof encoding === 'number') {
-    throw new TypeError('encoding must not be number');
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  var enc = encoding;
-  var _fill = fill;
-  if (_fill === undefined) {
-    enc = undefined;
-    _fill = 0;
-  }
-  var buf = new Buffer(size);
-  if (typeof _fill === 'string') {
-    var fillBuf = new Buffer(_fill, enc);
-    var flen = fillBuf.length;
-    var i = -1;
-    while (++i < size) {
-      buf[i] = fillBuf[i % flen];
-    }
-  } else {
-    buf.fill(_fill);
-  }
-  return buf;
-}
-exports.allocUnsafe = function allocUnsafe(size) {
-  if (typeof Buffer.allocUnsafe === 'function') {
-    return Buffer.allocUnsafe(size);
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  return new Buffer(size);
-}
-exports.from = function from(value, encodingOrOffset, length) {
-  if (typeof Buffer.from === 'function' && (!global.Uint8Array || Uint8Array.from !== Buffer.from)) {
-    return Buffer.from(value, encodingOrOffset, length);
-  }
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number');
-  }
-  if (typeof value === 'string') {
-    return new Buffer(value, encodingOrOffset);
-  }
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    var offset = encodingOrOffset;
-    if (arguments.length === 1) {
-      return new Buffer(value);
-    }
-    if (typeof offset === 'undefined') {
-      offset = 0;
-    }
-    var len = length;
-    if (typeof len === 'undefined') {
-      len = value.byteLength - offset;
-    }
-    if (offset >= value.byteLength) {
-      throw new RangeError('\'offset\' is out of bounds');
-    }
-    if (len > value.byteLength - offset) {
-      throw new RangeError('\'length\' is out of bounds');
-    }
-    return new Buffer(value.slice(offset, offset + len));
-  }
-  if (Buffer.isBuffer(value)) {
-    var out = new Buffer(value.length);
-    value.copy(out, 0, 0, value.length);
-    return out;
-  }
-  if (value) {
-    if (Array.isArray(value) || (typeof ArrayBuffer !== 'undefined' && value.buffer instanceof ArrayBuffer) || 'length' in value) {
-      return new Buffer(value);
-    }
-    if (value.type === 'Buffer' && Array.isArray(value.data)) {
-      return new Buffer(value.data);
-    }
-  }
-
-  throw new TypeError('First argument must be a string, Buffer, ' + 'ArrayBuffer, Array, or array-like object.');
-}
-exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
-  if (typeof Buffer.allocUnsafeSlow === 'function') {
-    return Buffer.allocUnsafeSlow(size);
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size >= MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  return new SlowBuffer(size);
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":9}],9:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browserify/lib/_empty.js":[function(require,module,exports){
+arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"][0].apply(exports,arguments)
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js":[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -2754,7 +2394,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":5,"ieee754":39,"isarray":43}],10:[function(require,module,exports){
+},{"base64-js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/base64-js/index.js","ieee754":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ieee754/index.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js":[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2015 Trent Mick.
@@ -4322,7 +3962,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":42,"_process":84,"assert":4,"events":37,"fs":7,"os":82,"safe-json-stringify":101,"stream":137,"util":147}],11:[function(require,module,exports){
+},{"../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","assert":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/assert/assert.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","fs":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browserify/lib/_empty.js","os":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/os-browserify/browser.js","safe-json-stringify":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/safe-json-stringify/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4433,7 +4073,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":42}],12:[function(require,module,exports){
+},{"../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-iterator.js":[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -4469,7 +4109,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":17,"util":147}],13:[function(require,module,exports){
+},{"abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-leveldown.js":[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -4529,7 +4169,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":42,"./deferred-iterator":12,"_process":84,"abstract-leveldown":17,"util":147}],14:[function(require,module,exports){
+},{"../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./deferred-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-chained-batch.js":[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4612,7 +4252,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":84}],15:[function(require,module,exports){
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-iterator.js":[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4665,7 +4305,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":84}],16:[function(require,module,exports){
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-leveldown.js":[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -4941,13 +4581,13 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":14,"./abstract-iterator":15,"_process":84,"xtend":149}],17:[function(require,module,exports){
+},{"../../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/index.js":[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
 exports.isLevelDOWN          = require('./is-leveldown')
 
-},{"./abstract-chained-batch":14,"./abstract-iterator":15,"./abstract-leveldown":16,"./is-leveldown":18}],18:[function(require,module,exports){
+},{"./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-iterator.js","./abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-leveldown.js","./is-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/is-leveldown.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/is-leveldown.js":[function(require,module,exports){
 var AbstractLevelDOWN = require('./abstract-leveldown')
 
 function isLevelDOWN (db) {
@@ -4963,7 +4603,7 @@ function isLevelDOWN (db) {
 
 module.exports = isLevelDOWN
 
-},{"./abstract-leveldown":16}],19:[function(require,module,exports){
+},{"./abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-leveldown.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/index.js":[function(require,module,exports){
 const bunyan = require('bunyan')
 const pumpify = require('pumpify')
 const stopwords = []
@@ -5034,7 +4674,7 @@ exports.customPipeline = function (pl) {
   return pumpify.obj.apply(this, pl)
 }
 
-},{"./pipeline/CalculateTermFrequency.js":20,"./pipeline/CreateCompositeVector.js":21,"./pipeline/CreateSortVectors.js":22,"./pipeline/CreateStoredDocument.js":23,"./pipeline/FieldedSearch.js":24,"./pipeline/IngestDoc.js":25,"./pipeline/LowCase.js":26,"./pipeline/NormaliseFields.js":27,"./pipeline/RemoveStopWords.js":28,"./pipeline/Spy.js":29,"./pipeline/Tokeniser.js":30,"bunyan":10,"pumpify":89}],20:[function(require,module,exports){
+},{"./pipeline/CalculateTermFrequency.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CalculateTermFrequency.js","./pipeline/CreateCompositeVector.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateCompositeVector.js","./pipeline/CreateSortVectors.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateSortVectors.js","./pipeline/CreateStoredDocument.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateStoredDocument.js","./pipeline/FieldedSearch.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/FieldedSearch.js","./pipeline/IngestDoc.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/IngestDoc.js","./pipeline/LowCase.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/LowCase.js","./pipeline/NormaliseFields.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/NormaliseFields.js","./pipeline/RemoveStopWords.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/RemoveStopWords.js","./pipeline/Spy.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/Spy.js","./pipeline/Tokeniser.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/Tokeniser.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","pumpify":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/pumpify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CalculateTermFrequency.js":[function(require,module,exports){
 const tv = require('term-vector')
 const tf = require('term-frequency')
 const Transform = require('stream').Transform
@@ -5079,7 +4719,7 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"term-frequency":140,"term-vector":141,"util":147}],21:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","term-frequency":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-frequency/index.js","term-vector":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-vector/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateCompositeVector.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5110,7 +4750,7 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],22:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateSortVectors.js":[function(require,module,exports){
 const tf = require('term-frequency')
 const tv = require('term-vector')
 const Transform = require('stream').Transform
@@ -5147,7 +4787,7 @@ CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"term-frequency":140,"term-vector":141,"util":147}],23:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","term-frequency":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-frequency/index.js","term-vector":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-vector/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/CreateStoredDocument.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5175,7 +4815,7 @@ CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],24:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/FieldedSearch.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5200,7 +4840,7 @@ FieldedSearch.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],25:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/IngestDoc.js":[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -5235,7 +4875,7 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
 }
 
 
-},{"stream":137,"util":147}],26:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/LowCase.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5262,7 +4902,7 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],27:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/NormaliseFields.js":[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -5285,7 +4925,7 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],28:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/RemoveStopWords.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5315,7 +4955,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],29:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/Spy.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5330,7 +4970,7 @@ Spy.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],30:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/pipeline/Tokeniser.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -5356,7 +4996,7 @@ Tokeniser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":137,"util":147}],31:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/index.js":[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -5588,7 +5228,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":84,"buffer":9,"end-of-stream":32,"inherits":40,"readable-stream":98,"stream-shift":138}],32:[function(require,module,exports){
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","end-of-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/node_modules/end-of-stream/index.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","readable-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/readable.js","stream-shift":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-shift/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/node_modules/end-of-stream/index.js":[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -5661,7 +5301,7 @@ var eos = function(stream, opts, callback) {
 };
 
 module.exports = eos;
-},{"once":33}],33:[function(require,module,exports){
+},{"once":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/node_modules/once/once.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/node_modules/once/once.js":[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 
@@ -5684,7 +5324,93 @@ function once (fn) {
   return f
 }
 
-},{"wrappy":148}],34:[function(require,module,exports){
+},{"wrappy":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/wrappy/wrappy.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/end-of-stream/index.js":[function(require,module,exports){
+var once = require('once');
+
+var noop = function() {};
+
+var isRequest = function(stream) {
+	return stream.setHeader && typeof stream.abort === 'function';
+};
+
+var isChildProcess = function(stream) {
+	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
+};
+
+var eos = function(stream, opts, callback) {
+	if (typeof opts === 'function') return eos(stream, null, opts);
+	if (!opts) opts = {};
+
+	callback = once(callback || noop);
+
+	var ws = stream._writableState;
+	var rs = stream._readableState;
+	var readable = opts.readable || (opts.readable !== false && stream.readable);
+	var writable = opts.writable || (opts.writable !== false && stream.writable);
+
+	var onlegacyfinish = function() {
+		if (!stream.writable) onfinish();
+	};
+
+	var onfinish = function() {
+		writable = false;
+		if (!readable) callback();
+	};
+
+	var onend = function() {
+		readable = false;
+		if (!writable) callback();
+	};
+
+	var onexit = function(exitCode) {
+		callback(exitCode ? new Error('exited with error code: ' + exitCode) : null);
+	};
+
+	var onclose = function() {
+		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
+		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
+	};
+
+	var onrequest = function() {
+		stream.req.on('finish', onfinish);
+	};
+
+	if (isRequest(stream)) {
+		stream.on('complete', onfinish);
+		stream.on('abort', onclose);
+		if (stream.req) onrequest();
+		else stream.on('request', onrequest);
+	} else if (writable && !ws) { // legacy streams
+		stream.on('end', onlegacyfinish);
+		stream.on('close', onlegacyfinish);
+	}
+
+	if (isChildProcess(stream)) stream.on('exit', onexit);
+
+	stream.on('end', onend);
+	stream.on('finish', onfinish);
+	if (opts.error !== false) stream.on('error', callback);
+	stream.on('close', onclose);
+
+	return function() {
+		stream.removeListener('complete', onfinish);
+		stream.removeListener('abort', onclose);
+		stream.removeListener('request', onrequest);
+		if (stream.req) stream.req.removeListener('finish', onfinish);
+		stream.removeListener('end', onlegacyfinish);
+		stream.removeListener('close', onlegacyfinish);
+		stream.removeListener('finish', onfinish);
+		stream.removeListener('exit', onexit);
+		stream.removeListener('end', onend);
+		stream.removeListener('error', callback);
+		stream.removeListener('close', onclose);
+	};
+};
+
+module.exports = eos;
+},{"once":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/end-of-stream/node_modules/once/once.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/end-of-stream/node_modules/once/once.js":[function(require,module,exports){
+arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/node_modules/once/once.js"][0].apply(exports,arguments)
+},{"wrappy":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/wrappy/wrappy.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/custom.js":[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -5741,7 +5467,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":36}],35:[function(require,module,exports){
+},{"prr":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/errno.js":[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -6056,7 +5782,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":34}],36:[function(require,module,exports){
+},{"./custom":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/custom.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js":[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -6120,7 +5846,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],37:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6424,7 +6150,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],38:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/idb-wrapper/idbstore.js":[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -7831,7 +7557,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],39:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ieee754/index.js":[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -7917,7 +7643,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],40:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7942,7 +7668,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],41:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/intersect-arrays-to-stream/index.js":[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -8008,7 +7734,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":137}],42:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js":[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -8031,14 +7757,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],43:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js":[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],44:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isbuffer/index.js":[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -8048,352 +7774,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":9}],45:[function(require,module,exports){
-(function (Buffer){
-/*global Buffer*/
-// Named constants with unique integer values
-var C = {};
-// Tokens
-var LEFT_BRACE    = C.LEFT_BRACE    = 0x1;
-var RIGHT_BRACE   = C.RIGHT_BRACE   = 0x2;
-var LEFT_BRACKET  = C.LEFT_BRACKET  = 0x3;
-var RIGHT_BRACKET = C.RIGHT_BRACKET = 0x4;
-var COLON         = C.COLON         = 0x5;
-var COMMA         = C.COMMA         = 0x6;
-var TRUE          = C.TRUE          = 0x7;
-var FALSE         = C.FALSE         = 0x8;
-var NULL          = C.NULL          = 0x9;
-var STRING        = C.STRING        = 0xa;
-var NUMBER        = C.NUMBER        = 0xb;
-// Tokenizer States
-var START   = C.START   = 0x11;
-var STOP    = C.STOP    = 0x12;
-var TRUE1   = C.TRUE1   = 0x21;
-var TRUE2   = C.TRUE2   = 0x22;
-var TRUE3   = C.TRUE3   = 0x23;
-var FALSE1  = C.FALSE1  = 0x31;
-var FALSE2  = C.FALSE2  = 0x32;
-var FALSE3  = C.FALSE3  = 0x33;
-var FALSE4  = C.FALSE4  = 0x34;
-var NULL1   = C.NULL1   = 0x41;
-var NULL2   = C.NULL2   = 0x42;
-var NULL3   = C.NULL3   = 0x43;
-var NUMBER1 = C.NUMBER1 = 0x51;
-var NUMBER3 = C.NUMBER3 = 0x53;
-var STRING1 = C.STRING1 = 0x61;
-var STRING2 = C.STRING2 = 0x62;
-var STRING3 = C.STRING3 = 0x63;
-var STRING4 = C.STRING4 = 0x64;
-var STRING5 = C.STRING5 = 0x65;
-var STRING6 = C.STRING6 = 0x66;
-// Parser States
-var VALUE   = C.VALUE   = 0x71;
-var KEY     = C.KEY     = 0x72;
-// Parser Modes
-var OBJECT  = C.OBJECT  = 0x81;
-var ARRAY   = C.ARRAY   = 0x82;
-
-
-function Parser() {
-  this.tState = START;
-  this.value = undefined;
-
-  this.string = undefined; // string data
-  this.unicode = undefined; // unicode escapes
-
-  this.key = undefined;
-  this.mode = undefined;
-  this.stack = [];
-  this.state = VALUE;
-  this.bytes_remaining = 0; // number of bytes remaining in multi byte utf8 char to read after split boundary
-  this.bytes_in_sequence = 0; // bytes in multi byte utf8 char to read
-  this.temp_buffs = { "2": new Buffer(2), "3": new Buffer(3), "4": new Buffer(4) }; // for rebuilding chars split before boundary is reached
-
-  // Stream offset
-  this.offset = -1;
-}
-
-// Slow code to string converter (only used when throwing syntax errors)
-Parser.toknam = function (code) {
-  var keys = Object.keys(C);
-  for (var i = 0, l = keys.length; i < l; i++) {
-    var key = keys[i];
-    if (C[key] === code) { return key; }
-  }
-  return code && ("0x" + code.toString(16));
-};
-
-var proto = Parser.prototype;
-proto.onError = function (err) { throw err; };
-proto.charError = function (buffer, i) {
-  this.tState = STOP;
-  this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + Parser.toknam(this.tState)));
-};
-proto.write = function (buffer) {
-  if (typeof buffer === "string") buffer = new Buffer(buffer);
-  var n;
-  for (var i = 0, l = buffer.length; i < l; i++) {
-    if (this.tState === START){
-      n = buffer[i];
-      this.offset++;
-      if(n === 0x7b){ this.onToken(LEFT_BRACE, "{"); // {
-      }else if(n === 0x7d){ this.onToken(RIGHT_BRACE, "}"); // }
-      }else if(n === 0x5b){ this.onToken(LEFT_BRACKET, "["); // [
-      }else if(n === 0x5d){ this.onToken(RIGHT_BRACKET, "]"); // ]
-      }else if(n === 0x3a){ this.onToken(COLON, ":");  // :
-      }else if(n === 0x2c){ this.onToken(COMMA, ","); // ,
-      }else if(n === 0x74){ this.tState = TRUE1;  // t
-      }else if(n === 0x66){ this.tState = FALSE1;  // f
-      }else if(n === 0x6e){ this.tState = NULL1; // n
-      }else if(n === 0x22){ this.string = ""; this.tState = STRING1; // "
-      }else if(n === 0x2d){ this.string = "-"; this.tState = NUMBER1; // -
-      }else{
-        if (n >= 0x30 && n < 0x40) { // 1-9
-          this.string = String.fromCharCode(n); this.tState = NUMBER3;
-        } else if (n === 0x20 || n === 0x09 || n === 0x0a || n === 0x0d) {
-          // whitespace
-        } else {
-          return this.charError(buffer, i);
-        }
-      }
-    }else if (this.tState === STRING1){ // After open quote
-      n = buffer[i]; // get current byte from buffer
-      // check for carry over of a multi byte char split between data chunks
-      // & fill temp buffer it with start of this data chunk up to the boundary limit set in the last iteration
-      if (this.bytes_remaining > 0) {
-        for (var j = 0; j < this.bytes_remaining; j++) {
-          this.temp_buffs[this.bytes_in_sequence][this.bytes_in_sequence - this.bytes_remaining + j] = buffer[j];
-        }
-        this.string += this.temp_buffs[this.bytes_in_sequence].toString();
-        this.bytes_in_sequence = this.bytes_remaining = 0;
-        i = i + j - 1;
-      } else if (this.bytes_remaining === 0 && n >= 128) { // else if no remainder bytes carried over, parse multi byte (>=128) chars one at a time
-        if (n <= 193 || n > 244) {
-          return this.onError(new Error("Invalid UTF-8 character at position " + i + " in state " + Parser.toknam(this.tState)));
-        }
-        if ((n >= 194) && (n <= 223)) this.bytes_in_sequence = 2;
-        if ((n >= 224) && (n <= 239)) this.bytes_in_sequence = 3;
-        if ((n >= 240) && (n <= 244)) this.bytes_in_sequence = 4;
-        if ((this.bytes_in_sequence + i) > buffer.length) { // if bytes needed to complete char fall outside buffer length, we have a boundary split
-          for (var k = 0; k <= (buffer.length - 1 - i); k++) {
-            this.temp_buffs[this.bytes_in_sequence][k] = buffer[i + k]; // fill temp buffer of correct size with bytes available in this chunk
-          }
-          this.bytes_remaining = (i + this.bytes_in_sequence) - buffer.length;
-          i = buffer.length - 1;
-        } else {
-          this.string += buffer.slice(i, (i + this.bytes_in_sequence)).toString();
-          i = i + this.bytes_in_sequence - 1;
-        }
-      } else if (n === 0x22) { this.tState = START; this.onToken(STRING, this.string); this.offset += Buffer.byteLength(this.string, 'utf8') + 1; this.string = undefined; }
-      else if (n === 0x5c) { this.tState = STRING2; }
-      else if (n >= 0x20) { this.string += String.fromCharCode(n); }
-      else {
-          return this.charError(buffer, i);
-      }
-    }else if (this.tState === STRING2){ // After backslash
-      n = buffer[i];
-      if(n === 0x22){ this.string += "\""; this.tState = STRING1;
-      }else if(n === 0x5c){ this.string += "\\"; this.tState = STRING1; 
-      }else if(n === 0x2f){ this.string += "\/"; this.tState = STRING1; 
-      }else if(n === 0x62){ this.string += "\b"; this.tState = STRING1; 
-      }else if(n === 0x66){ this.string += "\f"; this.tState = STRING1; 
-      }else if(n === 0x6e){ this.string += "\n"; this.tState = STRING1; 
-      }else if(n === 0x72){ this.string += "\r"; this.tState = STRING1; 
-      }else if(n === 0x74){ this.string += "\t"; this.tState = STRING1; 
-      }else if(n === 0x75){ this.unicode = ""; this.tState = STRING3;
-      }else{ 
-        return this.charError(buffer, i); 
-      }
-    }else if (this.tState === STRING3 || this.tState === STRING4 || this.tState === STRING5 || this.tState === STRING6){ // unicode hex codes
-      n = buffer[i];
-      // 0-9 A-F a-f
-      if ((n >= 0x30 && n < 0x40) || (n > 0x40 && n <= 0x46) || (n > 0x60 && n <= 0x66)) {
-        this.unicode += String.fromCharCode(n);
-        if (this.tState++ === STRING6) {
-          this.string += String.fromCharCode(parseInt(this.unicode, 16));
-          this.unicode = undefined;
-          this.tState = STRING1; 
-        }
-      } else {
-        return this.charError(buffer, i);
-      }
-    } else if (this.tState === NUMBER1 || this.tState === NUMBER3) {
-        n = buffer[i];
-
-        switch (n) {
-          case 0x30: // 0
-          case 0x31: // 1
-          case 0x32: // 2
-          case 0x33: // 3
-          case 0x34: // 4
-          case 0x35: // 5
-          case 0x36: // 6
-          case 0x37: // 7
-          case 0x38: // 8
-          case 0x39: // 9
-          case 0x2e: // .
-          case 0x65: // e
-          case 0x45: // E
-          case 0x2b: // +
-          case 0x2d: // -
-            this.string += String.fromCharCode(n);
-            this.tState = NUMBER3;
-            break;
-          default:
-            this.tState = START;
-            var result = Number(this.string);
-
-            if (isNaN(result)){
-              return this.charError(buffer, i);
-            }
-
-            if ((this.string.match(/[0-9]+/) == this.string) && (result.toString() != this.string)) {
-              // Long string of digits which is an ID string and not valid and/or safe JavaScript integer Number
-              this.onToken(STRING, this.string);
-            } else {
-              this.onToken(NUMBER, result);
-            }
-
-            this.offset += this.string.length - 1;
-            this.string = undefined;
-            i--;
-            break;
-        }
-    }else if (this.tState === TRUE1){ // r
-      if (buffer[i] === 0x72) { this.tState = TRUE2; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === TRUE2){ // u
-      if (buffer[i] === 0x75) { this.tState = TRUE3; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === TRUE3){ // e
-      if (buffer[i] === 0x65) { this.tState = START; this.onToken(TRUE, true); this.offset+= 3; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === FALSE1){ // a
-      if (buffer[i] === 0x61) { this.tState = FALSE2; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === FALSE2){ // l
-      if (buffer[i] === 0x6c) { this.tState = FALSE3; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === FALSE3){ // s
-      if (buffer[i] === 0x73) { this.tState = FALSE4; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === FALSE4){ // e
-      if (buffer[i] === 0x65) { this.tState = START; this.onToken(FALSE, false); this.offset+= 4; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === NULL1){ // u
-      if (buffer[i] === 0x75) { this.tState = NULL2; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === NULL2){ // l
-      if (buffer[i] === 0x6c) { this.tState = NULL3; }
-      else { return this.charError(buffer, i); }
-    }else if (this.tState === NULL3){ // l
-      if (buffer[i] === 0x6c) { this.tState = START; this.onToken(NULL, null); this.offset += 3; }
-      else { return this.charError(buffer, i); }
-    }
-  }
-};
-proto.onToken = function (token, value) {
-  // Override this to get events
-};
-
-proto.parseError = function (token, value) {
-  this.tState = STOP;
-  this.onError(new Error("Unexpected " + Parser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + Parser.toknam(this.state)));
-};
-proto.push = function () {
-  this.stack.push({value: this.value, key: this.key, mode: this.mode});
-};
-proto.pop = function () {
-  var value = this.value;
-  var parent = this.stack.pop();
-  this.value = parent.value;
-  this.key = parent.key;
-  this.mode = parent.mode;
-  this.emit(value);
-  if (!this.mode) { this.state = VALUE; }
-};
-proto.emit = function (value) {
-  if (this.mode) { this.state = COMMA; }
-  this.onValue(value);
-};
-proto.onValue = function (value) {
-  // Override me
-};  
-proto.onToken = function (token, value) {
-  if(this.state === VALUE){
-    if(token === STRING || token === NUMBER || token === TRUE || token === FALSE || token === NULL){
-      if (this.value) {
-        this.value[this.key] = value;
-      }
-      this.emit(value);  
-    }else if(token === LEFT_BRACE){
-      this.push();
-      if (this.value) {
-        this.value = this.value[this.key] = {};
-      } else {
-        this.value = {};
-      }
-      this.key = undefined;
-      this.state = KEY;
-      this.mode = OBJECT;
-    }else if(token === LEFT_BRACKET){
-      this.push();
-      if (this.value) {
-        this.value = this.value[this.key] = [];
-      } else {
-        this.value = [];
-      }
-      this.key = 0;
-      this.mode = ARRAY;
-      this.state = VALUE;
-    }else if(token === RIGHT_BRACE){
-      if (this.mode === OBJECT) {
-        this.pop();
-      } else {
-        return this.parseError(token, value);
-      }
-    }else if(token === RIGHT_BRACKET){
-      if (this.mode === ARRAY) {
-        this.pop();
-      } else {
-        return this.parseError(token, value);
-      }
-    }else{
-      return this.parseError(token, value);
-    }
-  }else if(this.state === KEY){
-    if (token === STRING) {
-      this.key = value;
-      this.state = COLON;
-    } else if (token === RIGHT_BRACE) {
-      this.pop();
-    } else {
-      return this.parseError(token, value);
-    }
-  }else if(this.state === COLON){
-    if (token === COLON) { this.state = VALUE; }
-    else { return this.parseError(token, value); }
-  }else if(this.state === COMMA){
-    if (token === COMMA) { 
-      if (this.mode === ARRAY) { this.key++; this.state = VALUE; }
-      else if (this.mode === OBJECT) { this.state = KEY; }
-
-    } else if (token === RIGHT_BRACKET && this.mode === ARRAY || token === RIGHT_BRACE && this.mode === OBJECT) {
-      this.pop();
-    } else {
-      return this.parseError(token, value);
-    }
-  }else{
-    return this.parseError(token, value);
-  }
-};
-
-Parser.C = C;
-
-module.exports = Parser;
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":9}],46:[function(require,module,exports){
+},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/index.js":[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -8501,7 +7882,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":47}],47:[function(require,module,exports){
+},{"./lib/encodings":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/lib/encodings.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/lib/encodings.js":[function(require,module,exports){
 (function (Buffer){
 
 exports.utf8 = exports['utf-8'] = {
@@ -8581,7 +7962,7 @@ function isBinary(data){
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],48:[function(require,module,exports){
+},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js":[function(require,module,exports){
 /* Copyright (c) 2012-2015 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -8605,7 +7986,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":35}],49:[function(require,module,exports){
+},{"errno":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/errno.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/index.js":[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -8663,12 +8044,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":40,"level-errors":48,"readable-stream":56,"xtend":149}],50:[function(require,module,exports){
+},{"inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","readable-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/readable.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/isarray/index.js":[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],51:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8761,7 +8142,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":53,"./_stream_writable":55,"_process":84,"core-util-is":11,"inherits":40}],52:[function(require,module,exports){
+},{"./_stream_readable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8809,7 +8190,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":54,"core-util-is":11,"inherits":40}],53:[function(require,module,exports){
+},{"./_stream_transform":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9764,7 +9145,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":51,"_process":84,"buffer":9,"core-util-is":11,"events":37,"inherits":40,"isarray":50,"stream":137,"string_decoder/":139,"util":6}],54:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/isarray/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","string_decoder/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9975,7 +9356,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":51,"core-util-is":11,"inherits":40}],55:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10456,7 +9837,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":51,"_process":84,"buffer":9,"core-util-is":11,"inherits":40,"stream":137}],56:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/readable.js":[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -10470,7 +9851,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":51,"./lib/_stream_passthrough.js":52,"./lib/_stream_readable.js":53,"./lib/_stream_transform.js":54,"./lib/_stream_writable.js":55,"_process":84,"stream":137}],57:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/node_modules/readable-stream/lib/_stream_writable.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js":[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -10648,7 +10029,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":58,"abstract-leveldown":61,"buffer":9,"idb-wrapper":38,"isbuffer":44,"typedarray-to-buffer":143,"util":147,"xtend":68}],58:[function(require,module,exports){
+},{"./iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/iterator.js","abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","idb-wrapper":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/idb-wrapper/idbstore.js","isbuffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isbuffer/index.js","typedarray-to-buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/typedarray-to-buffer/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/iterator.js":[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -10722,7 +10103,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":61,"ltgt":80,"util":147}],59:[function(require,module,exports){
+},{"abstract-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js","ltgt":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ltgt/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-chained-batch.js":[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10806,9 +10187,9 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":84}],60:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"_process":84,"dup":15}],61:[function(require,module,exports){
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-iterator.js":[function(require,module,exports){
+arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/node_modules/abstract-leveldown/abstract-iterator.js"][0].apply(exports,arguments)
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-leveldown.js":[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -11068,7 +10449,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":59,"./abstract-iterator":60,"_process":84,"xtend":62}],62:[function(require,module,exports){
+},{"../../../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js","./abstract-chained-batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-chained-batch.js","./abstract-iterator":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/abstract-iterator.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/node_modules/xtend/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/abstract-leveldown/node_modules/xtend/index.js":[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -11087,7 +10468,7 @@ function extend() {
     return target
 }
 
-},{}],63:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/foreach.js":[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -11129,11 +10510,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],64:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/index.js":[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":66}],65:[function(require,module,exports){
+},{"./shim":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/shim.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/isArguments.js":[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -11151,7 +10532,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],66:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/shim.js":[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -11215,7 +10596,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":63,"./isArguments":65}],67:[function(require,module,exports){
+},{"./foreach":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/foreach.js","./isArguments":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/isArguments.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/has-keys.js":[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -11224,7 +10605,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],68:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/index.js":[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -11251,7 +10632,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":67,"object-keys":64}],69:[function(require,module,exports){
+},{"./has-keys":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/xtend/has-keys.js","object-keys":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/node_modules/object-keys/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/batch.js":[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -11336,7 +10717,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":71,"level-errors":48}],70:[function(require,module,exports){
+},{"./util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js":[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -11739,7 +11120,7 @@ module.exports.repair  = deprecate(
 
 
 }).call(this,require('_process'))
-},{"./batch":69,"./util":71,"_process":84,"deferred-leveldown":13,"events":37,"level-codec":46,"level-errors":48,"level-iterator-stream":49,"prr":85,"util":147,"xtend":149}],71:[function(require,module,exports){
+},{"./batch":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/batch.js","./util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","deferred-leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/deferred-leveldown/deferred-leveldown.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","level-codec":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-codec/index.js","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","level-iterator-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-iterator-stream/index.js","prr":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/prr/prr.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/util.js":[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -11818,23 +11199,23 @@ module.exports = {
   , isDefined       : isDefined
 }
 
-},{"../package.json":72,"level-errors":48,"leveldown":6,"leveldown/package":6,"semver":6,"util":147,"xtend":149}],72:[function(require,module,exports){
+},{"../package.json":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/package.json","level-errors":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-errors/errors.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","leveldown/package":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","semver":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js","xtend":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/package.json":[function(require,module,exports){
 module.exports={
   "_args": [
     [
       {
-        "raw": "levelup",
+        "raw": "levelup@^1.3.3",
         "scope": null,
         "escapedName": "levelup",
         "name": "levelup",
-        "rawSpec": "",
-        "spec": "latest",
-        "type": "tag"
+        "rawSpec": "^1.3.3",
+        "spec": ">=1.3.3 <2.0.0",
+        "type": "range"
       },
       "/Users/fergusmcdowall/Desktop/node/search-index"
     ]
   ],
-  "_from": "levelup@latest",
+  "_from": "levelup@>=1.3.3 <2.0.0",
   "_id": "levelup@1.3.3",
   "_inCache": true,
   "_installable": true,
@@ -11851,16 +11232,15 @@ module.exports={
   "_npmVersion": "2.15.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "levelup",
+    "raw": "levelup@^1.3.3",
     "scope": null,
     "escapedName": "levelup",
     "name": "levelup",
-    "rawSpec": "",
-    "spec": "latest",
-    "type": "tag"
+    "rawSpec": "^1.3.3",
+    "spec": ">=1.3.3 <2.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "#USER",
     "/",
     "/search-index-adder",
     "/search-index-searcher"
@@ -11868,7 +11248,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.3.tgz",
   "_shasum": "bf9db62bdb6188d08eaaa2efcf6cc311916f41fd",
   "_shrinkwrap": null,
-  "_spec": "levelup",
+  "_spec": "levelup@^1.3.3",
   "_where": "/Users/fergusmcdowall/Desktop/node/search-index",
   "browser": {
     "leveldown": false,
@@ -12019,7 +11399,7 @@ module.exports={
   "version": "1.3.3"
 }
 
-},{}],73:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.difference/index.js":[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -13193,7 +12573,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],74:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js":[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -14262,7 +13642,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],75:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.isequal/index.js":[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -15915,7 +15295,7 @@ function keys(object) {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],76:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js":[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16168,7 +15548,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],77:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.spread/index.js":[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -16574,7 +15954,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],78:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.union/index.js":[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -17759,7 +17139,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],79:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.uniq/index.js":[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -18659,7 +18039,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/ltgt/index.js":[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -18809,7 +18189,7 @@ exports.filter = function (range, compare) {
 }
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":42}],81:[function(require,module,exports){
+},{"../is-buffer/index.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/is-buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/once/once.js":[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -18853,7 +18233,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":148}],82:[function(require,module,exports){
+},{"wrappy":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/wrappy/wrappy.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/os-browserify/browser.js":[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -18900,7 +18280,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],83:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18947,7 +18327,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":84}],84:[function(require,module,exports){
+},{"_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19129,9 +18509,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],85:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"dup":36}],86:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/prr/prr.js":[function(require,module,exports){
+arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/errno/node_modules/prr/prr.js"][0].apply(exports,arguments)
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/pump/index.js":[function(require,module,exports){
 var once = require('once')
 var eos = require('end-of-stream')
 var fs = require('fs') // we only need fs to get the ReadStream and WriteStream prototypes
@@ -19212,93 +18592,7 @@ var pump = function () {
 
 module.exports = pump
 
-},{"end-of-stream":87,"fs":7,"once":81}],87:[function(require,module,exports){
-var once = require('once');
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var isChildProcess = function(stream) {
-	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback();
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback();
-	};
-
-	var onexit = function(exitCode) {
-		callback(exitCode ? new Error('exited with error code: ' + exitCode) : null);
-	};
-
-	var onclose = function() {
-		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
-		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
-	}
-
-	if (isChildProcess(stream)) stream.on('exit', onexit);
-
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', callback);
-	stream.on('close', onclose);
-
-	return function() {
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('exit', onexit);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', callback);
-		stream.removeListener('close', onclose);
-	};
-};
-
-module.exports = eos;
-},{"once":88}],88:[function(require,module,exports){
-arguments[4][33][0].apply(exports,arguments)
-},{"dup":33,"wrappy":148}],89:[function(require,module,exports){
+},{"end-of-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/end-of-stream/index.js","fs":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browserify/lib/_empty.js","once":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/once/once.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/pumpify/index.js":[function(require,module,exports){
 var pump = require('pump')
 var inherits = require('inherits')
 var Duplexify = require('duplexify')
@@ -19355,10 +18649,10 @@ var define = function(opts) {
 module.exports = define({destroy:false})
 module.exports.obj = define({destroy:false, objectMode:true, highWaterMark:16})
 
-},{"duplexify":31,"inherits":40,"pump":86}],90:[function(require,module,exports){
+},{"duplexify":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/duplexify/index.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","pump":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/pump/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/duplex.js":[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":91}],91:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -19434,7 +18728,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":93,"./_stream_writable":95,"core-util-is":11,"inherits":40,"process-nextick-args":83}],92:[function(require,module,exports){
+},{"./_stream_readable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -19461,7 +18755,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":94,"core-util-is":11,"inherits":40}],93:[function(require,module,exports){
+},{"./_stream_transform":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19475,11 +18769,15 @@ var processNextTick = require('process-nextick-args');
 var isArray = require('isarray');
 /*</replacement>*/
 
+/*<replacement>*/
+var Buffer = require('buffer').Buffer;
+/*</replacement>*/
+
 Readable.ReadableState = ReadableState;
 
-/*<replacement>*/
-var EE = require('events').EventEmitter;
+var EE = require('events');
 
+/*<replacement>*/
 var EElistenerCount = function (emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -19497,9 +18795,6 @@ var Stream;
 /*</replacement>*/
 
 var Buffer = require('buffer').Buffer;
-/*<replacement>*/
-var bufferShim = require('buffer-shims');
-/*</replacement>*/
 
 /*<replacement>*/
 var util = require('core-util-is');
@@ -19508,7 +18803,7 @@ util.inherits = require('inherits');
 
 /*<replacement>*/
 var debugUtil = require('util');
-var debug = void 0;
+var debug = undefined;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -19516,22 +18811,9 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-var BufferList = require('./internal/streams/BufferList');
 var StringDecoder;
 
 util.inherits(Readable, Stream);
-
-function prependListener(emitter, event, fn) {
-  if (typeof emitter.prependListener === 'function') {
-    return emitter.prependListener(event, fn);
-  } else {
-    // This is a hack to make sure that our error handler is attached before any
-    // userland ones.  NEVER DO THIS. This is here only because this code needs
-    // to continue to work with older versions of Node.js that do not include
-    // the prependListener() method. The goal is to eventually remove this hack.
-    if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
-  }
-}
 
 var Duplex;
 function ReadableState(options, stream) {
@@ -19554,10 +18836,7 @@ function ReadableState(options, stream) {
   // cast to ints.
   this.highWaterMark = ~ ~this.highWaterMark;
 
-  // A linked list is used to store data chunks instead of an array because the
-  // linked list can remove elements from the beginning faster than
-  // array.shift()
-  this.buffer = new BufferList();
+  this.buffer = [];
   this.length = 0;
   this.pipes = null;
   this.pipesCount = 0;
@@ -19629,7 +18908,7 @@ Readable.prototype.push = function (chunk, encoding) {
   if (!state.objectMode && typeof chunk === 'string') {
     encoding = encoding || state.defaultEncoding;
     if (encoding !== state.encoding) {
-      chunk = bufferShim.from(chunk, encoding);
+      chunk = new Buffer(chunk, encoding);
       encoding = '';
     }
   }
@@ -19659,8 +18938,8 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
       var e = new Error('stream.push() after EOF');
       stream.emit('error', e);
     } else if (state.endEmitted && addToFront) {
-      var _e = new Error('stream.unshift() after end event');
-      stream.emit('error', _e);
+      var e = new Error('stream.unshift() after end event');
+      stream.emit('error', e);
     } else {
       var skipAdd;
       if (state.decoder && !addToFront && !encoding) {
@@ -19720,8 +18999,7 @@ function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     n = MAX_HWM;
   } else {
-    // Get the next highest power of 2 to prevent increasing hwm excessively in
-    // tiny amounts
+    // Get the next highest power of 2
     n--;
     n |= n >>> 1;
     n |= n >>> 2;
@@ -19733,34 +19011,44 @@ function computeNewHighWaterMark(n) {
   return n;
 }
 
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
 function howMuchToRead(n, state) {
-  if (n <= 0 || state.length === 0 && state.ended) return 0;
-  if (state.objectMode) return 1;
-  if (n !== n) {
-    // Only flow one buffer at a time
-    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+  if (state.length === 0 && state.ended) return 0;
+
+  if (state.objectMode) return n === 0 ? 0 : 1;
+
+  if (n === null || isNaN(n)) {
+    // only flow one buffer at a time
+    if (state.flowing && state.buffer.length) return state.buffer[0].length;else return state.length;
   }
-  // If we're asking for more than the current hwm, then raise the hwm.
+
+  if (n <= 0) return 0;
+
+  // If we're asking for more than the target buffer level,
+  // then raise the water mark.  Bump up to the next highest
+  // power of 2, to prevent increasing it excessively in tiny
+  // amounts.
   if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
-  if (n <= state.length) return n;
-  // Don't have enough
-  if (!state.ended) {
-    state.needReadable = true;
-    return 0;
+
+  // don't have that much.  return null, unless we've ended.
+  if (n > state.length) {
+    if (!state.ended) {
+      state.needReadable = true;
+      return 0;
+    } else {
+      return state.length;
+    }
   }
-  return state.length;
+
+  return n;
 }
 
 // you can override either this method, or the async _read(n) below.
 Readable.prototype.read = function (n) {
   debug('read', n);
-  n = parseInt(n, 10);
   var state = this._readableState;
   var nOrig = n;
 
-  if (n !== 0) state.emittedReadable = false;
+  if (typeof n !== 'number' || n > 0) state.emittedReadable = false;
 
   // if we're doing read(0) to trigger a readable event, but we
   // already have a bunch of data in the buffer, then just trigger
@@ -19816,7 +19104,9 @@ Readable.prototype.read = function (n) {
   if (state.ended || state.reading) {
     doRead = false;
     debug('reading or ended', doRead);
-  } else if (doRead) {
+  }
+
+  if (doRead) {
     debug('do read');
     state.reading = true;
     state.sync = true;
@@ -19825,10 +19115,11 @@ Readable.prototype.read = function (n) {
     // call internal read method
     this._read(state.highWaterMark);
     state.sync = false;
-    // If _read pushed data synchronously, then `reading` will be false,
-    // and we need to re-evaluate how much data we can return to the user.
-    if (!state.reading) n = howMuchToRead(nOrig, state);
   }
+
+  // If _read pushed data synchronously, then `reading` will be false,
+  // and we need to re-evaluate how much data we can return to the user.
+  if (doRead && !state.reading) n = howMuchToRead(nOrig, state);
 
   var ret;
   if (n > 0) ret = fromList(n, state);else ret = null;
@@ -19836,18 +19127,16 @@ Readable.prototype.read = function (n) {
   if (ret === null) {
     state.needReadable = true;
     n = 0;
-  } else {
-    state.length -= n;
   }
 
-  if (state.length === 0) {
-    // If we have nothing in the buffer, then we want to know
-    // as soon as we *do* get something into the buffer.
-    if (!state.ended) state.needReadable = true;
+  state.length -= n;
 
-    // If we tried to read() past the EOF, then emit end on the next tick.
-    if (nOrig !== n && state.ended) endReadable(this);
-  }
+  // If we have nothing in the buffer, then we want to know
+  // as soon as we *do* get something into the buffer.
+  if (state.length === 0 && !state.ended) state.needReadable = true;
+
+  // If we tried to read() past the EOF, then emit end on the next tick.
+  if (nOrig !== n && state.ended && state.length === 0) endReadable(this);
 
   if (ret !== null) this.emit('data', ret);
 
@@ -19995,25 +19284,17 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
   }
 
-  // If the user pushes more data while we're writing to dest then we'll end up
-  // in ondata again. However, we only want to increase awaitDrain once because
-  // dest will only emit one 'drain' event for the multiple writes.
-  // => Introduce a guard on increasing awaitDrain.
-  var increasedAwaitDrain = false;
   src.on('data', ondata);
   function ondata(chunk) {
     debug('ondata');
-    increasedAwaitDrain = false;
     var ret = dest.write(chunk);
-    if (false === ret && !increasedAwaitDrain) {
+    if (false === ret) {
       // If the user unpiped during `dest.write()`, it is possible
       // to get stuck in a permanently paused state if that write
       // also returned false.
-      // => Check whether `dest` is still a piping destination.
-      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+      if (state.pipesCount === 1 && state.pipes[0] === dest && src.listenerCount('data') === 1 && !cleanedUp) {
         debug('false write response, pause', src._readableState.awaitDrain);
         src._readableState.awaitDrain++;
-        increasedAwaitDrain = true;
       }
       src.pause();
     }
@@ -20027,9 +19308,9 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     dest.removeListener('error', onerror);
     if (EElistenerCount(dest, 'error') === 0) dest.emit('error', er);
   }
-
-  // Make sure our error handler is attached before userland ones.
-  prependListener(dest, 'error', onerror);
+  // This is a brutally ugly hack to make sure that our error handler
+  // is attached before any userland ones.  NEVER DO THIS.
+  if (!dest._events || !dest._events.error) dest.on('error', onerror);else if (isArray(dest._events.error)) dest._events.error.unshift(onerror);else dest._events.error = [onerror, dest._events.error];
 
   // Both close and finish should trigger unpipe, but only once.
   function onclose() {
@@ -20127,14 +19408,18 @@ Readable.prototype.unpipe = function (dest) {
 Readable.prototype.on = function (ev, fn) {
   var res = Stream.prototype.on.call(this, ev, fn);
 
-  if (ev === 'data') {
-    // Start flowing on next tick if stream isn't explicitly paused
-    if (this._readableState.flowing !== false) this.resume();
-  } else if (ev === 'readable') {
+  // If listening to data, and it has not explicitly been paused,
+  // then call resume to start the flow of data on the next tick.
+  if (ev === 'data' && false !== this._readableState.flowing) {
+    this.resume();
+  }
+
+  if (ev === 'readable' && !this._readableState.endEmitted) {
     var state = this._readableState;
-    if (!state.endEmitted && !state.readableListening) {
-      state.readableListening = state.needReadable = true;
+    if (!state.readableListening) {
+      state.readableListening = true;
       state.emittedReadable = false;
+      state.needReadable = true;
       if (!state.reading) {
         processNextTick(nReadingNextTick, this);
       } else if (state.length) {
@@ -20178,7 +19463,6 @@ function resume_(stream, state) {
   }
 
   state.resumeScheduled = false;
-  state.awaitDrain = 0;
   stream.emit('resume');
   flow(stream);
   if (state.flowing && !state.reading) stream.read(0);
@@ -20197,7 +19481,11 @@ Readable.prototype.pause = function () {
 function flow(stream) {
   var state = stream._readableState;
   debug('flow', state.flowing);
-  while (state.flowing && stream.read() !== null) {}
+  if (state.flowing) {
+    do {
+      var chunk = stream.read();
+    } while (null !== chunk && state.flowing);
+  }
 }
 
 // wrap an old-style stream as the async data source.
@@ -20268,101 +19556,50 @@ Readable._fromList = fromList;
 
 // Pluck off n bytes from an array of buffers.
 // Length is the combined lengths of all the buffers in the list.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
 function fromList(n, state) {
-  // nothing buffered
-  if (state.length === 0) return null;
-
+  var list = state.buffer;
+  var length = state.length;
+  var stringMode = !!state.decoder;
+  var objectMode = !!state.objectMode;
   var ret;
-  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
-    // read it all, truncate the list
-    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
-    state.buffer.clear();
+
+  // nothing in the list, definitely empty.
+  if (list.length === 0) return null;
+
+  if (length === 0) ret = null;else if (objectMode) ret = list.shift();else if (!n || n >= length) {
+    // read it all, truncate the array.
+    if (stringMode) ret = list.join('');else if (list.length === 1) ret = list[0];else ret = Buffer.concat(list, length);
+    list.length = 0;
   } else {
-    // read part of list
-    ret = fromListPartial(n, state.buffer, state.decoder);
-  }
+    // read just some of it.
+    if (n < list[0].length) {
+      // just take a part of the first list item.
+      // slice is the same for buffers and strings.
+      var buf = list[0];
+      ret = buf.slice(0, n);
+      list[0] = buf.slice(n);
+    } else if (n === list[0].length) {
+      // first list is a perfect match
+      ret = list.shift();
+    } else {
+      // complex case.
+      // we have enough to cover it, but it spans past the first buffer.
+      if (stringMode) ret = '';else ret = new Buffer(n);
 
-  return ret;
-}
+      var c = 0;
+      for (var i = 0, l = list.length; i < l && c < n; i++) {
+        var buf = list[0];
+        var cpy = Math.min(n - c, buf.length);
 
-// Extracts only enough buffered data to satisfy the amount requested.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function fromListPartial(n, list, hasStrings) {
-  var ret;
-  if (n < list.head.data.length) {
-    // slice is the same for buffers and strings
-    ret = list.head.data.slice(0, n);
-    list.head.data = list.head.data.slice(n);
-  } else if (n === list.head.data.length) {
-    // first chunk is a perfect match
-    ret = list.shift();
-  } else {
-    // result spans more than one buffer
-    ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
-  }
-  return ret;
-}
+        if (stringMode) ret += buf.slice(0, cpy);else buf.copy(ret, c, 0, cpy);
 
-// Copies a specified amount of characters from the list of buffered data
-// chunks.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function copyFromBufferString(n, list) {
-  var p = list.head;
-  var c = 1;
-  var ret = p.data;
-  n -= ret.length;
-  while (p = p.next) {
-    var str = p.data;
-    var nb = n > str.length ? str.length : n;
-    if (nb === str.length) ret += str;else ret += str.slice(0, n);
-    n -= nb;
-    if (n === 0) {
-      if (nb === str.length) {
-        ++c;
-        if (p.next) list.head = p.next;else list.head = list.tail = null;
-      } else {
-        list.head = p;
-        p.data = str.slice(nb);
+        if (cpy < buf.length) list[0] = buf.slice(cpy);else list.shift();
+
+        c += cpy;
       }
-      break;
     }
-    ++c;
   }
-  list.length -= c;
-  return ret;
-}
 
-// Copies a specified amount of bytes from the list of buffered data chunks.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function copyFromBuffer(n, list) {
-  var ret = bufferShim.allocUnsafe(n);
-  var p = list.head;
-  var c = 1;
-  p.data.copy(ret);
-  n -= p.data.length;
-  while (p = p.next) {
-    var buf = p.data;
-    var nb = n > buf.length ? buf.length : n;
-    buf.copy(ret, ret.length - n, 0, nb);
-    n -= nb;
-    if (n === 0) {
-      if (nb === buf.length) {
-        ++c;
-        if (p.next) list.head = p.next;else list.head = list.tail = null;
-      } else {
-        list.head = p;
-        p.data = buf.slice(nb);
-      }
-      break;
-    }
-    ++c;
-  }
-  list.length -= c;
   return ret;
 }
 
@@ -20371,7 +19608,7 @@ function endReadable(stream) {
 
   // If we get here before consuming all the bytes, then that is a
   // bug in node.  Should never happen.
-  if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
+  if (state.length > 0) throw new Error('endReadable called on non-empty stream');
 
   if (!state.endEmitted) {
     state.ended = true;
@@ -20401,7 +19638,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":91,"./internal/streams/BufferList":96,"_process":84,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":37,"inherits":40,"isarray":43,"process-nextick-args":83,"string_decoder/":139,"util":6}],94:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","isarray":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/isarray/index.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js","string_decoder/":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/browser-resolve/empty.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -20538,7 +19775,7 @@ Transform.prototype.push = function (chunk, encoding) {
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
 Transform.prototype._transform = function (chunk, encoding, cb) {
-  throw new Error('Not implemented');
+  throw new Error('not implemented');
 };
 
 Transform.prototype._write = function (chunk, encoding, cb) {
@@ -20576,13 +19813,13 @@ function done(stream, er) {
   var ws = stream._writableState;
   var ts = stream._transformState;
 
-  if (ws.length) throw new Error('Calling transform done when ws.length != 0');
+  if (ws.length) throw new Error('calling transform done when ws.length != 0');
 
-  if (ts.transforming) throw new Error('Calling transform done when still transforming');
+  if (ts.transforming) throw new Error('calling transform done when still transforming');
 
   return stream.push(null);
 }
-},{"./_stream_duplex":91,"core-util-is":11,"inherits":40}],95:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -20598,6 +19835,10 @@ var processNextTick = require('process-nextick-args');
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
+/*</replacement>*/
+
+/*<replacement>*/
+var Buffer = require('buffer').Buffer;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
@@ -20625,9 +19866,6 @@ var Stream;
 /*</replacement>*/
 
 var Buffer = require('buffer').Buffer;
-/*<replacement>*/
-var bufferShim = require('buffer-shims');
-/*</replacement>*/
 
 util.inherits(Writable, Stream);
 
@@ -20731,9 +19969,10 @@ function WritableState(options, stream) {
   // count buffered requests
   this.bufferedRequestCount = 0;
 
-  // allocate the first CorkedRequest, there is always
-  // one allocated and free to use, and we maintain at most two
+  // create the two objects needed to store the corked requests
+  // they are not a linked list, as no new elements are inserted in there
   this.corkedRequestsFree = new CorkedRequest(this);
+  this.corkedRequestsFree.next = new CorkedRequest(this);
 }
 
 WritableState.prototype.getBuffer = function writableStateGetBuffer() {
@@ -20780,7 +20019,7 @@ function Writable(options) {
 
 // Otherwise people can pipe Writable streams, which is just wrong.
 Writable.prototype.pipe = function () {
-  this.emit('error', new Error('Cannot pipe, not readable'));
+  this.emit('error', new Error('Cannot pipe. Not readable.'));
 };
 
 function writeAfterEnd(stream, cb) {
@@ -20797,16 +20036,9 @@ function writeAfterEnd(stream, cb) {
 // how many bytes or characters.
 function validChunk(stream, state, chunk, cb) {
   var valid = true;
-  var er = false;
-  // Always throw error if a null is written
-  // if we are not in object mode then throw
-  // if it is not a buffer, string, or undefined.
-  if (chunk === null) {
-    er = new TypeError('May not write null values to stream');
-  } else if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
-    er = new TypeError('Invalid non-string/buffer chunk');
-  }
-  if (er) {
+
+  if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
+    var er = new TypeError('Invalid non-string/buffer chunk');
     stream.emit('error', er);
     processNextTick(cb, er);
     valid = false;
@@ -20856,12 +20088,11 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   if (typeof encoding === 'string') encoding = encoding.toLowerCase();
   if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
   this._writableState.defaultEncoding = encoding;
-  return this;
 };
 
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
-    chunk = bufferShim.from(chunk, encoding);
+    chunk = new Buffer(chunk, encoding);
   }
   return chunk;
 }
@@ -20984,16 +20215,12 @@ function clearBuffer(stream, state) {
 
     doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
-    // doWrite is almost always async, defer these to save a bit of time
+    // doWrite is always async, defer these to save a bit of time
     // as the hot path ends with doWrite
     state.pendingcb++;
     state.lastBufferedRequest = null;
-    if (holder.next) {
-      state.corkedRequestsFree = holder.next;
-      holder.next = null;
-    } else {
-      state.corkedRequestsFree = new CorkedRequest(state);
-    }
+    state.corkedRequestsFree = holder.next;
+    holder.next = null;
   } else {
     // Slow case, write chunks one-by-one
     while (entry) {
@@ -21111,76 +20338,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":91,"_process":84,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":37,"inherits":40,"process-nextick-args":83,"util-deprecate":144}],96:[function(require,module,exports){
-'use strict';
-
-var Buffer = require('buffer').Buffer;
-/*<replacement>*/
-var bufferShim = require('buffer-shims');
-/*</replacement>*/
-
-module.exports = BufferList;
-
-function BufferList() {
-  this.head = null;
-  this.tail = null;
-  this.length = 0;
-}
-
-BufferList.prototype.push = function (v) {
-  var entry = { data: v, next: null };
-  if (this.length > 0) this.tail.next = entry;else this.head = entry;
-  this.tail = entry;
-  ++this.length;
-};
-
-BufferList.prototype.unshift = function (v) {
-  var entry = { data: v, next: this.head };
-  if (this.length === 0) this.tail = entry;
-  this.head = entry;
-  ++this.length;
-};
-
-BufferList.prototype.shift = function () {
-  if (this.length === 0) return;
-  var ret = this.head.data;
-  if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-  --this.length;
-  return ret;
-};
-
-BufferList.prototype.clear = function () {
-  this.head = this.tail = null;
-  this.length = 0;
-};
-
-BufferList.prototype.join = function (s) {
-  if (this.length === 0) return '';
-  var p = this.head;
-  var ret = '' + p.data;
-  while (p = p.next) {
-    ret += s + p.data;
-  }return ret;
-};
-
-BufferList.prototype.concat = function (n) {
-  if (this.length === 0) return bufferShim.alloc(0);
-  if (this.length === 1) return this.head.data;
-  var ret = bufferShim.allocUnsafe(n >>> 0);
-  var p = this.head;
-  var i = 0;
-  while (p) {
-    p.data.copy(ret, i);
-    i += p.data.length;
-    p = p.next;
-  }
-  return ret;
-};
-},{"buffer":9,"buffer-shims":8}],97:[function(require,module,exports){
+},{"./_stream_duplex":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js","core-util-is":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/core-util-is/lib/util.js","events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","process-nextick-args":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process-nextick-args/index.js","util-deprecate":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util-deprecate/browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":92}],98:[function(require,module,exports){
-(function (process){
+},{"./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/readable.js":[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -21194,18 +20355,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
-  module.exports = Stream;
-}
-
-}).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":91,"./lib/_stream_passthrough.js":92,"./lib/_stream_readable.js":93,"./lib/_stream_transform.js":94,"./lib/_stream_writable.js":95,"_process":84}],99:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/transform.js":[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":94}],100:[function(require,module,exports){
+},{"./lib/_stream_transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_transform.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/writable.js":[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":95}],101:[function(require,module,exports){
+},{"./lib/_stream_writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/lib/_stream_writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/safe-json-stringify/index.js":[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -21266,7 +20422,7 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],102:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/index.js":[function(require,module,exports){
 /*
 search-index-adder
 
@@ -21283,7 +20439,7 @@ const IndexBatch = require('./lib/add.js').IndexBatch
 const Readable = require('stream').Readable
 const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
 const bunyan = require('bunyan')
-const deleter = require('./lib/delete.js')
+const del = require('./lib/delete.js')
 const docProc = require('docproc')
 const leveldown = require('leveldown')
 const levelup = require('levelup')
@@ -21300,6 +20456,23 @@ module.exports = function (givenOptions, callback) {
         new IndexBatch(batchOptions, Indexer),
         new DBWriteMergeStream(batchOptions)
       )
+    }
+
+    Indexer.callbackyAdd = function (batchOps, batch, done) {
+      const s = new Readable({ objectMode: true })
+      batch.forEach(function (doc) {
+        s.push(doc)
+      })
+      s.push(null)
+      s.pipe(Indexer.defaultPipeline())
+        .pipe(Indexer.add())
+        .on('data', function (data) {})
+        .on('end', function () {
+          return done()
+        })
+        .on('error', function (err) {
+          return done(err)
+        })
     }
 
     Indexer.close = function (callback) {
@@ -21352,7 +20525,7 @@ module.exports = function (givenOptions, callback) {
     }
 
     Indexer.flush = function (APICallback) {
-      deleter.flush(options, function (err) {
+      del.flush(options, function (err) {
         return APICallback(err)
       })
     }
@@ -21397,7 +20570,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":103,"./lib/delete.js":104,"./lib/replicate.js":105,"bunyan":10,"docproc":19,"leveldown":57,"levelup":70,"pumpify":89,"stream":137}],103:[function(require,module,exports){
+},{"./lib/add.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/add.js","./lib/delete.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/delete.js","./lib/replicate.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/replicate.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","docproc":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/docproc/index.js","leveldown":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/level-js/index.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","pumpify":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/pumpify/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/add.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21455,7 +20628,7 @@ IndexBatch.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":137,"util":147}],104:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/delete.js":[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -21573,7 +20746,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":137,"util":147}],105:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-adder/lib/replicate.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -21640,7 +20813,7 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":137,"util":147}],106:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/index.js":[function(require,module,exports){
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
 const CalculateEntireResultSet = require('./lib/CalculateEntireResultSet.js').CalculateEntireResultSet
@@ -21650,7 +20823,6 @@ const CalculateTotalHits = require('./lib/CalculateTotalHits.js').CalculateTotal
 const FetchDocsFromDB = require('./lib/FetchDocsFromDB.js').FetchDocsFromDB
 const FetchStoredDoc = require('./lib/FetchStoredDoc.js').FetchStoredDoc
 const GetIntersectionStream = require('./lib/GetIntersectionStream.js').GetIntersectionStream
-const JSONStream = require('JSONStream')
 const MergeOrConditions = require('./lib/MergeOrConditions.js').MergeOrConditions
 const Readable = require('stream').Readable
 const ScoreDocsOnField = require('./lib/ScoreDocsOnField.js').ScoreDocsOnField
@@ -21661,17 +20833,16 @@ const bunyan = require('bunyan')
 const levelup = require('levelup')
 const matcher = require('./lib/matcher.js')
 const siUtil = require('./lib/siUtil.js')
-const sw = require('stopword')
 
 const initModule = function (err, Searcher, moduleReady) {
   Searcher.bucketStream = function (q) {
     q = siUtil.getQueryDefaults(q)
-    const s = new Readable()
+    const s = new Readable({ objectMode: true })
     q.query.forEach(function (clause) {
-      s.push(JSON.stringify(clause))
+      s.push(clause)
     })
     s.push(null)
-    return s.pipe(JSONStream.parse())
+    return s
       .pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
       .pipe(new CalculateEntireResultSet(Searcher.options))
       .pipe(new CalculateBuckets(Searcher.options, q.filter || {}, q.buckets))
@@ -21679,12 +20850,12 @@ const initModule = function (err, Searcher, moduleReady) {
 
   Searcher.categoryStream = function (q) {
     q = siUtil.getQueryDefaults(q)
-    const s = new Readable()
+    const s = new Readable({ objectMode: true })
     q.query.forEach(function (clause) {
-      s.push(JSON.stringify(clause))
+      s.push(clause)
     })
     s.push(null)
-    return s.pipe(JSONStream.parse())
+    return s
       .pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
       .pipe(new CalculateEntireResultSet(Searcher.options))
       .pipe(new CalculateCategories(Searcher.options, q.category))
@@ -21707,7 +20878,7 @@ const initModule = function (err, Searcher, moduleReady) {
   }
 
   Searcher.get = function (docIDs) {
-    var s = new Readable()
+    var s = new Readable({ objectMode: true })
     docIDs.forEach(function (id) {
       s.push(id)
     })
@@ -21721,19 +20892,18 @@ const initModule = function (err, Searcher, moduleReady) {
 
   Searcher.search = function (q) {
     q = siUtil.getQueryDefaults(q)
-    const s = new Readable()
+    const s = new Readable({ objectMode: true })
     // more forgivable querying
     if (Object.prototype.toString.call(q.query) !== '[object Array]') {
       q.query = [q.query]
     }
     q.query.forEach(function (clause) {
-      s.push(JSON.stringify(clause))
+      s.push(clause)
     })
     s.push(null)
 
     if (q.sort) {
       return s
-        .pipe(JSONStream.parse())
         .pipe(new CalculateResultSetPerClause(Searcher.options))
         .pipe(new CalculateTopScoringDocs(Searcher.options, (q.offset + q.pageSize)))
         .pipe(new ScoreDocsOnField(Searcher.options, (q.offset + q.pageSize), q.sort))
@@ -21742,7 +20912,6 @@ const initModule = function (err, Searcher, moduleReady) {
         .pipe(new FetchStoredDoc(Searcher.options))
     } else {
       return s
-        .pipe(JSONStream.parse())
         .pipe(new CalculateResultSetPerClause(Searcher.options))
         .pipe(new CalculateTopScoringDocs(Searcher.options, (q.offset + q.pageSize)))
         .pipe(new ScoreTopScoringDocsTFIDF(Searcher.options))
@@ -21756,23 +20925,26 @@ const initModule = function (err, Searcher, moduleReady) {
     q = siUtil.getQueryDefaults(q)
     // just make this work for a simple one clause AND
     // TODO: add filtering, NOTting, multi-clause AND
-    var s = new Readable()
+    var s = new Readable({ objectMode: true })
     s.push('init')
     s.push(null)
-    return s.pipe(
-      new GetIntersectionStream(Searcher.options, siUtil.getKeySet(q.query.AND, Searcher.options.keySeparator)))
+    return s
+      .pipe(new GetIntersectionStream(Searcher.options,
+                                      siUtil.getKeySet(
+                                        q.query.AND,
+                                        Searcher.options.keySeparator
+                                      )))
       .pipe(new FetchDocsFromDB(Searcher.options))
   }
 
   Searcher.totalHits = function (q, callback) {
     q = siUtil.getQueryDefaults(q)
-    const s = new Readable()
+    const s = new Readable({ objectMode: true })
     q.query.forEach(function (clause) {
-      s.push(JSON.stringify(clause))
+      s.push(clause)
     })
     s.push(null)
-    s.pipe(JSONStream.parse())
-      .pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
+    s.pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
       .pipe(new CalculateEntireResultSet(Searcher.options))
       .pipe(new CalculateTotalHits(Searcher.options)).on('data', function (totalHits) {
         return callback(null, totalHits)
@@ -21794,7 +20966,7 @@ const getOptions = function (options, done) {
     nGramLength: 1,
     nGramSeparator: ' ',
     separator: /[\|' \.,\-|(\n)]+/,
-    stopwords: sw.en
+    stopwords: []
   }, options)
   Searcher.options.log = bunyan.createLogger({
     name: 'search-index',
@@ -21818,7 +20990,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/CalculateBuckets.js":107,"./lib/CalculateCategories.js":108,"./lib/CalculateEntireResultSet.js":109,"./lib/CalculateResultSetPerClause.js":110,"./lib/CalculateTopScoringDocs.js":111,"./lib/CalculateTotalHits.js":112,"./lib/FetchDocsFromDB.js":113,"./lib/FetchStoredDoc.js":114,"./lib/GetIntersectionStream.js":115,"./lib/MergeOrConditions.js":116,"./lib/ScoreDocsOnField.js":117,"./lib/ScoreTopScoringDocsTFIDF.js":118,"./lib/SortTopScoringDocs.js":119,"./lib/matcher.js":120,"./lib/siUtil.js":121,"JSONStream":3,"bunyan":10,"levelup":70,"stopword":122,"stream":137}],107:[function(require,module,exports){
+},{"./lib/CalculateBuckets.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateBuckets.js","./lib/CalculateCategories.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateCategories.js","./lib/CalculateEntireResultSet.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateEntireResultSet.js","./lib/CalculateResultSetPerClause.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateResultSetPerClause.js","./lib/CalculateTopScoringDocs.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTopScoringDocs.js","./lib/CalculateTotalHits.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTotalHits.js","./lib/FetchDocsFromDB.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchDocsFromDB.js","./lib/FetchStoredDoc.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchStoredDoc.js","./lib/GetIntersectionStream.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/GetIntersectionStream.js","./lib/MergeOrConditions.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/MergeOrConditions.js","./lib/ScoreDocsOnField.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreDocsOnField.js","./lib/ScoreTopScoringDocsTFIDF.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreTopScoringDocsTFIDF.js","./lib/SortTopScoringDocs.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/SortTopScoringDocs.js","./lib/matcher.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/matcher.js","./lib/siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js","bunyan":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/bunyan/lib/bunyan.js","levelup":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/levelup/lib/levelup.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateBuckets.js":[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -21859,7 +21031,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":74,"lodash.uniq":79,"stream":137,"util":147}],108:[function(require,module,exports){
+},{"lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","lodash.uniq":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.uniq/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateCategories.js":[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -21900,7 +21072,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
     })
 }
 
-},{"lodash.intersection":74,"stream":137,"util":147}],109:[function(require,module,exports){
+},{"lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateEntireResultSet.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -21924,7 +21096,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":78,"stream":137,"util":147}],110:[function(require,module,exports){
+},{"lodash.union":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.union/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateResultSetPerClause.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -22030,7 +21202,7 @@ const uniqFast = function (a) {
   return out
 }
 
-},{"./siUtil.js":121,"lodash.difference":73,"lodash.intersection":74,"lodash.spread":77,"stream":137,"util":147}],111:[function(require,module,exports){
+},{"./siUtil.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js","lodash.difference":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.difference/index.js","lodash.intersection":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.intersection/index.js","lodash.spread":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.spread/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTopScoringDocs.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -22083,7 +21255,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":76,"stream":137,"util":147}],112:[function(require,module,exports){
+},{"lodash.sortedindexof":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/CalculateTotalHits.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22101,7 +21273,7 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":137,"util":147}],113:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchDocsFromDB.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22122,7 +21294,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":137,"util":147}],114:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/FetchStoredDoc.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22146,7 +21318,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":137,"util":147}],115:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/GetIntersectionStream.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -22181,7 +21353,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":41,"stream":137,"util":147}],116:[function(require,module,exports){
+},{"intersect-arrays-to-stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/intersect-arrays-to-stream/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/MergeOrConditions.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22214,7 +21386,7 @@ MergeOrConditions.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":137,"util":147}],117:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreDocsOnField.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -22253,7 +21425,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
     })
 }
 
-},{"lodash.sortedindexof":76,"stream":137,"util":147}],118:[function(require,module,exports){
+},{"lodash.sortedindexof":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.sortedindexof/index.js","stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/ScoreTopScoringDocsTFIDF.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22319,7 +21491,7 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
   })
 }
 
-},{"stream":137,"util":147}],119:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/SortTopScoringDocs.js":[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -22368,7 +21540,7 @@ SortTopScoringDocs.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":137,"util":147}],120:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/matcher.js":[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const util = require('util')
@@ -22438,7 +21610,7 @@ exports.match = function (q, options) {
   return s.pipe(new MatcherStream(q, options))
 }
 
-},{"stream":137,"util":147}],121:[function(require,module,exports){
+},{"stream":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js","util":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/search-index-searcher/lib/siUtil.js":[function(require,module,exports){
 exports.getKeySet = function (clause, sep) {
   var keySet = []
   for (var fieldName in clause) {
@@ -22472,911 +21644,7 @@ exports.getQueryDefaults = function (q) {
   }, q)
 }
 
-},{}],122:[function(require,module,exports){
-const defaultStopwords = require('./stopwords_en.js').words
-
-exports.removeStopwords = function(tokens, stopwords) {
-  stopwords = stopwords || defaultStopwords
-  if (( Object.prototype.toString.call(tokens) !== '[object Array]' )
-    || ( Object.prototype.toString.call(stopwords) !== '[object Array]' )) {
-    throw new Error ('expected Arrays try: removeStopwords(Array[, Array])')
-  }
-  return tokens.filter(function (value) {
-    if (stopwords.indexOf(value.toLowerCase()) === -1)
-      return value
-  })
-}
-
-exports.da = require('./stopwords_da.js').words
-exports.en = require('./stopwords_en.js').words
-exports.es = require('./stopwords_es.js').words
-exports.fa = require('./stopwords_fa.js').words
-exports.fr = require('./stopwords_fr.js').words
-exports.it = require('./stopwords_it.js').words
-exports.ja = require('./stopwords_ja.js').words
-exports.nl = require('./stopwords_nl.js').words
-exports.no = require('./stopwords_no.js').words
-exports.pl = require('./stopwords_pl.js').words
-exports.pt = require('./stopwords_pt.js').words
-exports.ru = require('./stopwords_ru.js').words
-exports.sv = require('./stopwords_sv.js').words
-exports.zh = require('./stopwords_zh.js').words
-
-},{"./stopwords_da.js":123,"./stopwords_en.js":124,"./stopwords_es.js":125,"./stopwords_fa.js":126,"./stopwords_fr.js":127,"./stopwords_it.js":128,"./stopwords_ja.js":129,"./stopwords_nl.js":130,"./stopwords_no.js":131,"./stopwords_pl.js":132,"./stopwords_pt.js":133,"./stopwords_ru.js":134,"./stopwords_sv.js":135,"./stopwords_zh.js":136}],123:[function(require,module,exports){
-/*
-Creative Commons – Attribution / ShareAlike 3.0 license
-http://creativecommons.org/licenses/by-sa/3.0/
-
-List based on frequently used words in subtitles in 2012.
-
-Thanks to
-opensubtitles.org
-https://invokeit.wordpress.com/frequency-word-lists/#comment-9707
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'er', 'jeg', 'det', 'du', 'ikke', 'i', 'at', 'en', 'og', 'har',
-  'vi', 'til', 'på', 'hvad', 'med', 'mig', 'så', 'for', 'de', 'dig',
-  'der', 'den', 'han', 'kan', 'af', 'vil', 'var', 'her', 'et', 'skal',
-  'ved', 'nu', 'men', 'om', 'ja', 'som', 'nej', 'min', 'noget', 'ham',
-  'hun', 'bare', 'kom', 'være', 'din', 'hvor', 'dem', 'ud', 'os', 'hvis',
-  'må', 'se', 'godt', 'have', 'fra', 'ville', 'okay', 'lige', 'op', 'alle',
-  'lad', 'hvorfor', 'sig', 'hvordan', 'få', 'kunne', 'eller', 'hvem', 'man', 'bliver',
-  'havde', 'da', 'ingen', 'efter', 'når', 'alt', 'jo', 'to', 'mit', 'ind',
-  'hej', 'aldrig', 'lidt', 'nogen', 'over', 'også', 'mand', 'far', 'skulle', 'selv',
-  'får', 'hans', 'ser', 'vores', 'jer', 'sådan', 'dit', 'kun', 'deres', 'ned',
-  'mine', 'komme', 'tage', 'denne', 'sige', 'dette', 'blive', 'helt', 'fordi',
-  'end', 'tag', 'før', 'fik', 'dine',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],124:[function(require,module,exports){
-/*
-Copyright (c) 2011, Chris Umbel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'about', 'after', 'all', 'also', 'am', 'an', 'and', 'another', 'any', 'are', 'as', 'at', 'be',
-  'because', 'been', 'before', 'being', 'between', 'both', 'but', 'by', 'came', 'can',
-  'come', 'could', 'did', 'do', 'each', 'for', 'from', 'get', 'got', 'has', 'had',
-  'he', 'have', 'her', 'here', 'him', 'himself', 'his', 'how', 'if', 'in', 'into',
-  'is', 'it', 'like', 'make', 'many', 'me', 'might', 'more', 'most', 'much', 'must',
-  'my', 'never', 'now', 'of', 'on', 'only', 'or', 'other', 'our', 'out', 'over',
-  'said', 'same', 'see', 'should', 'since', 'some', 'still', 'such', 'take', 'than',
-  'that', 'the', 'their', 'them', 'then', 'there', 'these', 'they', 'this', 'those',
-  'through', 'to', 'too', 'under', 'up', 'very', 'was', 'way', 'we', 'well', 'were',
-  'what', 'where', 'which', 'while', 'who', 'with', 'would', 'you', 'your', 'a', 'i']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],125:[function(require,module,exports){
-/*
-Copyright (c) 2011, David Przybilla, Chris Umbel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'a', 'un', 'el', 'ella', 'y', 'sobre', 'de', 'la', 'que', 'en',
-  'los', 'del', 'se', 'las', 'por', 'un', 'para', 'con', 'no',
-  'una', 'su', 'al', 'lo', 'como', 'más', 'pero', 'sus', 'le',
-  'ya', 'o', 'porque', 'cuando', 'muy', 'sin', 'sobre', 'también',
-  'me', 'hasta', 'donde', 'quien', 'desde', 'nos', 'durante', 'uno',
-  'ni', 'contra', 'ese', 'eso', 'mí', 'qué', 'otro', 'él', 'cual',
-  'poco', 'mi', 'tú', 'te', 'ti', 'sí',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],126:[function(require,module,exports){
-/*
-Copyright (c) 2011, Chris Umbel
-Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  // Words
-  'از', 'با', 'یه', 'برای', 'و', 'باید', 'شاید',
-
-  // Symbols
-  '؟', '!', '٪', '.', '،', '؛', ':', ';', ',',
-
-  // Numbers
-  '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹', '۰'
-]
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],127:[function(require,module,exports){
-/*
- Copyright (c) 2014, Ismaël Héry
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
-
-// A list of commonly used french words that have little meaning and can be excluded
-// from analysis.
-
-var words = ['être', 'avoir', 'faire',
-  'a',
-  'au',
-  'aux',
-  'avec',
-  'ce',
-  'ces',
-  'dans',
-  'de',
-  'des',
-  'du',
-  'elle',
-  'en',
-  'et',
-  'eux',
-  'il',
-  'je',
-  'la',
-  'le',
-  'leur',
-  'lui',
-  'ma',
-  'mais',
-  'me',
-  'même',
-  'mes',
-  'moi',
-  'mon',
-  'ne',
-  'nos',
-  'notre',
-  'nous',
-  'on',
-  'ou',
-  'où',
-  'par',
-  'pas',
-  'pour',
-  'qu',
-  'que',
-  'qui',
-  'sa',
-  'se',
-  'ses',
-  'son',
-  'sur',
-  'ta',
-  'te',
-  'tes',
-  'toi',
-  'ton',
-  'tu',
-  'un',
-  'une',
-  'vos',
-  'votre',
-  'vous',
-  'c',
-  'd',
-  'j',
-  'l',
-  'à',
-  'm',
-  'n',
-  's',
-  't',
-  'y',
-  'été',
-  'étée',
-  'étées',
-  'étés',
-  'étant',
-  'suis',
-  'es',
-  'est',
-  'sommes',
-  'êtes',
-  'sont',
-  'serai',
-  'seras',
-  'sera',
-  'serons',
-  'serez',
-  'seront',
-  'serais',
-  'serait',
-  'serions',
-  'seriez',
-  'seraient',
-  'étais',
-  'était',
-  'étions',
-  'étiez',
-  'étaient',
-  'fus',
-  'fut',
-  'fûmes',
-  'fûtes',
-  'furent',
-  'sois',
-  'soit',
-  'soyons',
-  'soyez',
-  'soient',
-  'fusse',
-  'fusses',
-  'fût',
-  'fussions',
-  'fussiez',
-  'fussent',
-  'ayant',
-  'eu',
-  'eue',
-  'eues',
-  'eus',
-  'ai',
-  'as',
-  'avons',
-  'avez',
-  'ont',
-  'aurai',
-  'auras',
-  'aura',
-  'aurons',
-  'aurez',
-  'auront',
-  'aurais',
-  'aurait',
-  'aurions',
-  'auriez',
-  'auraient',
-  'avais',
-  'avait',
-  'avions',
-  'aviez',
-  'avaient',
-  'eut',
-  'eûmes',
-  'eûtes',
-  'eurent',
-  'aie',
-  'aies',
-  'ait',
-  'ayons',
-  'ayez',
-  'aient',
-  'eusse',
-  'eusses',
-  'eût',
-  'eussions',
-  'eussiez',
-  'eussent',
-  'ceci',
-  'cela',
-  'cet',
-  'cette',
-  'ici',
-  'ils',
-  'les',
-  'leurs',
-  'quel',
-  'quels',
-  'quelle',
-  'quelles',
-  'sans',
-  'soi'
-]
-
-exports.words = words
-
-},{}],128:[function(require,module,exports){
-/*
-Copyright (c) 2011, David Przybilla, Chris Umbel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'ad', 'al', 'allo', 'ai', 'agli', 'all', 'agl', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo',
-  'dai', 'dagli', 'dall', 'dagl', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'degl',
-  'della', 'delle', 'in', 'nel', 'nello', 'nei', 'negli', 'nell', 'negl', 'nella', 'nelle', 'su', 'sul',
-  'sullo', 'sui', 'sugli', 'sull', 'sugl', 'sulla', 'sulle', 'per', 'tra', 'contro', 'io', 'tu', 'lui',
-  'lei', 'noi', 'voi', 'loro', 'mio', 'mia', 'miei', 'mie', 'tuo', 'tua', 'tuoi', 'tue', 'suo', 'sua', 'suoi',
-  'sue', 'nostro', 'nostra', 'nostri', 'nostre', 'vostro', 'vostra', 'vostri', 'vostre', 'mi', 'ti', 'ci',
-  'vi', 'lo', 'la', 'li', 'le', 'gli', 'ne', 'il', 'un', 'uno', 'una', 'ma', 'ed', 'se', 'perché', 'anche', 'come',
-  'dov', 'dove', 'che', 'chi', 'cui', 'non', 'più', 'quale', 'quanto', 'quanti', 'quanta', 'quante', 'quello',
-  'quelli', 'quella', 'quelle', 'questo', 'questi', 'questa', 'queste', 'si', 'tutto', 'tutti', 'a', 'c', 'e',
-  'i', 'l', 'o', 'ho', 'hai', 'ha', 'abbiamo', 'avete', 'hanno', 'abbia', 'abbiate', 'abbiano', 'avrò', 'avrai',
-  'avrà', 'avremo', 'avrete', 'avranno', 'avrei', 'avresti', 'avrebbe', 'avremmo', 'avreste', 'avrebbero',
-  'avevo', 'avevi', 'aveva', 'avevamo', 'avevate', 'avevano', 'ebbi', 'avesti', 'ebbe', 'avemmo', 'aveste',
-  'ebbero', 'avessi', 'avesse', 'avessimo', 'avessero', 'avendo', 'avuto', 'avuta', 'avuti', 'avute', 'sono',
-  'sei', 'è', 'siamo', 'siete', 'sia', 'siate', 'siano', 'sarò', 'sarai', 'sarà', 'saremo', 'sarete', 'saranno',
-  'sarei', 'saresti', 'sarebbe', 'saremmo', 'sareste', 'sarebbero', 'ero', 'eri', 'era', 'eravamo', 'eravate',
-  'erano', 'fui', 'fosti', 'fu', 'fummo', 'foste', 'furono', 'fossi', 'fosse', 'fossimo', 'fossero', 'essendo',
-  'faccio', 'fai', 'facciamo', 'fanno', 'faccia', 'facciate', 'facciano', 'farò', 'farai', 'farà', 'faremo',
-  'farete', 'faranno', 'farei', 'faresti', 'farebbe', 'faremmo', 'fareste', 'farebbero', 'facevo', 'facevi',
-  'faceva', 'facevamo', 'facevate', 'facevano', 'feci', 'facesti', 'fece', 'facemmo', 'faceste', 'fecero',
-  'facessi', 'facesse', 'facessimo', 'facessero', 'facendo', 'sto', 'stai', 'sta', 'stiamo', 'stanno', 'stia',
-  'stiate', 'stiano', 'starò', 'starai', 'starà', 'staremo', 'starete', 'staranno', 'starei', 'staresti',
-  'starebbe', 'staremmo', 'stareste', 'starebbero', 'stavo', 'stavi', 'stava', 'stavamo', 'stavate', 'stavano',
-  'stetti', 'stesti', 'stette', 'stemmo', 'steste', 'stettero', 'stessi', 'stesse', 'stessimo', 'stessero', 'stando',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],129:[function(require,module,exports){
-// Original copyright:
-/*
- Licensed to the Apache Software Foundation (ASF) under one or more
- contributor license agreements.  See the NOTICE file distributed with
- this work for additional information regarding copyright ownership.
- The ASF licenses this file to You under the Apache License, Version 2.0
- the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
-// This version:
-/*
-Copyright (c) 2012, Guillaume Marty
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-// Original location:
-// http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/kuromoji/src/resources/org/apache/lucene/analysis/ja/stopwords.txt
-var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し', 'れ', 'さ',
-  'ある', 'いる', 'も', 'する', 'から', 'な', 'こと', 'として', 'い', 'や', 'れる',
-  'など', 'なっ', 'ない', 'この', 'ため', 'その', 'あっ', 'よう', 'また', 'もの',
-  'という', 'あり', 'まで', 'られ', 'なる', 'へ', 'か', 'だ', 'これ', 'によって',
-  'により', 'おり', 'より', 'による', 'ず', 'なり', 'られる', 'において', 'ば', 'なかっ',
-  'なく', 'しかし', 'について', 'せ', 'だっ', 'その後', 'できる', 'それ', 'う', 'ので',
-  'なお', 'のみ', 'でき', 'き', 'つ', 'における', 'および', 'いう', 'さらに', 'でも',
-  'ら', 'たり', 'その他', 'に関する', 'たち', 'ます', 'ん', 'なら', 'に対して', '特に',
-  'せる', '及び', 'これら', 'とき', 'では', 'にて', 'ほか', 'ながら', 'うち', 'そして',
-  'とともに', 'ただし', 'かつて', 'それぞれ', 'または', 'お', 'ほど', 'ものの', 'に対する',
-  'ほとんど', 'と共に', 'といった', 'です', 'とも', 'ところ', 'ここ']
-
-// tell the world about the noise words.
-module.exports = words
-
-},{}],130:[function(require,module,exports){
-/*
-Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-// This dutch wordlist has been parsed from a list created by Damien van Holten
-// source: http://www.damienvanholten.com/blog/dutch-stop-words/
-var words = [
-  'aan', 'af', 'al', 'alles', 'als', 'altijd', 'andere', 'ben', 'bij', 'daar',
-  'dan', 'dat', 'de', 'der', 'deze', 'die', 'dit', 'doch', 'doen', 'door', 'dus',
-  'een', 'eens', 'en', 'er', 'ge', 'geen', 'geweest', 'haar', 'had', 'heb',
-  'hebben', 'heeft', 'hem', 'het', 'hier', 'hij', 'hoe', 'hun', 'iemand', 'iets',
-  'ik', 'in', 'is', 'ja', 'je ', 'kan', 'kon', 'kunnen', 'maar', 'me', 'meer',
-  'men', 'met', 'mij', 'mijn', 'moet', 'na', 'naar', 'niet', 'niets', 'nog', 'nu',
-  'of', 'om', 'omdat', 'ons', 'ook', 'op', 'over', 'reeds', 'te', 'tegen', 'toch',
-  'toen', 'tot', 'u', 'uit', 'uw', 'van', 'veel', 'voor', 'want', 'waren', 'was',
-  'wat', 'we', 'wel', 'werd', 'wezen', 'wie', 'wij', 'wil', 'worden', 'zal', 'ze',
-  'zei', 'zelf', 'zich', 'zij', 'zijn', 'zo', 'zonder', 'zou',
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-  'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '$', '1',
-  '2', '3', '4', '5', '6', '7', '8', '9', '0', '_', '-']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],131:[function(require,module,exports){
-/*
-Copyright (c) 2014, Kristoffer Brabrand
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'og', 'i', 'jeg', 'det', 'at', 'en', 'et', 'den', 'til', 'er', 'som',
-  'på', 'de', 'med', 'han', 'av', 'ikke', 'der', 'så', 'var', 'meg',
-  'seg', 'men', 'ett', 'har', 'om', 'vi', 'min', 'mitt', 'ha', 'hadde',
-  'hun', 'nå', 'over', 'da', 'ved', 'fra', 'du', 'ut', 'sin', 'dem',
-  'oss', 'opp', 'man', 'kan', 'hans', 'hvor', 'eller', 'hva', 'skal',
-  'selv', 'sjøl', 'her', 'alle', 'vil', 'bli', 'ble', 'blitt', 'kunne',
-  'inn', 'når', 'kom', 'noen', 'noe', 'ville', 'dere', 'som',
-  'deres', 'kun', 'ja', 'etter', 'ned', 'skulle', 'denne', 'for', 'deg',
-  'si', 'sine', 'sitt', 'mot', 'å', 'meget', 'hvorfor', 'dette', 'disse',
-  'uten', 'hvordan', 'ingen', 'din', 'ditt', 'blir', 'samme', 'hvilken',
-  'hvilke', 'sånn', 'inni', 'mellom', 'vår', 'hver', 'hvem', 'vors',
-  'hvis', 'både', 'bare', 'enn', 'fordi', 'før', 'mange', 'også', 'slik',
-  'vært', 'være', 'begge', 'siden', 'henne', 'hennar', 'hennes',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],132:[function(require,module,exports){
-/*
-Copyright (c) 2013, Paweł Łaskarzewski
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-// list based on: http://pl.wikipedia.org/wiki/Wikipedia:Stopwords
-var words = [
-  'a', 'aby', 'ach', 'acz', 'aczkolwiek', 'aj', 'albo', 'ale', 'ależ', 'ani',
-  'aż', 'bardziej', 'bardzo', 'bo', 'bowiem', 'by', 'byli', 'bynajmniej',
-  'być', 'był', 'była', 'było', 'były', 'będzie', 'będą', 'cali', 'cała',
-  'cały', 'ci', 'cię', 'ciebie', 'co', 'cokolwiek', 'coś', 'czasami',
-  'czasem', 'czemu', 'czy', 'czyli', 'daleko', 'dla', 'dlaczego', 'dlatego',
-  'do', 'dobrze', 'dokąd', 'dość', 'dużo', 'dwa', 'dwaj', 'dwie', 'dwoje',
-  'dziś', 'dzisiaj', 'gdy', 'gdyby', 'gdyż', 'gdzie', 'gdziekolwiek',
-  'gdzieś', 'i', 'ich', 'ile', 'im', 'inna', 'inne', 'inny', 'innych', 'iż',
-  'ja', 'ją', 'jak', 'jakaś', 'jakby', 'jaki', 'jakichś', 'jakie', 'jakiś',
-  'jakiż', 'jakkolwiek', 'jako', 'jakoś', 'je', 'jeden', 'jedna', 'jedno',
-  'jednak', 'jednakże', 'jego', 'jej', 'jemu', 'jest', 'jestem', 'jeszcze',
-  'jeśli', 'jeżeli', 'już', 'ją', 'każdy', 'kiedy', 'kilka', 'kimś', 'kto',
-  'ktokolwiek', 'ktoś', 'która', 'które', 'którego', 'której', 'który',
-  'których', 'którym', 'którzy', 'ku', 'lat', 'lecz', 'lub', 'ma', 'mają',
-  'mało', 'mam', 'mi', 'mimo', 'między', 'mną', 'mnie', 'mogą', 'moi', 'moim',
-  'moja', 'moje', 'może', 'możliwe', 'można', 'mój', 'mu', 'musi', 'my', 'na',
-  'nad', 'nam', 'nami', 'nas', 'nasi', 'nasz', 'nasza', 'nasze', 'naszego',
-  'naszych', 'natomiast', 'natychmiast', 'nawet', 'nią', 'nic', 'nich', 'nie',
-  'niech', 'niego', 'niej', 'niemu', 'nigdy', 'nim', 'nimi', 'niż', 'no', 'o',
-  'obok', 'od', 'około', 'on', 'ona', 'one', 'oni', 'ono', 'oraz', 'oto',
-  'owszem', 'pan', 'pana', 'pani', 'po', 'pod', 'podczas', 'pomimo', 'ponad',
-  'ponieważ', 'powinien', 'powinna', 'powinni', 'powinno', 'poza', 'prawie',
-  'przecież', 'przed', 'przede', 'przedtem', 'przez', 'przy', 'roku',
-  'również', 'sam', 'sama', 'są', 'się', 'skąd', 'sobie', 'sobą', 'sposób',
-  'swoje', 'ta', 'tak', 'taka', 'taki', 'takie', 'także', 'tam', 'te', 'tego',
-  'tej', 'temu', 'ten', 'teraz', 'też', 'to', 'tobą', 'tobie', 'toteż',
-  'trzeba', 'tu', 'tutaj', 'twoi', 'twoim', 'twoja', 'twoje', 'twym', 'twój',
-  'ty', 'tych', 'tylko', 'tym', 'u', 'w', 'wam', 'wami', 'was', 'wasz', 'zaś',
-  'wasza', 'wasze', 'we', 'według', 'wiele', 'wielu', 'więc', 'więcej', 'tę',
-  'wszyscy', 'wszystkich', 'wszystkie', 'wszystkim', 'wszystko', 'wtedy',
-  'wy', 'właśnie', 'z', 'za', 'zapewne', 'zawsze', 'ze', 'zł', 'znowu',
-  'znów', 'został', 'żaden', 'żadna', 'żadne', 'żadnych', 'że', 'żeby',
-  '$', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],133:[function(require,module,exports){
-/*
-Copyright (c) 2011, Luís Rodrigues
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'a',
-  'à',
-  'ao',
-  'aos',
-  'aquela',
-  'aquelas',
-  'aquele',
-  'aqueles',
-  'aquilo',
-  'as',
-  'às',
-  'até',
-  'com',
-  'como',
-  'da',
-  'das',
-  'de',
-  'dela',
-  'delas',
-  'dele',
-  'deles',
-  'depois',
-  'do',
-  'dos',
-  'e',
-  'ela',
-  'elas',
-  'ele',
-  'eles',
-  'em',
-  'entre',
-  'essa',
-  'essas',
-  'esse',
-  'esses',
-  'esta',
-  'estas',
-  'este',
-  'estes',
-  'eu',
-  'isso',
-  'isto',
-  'já',
-  'lhe',
-  'lhes',
-  'mais',
-  'mas',
-  'me',
-  'mesmo',
-  'meu',
-  'meus',
-  'minha',
-  'minhas',
-  'muito',
-  'muitos',
-  'na',
-  'não',
-  'nas',
-  'nem',
-  'no',
-  'nos',
-  'nós',
-  'nossa',
-  'nossas',
-  'nosso',
-  'nossos',
-  'num',
-  'nuns',
-  'numa',
-  'numas',
-  'o',
-  'os',
-  'ou',
-  'para',
-  'pela',
-  'pelas',
-  'pelo',
-  'pelos',
-  'por',
-  'quais',
-  'qual',
-  'quando',
-  'que',
-  'quem',
-  'se',
-  'sem',
-  'seu',
-  'seus',
-  'só',
-  'sua',
-  'suas',
-  'também',
-  'te',
-  'teu',
-  'teus',
-  'tu',
-  'tua',
-  'tuas',
-  'um',
-  'uma',
-  'umas',
-  'você',
-  'vocês',
-  'vos',
-  'vosso',
-  'vossos',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_'
-]
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],134:[function(require,module,exports){
-/*
-Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'о', 'после', 'все', 'также', 'и', 'другие', 'все', 'как', 'во', 'быть',
-  'потому', 'был', 'до', 'являюсь', 'между', 'все', 'но', 'от', 'иди', 'могу',
-  'подойди', 'мог', 'делал', 'делаю', 'каждый', 'для', 'откуда', 'иметь', 'имел',
-  'он', 'имеет', 'её', 'здесь', 'его', 'как', 'если', 'в', 'оно', 'за',
-  'делать', 'много', 'я', 'может быть', 'более', 'самый', 'должен',
-  'мой', 'никогда', 'сейчас', 'из', 'на', 'только', 'или', 'другой', 'другая',
-  'другое', 'наше', 'вне', 'конец', 'сказал', 'сказала', 'также', 'видел', 'c',
-  'немного', 'все еще', 'так', 'затем', 'тот', 'их', 'там', 'этот', 'они', 'те',
-  'через', 'тоже', 'под', 'над', 'очень', 'был', 'путь', 'мы', 'хорошо',
-  'что', 'где', 'который', 'пока', 'кто', 'с кем', 'хотел бы', 'ты', 'твои',
-  'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н',
-  'o', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь',
-  'э', 'ю', 'я', '$', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],135:[function(require,module,exports){
-/*
-Creative Commons – Attribution / ShareAlike 3.0 license
-http://creativecommons.org/licenses/by-sa/3.0/
-
-List based on frequently used words in subtitles in 2012.
-
-Thanks to
-opensubtitles.org
-https://invokeit.wordpress.com/frequency-word-lists/#comment-9707
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  'jag', 'det', 'är', 'du', 'inte', 'att', 'en', 'och', 'har', 'vi',
-  'på', 'i', 'för', 'han', 'vad', 'med', 'mig', 'som', 'här', 'om',
-  'dig', 'var', 'den', 'så', 'till', 'kan', 'de', 'ni', 'ska', 'ett',
-  'men', 'av', 'vill', 'nu', 'ja', 'nej', 'bara', 'hon', 'hur', 'min',
-  'där', 'honom', 'kom', 'din', 'då', 'när', 'ha', 'er', 'ta', 'ut',
-  'får', 'man', 'vara', 'oss', 'dem', 'eller', 'varför', 'alla', 'från', 'upp',
-  'igen', 'sa', 'hade', 'allt', 'in', 'sig', 'ingen', 'henne', 'vem', 'mitt',
-  'nåt', 'blir', 'än', 'bli', 'ju', 'två', 'tar', 'hans', 'ditt', 'mina',
-  'åt', 'väl', 'också', 'nån', 'låt', 'detta', 'va', 'dina', 'dom', 'blev',
-  'inga', 'sin', 'just', 'många', 'vart', 'vilken', 'ur', 'ens', 'sitt', 'e',
-  'jo', 'era', 'deras', 'fem', 'sex', 'denna', 'vilket', 'fyra', 'vårt', 'emot',
-  'tio', 'ert', 'sju', 'åtta', 'nånting', 'ned', 'ers', 'nio', 'mej',
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_']
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],136:[function(require,module,exports){
-/*
-Copyright (c) 2011, David Przybilla, Chris Umbel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// a list of commonly used words that have little meaning and can be excluded
-// from analysis.
-var words = [
-  '的', '地', '得', '和', '跟',
-  '与', '及', '向', '并', '等',
-  '更', '已', '含', '做', '我',
-  '你', '他', '她', '们', '某',
-  '该', '各', '每', '这', '那',
-  '哪', '什', '么', '谁', '年',
-  '月', '日', '时', '分', '秒',
-  '几', '多', '来', '在', '就',
-  '又', '很', '呢', '吧', '吗',
-  '了', '嘛', '哇', '儿', '哼',
-  '啊', '嗯', '是', '着', '都',
-  '不', '说', '也', '看', '把',
-  '还', '个', '有', '小', '到',
-  '一', '为', '中', '于', '对',
-  '会', '之', '第', '此', '或',
-  '共', '按', '请'
-]
-
-// tell the world about the noise words.
-exports.words = words
-
-},{}],137:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-browserify/index.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23505,7 +21773,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":37,"inherits":40,"readable-stream/duplex.js":90,"readable-stream/passthrough.js":97,"readable-stream/readable.js":98,"readable-stream/transform.js":99,"readable-stream/writable.js":100}],138:[function(require,module,exports){
+},{"events":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/events/events.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/duplex.js","readable-stream/passthrough.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/readable.js","readable-stream/transform.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/readable-stream/writable.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/stream-shift/index.js":[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -23527,7 +21795,7 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],139:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/string_decoder/index.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23750,7 +22018,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":9}],140:[function(require,module,exports){
+},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-frequency/index.js":[function(require,module,exports){
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
 exports.logNormalization = 'logNormalization'
 exports.raw = 'raw'
@@ -23800,7 +22068,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{}],141:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/term-vector/index.js":[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -23866,119 +22134,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":75}],142:[function(require,module,exports){
-(function (process){
-var Stream = require('stream')
-
-// through
-//
-// a stream that does nothing but re-emit the input.
-// useful for aggregating a series of changing but not ending streams into one stream)
-
-exports = module.exports = through
-through.through = through
-
-//create a readable writable stream.
-
-function through (write, end, opts) {
-  write = write || function (data) { this.queue(data) }
-  end = end || function () { this.queue(null) }
-
-  var ended = false, destroyed = false, buffer = [], _ended = false
-  var stream = new Stream()
-  stream.readable = stream.writable = true
-  stream.paused = false
-
-//  stream.autoPause   = !(opts && opts.autoPause   === false)
-  stream.autoDestroy = !(opts && opts.autoDestroy === false)
-
-  stream.write = function (data) {
-    write.call(this, data)
-    return !stream.paused
-  }
-
-  function drain() {
-    while(buffer.length && !stream.paused) {
-      var data = buffer.shift()
-      if(null === data)
-        return stream.emit('end')
-      else
-        stream.emit('data', data)
-    }
-  }
-
-  stream.queue = stream.push = function (data) {
-//    console.error(ended)
-    if(_ended) return stream
-    if(data === null) _ended = true
-    buffer.push(data)
-    drain()
-    return stream
-  }
-
-  //this will be registered as the first 'end' listener
-  //must call destroy next tick, to make sure we're after any
-  //stream piped from here.
-  //this is only a problem if end is not emitted synchronously.
-  //a nicer way to do this is to make sure this is the last listener for 'end'
-
-  stream.on('end', function () {
-    stream.readable = false
-    if(!stream.writable && stream.autoDestroy)
-      process.nextTick(function () {
-        stream.destroy()
-      })
-  })
-
-  function _end () {
-    stream.writable = false
-    end.call(stream)
-    if(!stream.readable && stream.autoDestroy)
-      stream.destroy()
-  }
-
-  stream.end = function (data) {
-    if(ended) return
-    ended = true
-    if(arguments.length) stream.write(data)
-    _end() // will emit or queue
-    return stream
-  }
-
-  stream.destroy = function () {
-    if(destroyed) return
-    destroyed = true
-    ended = true
-    buffer.length = 0
-    stream.writable = stream.readable = false
-    stream.emit('close')
-    return stream
-  }
-
-  stream.pause = function () {
-    if(stream.paused) return
-    stream.paused = true
-    return stream
-  }
-
-  stream.resume = function () {
-    if(stream.paused) {
-      stream.paused = false
-      stream.emit('resume')
-    }
-    drain()
-    //may have become paused again,
-    //as drain emits 'data'.
-    if(!stream.paused)
-      stream.emit('drain')
-    return stream
-  }
-  return stream
-}
-
-
-}).call(this,require('_process'))
-},{"_process":84,"stream":137}],143:[function(require,module,exports){
+},{"lodash.isequal":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/lodash.isequal/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/typedarray-to-buffer/index.js":[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -24001,7 +22157,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],144:[function(require,module,exports){
+},{"buffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/buffer/index.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util-deprecate/browser.js":[function(require,module,exports){
 (function (global){
 
 /**
@@ -24072,16 +22228,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],145:[function(require,module,exports){
-arguments[4][40][0].apply(exports,arguments)
-},{"dup":40}],146:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+arguments[4]["/Users/fergusmcdowall/Desktop/node/search-index/node_modules/inherits/inherits_browser.js"][0].apply(exports,arguments)
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],147:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/util.js":[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -24671,7 +22827,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":146,"_process":84,"inherits":145}],148:[function(require,module,exports){
+},{"./support/isBuffer":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/support/isBufferBrowser.js","_process":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/process/browser.js","inherits":"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/util/node_modules/inherits/inherits_browser.js"}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/wrappy/wrappy.js":[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -24706,7 +22862,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],149:[function(require,module,exports){
+},{}],"/Users/fergusmcdowall/Desktop/node/search-index/node_modules/xtend/immutable.js":[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -24727,5 +22883,5 @@ function extend() {
     return target
 }
 
-},{}]},{},[1])(1)
+},{}]},{},["/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js"])("/Users/fergusmcdowall/Desktop/node/search-index/lib/index.js")
 });
