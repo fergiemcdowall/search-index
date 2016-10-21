@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=4"
