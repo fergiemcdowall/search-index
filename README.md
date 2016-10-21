@@ -39,6 +39,7 @@ Find out how to use the `search-index` module here:
  * [Run search-index in the browser](./doc/browser.md)
  * [Sync from a server to a browser](./doc/browserSync.md)
 
+<!--
 ### Other How-tos and Articles on the Interwebs
  * [Getting started with search-index](#)
  * [How to implement stemming in search-index](#)
@@ -46,7 +47,7 @@ Find out how to use the `search-index` module here:
  * [Create a Network-Resiliant Search Application](#)
  * [Functionality vs index size (how to shrink your index)](#)
  * [Teasers and Search Term Highlighting](#)
-
+-->
 ### Release notes
 
 * 0.7.0 : new constructor
