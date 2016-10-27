@@ -17,7 +17,7 @@ si.dbReadStream()
 ## Merge saved file into index
 
 ```javascript
-// assumes that backup is in a file called 'backup.gz'
+// assumes that backup is in a file called 'backup.json'
 fs.createReadStream('backup.json')
   .pipe(JSONStream.parse())
   .pipe(si.dbWriteStream())
