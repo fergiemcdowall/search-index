@@ -10,9 +10,9 @@
 
 ```javascript
 const getData = function(err, myIndex) {
-  readStreamOfDocuments                     // <- a stream of documents to be indexed
-    .pipe(myIndex.defaultPipeline())        // <- an extentable document processing pipeline
-    .pipe(myIndex.add())                    // <- myIndex is a search index that can now be queried
+  readStreamOfDocuments                   // <- a stream of documents to be indexed
+    .pipe(myIndex.defaultPipeline())      // <- an extentable document processing pipeline
+    .pipe(myIndex.add())                  // <- myIndex is a search index that can now be queried
 }
 require('search-index')(options, getData) // <- make a new index
 ```
@@ -23,7 +23,7 @@ Find out how to use the `search-index` module here:
 
 ### For the impatient
  * [Quickstart](./doc/quickstart.md)
- * [Simple web demo](https://cdn.rawgit.com/fergiemcdowall/search-index/master/doc/demo/index.html)
+ * [Simple web demo](https://rawgit.com/fergiemcdowall/search-index/master/doc/demo/index.html)
 
 ### API
 
