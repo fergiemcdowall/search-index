@@ -96,4 +96,12 @@ describe('Indexing API', function () {
         })
       })
   })
+
+  it('can count docs', function (done) {
+    si.countDocs(function (err, docCount) {
+      if (err) false.should.eql(true)
+      docCount.should.be.exactly(3)
+      return done()
+    })
+  })
 })
