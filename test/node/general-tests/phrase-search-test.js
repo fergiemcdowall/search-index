@@ -148,7 +148,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['now sadly defunct']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -166,7 +166,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['tastie bite']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -184,7 +184,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['curry']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -202,7 +202,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['curry', 'substituted for gravy']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -234,7 +234,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['curry sauce may be substituted']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -252,7 +252,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'*': ['curry sauce may be substituted', 'gravy']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -284,7 +284,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'name': ['chips and curry']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -316,7 +316,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'test': ['substituted']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -334,7 +334,7 @@ describe('ngrams (phrase search): ', function () {
         AND: {'name': ['chips']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.should.eql(results.shift())
+      data.document.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()

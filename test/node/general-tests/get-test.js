@@ -25,30 +25,29 @@ describe('.get-ting: ', function () {
   })
 
   it('should index test data into the index', function (done) {
-    var s = new Readable()
-    s.push(JSON.stringify({
+    var s = new Readable({ objectMode: true })
+    s.push({
       id: 1,
       name: 'The First Doc',
       test: 'this is the first doc'
-    }))
-    s.push(JSON.stringify({
+    })
+    s.push({
       id: 2,
       name: 'The Second Doc',
       test: 'this is the second doc'
-    }))
-    s.push(JSON.stringify({
+    })
+    s.push({
       id: 3,
       name: 'The Third Doc',
       test: 'this is the third doc doc'
-    }))
-    s.push(JSON.stringify({
+    })
+    s.push({
       id: 4,
       name: 'The Fourth Doc',
       test: 'this is the fourth doc'
-    }))
+    })
     s.push(null)
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
+    s.pipe(si.defaultPipeline())
       .pipe(si.add())
       .on('data', function (data) {}).on('end', function () {
         done()
@@ -64,7 +63,6 @@ describe('.get-ting: ', function () {
       }
     ]
     si.get(['3']).on('data', function (data) {
-      data = JSON.parse(data)
       data.should.eql(results.shift())
     }).on('end', function (end) {
       results.length.should.be.exactly(0)
@@ -91,7 +89,6 @@ describe('.get-ting: ', function () {
       }
     ]
     si.get(['3', '1', '4']).on('data', function (data) {
-      data = JSON.parse(data)
       data.should.eql(results.shift())
     }).on('end', function (end) {
       results.length.should.be.exactly(0)

@@ -58,7 +58,6 @@ describe('stopwords: ', function () {
       }
     }).on('data', function (data) {
       i++
-      data = JSON.parse(data)
       data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       i.should.be.exactly(10)

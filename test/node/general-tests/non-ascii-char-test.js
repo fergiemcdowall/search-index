@@ -54,7 +54,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
     }
     si.search(q)
       .on('data', function (data) {
-        JSON.parse(data).document.should.eql({
+        data.document.should.eql({
           id: 1,
           names: 'ståle synnøve Kjærsti',
           test: 'this doc should give hits smør for peaches peaches all of the tokens in the names field'
@@ -72,7 +72,7 @@ describe('Indexing and searching non-ascii characters: ', function () {
     }
     si.search(q)
       .on('data', function (data) {
-        JSON.parse(data).document.should.eql({
+        data.document.should.eql({
           id: 2,
           names: 'Gerät Grünnerløkka',
           test: 'everything in names doc field smør should be searchable searchable searchable'

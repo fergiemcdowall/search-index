@@ -59,7 +59,7 @@ describe('some simple relevancy tests: ', function () {
         AND: {'*': ['*']}
       }]
     }).on('data', function (data) {
-      results.push(JSON.parse(data))
+      results.push(data)
     }).on('end', function () {
       // console.log(results)
       results.map(function (item) {
@@ -77,7 +77,7 @@ describe('some simple relevancy tests: ', function () {
         AND: {'*': ['salad']}
       }]
     }).on('data', function (data) {
-      results.push(JSON.parse(data))
+      results.push(data)
     }).on('end', function () {
       results.map(function (item) {
         return item.document.id
@@ -94,7 +94,7 @@ describe('some simple relevancy tests: ', function () {
         AND: {'*': ['fruit']}
       }]
     }).on('data', function (data) {
-      results.push(JSON.parse(data))
+      results.push(data)
     }).on('end', function () {
       results.map(function (item) {
         return item.document.id

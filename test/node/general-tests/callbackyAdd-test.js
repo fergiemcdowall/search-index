@@ -51,7 +51,6 @@ describe('Callbacky Add', function () {
     si.search({
       AND: {'*': ['*']}
     }).on('data', function (data) {
-      data = JSON.parse(data)
       data.document.id.should.be.exactly(results.shift())
     }).on('end', function () {
       true.should.eql(true)

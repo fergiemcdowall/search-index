@@ -116,7 +116,7 @@ describe('scanning: ', function () {
         AND: {'*': ['swiss', 'watch']}
       }
     }).on('data', function (doc) {
-      results.push(JSON.parse(doc).id)
+      results.push(doc.id)
     }).on('end', function () {
       results.should.eql([ '10', '2', '3', '9' ])
       done()
@@ -130,7 +130,7 @@ describe('scanning: ', function () {
         AND: {'*': ['watch']}
       }
     }).on('data', function (doc) {
-      results.push(JSON.parse(doc).id)
+      results.push(doc.id)
     }).on('end', function () {
       results.should.eql([ '1', '10', '2', '3', '7', '9' ])
       done()
@@ -144,7 +144,7 @@ describe('scanning: ', function () {
         AND: {'name': ['swiss']}
       }
     }).on('data', function (doc) {
-      results.push(JSON.parse(doc).id)
+      results.push(doc.id)
     }).on('end', function () {
       results.should.eql([ '10', '2', '3', '4', '5' ])
       done()
@@ -163,9 +163,9 @@ describe('scanning: ', function () {
         }
       }
     }).on('data', function (doc) {
-      results.push(JSON.parse(doc).id)
+      results.push(doc.id)
     }).on('end', function () {
-      results.should.eql([ '10', '2', '3', '5' ])
+      results.should.eql([ '10', '3' ])
       done()
     })
   })

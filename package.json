@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=4"
@@ -11,14 +11,14 @@
     "bunyan": "^1.8.1",
     "leveldown": "^1.5.0",
     "levelup": "^1.3.3",
-    "search-index-adder": "0.1.18",
-    "search-index-searcher": "0.1.14"
+    "search-index-adder": "^0.1.20",
+    "search-index-searcher": "^0.1.17"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",
     "brfs": "^1.4.3",
     "browserify": "^13.1.0",
-    "chromedriver": "2.23.1",
+    "chromedriver": "2.25.1",
     "disc": "^1.3.2",
     "highland": "^2.10.0",
     "level-js": "^2.2.4",

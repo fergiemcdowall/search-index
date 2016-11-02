@@ -57,7 +57,7 @@ describe('sqllite compatability: ', function () {
             AND: {'*': ['cool']}
           }]
         }).on('data', function (data) {
-          JSON.parse(data).document.body.should.equal('this is my doc')
+          data.document.body.should.equal('this is my doc')
           return done()
         })
       })

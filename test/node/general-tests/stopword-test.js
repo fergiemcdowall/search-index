@@ -91,7 +91,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['dette']}
       }
     }).on('data', function (data) {
-      data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
     }).on('end', function () {
@@ -129,7 +128,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['tur']}
       }
     }).on('data', function (data) {
-      data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
     }).on('end', function () {
@@ -181,7 +179,6 @@ describe('stopwords: ', function () {
         AND: {'*': 'fish and chips'.split(' ')}
       }
     }).on('data', function (data) {
-      data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
     }).on('end', function () {
@@ -198,7 +195,6 @@ describe('stopwords: ', function () {
         AND: {'*': ['and']}
       }
     }).on('data', function (data) {
-      data = JSON.parse(data)
       results.shift().should.be.exactly(data.id)
       i++
     }).on('end', function () {

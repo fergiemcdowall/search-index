@@ -112,7 +112,7 @@ describe('OR-ing: ', function () {
         AND: { '*': [ '*' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.id.should.be.exactly(results.shift())
+      data.document.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -126,7 +126,7 @@ describe('OR-ing: ', function () {
         AND: { '*': [ 'armani', 'watch' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).document.id.should.be.exactly(results.shift())
+      data.document.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -142,7 +142,7 @@ describe('OR-ing: ', function () {
         AND: { '*': [ 'tw', 'watch' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -160,7 +160,7 @@ describe('OR-ing: ', function () {
         AND: { '*': [ 'tw', 'watch' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -175,7 +175,7 @@ describe('OR-ing: ', function () {
         NOT: { '*': [ 'armani' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -190,7 +190,7 @@ describe('OR-ing: ', function () {
         NOT: { 'name': [ 'apple' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -207,7 +207,7 @@ describe('OR-ing: ', function () {
         AND: { '*': [ 'apple', 'watch' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -222,7 +222,7 @@ describe('OR-ing: ', function () {
         NOT: { '*': [ 'tw' ] }
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.be.exactly(results.shift())
+      data.id.should.be.exactly(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()

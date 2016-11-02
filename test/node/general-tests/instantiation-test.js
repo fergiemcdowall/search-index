@@ -8,34 +8,34 @@ const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
 const should = require('should')
 
-var sOne = new Readable()
-var sTwo = new Readable()
+var sOne = new Readable({ objectMode: true })
+var sTwo = new Readable({ objectMode: true })
 
 var siOne, siTwo
 
 describe('Instantiation: ', function () {
   describe('setting up different indexes with no pollution', function () {
-    sOne.push(JSON.stringify({
+    sOne.push({
       id: 1,
       name: 'The First Doc',
       test: 'this is the first doc'
-    }))
-    sOne.push(JSON.stringify({
+    })
+    sOne.push({
       id: 2,
       name: 'The Second Doc',
       test: 'this is the second doc'
-    }))
+    })
     sOne.push(null)
-    sTwo.push(JSON.stringify({
+    sTwo.push({
       id: 3,
       name: 'The Third Doc',
       test: 'this is the third doc'
-    }))
-    sTwo.push(JSON.stringify({
+    })
+    sTwo.push({
       id: 4,
       name: 'The Fourth Doc',
       test: 'this is the fourth doc'
-    }))
+    })
     sTwo.push(null)
 
     it('should initialize the first search index', function (done) {
@@ -60,8 +60,7 @@ describe('Instantiation: ', function () {
     })
 
     it('should index test data into the first index', function (done) {
-      sOne.pipe(JSONStream.parse())
-        .pipe(siOne.defaultPipeline())
+      sOne.pipe(siOne.defaultPipeline())
         .pipe(siOne.add())
         .on('data', function (data) {})
         .on('end', function () {
@@ -70,8 +69,7 @@ describe('Instantiation: ', function () {
     })
 
     it('should index test data into the second index', function (done) {
-      sTwo.pipe(JSONStream.parse())
-        .pipe(siTwo.defaultPipeline())
+      sTwo.pipe(siTwo.defaultPipeline())
         .pipe(siTwo.add())
         .on('data', function (data) {})
         .on('end', function () {
@@ -97,7 +95,7 @@ describe('Instantiation: ', function () {
           AND: {'*': ['*']}
         }]
       }).on('data', function (data) {
-        JSON.parse(data).document.should.eql(results.shift())
+        data.document.should.eql(results.shift())
       }).on('end', function () {
         results.length.should.be.exactly(0)
         return done()
@@ -122,7 +120,7 @@ describe('Instantiation: ', function () {
           AND: {'*': ['*']}
         }]
       }).on('data', function (data) {
-        JSON.parse(data).document.should.eql(results.shift())
+        data.document.should.eql(results.shift())
       }).on('end', function () {
         results.length.should.be.exactly(0)
         return done()

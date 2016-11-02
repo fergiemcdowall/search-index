@@ -126,6 +126,10 @@ describe('categories: ', function () {
   it('return all docs, and show manufacturer category', function (done) {
     var result = [
       {
+        'key': '*',
+        'value': 4
+      },
+      {
         'key': 'armani',
         'value': 1
       },
@@ -156,6 +160,10 @@ describe('categories: ', function () {
 
   it('return all docs, and show manufacturer category by set', function (done) {
     var result = [
+      {
+        'key': '*',
+        'value': [ '10', '2', '3', '9' ]
+      },
       {
         'key': 'armani',
         'value': [ '10' ]
@@ -188,6 +196,7 @@ describe('categories: ', function () {
 
   it('return all docs, and show manufacturer category, filter on color: black', function (done) {
     var result = [
+      { key: '*', value: 3 },
       { key: 'apple', value: 1 },
       { key: 'versace', value: 1 },
       { key: 'victorinox', value: 1 }
@@ -220,6 +229,7 @@ describe('categories: ', function () {
 
   it('should be able to do simple filtering on price', function (done) {
     var result = [
+      { key: '*', value: 3 },
       { key: 'armani', value: 1 },
       { key: 'versace', value: 1 },
       { key: 'victorinox', value: 1 }
@@ -250,6 +260,7 @@ describe('categories: ', function () {
 
   it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch and return categories', function (done) {
     var result = [
+      { key: '*', value: 4 },
       { key: 'armani', value: 2 },
       { key: 'tw', value: 1 },
       { key: 'victorinox', value: 2 }
@@ -280,6 +291,7 @@ describe('categories: ', function () {
 
   it('search for "swiss" NOT "watch" and return categories for manufacturer', function (done) {
     var result = [
+      { key: '*', value: ['4', '5'] },
       { key: 'charriol', value: [ '4' ] },
       { key: 'ferragamo', value: [ '5' ] }
     ]
@@ -305,6 +317,7 @@ describe('categories: ', function () {
 
   it('return all docs, and show manufacturer and color categories', function (done) {
     var result = [
+      { key: '*', value: 10 },
       { key: 'black', value: 6 },
       { key: 'blue', value: 1 },
       { key: 'gold', value: 7 },
@@ -322,7 +335,6 @@ describe('categories: ', function () {
         field: 'color'
       }
     }).on('data', function (data) {
-      // console.log(data)
       data.should.eql(result.shift())
     }).on('end', function () {
       result.length.should.be.exactly(0)

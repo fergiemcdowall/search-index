@@ -127,7 +127,7 @@ describe('sorting: ', function () {
         AND: {'*': ['*']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.eql(results.shift())
+      data.id.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -141,7 +141,7 @@ describe('sorting: ', function () {
         AND: {'*': ['watch']}
       }]
     }).on('data', function (data) {
-      JSON.parse(data).id.should.eql(results.shift())
+      data.id.should.eql(results.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       return done()
@@ -162,8 +162,8 @@ describe('sorting: ', function () {
       }
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).score.should.eql(prices.shift())
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)
@@ -193,8 +193,8 @@ describe('sorting: ', function () {
       }
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).document.name.should.eql(names.shift())
+      data.id.should.eql(results.shift())
+      data.document.name.should.eql(names.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       names.length.should.be.exactly(0)
@@ -217,8 +217,8 @@ describe('sorting: ', function () {
       }
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).score.should.eql(prices.shift())
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)
@@ -242,8 +242,8 @@ describe('sorting: ', function () {
       pageSize: 2
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).score.should.eql(prices.shift())
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)
@@ -268,8 +268,8 @@ describe('sorting: ', function () {
       pageSize: 2
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).score.should.eql(prices.shift())
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)
@@ -296,8 +296,8 @@ describe('sorting: ', function () {
       pageSize: 2
     }).on('data', function (data) {
       i++
-      JSON.parse(data).id.should.eql(results.shift())
-      JSON.parse(data).score.should.eql(prices.shift())
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
       prices.length.should.be.exactly(0)

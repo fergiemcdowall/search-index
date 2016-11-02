@@ -63,7 +63,7 @@ describe('deleting: ', function () {
       AND: {'*': ['*']}
     }
     si.search(q).on('data', function (data) {
-      result.push(JSON.parse(data))
+      result.push(data)
     }).on('end', function (end) {
       result.map(function (item) { return item.id })
         .should.eql(['4', '3', '2', '1'])
@@ -84,7 +84,7 @@ describe('deleting: ', function () {
       AND: {'*': ['*']}
     }
     si.search(q).on('data', function (data) {
-      result.push(JSON.parse(data))
+      result.push(data)
     }).on('end', function (end) {
       result.map(function (item) { return item.id })
         .should.eql(['4', '3', '1'])
@@ -93,15 +93,14 @@ describe('deleting: ', function () {
   })
 
   it('should index duplicate test data into the index', function (done) {
-    var s = new Readable()
-    s.push(JSON.stringify({
+    var s = new Readable({ objectMode: true })
+    s.push({
       id: 1,
       name: 'The First Doc',
       test: 'this is the first doc'
-    }))
+    })
     s.push(null)
-    s.pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
+    s.pipe(si.defaultPipeline())
       .pipe(si.add())
       .on('data', function (data) {}).on('end', function () {
         done()
@@ -115,7 +114,7 @@ describe('deleting: ', function () {
       AND: {'*': ['*']}
     }
     si.search(q).on('data', function (data) {
-      result.push(JSON.parse(data))
+      result.push(data)
     }).on('end', function (end) {
       result.map(function (item) { return item.id })
         .should.eql(['4', '3', '1'])
