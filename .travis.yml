@@ -1,12 +1,3 @@
-
-env:
-  global:
-    - secure: "f29GVSmKJSYcv09N2VuWKDzrjmtl5ZuN6qDrsS7SAfisaQLtM6aBlqYeHpbR2vijNI10Zq51KiDqW5kuNPyl/2VvDOuL6OXuR0TYDYoDjXH/Cj2hLys6oUowEbV9LvyibR3X8H7KCO7EYs3VRmahypCWiYS8dIvgbAQXU3tJe6c="
-    - secure: "GNxHvet6lgFp3uDoTlpPTVuUkBxhl2HrEs5DumWAa8qOnr66UTVnqsOAIUzWjcI2dF/3JyRAS3oGvWrZZ4zlbEdgdThO8vyeBAEI58gzLIxODgL5Fa70XLXyNLpYO+rwj2mUn0YPdXEDNbRgXQsAMzuq8tQiNZD66QMj7B3lIg0="
-
-addons:
-  sauce_connect: true
-
 sudo: false
 
 language: node_js
@@ -15,6 +6,15 @@ node_js:
 - '4'
 - '5'
 - '6'
+
+addons:
+  apt:
+    packages:
+      - xvfb
+install:
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+  - npm install
 
 notifications:
   slack: norch:wLsHiXjnAH5BdtTq3qtAqGp7
