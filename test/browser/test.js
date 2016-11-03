@@ -1,28 +1,46 @@
-const that = this
+const SearchIndex = require('../../')
+const test = require('tape')
+const Readable = require('stream').Readable
 
-const paintResultDiv = function(result) {
-  result = JSON.parse(result)
-  console.log(result)
-  document.getElementById('result').innerHTML = result.document.body
-}
+var si
 
-const indexData = function(err, index) {
-  index.flush(function(err) {
-    highland([{
-      id: '1',
-      body: 'this is a document from the search index'
-    }])
-      .pipe(index.defaultPipeline())
-      .pipe(index.add())
-      .on('data', function(data) {
-        console.log(data)
-      })     
-      .on('end', function() {
-        index.search().on('data', paintResultDiv)
-      })     
+test ('general testiness', function (assert) {
+  assert.plan(1)
+  assert.equals(true, true)
+})
+
+test ('can instantiate a search-index', function (assert) {
+  assert.plan(1)
+  SearchIndex({}, function (err, thisSi) {
+    si = thisSi
+    assert.error(err)
   })
-}
+})
 
-SearchIndex({
-  indexPath: 'fergie'
-}, indexData) 
+test ('can index data', function (assert) {
+  assert.plan(1)
+  si.callbackyAdd({}, [
+    {id: 'one', body: 'the first doc'},
+    {id: 'two', body: 'the second doc'},
+    {id: 'three', body: 'the third doc'}
+  ], function(err) {
+    assert.error(err)
+  })
+})
+
+test ('can search data', function (assert) {
+  assert.plan(3)
+  var expectedResults = [
+    {id: 'two', body: 'the second doc'},
+    {id: 'three', body: 'the third doc'},
+    {id: 'one', body: 'the first doc'}
+  ]
+  si.search().on('data', function (d) {
+    assert.looseEquals(d.document, expectedResults.shift())
+  })
+})
+
+test ('close signal', function (assert) {
+  window.close()
+})
+
