@@ -23,6 +23,7 @@
     "highland": "^2.10.0",
     "level-js": "^2.2.4",
     "mocha": "^3.0.2",
+    "request": "^2.78.0",
     "reuters-21578-json": "0.0.8",
     "should": "^10.0.0",
     "sqldown": "^2.1.0",
