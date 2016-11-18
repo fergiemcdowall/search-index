@@ -91,9 +91,7 @@ const search = function(rawQuery) {
 }
 
 const printResults = function (data) {
-  data = JSON.parse(data)
-  console.log()
-  console.log(chalk.blue(data.document.id) + ' : ' + chalk.blue(data.document.title))
+  console.log('\n' + chalk.blue(data.document.id) + ' : ' + chalk.blue(data.document.title))
   const terms = Object.keys(data.scoringCriteria[0].df).map(function(item) {
     return item.substring(2)
   })  

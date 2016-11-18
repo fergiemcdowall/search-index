@@ -17,7 +17,6 @@ for example do something like this:
 
 // display search results in a div
 const paintResultDiv = function(result) {
-  result = JSON.parse(result)
   console.log(result)
   document.getElementById('result').innerHTML = result.document.body
 }
