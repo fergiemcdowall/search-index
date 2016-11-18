@@ -1,30 +1,31 @@
-<div align="center">
-  <a id="showAdd" href="#">add</a> | <a id="showSearch" href="#">search</a>
-  <div id="add">
-    <h1>Add docs to the index</h1>
-    <p>
-      enter some title text<br>
-      <textarea id="title"></textarea>
-    </p>
-    <p>
-      enter some body text<br>
-      <textarea id="body"></textarea>
-    </p>
-    <input type="button" value="add" id="a" />
+<html manifest="mfst.mf">
+  <div align="center">
+    <a id="showAdd" href="#">add</a> | <a id="showSearch" href="#">search</a>
+    <div id="add">
+      <h1>Add docs to the index</h1>
+      <p>
+        enter some title text<br>
+        <textarea id="title"></textarea>
+      </p>
+      <p>
+        enter some body text<br>
+        <textarea id="body"></textarea>
+      </p>
+      <input type="button" value="add" id="a" />
+    </div>
+    <div id="search" style="display:none">
+      <h1>Search the index</h1>
+      <p>
+        <input id="s">
+      </p>
+      <p>
+        <a id="sa" href="#">show all docs in index</a>
+      </p>
+    </div>
+    <br>
+    <br>
+    <div id="result" />
   </div>
-  <div id="search" style="display:none">
-    <h1>Search the index</h1>
-    <p>
-      <input id="s">
-    </p>
-    <p>
-      <a id="sa" href="#">show all docs in index</a>
-    </p>
-  </div>
-  <br>
-  <br>
-  <div id="result"></ul>
-</div>
-
-<script src="../../dist/search-index.min.js"></script>
-<script src="./searchapp.js"></script>
+  <script src="../../dist/search-index.min.js"></script>
+  <script src="searchapp.js"></script>
+</html>

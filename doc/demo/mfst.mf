@@ -1,0 +1,4 @@
+CACHE MANIFEST
+index.html
+../../dist/search-index.min.js
+searchapp.js
