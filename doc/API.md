@@ -370,13 +370,9 @@ pipeline stages can be inserted before and after processing if required.
 Deletes one or more documents from the corpus
 
 ```javascript
-si.del(docIDs)
-  .on('data', function (msg) {
-    // this doc is deleted
-  })
-  .on('end', function () {
-    // all docs are deleted
-  })
+si.del(docIDs, function(err) {
+  return done()
+})
 ```
 
 * **docIDs** an array of document IDs referencing documents that are
