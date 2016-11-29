@@ -9,10 +9,10 @@
 
  * [buckets(...)](#buckets)
  * [categorize(...)](#categorize)
+ * [countDocs(...)](#countdocs)
  * [get(...)](#get)
  * [match(...)](#match)
  * [search(...)](#search)
- * [tellMeAboutMySearchIndex(...)](#tellmeaboutmysearchindex)
  * [totalHits(...)](#totalHits)
 
 ### Writing
@@ -30,6 +30,8 @@
 
 ### Options and Settings
  
+(viewable under `index.options`)
+
  *  [batchSize](#batchsize)
  *  [db](#db)
  *  [fieldedSearch](#fieldedsearch)
@@ -175,6 +177,18 @@ and return a readable stream
   * **set** if true- return a set of IDs. If false or not set, return
             a count
 
+
+### countDocs(...)
+
+Returns the total amount of docs in the index
+
+```javascript
+si.countDocs(function (err, count) {
+  console.log('this index contains ' + count + ' documents')
+})
+```
+
+
 ### get(...)
 
 Gets a document from the corpus
@@ -278,16 +292,6 @@ si.search({
 
  * **pageSize** _number_ Sets the size of the resultset.
 
-
-### tellMeAboutMySearchIndex(...)
-
-Returns info about the state of the index
-
-```javascript
-si.tellMeAboutMySearchIndex(function (err, info) {
-  console.log(info)
-})
-```
 
 ### totalHits(...)
 
