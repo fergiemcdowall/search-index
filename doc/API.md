@@ -315,9 +315,15 @@ that can be used to index documents into the search index.
  * **batchOptions** is an object describing [indexing options](#defaultpipeline)
 
 ```javascript
-s.pipe(JSONStream.parse())
-  .pipe(si.defaultPipeline(batchOptions))
+// s is a Readable stream in object mode
+s.pipe(si.defaultPipeline(batchOptions))
   .pipe(si.add())
+  .on('data', function(d) {
+    // this function needs to be called if you want to listen for the end event
+  })
+  .on('end', function() {
+    // complete
+  })
 ```
 
 ### callbackyAdd(...)
