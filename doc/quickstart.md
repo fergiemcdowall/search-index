@@ -98,8 +98,10 @@ const printResults = function (data) {
     return item.substring(2)
   })  
   for (var key in data.document) {
-    var teaser = tc(data.document[key], terms)
-    if (teaser) console.log(teaser)
+    if (data.document[key]) {
+      var teaser = tc(data.document[key], terms)
+      if (teaser) console.log(teaser)
+    }
   }
   console.log()
 }
