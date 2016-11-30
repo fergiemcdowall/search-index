@@ -85,7 +85,9 @@ const searchCLI = function () {
 }
 
 const search = function(rawQuery) {
-  index.search(rawQuery.toString().slice(0, -1))
+  // if you are on windows use this line, instead of the next one
+  // index.search(rawQuery.toString().replace( /\r?\n|\r/g, '' ))
+  index.search(rawQuery.toString().slice(0, -1))     // *nix only
     .on('data', printResults)
     .on('end', printPrompt)
 }
