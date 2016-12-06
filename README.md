@@ -38,6 +38,7 @@ Find out how to use the `search-index` module here:
  * [Sync an index](./doc/replicate.md)
  * [Run search-index in the browser](./doc/browser.md)
  * [Sync from a server to a browser](./doc/browserSync.md)
+ * [Work with Gulp.js](./doc/gulp.md)
 
 <!--
 ### Other How-tos and Articles on the Interwebs
