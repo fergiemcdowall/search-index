@@ -13,7 +13,7 @@
  * [get(...)](#get)
  * [match(...)](#match)
  * [search(...)](#search)
- * [totalHits(...)](#totalHits)
+ * [totalHits(...)](#totalhits)
 
 ### Writing
 
