@@ -18,8 +18,8 @@ test('initialize a search index', t => {
 
 test('concurrently index docs using callbackyAdd', t => {
   t.plan(100)
-  for (let i = 1; i <= 100; i++) {
-    let writtenNum = num(i)
+  for (var i = 1; i <= 100; i++) {
+    var writtenNum = num(i)
     si.callbackyAdd({}, [{
       id: writtenNum,
       body: 'this is the wonderfully fabulous doc number ' + writtenNum
