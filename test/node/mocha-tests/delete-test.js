@@ -102,7 +102,10 @@ describe('deleting: ', function () {
     s.push(null)
     s.pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function (data) {}).on('end', function () {
+      .on('data', function (data) {
+
+      })
+      .on('end', function () {
         done()
       })
   })
