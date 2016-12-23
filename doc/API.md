@@ -271,18 +271,24 @@ si.search({
    in all fields
 
 
- * **filters** _Array_ An object that can filter search
-   results. Filters can only be applied to fields that have been
-   flagged with the `filter` option during indexing. Filters are
+ * **filters** _Object_ One or more objects added to the AND and/or
+   NOT objects that filters the search results. Filters can only be
+   applied to any searchable fields in your index. Filters are
    commonly used in conjunction with the selection of catgories and
    buckets.
 
    ```javascript
-   [{
-     field: 'price',
-     gte:   '2',
-     lte:   '3'
-   }]
+   [
+     {
+       AND: {
+         '*':    ['watch', 'gold'],
+         'price': [{
+           gte: '1000',
+           lte: '8'
+         }]
+       }
+     }
+   ]
    ```
 
  * **offset** _number_ Sets the start index of the results. In a
