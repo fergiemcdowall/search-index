@@ -313,4 +313,17 @@ describe('sorting: ', function () {
     })
   })
 
+  it('calculate total hits', function (done) {
+    si.totalHits({
+      query: {
+        AND: {
+          '*': [ 'watch', 'swiss' ]
+        }
+      }
+    }, function (err, totalHits) {
+      totalHits.should.be.exactly(3)
+      return done()
+    })
+  })
+
 })
