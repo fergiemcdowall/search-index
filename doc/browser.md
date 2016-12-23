@@ -23,7 +23,7 @@ const paintResultDiv = function(result) {
 
 // index some data
 const indexData = function(err, myCoolSearchIndex) {
-  mySearchIndex.callbackyAdd({}, data, function(err) {
+  mySearchIndex.concurrentAdd({}, data, function(err) {
     // now you can perform search queries
     myCoolSearchIndex.search('pickled onions').on('data', paintResultDiv)
   })

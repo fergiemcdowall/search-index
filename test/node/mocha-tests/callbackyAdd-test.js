@@ -40,7 +40,7 @@ describe('Callbacky Add', function () {
   })
 
   it('Should allow indexing via callbacky api', function (done) {
-    si.callbackyAdd({}, data, function (err) {
+    si.concurrentAdd({}, data, function (err) {
       if (err) false.should.eql(true)
       return done()
     })

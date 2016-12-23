@@ -18,7 +18,7 @@
 ### Writing
 
  * [add(...)](#add)
- * [callbackyAdd(...)](#callbackyadd)
+ * [concurrentAdd(...)](#concurrentadd)
  * [defaultPipeline(...)](#defaultpipeline)
  * [del(...)](#del)
  * [flush(...)](#flush)
@@ -318,6 +318,10 @@ Returns a [writeable
 stream](https://nodejs.org/api/stream.html#stream_class_stream_writable)
 that can be used to index documents into the search index.
 
+Note that this stream cannot be used concurrently. If documents are
+being sent on top of one another then it is safer to use
+`concurrentAdd`, however `add` is faster and uses less resources.
+
  * **batchOptions** is an object describing [indexing options](#defaultpipeline)
 
 ```javascript
@@ -332,17 +336,21 @@ s.pipe(si.defaultPipeline(batchOptions))
   })
 ```
 
-### callbackyAdd(...)
+### concurrentAdd(...)
 
 An alternative to `.add(...)` that allows adding by passing an array
 of documents and waiting for a callback. Useful for environments where
-node streams cannot be constructed (such as browsers)
+node streams cannot be constructed (such as browsers).
+
+Note that `concurrentAdd` queues documents internally, so in a
+scenario where unordered documents are being added rapidly from many
+sources `concurrentAdd` should be used.
 
  * **data** is an array of documents
  * **batchOptions** is an object describing [indexing options](#defaultpipeline)
 
 ```javascript
-mySearchIndex.callbackyAdd(batchOptions, data, function(err) {
+mySearchIndex.concurrentAdd(batchOptions, data, function(err) {
   // docs added
 })
 ```

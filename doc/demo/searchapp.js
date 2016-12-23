@@ -21,7 +21,7 @@ const initIndex = function (err, index) {
 
 // index some data
 const indexData = function (data) {
-  mySearchIndex.callbackyAdd({}, data, function(err) {
+  mySearchIndex.concurrentAdd({}, data, function(err) {
     // and then show search results (defaults to everything)
     search()
   })

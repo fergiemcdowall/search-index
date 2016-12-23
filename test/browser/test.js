@@ -19,7 +19,7 @@ test ('can instantiate a search-index', function (assert) {
 
 test ('can index data', function (assert) {
   assert.plan(1)
-  si.callbackyAdd({}, [
+  si.concurrentAdd({}, [
     {id: 'one', body: 'the first doc'},
     {id: 'two', body: 'the second doc'},
     {id: 'three', body: 'the third doc'}
