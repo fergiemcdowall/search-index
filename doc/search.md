@@ -133,7 +133,7 @@ query: [
 ```javascript
 query: {
   AND: {
-    'description': ['swiss', 'watch']
+    'description': ['swiss', 'watch'],
     'price': [{
        gte: '1000',
        lte: '8'
