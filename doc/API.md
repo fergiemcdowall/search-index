@@ -7,6 +7,7 @@
 
 ### Reading
 
+ * [availableFields(...)](#availablefields)
  * [buckets(...)](#buckets)
  * [categorize(...)](#categorize)
  * [countDocs(...)](#countdocs)
@@ -96,6 +97,18 @@ index.close(function(err) {
       
 
 ## Reading
+
+### availableFields(...)
+
+Returns a readable stream of all fields that can be searched in.
+
+```javascript
+si.availableFields().on('data', function (field) {
+  // "field" is the name of a field that is searchable
+}).on('end', function () {
+  // done
+})
+```
 
 ### buckets(...)
 
