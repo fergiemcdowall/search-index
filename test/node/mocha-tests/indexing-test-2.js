@@ -49,7 +49,7 @@ describe('Indexing API', function () { // jshint ignore:line
               i++
             })
             .on('close', function (data) {
-              i.should.be.exactly(161)
+              i.should.be.exactly(167)
               return done()
             })
         })

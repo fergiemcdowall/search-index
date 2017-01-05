@@ -68,5 +68,18 @@ describe('simple search test', function() {
     })
   })
 
+  it('knows what fields are available', function (done) {
+    var results = []
+    si.availableFields().on('data', function (data) {
+      results.push(data)
+    }).on('end', function () {
+      results.map(function (item) {
+        return item
+      }).should.eql(
+        [ '*', 'body', 'date', 'id', 'places', 'title', 'topics' ])
+      return done()
+    })
+  })
+
 
 })
