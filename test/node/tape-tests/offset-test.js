@@ -91,3 +91,27 @@ test('search with offset', t => {
       t.fail(e)
     })
 })
+
+test('search with offset and pageSize defined as strings', t => {
+  t.plan(2)
+  var i = 0
+  si.search({
+    query: [{
+      AND: {
+        body: ['number']
+      }
+    }],
+    offset: "50",
+    pageSize: "7"
+  })
+    .on('data', hit => {
+      if (i == 0) t.equal(hit.id, '050')
+      i++
+    })
+    .on('end', () => {
+      t.equal(i, 7)
+    })
+    .on('error', e => {
+      t.fail(e)
+    })
+})
