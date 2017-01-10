@@ -227,6 +227,62 @@ describe('categories: ', function () {
     })
   })
 
+  it('return all docs, and show color category, filter on color: black', function (done) {
+    var result = [
+      { key: '*', value: 6 },
+      { key: 'black', value: 6, filter: true },
+      { key: 'gold', value: 6 },
+      { key: 'pink', value: 3 },
+      { key: 'white', value: 3 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {
+            '*': ['*'],
+            'color': ['black']
+          }
+        }
+      ],
+      category: {
+        field: 'color'
+      }
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('return all docs, and show color category, filter on color: black, pink', function (done) {
+    var result = [
+      { key: '*', value: 3 },
+      { key: 'black', value: 3, filter: true },
+      { key: 'gold', value: 3 },
+      { key: 'pink', value: 3, filter: true }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {
+            '*': ['*'],
+            'color': ['black', 'pink']
+          }
+        }
+      ],
+      category: {
+        field: 'color'
+      }
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
+
   it('should be able to do simple filtering on price', function (done) {
     var result = [
       { key: '*', value: 3 },
