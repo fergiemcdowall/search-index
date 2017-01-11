@@ -371,7 +371,7 @@ describe('categories: ', function () {
     })
   })
 
-  it('return all docs, and show manufacturer and color categories', function (done) {
+  it('return all docs, show color category', function (done) {
     var result = [
       { key: '*', value: 10 },
       { key: 'black', value: 6 },
@@ -397,6 +397,58 @@ describe('categories: ', function () {
       return done()
     })
   })
+
+  it('return all docs, show color category, limit to 4', function (done) {
+    var result = [
+      { key: '*', value: 10 },
+      { key: 'black', value: 6 },
+      { key: 'blue', value: 1 },
+      { key: 'gold', value: 7 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['*']}
+        }
+      ],
+      category: {
+        field: 'color'
+      },
+      pageSize: 4
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
+  it('return all docs, show color category, offset 1, limit to 4', function (done) {
+    var result = [
+      { key: 'black', value: 6 },
+      { key: 'blue', value: 1 },
+      { key: 'gold', value: 7 },
+      { key: 'pink', value: 4 }
+    ]
+    si.categorize({
+      query: [
+        {
+          AND: {'*': ['*']}
+        }
+      ],
+      category: {
+        field: 'color'
+      },
+      offset: 1,
+      pageSize: 4
+    }).on('data', function (data) {
+      data.should.eql(result.shift())
+    }).on('end', function () {
+      result.length.should.be.exactly(0)
+      return done()
+    })
+  })
+
 
   it('bucket on price', function (done) {
     var result = [
