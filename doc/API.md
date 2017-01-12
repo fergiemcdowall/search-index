@@ -186,9 +186,11 @@ and return a readable stream
   on:
 
   * **field** Name of the field to categorize on
-  * **limit** Limit the entries that will be returned
   * **set** if true- return a set of IDs. If false or not set, return
             a count
+
+In addition the q object can have *offset* and *pageSize*, that
+will work the same way as for the /search endpoint.
 
 
 ### countDocs(...)
