@@ -498,6 +498,17 @@ If true, then the field is searchable.
 ### fieldOptions
 _boolean_
 
+Example on setting options on several fields:
+```javascript
+fieldOptions: {
+  id: {
+    searchable: false
+  },
+  url: {
+    searchable: false
+  }
+}
+
 Contains field specific overrides to global settings
 
 ### preserveCase
