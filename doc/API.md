@@ -508,6 +508,7 @@ fieldOptions: {
     searchable: false
   }
 }
+```
 
 Contains field specific overrides to global settings
 
