@@ -498,6 +498,8 @@ If true, then the field is searchable.
 ### fieldOptions
 _boolean_
 
+Contains field specific overrides to global settings
+
 Example on setting options on several fields:
 ```javascript
 fieldOptions: {
@@ -509,8 +511,6 @@ fieldOptions: {
   }
 }
 ```
-
-Contains field specific overrides to global settings
 
 ### preserveCase
 _true_
