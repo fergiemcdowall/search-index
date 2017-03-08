@@ -43,7 +43,6 @@
  *  [indexPath](#indexpath)
  *  [logLevel](#loglevel)
  *  [nGramLength](#ngramlength)
- *  [nGramSeparator](#ngramseparator)
  *  [separator](#separator)
  *  [stopwords](#stopwords)
 
