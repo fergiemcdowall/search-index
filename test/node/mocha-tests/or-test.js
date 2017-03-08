@@ -150,14 +150,17 @@ describe('OR-ing: ', function () {
   })
 
   it('search for Armarni AND Watch OR Victorinox AND swiss OR TW AND watch', function (done) {
-    var results = [ '9', '7', '2', '10' ]
+    var results = [ '7', '9', '2', '10' ]
     si.search({
       query: [{
         AND: { '*': [ 'armani', 'watch' ] }
       }, {
         AND: { '*': [ 'victorinox', 'swiss' ] }
       }, {
-        AND: { '*': [ 'tw', 'watch' ] }
+        AND: {
+          description: [ 'tw', 'watch' ],
+          name: [ 'tw' ]
+        }
       }]
     }).on('data', function (data) {
       data.id.should.be.exactly(results.shift())
