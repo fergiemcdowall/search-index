@@ -42,7 +42,7 @@ results. In the example below, only documents containing the word *reagan*
 in the `title` field **AND** the word *usa* in the `body` field will be returned.
 
 ```javascript
-q.query = 
+q.query = {
   {
     AND: {
       'title': ['reagan'],
@@ -76,7 +76,7 @@ q.query = [                   // Each array element is an OR condition
       'body':  ['usa']        // NOT 'usa' in the body field
     }
   }
-}
+]
 ```
 
 
