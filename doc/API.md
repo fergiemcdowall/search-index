@@ -43,7 +43,6 @@
  *  [indexPath](#indexpath)
  *  [logLevel](#loglevel)
  *  [nGramLength](#ngramlength)
- *  [nGramSeparator](#ngramseparator)
  *  [separator](#separator)
  *  [stopwords](#stopwords)
 
@@ -500,6 +499,18 @@ _boolean_
 
 Contains field specific overrides to global settings
 
+Example on setting options on several fields:
+```javascript
+fieldOptions: {
+  id: {
+    searchable: false
+  },
+  url: {
+    searchable: false
+  }
+}
+```
+
 ### preserveCase
 _true_
 
@@ -529,6 +540,13 @@ A [bunyan](https://github.com/trentm/node-bunyan) log level.
 
 ### nGramLength
 _number_ or _array_ or _object_
+
+All valid definitions of nGramLength:
+```javascript
+nGramLength = 1                // 1
+nGramLength = [1,3]            // 1 & 3
+nGramLength = {gte: 1, lte: 3} // 1, 2 & 3
+```
 
 Specifies how to split strings into phrases. See
 https://www.npmjs.com/package/term-vector for examples
