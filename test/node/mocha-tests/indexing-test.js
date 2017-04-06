@@ -75,7 +75,7 @@ describe('Indexing API', function () {
     s.push(doc)
     s.push(null)
     s.pipe(si.defaultPipeline({
-      separator: /\\n| /
+      separator: /\s+/
     })).pipe(si.add())
       .on('data', function (data) {})
       .on('end', function () {
