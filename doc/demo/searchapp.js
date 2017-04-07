@@ -15,6 +15,7 @@ const search = function (q) {
 }
 
 const initIndex = function (err, index) {
+  if (err) console.error(err)
   mySearchIndex = index
   search()
 }
