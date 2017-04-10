@@ -27110,8 +27110,11 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   const sep = this.options.keySeparator
   var that = this
   this.options.indexes.get(dbEntry.key, function (err, value) {
-    if (err) that.options.log.info(err)
+    if (err) {
+      that.options.log.info(err)
+    }
     // handle errors better
+    if (!value) value = []
     var docId = dbEntry.value
     var dbInstruction = {}
     dbInstruction.key = dbEntry.key
@@ -27585,15 +27588,18 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
       var i = 0
       var excludeResults = []
       siUtil.getKeySet(queryClause.NOT, sep).forEach(function (item) {
-        var exclude = []
+        var excludeSet = {}
         that.options.indexes.createReadStream({gte: item[0], lte: item[1] + sep})
           .on('data', function (data) {
-            exclude = uniqFast(exclude.concat(data.value))
+            for (var i = 0; i < data.value.length; i++) {
+              excludeSet[data.value[i]] = 1
+            }
           })
           .on('error', function (err) {
             that.options.log.debug(err)
           })
           .on('end', function () {
+            var exclude = Object.keys(excludeSet)
             excludeResults.push(exclude.sort())
             if (++i === siUtil.getKeySet(queryClause.NOT, sep).length) {
               excludeResults.forEach(function (excludeSet) {
@@ -27614,17 +27620,20 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
   // Get all of the IDs in the AND conditions
   var IDSets = []
   siUtil.getKeySet(queryClause.AND, sep).forEach(function (item) {
-    var include = []
+    var includeSet = {}
     var setLength = 0
     that.options.indexes.createReadStream({gte: item[0], lte: item[1]})
       .on('data', function (data) {
         setLength += data.value.length
-        include = uniqFast(include.concat(data.value))
+        for (var i = 0; i < data.value.length; i++) {
+          includeSet[data.value[i]] = 1
+        }
       })
       .on('error', function (err) {
         that.options.log.debug(err)
       })
       .on('end', function () {
+        var include = Object.keys(includeSet)
         frequencies.push({
           gte: item[0].split(sep)[1] + sep + item[0].split(sep)[2],
           lte: item[1].split(sep)[1] + sep + item[1].split(sep)[2],
@@ -27637,23 +27646,6 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
         }
       })
   })
-}
-
-// supposedly fastest way to get unique values in an array
-// http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
-const uniqFast = function (a) {
-  var seen = {}
-  var out = []
-  var len = a.length
-  var j = 0
-  for (var i = 0; i < len; i++) {
-    var item = a[i]
-    if (seen[item] !== 1) {
-      seen[item] = 1
-      out[j++] = item
-    }
-  }
-  return out
 }
 
 },{"./siUtil.js":121,"lodash.difference":74,"lodash.intersection":75,"lodash.spread":78,"stream":122,"util":131}],111:[function(require,module,exports){
