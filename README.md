@@ -22,23 +22,23 @@ require('search-index')(options, getData) // <- make a new index
 Find out how to use the `search-index` module here:
 
 ### For the impatient
- * [Quickstart](./doc/quickstart.md)
- * [Simple web demo](https://rawgit.com/fergiemcdowall/search-index/master/doc/demo/index.html)
+ * [Quickstart](./docs/quickstart.md)
+ * [Simple web demo](https://rawgit.com/fergiemcdowall/search-index/master/docs/demo/index.html)
 
 ### API
 
- * [API reference](./doc/API.md)
+ * [API reference](./docs/API.md)
 
 ### Documentation
- * [Create an index](./doc/create.md)
- * [Add documents](./doc/add.md)
- * [Search documents](./doc/search.md)
- * [Aggregate documents (buckets and categories)](./doc/aggregations.md)
- * [Set up autocomplete and query suggestions](./doc/autosuggest.md)
- * [Sync an index](./doc/replicate.md)
- * [Run search-index in the browser](./doc/browser.md)
- * [Sync from a server to a browser](./doc/browserSync.md)
- * [Work with Gulp.js](./doc/gulp.md)
+ * [Create an index](./docs/create.md)
+ * [Add documents](./docs/add.md)
+ * [Search documents](./docs/search.md)
+ * [Aggregate documents (buckets and categories)](./docs/aggregations.md)
+ * [Set up autocomplete and query suggestions](./docs/autosuggest.md)
+ * [Sync an index](./docs/replicate.md)
+ * [Run search-index in the browser](./docs/browser.md)
+ * [Sync from a server to a browser](./docs/browserSync.md)
+ * [Work with Gulp.js](./docs/gulp.md)
 
 <!--
 ### Other How-tos and Articles on the Interwebs
