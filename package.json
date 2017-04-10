@@ -11,7 +11,7 @@
     "bunyan": "^1.8.10",
     "leveldown": "^1.6.0",
     "levelup": "^1.3.5",
-    "search-index-adder": "^0.2.0",
+    "search-index-adder": "^0.2.1",
     "search-index-searcher": "^0.1.28"
   },
   "devDependencies": {
@@ -68,6 +68,7 @@
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
     "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browser && standard test/* lib/*",
     "test-browser": "node test/browser/runtest.js",
+    "test-with-local-deps": "npm install ../search-index-adder ../search-index-searcher && npm test",
     "test-node": "tape test/node/tape-tests/*.js && mocha test/node/mocha-tests --recursive --timeout 10000"
   },
   "repository": {
