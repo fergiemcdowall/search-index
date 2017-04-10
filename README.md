@@ -23,7 +23,7 @@ Find out how to use the `search-index` module here:
 
 ### For the impatient
  * [Quickstart](./docs/quickstart.md)
- * [Simple web demo](https://rawgit.com/fergiemcdowall/search-index/master/docs/demo/index.html)
+ * [Simple web demo](https://fergiemcdowall.github.io/search-index/demo/)
 
 ### API
 
