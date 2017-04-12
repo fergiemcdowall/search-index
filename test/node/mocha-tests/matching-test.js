@@ -108,10 +108,20 @@ describe('Matching epub: ', function () {
   })
 
   it('should match on all fields and return IDs', function (done) {
-    var matches = [ [ 'epubxhighestsort', [ 'doc101', 'doc102', 'doc103', 'doc105' ] ],
-      [ 'epub', [ 'doc101', 'doc102', 'doc103' ] ],
-      [ 'epubtastic', [ 'doc102' ] ],
-      [ 'epubulation', [ 'doc102' ] ] ]
+    var matches = [
+      {
+        epubxhighestsort: [ 'doc101', 'doc102', 'doc103', 'doc105' ]
+      },
+      {
+        epub: [ 'doc101', 'doc102', 'doc103' ]
+      },
+      {
+        epubtastic: [ 'doc102' ]
+      },
+      {
+        epubulation: [ 'doc102' ]
+      }
+    ]
     index.match({
       beginsWith: 'epub',
       type: 'ID'
@@ -123,10 +133,12 @@ describe('Matching epub: ', function () {
   })
 
   it('should match on all fields and return IDs and counts', function (done) {
-    var matches = [ [ 'epubxhighestsort', 4 ],
-      [ 'epub', 3 ],
-      [ 'epubtastic', 1 ],
-      [ 'epubulation', 1 ] ]
+    var matches = [
+      { epubxhighestsort: 4 },
+      { epub: 3 },
+      { epubtastic: 1 },
+      { epubulation: 1 }
+    ]
     index.match({
       beginsWith: 'epub',
       type: 'count'

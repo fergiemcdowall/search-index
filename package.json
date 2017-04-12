@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.9.17",
+  "version": "0.0.0-development",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=4"
@@ -12,7 +12,7 @@
     "leveldown": "^1.6.0",
     "levelup": "^1.3.5",
     "search-index-adder": "^0.2.1",
-    "search-index-searcher": "^0.1.28"
+    "search-index-searcher": "^0.2.0"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",
@@ -27,6 +27,7 @@
     "mocha": "^3.2.0",
     "request": "^2.78.0",
     "reuters-21578-json": "0.0.8",
+    "semantic-release-cli": "^3.0.3",
     "should": "^10.0.0",
     "sqldown": "^2.1.0",
     "sqlite3": "^3.1.4",
@@ -35,7 +36,8 @@
     "tape": "^4.6.0",
     "term-vector": "0.1.2",
     "uglifyjs": "^2.4.10",
-    "written-number": "^0.5.0"
+    "written-number": "^0.5.0",
+    "semantic-release": "^6.3.2"
   },
   "author": {
     "email": "fergusmcdowall@gmail.com",
@@ -68,8 +70,9 @@
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
     "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browser && standard test/* lib/*",
     "test-browser": "node test/browser/runtest.js",
-    "test-with-local-deps": "npm install ../search-index-adder ../search-index-searcher && npm test",
-    "test-node": "tape test/node/tape-tests/*.js && mocha test/node/mocha-tests --recursive --timeout 10000"
+    "test-with-local-deps": "npm install && npm install ../search-index-adder ../search-index-searcher && npm test",
+    "test-node": "tape test/node/tape-tests/*.js && mocha test/node/mocha-tests --recursive --timeout 10000",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
