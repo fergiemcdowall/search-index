@@ -51,9 +51,11 @@ Find out how to use the `search-index` module here:
 -->
 ### Release notes
 
-* 0.7.0 : new constructor
-* 0.8.0 : new search API
-* 0.9.0 : Streaming API
+ * See [releases page](https://github.com/fergiemcdowall/search-index/releases) on GitHub
+
+### Contribute
+
+ * [Contribution guidelines](./docs/contributing.md)
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
