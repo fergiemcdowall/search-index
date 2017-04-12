@@ -40,4 +40,8 @@ Semver is good. Use it.
 
 This project uses [`semantic-release`](https://github.com/semantic-release/semantic-release) to keep the code-base tagged and versions correctly assigned.
 
-When commiting, please use semantic-release's [default commit message format](https://github.com/semantic-release/semantic-release#default-commit-message-format). That way, your contributions will appear in the [changelog](https://github.com/fergiemcdowall/search-index/releases)
+When commiting, please use semantic-release's [default commit message format](https://github.com/semantic-release/semantic-release#default-commit-message-format). That way, your contributions will appear in the [changelog](https://github.com/fergiemcdowall/search-index/releases).
+
+### Git commit with commitizen
+
+If you do your git stuff on a BASH-like command line, and `./node_modules/.bin` is in your `$PATH` then it is probably easiest to make commits using [`commitizen`](https://github.com/commitizen/cz-cli): just run `npm run commit` and you will be prompted on how to format the commit message.
