@@ -1,12 +1,13 @@
 # search-index
 ### A streaming, network resilient, persistent full-text search library for the browser and Node.js
 
-[![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
-[![NPM version][npm-version-image]][npm-url]
-[![NPM downloads][npm-downloads-image]][npm-url]
-[![MIT License][license-image]][license-url]
-[![Build Status][travis-image]][travis-url]
-[![js-standard-style][js-standard-image]][js-standard-url] 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/fergiemcdowall/search-index)
+[![npm](https://img.shields.io/npm/v/search-index.svg?style=flat-square)](https://www.npmjs.com/package/search-index)
+[![npm](https://img.shields.io/npm/dm/search-index.svg?style=flat-square)](https://npm-stat.com/charts.html?package=search-index)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENCE)
+[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)](https://travis-ci.org/fergiemcdowall/search-index)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
 
 ```javascript
 const getData = function(err, myIndex) {
@@ -56,20 +57,3 @@ Find out how to use the `search-index` module here:
 ### Contribute
 
  * [Contribution guidelines](./docs/contributing.md)
-
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
-[license-url]: LICENSE
-
-[npm-url]: https://npmjs.org/package/search-index
-[npm-version-image]: http://img.shields.io/npm/v/search-index.svg?style=flat-square
-[npm-downloads-image]: http://img.shields.io/npm/dm/search-index.svg?style=flat-square
-
-[travis-url]: http://travis-ci.org/fergiemcdowall/search-index
-[travis-image]: http://img.shields.io/travis/fergiemcdowall/search-index.svg?style=flat-square
-
-[gitter-url]: https://gitter.im/fergiemcdowall/search-index?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[gitter-image]: https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square
-
-[js-standard-url]: https://github.com/feross/standard
-[js-standard-image]: https://img.shields.io/badge/code%20style-standard%20js-green.svg?style=flat-square
-
