@@ -436,7 +436,8 @@ replicate indexes to file, or to other (empty) indexes
 
 ```javascript
 // replicate an index to file
-si.dbReadStream(options) 
+si.dbReadStream(options)
+   .pipe(JSONStream.stringify('', '\n', ''))
   .pipe(fs.createWriteStream('backup.json'))
   .on('close', function() {
     // done
