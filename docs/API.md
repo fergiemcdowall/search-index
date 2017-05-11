@@ -437,7 +437,7 @@ replicate indexes to file, or to other (empty) indexes
 ```javascript
 // replicate an index to file
 si.dbReadStream(options) 
-  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+  .pipe(fs.createWriteStream('backup.json'))
   .on('close', function() {
     // done
   })
@@ -448,7 +448,7 @@ si.dbReadStream(options)
 replicator.dbReadStream({gzip: true})
   .pipe(zlib.createGunzip())
   .pipe(JSONStream.parse())
-  .pipe(replicatorTarget2.DBWriteStream())
+  .pipe(replicatorTarget2.dbWriteStream())
   .on('close', function () {
     // done
   })
@@ -461,11 +461,11 @@ replicator.dbReadStream({gzip: true})
 ### dbWriteStream(...)
 
 Use `dbWriteStream()` to read in an index created by
-`DBReadStream()`.
+`dbReadStream()`.
 
 ```javascript
-si.DBReadStream(options)
-  .pipe(fs.createWriteStream(sandboxPath + '/backup.gz'))
+si.dbReadStream(options)
+  .pipe(fs.createWriteStream('backup.json'))
   .on('close', function() {
     done()
   })
