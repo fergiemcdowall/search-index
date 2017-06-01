@@ -9,9 +9,9 @@
   "license": "MIT",
   "dependencies": {
     "bunyan": "^1.8.10",
-    "levelup": "1.3.5",
-    "search-index-adder": "0.2.2",
-    "search-index-searcher": "0.2.2"
+    "levelup": "1.3.8",
+    "search-index-adder": "^0.2.3",
+    "search-index-searcher": "^0.2.3"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",
@@ -72,12 +72,12 @@
     "demo-server": "http-server && echo 'demo is running at /doc/demo/'",
     "changelog": "node -e \"require('standard-changelog')().pipe(process.stdout)\"",
     "changelog-full": "standard-changelog --first-release",
-    "cut-release": "npm run -s changelog | git tag -a v$(npm run -s print-version-from-package-json) --file -",
     "commit": "git-cz",
     "print-version-from-package-json": "node -e \"process.stdout.write(require('./package.json').version)\"",
     "dist": "browserify lib/index.js --standalone SearchIndex > dist/search-index.js",
     "dist-min": "npm run dist && cat dist/search-index.js | uglifyjs -c dead_code > dist/search-index.min.js && cp dist/search-index.min.js docs/demo/",
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
+    "tag-release": "npm run -s changelog | git tag -a v$(npm run -s print-version-from-package-json) --file - --cleanup=verbatim",
     "test": "npm run empty-sandbox && date && npm run test-node && npm run test-browser && standard test/* lib/*",
     "test-browser": "node test/browser/runtest.js",
     "test-with-local-deps": "npm install && npm install ../search-index-adder ../search-index-searcher && npm test",
