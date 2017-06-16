@@ -17,7 +17,7 @@ test('init search index', function (t) {
 test('add 1000 identical docs using concurrent add', function (t) {
   t.plan(1)
   var batch = []
-  for (let i = 0; i < 1000; i++) {
+  for (var i = 0; i < 1000; i++) {
     batch.push({
       main: 'test.assembly'
     })
