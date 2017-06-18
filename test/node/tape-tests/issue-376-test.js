@@ -43,23 +43,24 @@ test('harvest ids', function (t) {
     })
 })
 
-test('delete docs', function (t) {
-  t.plan(batchSize)
-  ids.forEach(function(id) {
-    index.del([id], function(err) {
-      t.error(err)
-    })
-  })
-})
-
 // TODO: make the following test work
 
 // test('delete docs', function (t) {
-//   t.plan(1)
-//   index.concurrentDel(ids, function(err) {
-//     t.error(err)
+//   t.plan(batchSize)
+//   ids.forEach(function(id) {
+//     index.concurrentDel([id], function(err) {
+//       t.error(err)
+//     })
 //   })
 // })
+
+
+test('delete docs', function (t) {
+  t.plan(1)
+  index.del(ids, function(err) {
+    t.error(err)
+  })
+})
 
 
 test('search should return no docs', function (t) {
