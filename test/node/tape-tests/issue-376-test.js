@@ -1,6 +1,6 @@
 const test = require('tape')
 const SearchIndex = require('../../../')
-const batchSize = 10
+const batchSize = 100
 
 var index, ids
 
@@ -45,20 +45,12 @@ test('harvest ids', function (t) {
 
 // TODO: make the following test work
 
-// test('delete docs', function (t) {
-//   t.plan(batchSize)
-//   ids.forEach(function(id) {
-//     index.concurrentDel([id], function(err) {
-//       t.error(err)
-//     })
-//   })
-// })
-
-
 test('delete docs', function (t) {
-  t.plan(1)
-  index.del(ids, function(err) {
-    t.error(err)
+  t.plan(batchSize)
+  ids.forEach(function(id) {
+    index.concurrentDel([id], function(err) {
+      t.error(err)
+    })
   })
 })
 
