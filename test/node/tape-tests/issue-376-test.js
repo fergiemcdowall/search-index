@@ -1,5 +1,6 @@
 const test = require('tape')
 const SearchIndex = require('../../../')
+const batchSize = 10
 
 var index, ids
 
@@ -15,16 +16,16 @@ test('init search index', function (t) {
 
 
 test('add 1000 identical docs using concurrent add', function (t) {
-  t.plan(1)
+  t.plan(batchSize)
   var batch = []
-  for (var i = 0; i < 1000; i++) {
-    batch.push({
+  for (var i = 0; i < batchSize; i++) {
+    index.concurrentAdd({}, [{
+      id: i + 'a',
       main: 'test.assembly'
+    }], function (err) {
+      t.error(err)
     })
   }
-  index.concurrentAdd({}, batch, function (err) {
-    t.error(err)
-  })
 })
 
 
@@ -33,21 +34,33 @@ test('harvest ids', function (t) {
   ids = []
   index
     .search({
-      pageSize: 1000
+      pageSize: batchSize
     })
     .on('data', function(doc) {
       ids.push(doc.id)
     }).on('end', function() {
-      t.is(ids.length, 1000)
+      t.is(ids.length, batchSize)
     })
 })
 
 test('delete docs', function (t) {
-  t.plan(1)
-  index.del(ids, function(err) {
-    t.error(err)
+  t.plan(batchSize)
+  ids.forEach(function(id) {
+    index.del([id], function(err) {
+      t.error(err)
+    })
   })
 })
+
+// TODO: make the following test work
+
+// test('delete docs', function (t) {
+//   t.plan(1)
+//   index.concurrentDel(ids, function(err) {
+//     t.error(err)
+//   })
+// })
+
 
 test('search should return no docs', function (t) {
   t.plan(1)
