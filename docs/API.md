@@ -382,7 +382,7 @@ waiting for callbacks `concurrentDel` should be used.
 
 ```javascript
 mySearchIndex.concurrentDel(documentIDs, function(err) {
-  // docs added
+  // docs deleted
 })
 ```
 
