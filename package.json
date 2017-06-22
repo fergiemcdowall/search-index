@@ -19,7 +19,7 @@
     "browser-run": "^3.3.0",
     "browserify": "^13.1.0",
     "commitizen": "^2.9.6",
-    "conventional-github-releaser": "1.1.11",
+    "conventional-github-releaser": "^1.1.11",
     "cz-conventional-changelog": "^2.0.0",
     "disc": "^1.3.2",
     "highland": "^2.10.0",

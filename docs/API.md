@@ -20,6 +20,7 @@
 
  * [add(...)](#add)
  * [concurrentAdd(...)](#concurrentadd)
+ * [concurrentDel(...)](#concurrentdel)
  * [defaultPipeline(...)](#defaultpipeline)
  * [del(...)](#del)
  * [flush(...)](#flush)
@@ -368,6 +369,23 @@ mySearchIndex.concurrentAdd(batchOptions, data, function(err) {
   // docs added
 })
 ```
+
+### concurrentDel(...)
+
+An alternative to `.del(...)` that allows concurrent deletion
+
+Note that `concurrentDel` queues documents internally, so in a
+scenario where documents are being deleted a rapidly without
+waiting for callbacks `concurrentDel` should be used.
+
+ * **documentIDs** is an array of document IDs
+
+```javascript
+mySearchIndex.concurrentDel(documentIDs, function(err) {
+  // docs added
+})
+```
+
 
 ### defaultPipeline(...)
 
