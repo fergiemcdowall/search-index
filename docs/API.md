@@ -382,7 +382,7 @@ waiting for callbacks `concurrentDel` should be used.
 
 ```javascript
 mySearchIndex.concurrentDel(documentIDs, function(err) {
-  // docs added
+  // docs deleted
 })
 ```
 
@@ -412,7 +412,7 @@ pipeline stages can be inserted before and after processing if required.
    * **sortable** _boolean default:false_ : can this field be sorted
      on? If true field is not searchable
    * **stopwords** _Array, default: require('stopword').en_ An array
-     of [stop words](https://en.wikipedia.org/wiki/Stop_words).
+     of [stop words](https://en.wikipedia.org/wiki/Stop_words). [Other languages than english are available](#stopwords).
    * **storeable** _Array_ specifies which fields to store in index. You
      may want to index fields that are not shown in results, for
      example when dealing with synonyms
@@ -579,3 +579,26 @@ Specifies how strings are to be split, using a regex in the
 ### stopwords
 _array_
 An array of [stopwords](https://en.wikipedia.org/wiki/Stop_words)
+
+#### Arrays of stopwords for the following languages are supplied: 
+
+* `ar` - Modern Standard Arabic
+* `bn` - Bengali
+* `da` - Danish
+* `de` - German
+* `en` - English
+* `es` - Spanish
+* `fa` - Farsi
+* `fr` - French
+* `hi` - Hindi
+* `it` - Italian
+* `ja` - Japanese*
+* `nl` - Dutch
+* `no` - Norwegian
+* `pl` - Polish
+* `pt` - Portuguese
+* `ru` - Russioan
+* `sv` - Sweedish
+* `zh` - Chinese Simplified*
+
+*Some languages like `ja` Japanese and `zh` Chinese Simplified have no space between words. For these languages you need to split the text into words before adding it to search-index. You can check out [TinySegmenter](http://chasen.org/%7Etaku/software/TinySegmenter/) for Japanese and [chinese-tokenizer](https://github.com/yishn/chinese-tokenizer) for Chinese.
