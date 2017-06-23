@@ -32,6 +32,7 @@ const getAdder = function (SearchIndex, done) {
     SearchIndex.add = searchIndexAdder.add
     SearchIndex.callbackyAdd = searchIndexAdder.concurrentAdd  // deprecated
     SearchIndex.concurrentAdd = searchIndexAdder.concurrentAdd
+    SearchIndex.concurrentDel = searchIndexAdder.concurrentDel
     SearchIndex.createWriteStream = searchIndexAdder.createWriteStream
     SearchIndex.dbWriteStream = searchIndexAdder.dbWriteStream
     SearchIndex.defaultPipeline = searchIndexAdder.defaultPipeline
@@ -47,6 +48,7 @@ const getSearcher = function (SearchIndex, done) {
     SearchIndex.availableFields = searchIndexSearcher.availableFields
     SearchIndex.buckets = searchIndexSearcher.bucketStream
     SearchIndex.categorize = searchIndexSearcher.categoryStream
+    SearchIndex.classify = searchIndexSearcher.classify
     SearchIndex.dbReadStream = searchIndexSearcher.dbReadStream
     SearchIndex.get = searchIndexSearcher.get
     SearchIndex.match = searchIndexSearcher.match
@@ -81,7 +83,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":2,"bunyan":10,"leveldown":58,"levelup":71,"search-index-adder":101,"search-index-searcher":105}],2:[function(require,module,exports){
+},{"./siUtil.js":2,"bunyan":9,"leveldown":57,"levelup":70,"search-index-adder":103,"search-index-searcher":107}],2:[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -611,98 +613,30 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"util/":131}],4:[function(require,module,exports){
+},{"util/":134}],4:[function(require,module,exports){
 (function (process,global){
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (factory((global.async = global.async || {})));
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.async = global.async || {})));
 }(this, (function (exports) { 'use strict';
 
-/**
- * A faster alternative to `Function#apply`, this function invokes `func`
- * with the `this` binding of `thisArg` and the arguments of `args`.
- *
- * @private
- * @param {Function} func The function to invoke.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {Array} args The arguments to invoke `func` with.
- * @returns {*} Returns the result of `func`.
- */
-function apply(func, thisArg, args) {
-  switch (args.length) {
-    case 0: return func.call(thisArg);
-    case 1: return func.call(thisArg, args[0]);
-    case 2: return func.call(thisArg, args[0], args[1]);
-    case 3: return func.call(thisArg, args[0], args[1], args[2]);
-  }
-  return func.apply(thisArg, args);
-}
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max;
-
-/**
- * A specialized version of `baseRest` which transforms the rest array.
- *
- * @private
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @param {Function} transform The rest array transform.
- * @returns {Function} Returns the new function.
- */
-function overRest$1(func, start, transform) {
-  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
-  return function() {
-    var args = arguments,
-        index = -1,
-        length = nativeMax(args.length - start, 0),
-        array = Array(length);
-
-    while (++index < length) {
-      array[index] = args[start + index];
+function slice(arrayLike, start) {
+    start = start|0;
+    var newLen = Math.max(arrayLike.length - start, 0);
+    var newArr = Array(newLen);
+    for(var idx = 0; idx < newLen; idx++)  {
+        newArr[idx] = arrayLike[start + idx];
     }
-    index = -1;
-    var otherArgs = Array(start + 1);
-    while (++index < start) {
-      otherArgs[index] = args[index];
-    }
-    otherArgs[start] = transform(array);
-    return apply(func, this, otherArgs);
-  };
-}
-
-/**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-// Lodash rest function without function.toString()
-// remappings
-function rest(func, start) {
-    return overRest$1(func, start, identity);
+    return newArr;
 }
 
 var initialParams = function (fn) {
-    return rest(function (args /*..., callback*/) {
+    return function (/*...args, callback*/) {
+        var args = slice(arguments);
         var callback = args.pop();
         fn.call(this, args, callback);
-    });
+    };
 };
 
 /**
@@ -735,6 +669,34 @@ function isObject(value) {
   return value != null && (type == 'object' || type == 'function');
 }
 
+var hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
+var hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
+
+function fallback(fn) {
+    setTimeout(fn, 0);
+}
+
+function wrap(defer) {
+    return function (fn/*, ...args*/) {
+        var args = slice(arguments, 1);
+        defer(function () {
+            fn.apply(null, args);
+        });
+    };
+}
+
+var _defer;
+
+if (hasSetImmediate) {
+    _defer = setImmediate;
+} else if (hasNextTick) {
+    _defer = process.nextTick;
+} else {
+    _defer = fallback;
+}
+
+var setImmediate$1 = wrap(_defer);
+
 /**
  * Take a sync function and make it async, passing its return value to a
  * callback. This is useful for plugging sync functions into a waterfall,
@@ -754,7 +716,7 @@ function isObject(value) {
  * @method
  * @alias wrapSync
  * @category Util
- * @param {Function} func - The synchronous funuction, or Promise-returning
+ * @param {Function} func - The synchronous function, or Promise-returning
  * function to convert to an {@link AsyncFunction}.
  * @returns {AsyncFunction} An asynchronous wrapper of the `func`. To be
  * invoked with `(args..., callback)`.
@@ -801,10 +763,10 @@ function asyncify(func) {
         }
         // if result is Promise object
         if (isObject(result) && typeof result.then === 'function') {
-            result.then(function (value) {
-                callback(null, value);
-            }, function (err) {
-                callback(err.message ? err : new Error(err));
+            result.then(function(value) {
+                invokeCallback(callback, null, value);
+            }, function(err) {
+                invokeCallback(callback, err.message ? err : new Error(err));
             });
         } else {
             callback(null, result);
@@ -812,18 +774,19 @@ function asyncify(func) {
     });
 }
 
-var supportsSymbol = typeof Symbol === 'function';
-
-function supportsAsync() {
-    var supported;
+function invokeCallback(callback, error, value) {
     try {
-        /* eslint no-eval: 0 */
-        supported = isAsync(eval('(async function () {})'));
+        callback(error, value);
     } catch (e) {
-        supported = false;
+        setImmediate$1(rethrow, e);
     }
-    return supported;
 }
+
+function rethrow(error) {
+    throw error;
+}
+
+var supportsSymbol = typeof Symbol === 'function';
 
 function isAsync(fn) {
     return supportsSymbol && fn[Symbol.toStringTag] === 'AsyncFunction';
@@ -833,22 +796,22 @@ function wrapAsync(asyncFn) {
     return isAsync(asyncFn) ? asyncify(asyncFn) : asyncFn;
 }
 
-var wrapAsync$1 = supportsAsync() ? wrapAsync : identity;
-
 function applyEach$1(eachfn) {
-    return rest(function (fns, args) {
-        var go = initialParams(function (args, callback) {
+    return function(fns/*, ...args*/) {
+        var args = slice(arguments, 1);
+        var go = initialParams(function(args, callback) {
             var that = this;
             return eachfn(fns, function (fn, cb) {
-                wrapAsync$1(fn).apply(that, args.concat(cb));
+                wrapAsync(fn).apply(that, args.concat(cb));
             }, callback);
         });
         if (args.length) {
             return go.apply(this, args);
-        } else {
+        }
+        else {
             return go;
         }
-    });
+    };
 }
 
 /** Detect free variable `global` from Node.js. */
@@ -1518,18 +1481,19 @@ function createArrayIterator(coll) {
     var i = -1;
     var len = coll.length;
     return function next() {
-        return ++i < len ? { value: coll[i], key: i } : null;
-    };
+        return ++i < len ? {value: coll[i], key: i} : null;
+    }
 }
 
 function createES2015Iterator(iterator) {
     var i = -1;
     return function next() {
         var item = iterator.next();
-        if (item.done) return null;
+        if (item.done)
+            return null;
         i++;
-        return { value: item.value, key: i };
-    };
+        return {value: item.value, key: i};
+    }
 }
 
 function createObjectIterator(obj) {
@@ -1538,7 +1502,7 @@ function createObjectIterator(obj) {
     var len = okeys.length;
     return function next() {
         var key = okeys[++i];
-        return i < len ? { value: obj[key], key: key } : null;
+        return i < len ? {value: obj[key], key: key} : null;
     };
 }
 
@@ -1552,7 +1516,7 @@ function iterator(coll) {
 }
 
 function onlyOnce(fn) {
-    return function () {
+    return function() {
         if (fn === null) throw new Error("Callback was already called.");
         var callFn = fn;
         fn = null;
@@ -1575,15 +1539,17 @@ function _eachOfLimit(limit) {
             if (err) {
                 done = true;
                 callback(err);
-            } else if (value === breakLoop || done && running <= 0) {
+            }
+            else if (value === breakLoop || (done && running <= 0)) {
                 done = true;
                 return callback(null);
-            } else {
+            }
+            else {
                 replenish();
             }
         }
 
-        function replenish() {
+        function replenish () {
             while (running < limit && !done) {
                 var elem = nextElem();
                 if (elem === null) {
@@ -1623,7 +1589,7 @@ function _eachOfLimit(limit) {
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
  */
 function eachOfLimit(coll, limit, iteratee, callback) {
-  _eachOfLimit(limit)(coll, wrapAsync$1(iteratee), callback);
+    _eachOfLimit(limit)(coll, wrapAsync(iteratee), callback);
 }
 
 function doLimit(fn, limit) {
@@ -1645,7 +1611,7 @@ function eachOfArrayLike(coll, iteratee, callback) {
     function iteratorCallback(err, value) {
         if (err) {
             callback(err);
-        } else if (++completed === length || value === breakLoop) {
+        } else if ((++completed === length) || value === breakLoop) {
             callback(null);
         }
     }
@@ -1697,14 +1663,14 @@ var eachOfGeneric = doLimit(eachOfLimit, Infinity);
  *     doSomethingWith(configs);
  * });
  */
-var eachOf = function (coll, iteratee, callback) {
+var eachOf = function(coll, iteratee, callback) {
     var eachOfImplementation = isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric;
-    eachOfImplementation(coll, wrapAsync$1(iteratee), callback);
+    eachOfImplementation(coll, wrapAsync(iteratee), callback);
 };
 
 function doParallel(fn) {
     return function (obj, iteratee, callback) {
-        return fn(eachOf, obj, wrapAsync$1(iteratee), callback);
+        return fn(eachOf, obj, wrapAsync(iteratee), callback);
     };
 }
 
@@ -1713,7 +1679,7 @@ function _asyncMap(eachfn, arr, iteratee, callback) {
     arr = arr || [];
     var results = [];
     var counter = 0;
-    var _iteratee = wrapAsync$1(iteratee);
+    var _iteratee = wrapAsync(iteratee);
 
     eachfn(arr, function (value, _, callback) {
         var index = counter++;
@@ -1801,7 +1767,7 @@ var applyEach = applyEach$1(map);
 
 function doParallelLimit(fn) {
     return function (obj, limit, iteratee, callback) {
-        return fn(_eachOfLimit(limit), obj, wrapAsync$1(iteratee), callback);
+        return fn(_eachOfLimit(limit), obj, wrapAsync(iteratee), callback);
     };
 }
 
@@ -1879,10 +1845,11 @@ var applyEachSeries = applyEach$1(mapSeries);
  * @memberOf module:Utils
  * @method
  * @category Util
- * @param {Function} function - The function you want to eventually apply all
+ * @param {Function} fn - The function you want to eventually apply all
  * arguments to. Invokes with (arguments...).
  * @param {...*} arguments... - Any number of arguments to automatically apply
  * when the continuation is called.
+ * @returns {Function} the partially-applied function
  * @example
  *
  * // using apply
@@ -1911,11 +1878,13 @@ var applyEachSeries = applyEach$1(mapSeries);
  * two
  * three
  */
-var apply$2 = rest(function (fn, args) {
-    return rest(function (callArgs) {
+var apply = function(fn/*, ...args*/) {
+    var args = slice(arguments, 1);
+    return function(/*callArgs*/) {
+        var callArgs = slice(arguments);
         return fn.apply(null, args.concat(callArgs));
-    });
-});
+    };
+};
 
 /**
  * A specialized version of `_.forEach` for arrays without support for
@@ -2185,7 +2154,10 @@ var auto = function (tasks, concurrency, callback) {
 
         arrayEach(dependencies, function (dependencyName) {
             if (!tasks[dependencyName]) {
-                throw new Error('async.auto task `' + key + '` has a non-existent dependency `' + dependencyName + '` in ' + dependencies.join(', '));
+                throw new Error('async.auto task `' + key +
+                    '` has a non-existent dependency `' +
+                    dependencyName + '` in ' +
+                    dependencies.join(', '));
             }
             addListener(dependencyName, function () {
                 remainingDependencies--;
@@ -2209,10 +2181,11 @@ var auto = function (tasks, concurrency, callback) {
         if (readyTasks.length === 0 && runningTasks === 0) {
             return callback(null, results);
         }
-        while (readyTasks.length && runningTasks < concurrency) {
+        while(readyTasks.length && runningTasks < concurrency) {
             var run = readyTasks.shift();
             run();
         }
+
     }
 
     function addListener(taskName, fn) {
@@ -2232,32 +2205,33 @@ var auto = function (tasks, concurrency, callback) {
         processQueue();
     }
 
+
     function runTask(key, task) {
         if (hasError) return;
 
-        var taskCallback = onlyOnce(rest(function (err, args) {
+        var taskCallback = onlyOnce(function(err, result) {
             runningTasks--;
-            if (args.length <= 1) {
-                args = args[0];
+            if (arguments.length > 2) {
+                result = slice(arguments, 1);
             }
             if (err) {
                 var safeResults = {};
-                baseForOwn(results, function (val, rkey) {
+                baseForOwn(results, function(val, rkey) {
                     safeResults[rkey] = val;
                 });
-                safeResults[key] = args;
+                safeResults[key] = result;
                 hasError = true;
                 listeners = Object.create(null);
 
                 callback(err, safeResults);
             } else {
-                results[key] = args;
+                results[key] = result;
                 taskComplete(key);
             }
-        }));
+        });
 
         runningTasks++;
-        var taskFn = wrapAsync$1(task[task.length - 1]);
+        var taskFn = wrapAsync(task[task.length - 1]);
         if (task.length > 1) {
             taskFn(results, taskCallback);
         } else {
@@ -2282,7 +2256,9 @@ var auto = function (tasks, concurrency, callback) {
         }
 
         if (counter !== numTasks) {
-            throw new Error('async.auto cannot execute tasks due to a recursive dependency');
+            throw new Error(
+                'async.auto cannot execute tasks due to a recursive dependency'
+            );
         }
     }
 
@@ -2610,7 +2586,7 @@ function parseParams(func) {
     func = func.toString().replace(STRIP_COMMENTS, '');
     func = func.match(FN_ARGS)[2].replace(' ', '');
     func = func ? func.split(FN_ARG_SPLIT) : [];
-    func = func.map(function (arg) {
+    func = func.map(function (arg){
         return trim(arg.replace(FN_ARG, ''));
     });
     return func;
@@ -2704,7 +2680,9 @@ function autoInject(tasks, callback) {
     baseForOwn(tasks, function (taskFn, key) {
         var params;
         var fnIsAsync = isAsync(taskFn);
-        var hasNoDeps = !fnIsAsync && taskFn.length === 1 || fnIsAsync && taskFn.length === 0;
+        var hasNoDeps =
+            (!fnIsAsync && taskFn.length === 1) ||
+            (fnIsAsync && taskFn.length === 0);
 
         if (isArray(taskFn)) {
             params = taskFn.slice(0, -1);
@@ -2731,39 +2709,12 @@ function autoInject(tasks, callback) {
                 return results[name];
             });
             newArgs.push(taskCb);
-            wrapAsync$1(taskFn).apply(null, newArgs);
+            wrapAsync(taskFn).apply(null, newArgs);
         }
     });
 
     auto(newTasks, callback);
 }
-
-var hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
-var hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
-
-function fallback(fn) {
-    setTimeout(fn, 0);
-}
-
-function wrap(defer) {
-    return rest(function (fn, args) {
-        defer(function () {
-            fn.apply(null, args);
-        });
-    });
-}
-
-var _defer;
-
-if (hasSetImmediate) {
-    _defer = setImmediate;
-} else if (hasNextTick) {
-    _defer = process.nextTick;
-} else {
-    _defer = fallback;
-}
-
-var setImmediate$1 = wrap(_defer);
 
 // Simple doubly linked list (https://en.wikipedia.org/wiki/Doubly_linked_list) implementation
 // used for queues. This implementation assumes that the node provided by the user can be modified
@@ -2779,57 +2730,89 @@ function setInitial(dll, node) {
     dll.head = dll.tail = node;
 }
 
-DLL.prototype.removeLink = function (node) {
-    if (node.prev) node.prev.next = node.next;else this.head = node.next;
-    if (node.next) node.next.prev = node.prev;else this.tail = node.prev;
+DLL.prototype.removeLink = function(node) {
+    if (node.prev) node.prev.next = node.next;
+    else this.head = node.next;
+    if (node.next) node.next.prev = node.prev;
+    else this.tail = node.prev;
 
     node.prev = node.next = null;
     this.length -= 1;
     return node;
 };
 
-DLL.prototype.empty = DLL;
+DLL.prototype.empty = function () {
+    while(this.head) this.shift();
+    return this;
+};
 
-DLL.prototype.insertAfter = function (node, newNode) {
+DLL.prototype.insertAfter = function(node, newNode) {
     newNode.prev = node;
     newNode.next = node.next;
-    if (node.next) node.next.prev = newNode;else this.tail = newNode;
+    if (node.next) node.next.prev = newNode;
+    else this.tail = newNode;
     node.next = newNode;
     this.length += 1;
 };
 
-DLL.prototype.insertBefore = function (node, newNode) {
+DLL.prototype.insertBefore = function(node, newNode) {
     newNode.prev = node.prev;
     newNode.next = node;
-    if (node.prev) node.prev.next = newNode;else this.head = newNode;
+    if (node.prev) node.prev.next = newNode;
+    else this.head = newNode;
     node.prev = newNode;
     this.length += 1;
 };
 
-DLL.prototype.unshift = function (node) {
-    if (this.head) this.insertBefore(this.head, node);else setInitial(this, node);
+DLL.prototype.unshift = function(node) {
+    if (this.head) this.insertBefore(this.head, node);
+    else setInitial(this, node);
 };
 
-DLL.prototype.push = function (node) {
-    if (this.tail) this.insertAfter(this.tail, node);else setInitial(this, node);
+DLL.prototype.push = function(node) {
+    if (this.tail) this.insertAfter(this.tail, node);
+    else setInitial(this, node);
 };
 
-DLL.prototype.shift = function () {
+DLL.prototype.shift = function() {
     return this.head && this.removeLink(this.head);
 };
 
-DLL.prototype.pop = function () {
+DLL.prototype.pop = function() {
     return this.tail && this.removeLink(this.tail);
+};
+
+DLL.prototype.toArray = function () {
+    var arr = Array(this.length);
+    var curr = this.head;
+    for(var idx = 0; idx < this.length; idx++) {
+        arr[idx] = curr.data;
+        curr = curr.next;
+    }
+    return arr;
+};
+
+DLL.prototype.remove = function (testFn) {
+    var curr = this.head;
+    while(!!curr) {
+        var next = curr.next;
+        if (testFn(curr)) {
+            this.removeLink(curr);
+        }
+        curr = next;
+    }
+    return this;
 };
 
 function queue(worker, concurrency, payload) {
     if (concurrency == null) {
         concurrency = 1;
-    } else if (concurrency === 0) {
+    }
+    else if(concurrency === 0) {
         throw new Error('Concurrency must not be zero');
     }
 
-    var _worker = wrapAsync$1(worker);
+    var _worker = wrapAsync(worker);
     var numRunning = 0;
     var workersList = [];
 
@@ -2843,7 +2826,7 @@ function queue(worker, concurrency, payload) {
         }
         if (data.length === 0 && q.idle()) {
             // call drain immediately if there are no tasks
-            return setImmediate$1(function () {
+            return setImmediate$1(function() {
                 q.drain();
             });
         }
@@ -2864,7 +2847,7 @@ function queue(worker, concurrency, payload) {
     }
 
     function _next(tasks) {
-        return rest(function (args) {
+        return function(err){
             numRunning -= 1;
 
             for (var i = 0, l = tasks.length; i < l; i++) {
@@ -2874,14 +2857,14 @@ function queue(worker, concurrency, payload) {
                     workersList.splice(index);
                 }
 
-                task.callback.apply(task, args);
+                task.callback.apply(task, arguments);
 
-                if (args[0] != null) {
-                    q.error(args[0], task.data);
+                if (err != null) {
+                    q.error(err, task.data);
                 }
             }
 
-            if (numRunning <= q.concurrency - q.buffer) {
+            if (numRunning <= (q.concurrency - q.buffer) ) {
                 q.unsaturated();
             }
 
@@ -2889,7 +2872,7 @@ function queue(worker, concurrency, payload) {
                 q.drain();
             }
             q.process();
-        });
+        };
     }
 
     var isProcessing = false;
@@ -2898,7 +2881,7 @@ function queue(worker, concurrency, payload) {
         concurrency: concurrency,
         payload: payload,
         saturated: noop,
-        unsaturated: noop,
+        unsaturated:noop,
         buffer: concurrency / 4,
         empty: noop,
         drain: noop,
@@ -2915,6 +2898,9 @@ function queue(worker, concurrency, payload) {
         unshift: function (data, callback) {
             _insert(data, true, callback);
         },
+        remove: function (testFn) {
+            q._tasks.remove(testFn);
+        },
         process: function () {
             // Avoid trying to start too many processing operations. This can occur
             // when callbacks resolve synchronously (#1267).
@@ -2922,9 +2908,8 @@ function queue(worker, concurrency, payload) {
                 return;
             }
             isProcessing = true;
-            while (!q.paused && numRunning < q.concurrency && q._tasks.length) {
-                var tasks = [],
-                    data = [];
+            while(!q.paused && numRunning < q.concurrency && q._tasks.length){
+                var tasks = [], data = [];
                 var l = q._tasks.length;
                 if (q.payload) l = Math.min(l, q.payload);
                 for (var i = 0; i < l; i++) {
@@ -2933,11 +2918,12 @@ function queue(worker, concurrency, payload) {
                     data.push(node.data);
                 }
 
+                numRunning += 1;
+                workersList.push(tasks[0]);
+
                 if (q._tasks.length === 0) {
                     q.empty();
                 }
-                numRunning += 1;
-                workersList.push(tasks[0]);
 
                 if (numRunning === q.concurrency) {
                     q.saturated();
@@ -2957,16 +2943,14 @@ function queue(worker, concurrency, payload) {
         workersList: function () {
             return workersList;
         },
-        idle: function () {
+        idle: function() {
             return q._tasks.length + numRunning === 0;
         },
         pause: function () {
             q.paused = true;
         },
         resume: function () {
-            if (q.paused === false) {
-                return;
-            }
+            if (q.paused === false) { return; }
             q.paused = false;
             setImmediate$1(q.process);
         }
@@ -3052,7 +3036,7 @@ function queue(worker, concurrency, payload) {
  * });
  */
 function cargo(worker, payload) {
-  return queue(worker, 1, payload);
+    return queue(worker, 1, payload);
 }
 
 /**
@@ -3116,13 +3100,13 @@ var eachOfSeries = doLimit(eachOfLimit, 1);
  */
 function reduce(coll, memo, iteratee, callback) {
     callback = once(callback || noop);
-    var _iteratee = wrapAsync$1(iteratee);
-    eachOfSeries(coll, function (x, i, callback) {
-        _iteratee(memo, x, function (err, v) {
+    var _iteratee = wrapAsync(iteratee);
+    eachOfSeries(coll, function(x, i, callback) {
+        _iteratee(memo, x, function(err, v) {
             memo = v;
             callback(err);
         });
-    }, function (err) {
+    }, function(err) {
         callback(err, memo);
     });
 }
@@ -3165,9 +3149,10 @@ function reduce(coll, memo, iteratee, callback) {
  *     });
  * });
  */
-var seq$1 = rest(function seq(functions) {
-    var _functions = arrayMap(functions, wrapAsync$1);
-    return rest(function (args) {
+function seq(/*...functions*/) {
+    var _functions = arrayMap(arguments, wrapAsync);
+    return function(/*...args*/) {
+        var args = slice(arguments);
         var that = this;
 
         var cb = args[args.length - 1];
@@ -3177,15 +3162,17 @@ var seq$1 = rest(function seq(functions) {
             cb = noop;
         }
 
-        reduce(_functions, args, function (newargs, fn, cb) {
-            fn.apply(that, newargs.concat(rest(function (err, nextargs) {
+        reduce(_functions, args, function(newargs, fn, cb) {
+            fn.apply(that, newargs.concat(function(err/*, ...nextargs*/) {
+                var nextargs = slice(arguments, 1);
                 cb(err, nextargs);
-            })));
-        }, function (err, results) {
+            }));
+        },
+        function(err, results) {
             cb.apply(that, [err].concat(results));
         });
-    });
-});
+    };
+}
 
 /**
  * Creates a function which is a composition of the passed asynchronous
@@ -3222,9 +3209,9 @@ var seq$1 = rest(function seq(functions) {
  *     // result now equals 15
  * });
  */
-var compose = rest(function (args) {
-  return seq$1.apply(null, args.reverse());
-});
+var compose = function(/*...args*/) {
+    return seq.apply(null, slice(arguments).reverse());
+};
 
 function concat$1(eachfn, arr, fn, callback) {
     var result = [];
@@ -3267,7 +3254,7 @@ var concat = doParallel(concat$1);
 
 function doSeries(fn) {
     return function (obj, iteratee, callback) {
-        return fn(eachOfSeries, obj, wrapAsync$1(iteratee), callback);
+        return fn(eachOfSeries, obj, wrapAsync(iteratee), callback);
     };
 }
 
@@ -3333,20 +3320,42 @@ var concatSeries = doSeries(concat$1);
  *     //...
  * }, callback);
  */
-var constant = rest(function (values) {
+var constant = function(/*...values*/) {
+    var values = slice(arguments);
     var args = [null].concat(values);
-    return initialParams(function (ignoredArgs, callback) {
+    return function (/*...ignoredArgs, callback*/) {
+        var callback = arguments[arguments.length - 1];
         return callback.apply(this, args);
-    });
-});
+    };
+};
+
+/**
+ * This method returns the first argument it receives.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Util
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ *
+ * console.log(_.identity(object) === object);
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
 
 function _createTester(check, getResult) {
-    return function (eachfn, arr, iteratee, cb) {
+    return function(eachfn, arr, iteratee, cb) {
         cb = cb || noop;
         var testPassed = false;
         var testResult;
-        eachfn(arr, function (value, _, callback) {
-            iteratee(value, function (err, result) {
+        eachfn(arr, function(value, _, callback) {
+            iteratee(value, function(err, result) {
                 if (err) {
                     callback(err);
                 } else if (check(result) && !testResult) {
@@ -3357,7 +3366,7 @@ function _createTester(check, getResult) {
                     callback();
                 }
             });
-        }, function (err) {
+        }, function(err) {
             if (err) {
                 cb(err);
             } else {
@@ -3455,8 +3464,10 @@ var detectLimit = doParallelLimit(_createTester(identity, _findGetResult));
 var detectSeries = doLimit(detectLimit, 1);
 
 function consoleFunc(name) {
-    return rest(function (fn, args) {
-        wrapAsync$1(fn).apply(null, args.concat(rest(function (err, args) {
+    return function (fn/*, ...args*/) {
+        var args = slice(arguments, 1);
+        args.push(function (err/*, ...args*/) {
+            var args = slice(arguments, 1);
             if (typeof console === 'object') {
                 if (err) {
                     if (console.error) {
@@ -3468,8 +3479,9 @@ function consoleFunc(name) {
                     });
                 }
             }
-        })));
-    });
+        });
+        wrapAsync(fn).apply(null, args);
+    };
 }
 
 /**
@@ -3525,14 +3537,15 @@ var dir = consoleFunc('dir');
  */
 function doDuring(fn, test, callback) {
     callback = onlyOnce(callback || noop);
-    var _fn = wrapAsync$1(fn);
-    var _test = wrapAsync$1(test);
+    var _fn = wrapAsync(fn);
+    var _test = wrapAsync(test);
 
-    var next = rest(function (err, args) {
+    function next(err/*, ...args*/) {
         if (err) return callback(err);
+        var args = slice(arguments, 1);
         args.push(check);
         _test.apply(this, args);
-    });
+    }
 
     function check(err, truth) {
         if (err) return callback(err);
@@ -3541,6 +3554,7 @@ function doDuring(fn, test, callback) {
     }
 
     check(null, true);
+
 }
 
 /**
@@ -3567,12 +3581,13 @@ function doDuring(fn, test, callback) {
  */
 function doWhilst(iteratee, test, callback) {
     callback = onlyOnce(callback || noop);
-    var _iteratee = wrapAsync$1(iteratee);
-    var next = rest(function (err, args) {
+    var _iteratee = wrapAsync(iteratee);
+    var next = function(err/*, ...args*/) {
         if (err) return callback(err);
+        var args = slice(arguments, 1);
         if (test.apply(this, args)) return _iteratee(next);
         callback.apply(null, [null].concat(args));
-    });
+    };
     _iteratee(next);
 }
 
@@ -3597,7 +3612,7 @@ function doWhilst(iteratee, test, callback) {
  * callback. Invoked with (err, [results]);
  */
 function doUntil(iteratee, test, callback) {
-    doWhilst(iteratee, function () {
+    doWhilst(iteratee, function() {
         return !test.apply(this, arguments);
     }, callback);
 }
@@ -3640,8 +3655,8 @@ function doUntil(iteratee, test, callback) {
  */
 function during(test, fn, callback) {
     callback = onlyOnce(callback || noop);
-    var _fn = wrapAsync$1(fn);
-    var _test = wrapAsync$1(test);
+    var _fn = wrapAsync(fn);
+    var _test = wrapAsync(test);
 
     function next(err) {
         if (err) return callback(err);
@@ -3721,7 +3736,7 @@ function _withoutIndex(iteratee) {
  * });
  */
 function eachLimit(coll, iteratee, callback) {
-  eachOf(coll, _withoutIndex(wrapAsync$1(iteratee)), callback);
+    eachOf(coll, _withoutIndex(wrapAsync(iteratee)), callback);
 }
 
 /**
@@ -3745,7 +3760,7 @@ function eachLimit(coll, iteratee, callback) {
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
  */
 function eachLimit$1(coll, limit, iteratee, callback) {
-  _eachOfLimit(limit)(coll, _withoutIndex(wrapAsync$1(iteratee)), callback);
+    _eachOfLimit(limit)(coll, _withoutIndex(wrapAsync(iteratee)), callback);
 }
 
 /**
@@ -3938,7 +3953,7 @@ function filterGeneric(eachfn, coll, iteratee, callback) {
                 callback(err);
             } else {
                 if (v) {
-                    results.push({ index: index, value: x });
+                    results.push({index: index, value: x});
                 }
                 callback();
             }
@@ -3956,7 +3971,7 @@ function filterGeneric(eachfn, coll, iteratee, callback) {
 
 function _filter(eachfn, coll, iteratee, callback) {
     var filter = isArrayLike(coll) ? filterArray : filterGeneric;
-    filter(eachfn, coll, wrapAsync$1(iteratee), callback || noop);
+    filter(eachfn, coll, wrapAsync(iteratee), callback || noop);
 }
 
 /**
@@ -4059,7 +4074,7 @@ var filterSeries = doLimit(filterLimit, 1);
  */
 function forever(fn, errback) {
     var done = onlyOnce(errback || noop);
-    var task = wrapAsync$1(ensureAsync(fn));
+    var task = wrapAsync(ensureAsync(fn));
 
     function next(err) {
         if (err) return done(err);
@@ -4087,15 +4102,15 @@ function forever(fn, errback) {
  * functions have finished, or an error occurs. Result is an `Object` whoses
  * properties are arrays of values which returned the corresponding key.
  */
-var groupByLimit = function (coll, limit, iteratee, callback) {
+var groupByLimit = function(coll, limit, iteratee, callback) {
     callback = callback || noop;
-    var _iteratee = wrapAsync$1(iteratee);
-    mapLimit(coll, limit, function (val, callback) {
-        _iteratee(val, function (err, key) {
+    var _iteratee = wrapAsync(iteratee);
+    mapLimit(coll, limit, function(val, callback) {
+        _iteratee(val, function(err, key) {
             if (err) return callback(err);
-            return callback(null, { key: key, val: val });
+            return callback(null, {key: key, val: val});
         });
-    }, function (err, mapResults) {
+    }, function(err, mapResults) {
         var result = {};
         // from MDN, handle object having an `hasOwnProperty` prop
         var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -4229,8 +4244,8 @@ var log = consoleFunc('log');
 function mapValuesLimit(obj, limit, iteratee, callback) {
     callback = once(callback || noop);
     var newObj = {};
-    var _iteratee = wrapAsync$1(iteratee);
-    eachOfLimit(obj, limit, function (val, key, next) {
+    var _iteratee = wrapAsync(iteratee);
+    eachOfLimit(obj, limit, function(val, key, next) {
         _iteratee(val, key, function (err, result) {
             if (err) return next(err);
             newObj[key] = result;
@@ -4354,25 +4369,26 @@ function memoize(fn, hasher) {
     var memo = Object.create(null);
     var queues = Object.create(null);
     hasher = hasher || identity;
-    var _fn = wrapAsync$1(fn);
+    var _fn = wrapAsync(fn);
     var memoized = initialParams(function memoized(args, callback) {
         var key = hasher.apply(null, args);
         if (has(memo, key)) {
-            setImmediate$1(function () {
+            setImmediate$1(function() {
                 callback.apply(null, memo[key]);
             });
         } else if (has(queues, key)) {
             queues[key].push(callback);
         } else {
             queues[key] = [callback];
-            _fn.apply(null, args.concat(rest(function (args) {
+            _fn.apply(null, args.concat(function(/*args*/) {
+                var args = slice(arguments);
                 memo[key] = args;
                 var q = queues[key];
                 delete queues[key];
                 for (var i = 0, l = q.length; i < l; i++) {
                     q[i].apply(null, args);
                 }
-            })));
+            }));
         }
     });
     memoized.memo = memo;
@@ -4428,13 +4444,13 @@ function _parallel(eachfn, tasks, callback) {
     var results = isArrayLike(tasks) ? [] : {};
 
     eachfn(tasks, function (task, key, callback) {
-        wrapAsync$1(task)(rest(function (err, args) {
-            if (args.length <= 1) {
-                args = args[0];
+        wrapAsync(task)(function (err, result) {
+            if (arguments.length > 2) {
+                result = slice(arguments, 1);
             }
-            results[key] = args;
+            results[key] = result;
             callback(err);
-        }));
+        });
     }, function (err) {
         callback(err, results);
     });
@@ -4510,7 +4526,7 @@ function _parallel(eachfn, tasks, callback) {
  * });
  */
 function parallelLimit(tasks, callback) {
-  _parallel(eachOf, tasks, callback);
+    _parallel(eachOf, tasks, callback);
 }
 
 /**
@@ -4533,7 +4549,7 @@ function parallelLimit(tasks, callback) {
  * Invoked with (err, results).
  */
 function parallelLimit$1(tasks, limit, callback) {
-  _parallel(_eachOfLimit(limit), tasks, callback);
+    _parallel(_eachOfLimit(limit), tasks, callback);
 }
 
 /**
@@ -4559,6 +4575,12 @@ function parallelLimit$1(tasks, limit, callback) {
  * task in the list. Invoke with `queue.push(task, [callback])`,
  * @property {Function} unshift - add a new task to the front of the `queue`.
  * Invoke with `queue.unshift(task, [callback])`.
+ * @property {Function} remove - remove items from the queue that match a test
+ * function.  The test function will be passed an object with a `data` property,
+ * and a `priority` property, if this is a
+ * [priorityQueue]{@link module:ControlFlow.priorityQueue} object.
+ * Invoked with `queue.remove(testFn)`, where `testFn` is of the form
+ * `function ({data, priority}) {}` and returns a Boolean.
  * @property {Function} saturated - a callback that is called when the number of
  * running workers hits the `concurrency` limit, and further tasks will be
  * queued.
@@ -4635,10 +4657,10 @@ function parallelLimit$1(tasks, limit, callback) {
  * });
  */
 var queue$1 = function (worker, concurrency) {
-  var _worker = wrapAsync$1(worker);
-  return queue(function (items, cb) {
-    _worker(items[0], cb);
-  }, concurrency, 1);
+    var _worker = wrapAsync(worker);
+    return queue(function (items, cb) {
+        _worker(items[0], cb);
+    }, concurrency, 1);
 };
 
 /**
@@ -4664,12 +4686,12 @@ var queue$1 = function (worker, concurrency) {
  *   array of `tasks` is given, all tasks will be assigned the same priority.
  * * The `unshift` method was removed.
  */
-var priorityQueue = function (worker, concurrency) {
+var priorityQueue = function(worker, concurrency) {
     // Start with a normal queue
     var q = queue$1(worker, concurrency);
 
     // Override push to accept second parameter representing priority
-    q.push = function (data, priority, callback) {
+    q.push = function(data, priority, callback) {
         if (callback == null) callback = noop;
         if (typeof callback !== 'function') {
             throw new Error('task callback must be a function');
@@ -4680,7 +4702,7 @@ var priorityQueue = function (worker, concurrency) {
         }
         if (data.length === 0) {
             // call drain immediately if there are no tasks
-            return setImmediate$1(function () {
+            return setImmediate$1(function() {
                 q.drain();
             });
         }
@@ -4754,11 +4776,9 @@ function race(tasks, callback) {
     if (!isArray(tasks)) return callback(new TypeError('First argument to race must be an array of functions'));
     if (!tasks.length) return callback();
     for (var i = 0, l = tasks.length; i < l; i++) {
-        wrapAsync$1(tasks[i])(callback);
+        wrapAsync(tasks[i])(callback);
     }
 }
-
-var slice = Array.prototype.slice;
 
 /**
  * Same as [`reduce`]{@link module:Collections.reduce}, only operates on `array` in reverse order.
@@ -4782,9 +4802,9 @@ var slice = Array.prototype.slice;
  * `iteratee` functions have finished. Result is the reduced value. Invoked with
  * (err, result).
  */
-function reduceRight(array, memo, iteratee, callback) {
-  var reversed = slice.call(array).reverse();
-  reduce(reversed, memo, iteratee, callback);
+function reduceRight (array, memo, iteratee, callback) {
+    var reversed = slice(array).reverse();
+    reduce(reversed, memo, iteratee, callback);
 }
 
 /**
@@ -4827,33 +4847,29 @@ function reduceRight(array, memo, iteratee, callback) {
  * });
  */
 function reflect(fn) {
-    var _fn = wrapAsync$1(fn);
+    var _fn = wrapAsync(fn);
     return initialParams(function reflectOn(args, reflectCallback) {
-        args.push(rest(function callback(err, cbArgs) {
-            if (err) {
-                reflectCallback(null, {
-                    error: err
-                });
+        args.push(function callback(error, cbArg) {
+            if (error) {
+                reflectCallback(null, { error: error });
             } else {
-                var value = null;
-                if (cbArgs.length === 1) {
-                    value = cbArgs[0];
-                } else if (cbArgs.length > 1) {
-                    value = cbArgs;
+                var value;
+                if (arguments.length <= 2) {
+                    value = cbArg;
+                } else {
+                    value = slice(arguments, 1);
                 }
-                reflectCallback(null, {
-                    value: value
-                });
+                reflectCallback(null, { value: value });
             }
-        }));
+        });
 
         return _fn.apply(this, args);
     });
 }
 
 function reject$1(eachfn, arr, iteratee, callback) {
-    _filter(eachfn, arr, function (value, cb) {
-        iteratee(value, function (err, v) {
+    _filter(eachfn, arr, function(value, cb) {
+        iteratee(value, function(err, v) {
             cb(err, !v);
         });
     }, callback);
@@ -4961,7 +4977,7 @@ function reflectAll(tasks) {
         results = arrayMap(tasks, reflect);
     } else {
         results = {};
-        baseForOwn(tasks, function (task, key) {
+        baseForOwn(tasks, function(task, key) {
             results[key] = reflect.call(this, task);
         });
     }
@@ -5130,7 +5146,9 @@ function retry(opts, task, callback) {
         if (typeof t === 'object') {
             acc.times = +t.times || DEFAULT_TIMES;
 
-            acc.intervalFunc = typeof t.interval === 'function' ? t.interval : constant$1(+t.interval || DEFAULT_INTERVAL);
+            acc.intervalFunc = typeof t.interval === 'function' ?
+                t.interval :
+                constant$1(+t.interval || DEFAULT_INTERVAL);
 
             acc.errorFilter = t.errorFilter;
         } else if (typeof t === 'number' || typeof t === 'string') {
@@ -5152,12 +5170,14 @@ function retry(opts, task, callback) {
         throw new Error("Invalid arguments for async.retry");
     }
 
-    var _task = wrapAsync$1(task);
+    var _task = wrapAsync(task);
 
     var attempt = 1;
     function retryAttempt() {
-        _task(function (err) {
-            if (err && attempt++ < options.times && (typeof options.errorFilter != 'function' || options.errorFilter(err))) {
+        _task(function(err) {
+            if (err && attempt++ < options.times &&
+                (typeof options.errorFilter != 'function' ||
+                    options.errorFilter(err))) {
                 setTimeout(retryAttempt, options.intervalFunc(attempt));
             } else {
                 callback.apply(null, arguments);
@@ -5201,13 +5221,15 @@ var retryable = function (opts, task) {
         task = opts;
         opts = null;
     }
-    var _task = wrapAsync$1(task);
+    var _task = wrapAsync(task);
     return initialParams(function (args, callback) {
         function taskFn(cb) {
             _task.apply(null, args.concat(cb));
         }
 
-        if (opts) retry(opts, taskFn, callback);else retry(taskFn, callback);
+        if (opts) retry(opts, taskFn, callback);
+        else retry(taskFn, callback);
+
     });
 };
 
@@ -5276,7 +5298,7 @@ var retryable = function (opts, task) {
  * });
  */
 function series(tasks, callback) {
-  _parallel(eachOfSeries, tasks, callback);
+    _parallel(eachOfSeries, tasks, callback);
 }
 
 /**
@@ -5403,12 +5425,12 @@ var someSeries = doLimit(someLimit, 1);
  *     // result callback
  * });
  */
-function sortBy(coll, iteratee, callback) {
-    var _iteratee = wrapAsync$1(iteratee);
+function sortBy (coll, iteratee, callback) {
+    var _iteratee = wrapAsync(iteratee);
     map(coll, function (x, callback) {
         _iteratee(x, function (err, criteria) {
             if (err) return callback(err);
-            callback(null, { value: x, criteria: criteria });
+            callback(null, {value: x, criteria: criteria});
         });
     }, function (err, results) {
         if (err) return callback(err);
@@ -5416,8 +5438,7 @@ function sortBy(coll, iteratee, callback) {
     });
 
     function comparator(left, right) {
-        var a = left.criteria,
-            b = right.criteria;
+        var a = left.criteria, b = right.criteria;
         return a < b ? -1 : a > b ? 1 : 0;
     }
 }
@@ -5464,40 +5485,39 @@ function sortBy(coll, iteratee, callback) {
  * });
  */
 function timeout(asyncFn, milliseconds, info) {
-    var originalCallback, timer;
-    var timedOut = false;
+    var fn = wrapAsync(asyncFn);
 
-    function injectedCallback() {
-        if (!timedOut) {
-            originalCallback.apply(null, arguments);
-            clearTimeout(timer);
+    return initialParams(function (args, callback) {
+        var timedOut = false;
+        var timer;
+
+        function timeoutCallback() {
+            var name = asyncFn.name || 'anonymous';
+            var error  = new Error('Callback function "' + name + '" timed out.');
+            error.code = 'ETIMEDOUT';
+            if (info) {
+                error.info = info;
+            }
+            timedOut = true;
+            callback(error);
         }
-    }
 
-    function timeoutCallback() {
-        var name = asyncFn.name || 'anonymous';
-        var error = new Error('Callback function "' + name + '" timed out.');
-        error.code = 'ETIMEDOUT';
-        if (info) {
-            error.info = info;
-        }
-        timedOut = true;
-        originalCallback(error);
-    }
+        args.push(function () {
+            if (!timedOut) {
+                callback.apply(null, arguments);
+                clearTimeout(timer);
+            }
+        });
 
-    var fn = wrapAsync$1(asyncFn);
-
-    return initialParams(function (args, origCallback) {
-        originalCallback = origCallback;
         // setup timer and call original function
         timer = setTimeout(timeoutCallback, milliseconds);
-        fn.apply(null, args.concat(injectedCallback));
+        fn.apply(null, args);
     });
 }
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeCeil = Math.ceil;
-var nativeMax$1 = Math.max;
+var nativeMax = Math.max;
 
 /**
  * The base implementation of `_.range` and `_.rangeRight` which doesn't
@@ -5512,7 +5532,7 @@ var nativeMax$1 = Math.max;
  */
 function baseRange(start, end, step, fromRight) {
   var index = -1,
-      length = nativeMax$1(nativeCeil((end - start) / (step || 1)), 0),
+      length = nativeMax(nativeCeil((end - start) / (step || 1)), 0),
       result = Array(length);
 
   while (length--) {
@@ -5539,8 +5559,8 @@ function baseRange(start, end, step, fromRight) {
  * @param {Function} callback - see [async.map]{@link module:Collections.map}.
  */
 function timeLimit(count, limit, iteratee, callback) {
-  var _iteratee = wrapAsync$1(iteratee);
-  mapLimit(baseRange(0, count, 1), limit, _iteratee, callback);
+    var _iteratee = wrapAsync(iteratee);
+    mapLimit(baseRange(0, count, 1), limit, _iteratee, callback);
 }
 
 /**
@@ -5635,19 +5655,75 @@ var timesSeries = doLimit(timeLimit, 1);
  *     // result is equal to {a: 2, b: 4, c: 6}
  * })
  */
-function transform(coll, accumulator, iteratee, callback) {
+function transform (coll, accumulator, iteratee, callback) {
     if (arguments.length <= 3) {
         callback = iteratee;
         iteratee = accumulator;
         accumulator = isArray(coll) ? [] : {};
     }
     callback = once(callback || noop);
-    var _iteratee = wrapAsync$1(iteratee);
+    var _iteratee = wrapAsync(iteratee);
 
-    eachOf(coll, function (v, k, cb) {
+    eachOf(coll, function(v, k, cb) {
         _iteratee(accumulator, v, k, cb);
-    }, function (err) {
+    }, function(err) {
         callback(err, accumulator);
+    });
+}
+
+/**
+ * It runs each task in series but stops whenever any of the functions were
+ * successful. If one of the tasks were successful, the `callback` will be
+ * passed the result of the successful task. If all tasks fail, the callback
+ * will be passed the error and result (if any) of the final attempt.
+ *
+ * @name tryEach
+ * @static
+ * @memberOf module:ControlFlow
+ * @method
+ * @category Control Flow
+ * @param {Array|Iterable|Object} tasks - A collection containing functions to
+ * run, each function is passed a `callback(err, result)` it must call on
+ * completion with an error `err` (which can be `null`) and an optional `result`
+ * value.
+ * @param {Function} [callback] - An optional callback which is called when one
+ * of the tasks has succeeded, or all have failed. It receives the `err` and
+ * `result` arguments of the last attempt at completing the `task`. Invoked with
+ * (err, results).
+ * @example
+ * async.try([
+ *     function getDataFromFirstWebsite(callback) {
+ *         // Try getting the data from the first website
+ *         callback(err, data);
+ *     },
+ *     function getDataFromSecondWebsite(callback) {
+ *         // First website failed,
+ *         // Try getting the data from the backup website
+ *         callback(err, data);
+ *     }
+ * ],
+ * // optional callback
+ * function(err, results) {
+ *     Now do something with the data.
+ * });
+ *
+ */
+function tryEach(tasks, callback) {
+    var error = null;
+    var result;
+    callback = callback || noop;
+    eachSeries(tasks, function(task, callback) {
+        wrapAsync(task)(function (err, res/*, ...args*/) {
+            if (arguments.length > 2) {
+                result = slice(arguments, 1);
+            } else {
+                result = res;
+            }
+            error = err;
+            callback(!err);
+        });
+    }, function () {
+        callback(error, result);
     });
 }
 
@@ -5706,13 +5782,14 @@ function unmemoize(fn) {
  */
 function whilst(test, iteratee, callback) {
     callback = onlyOnce(callback || noop);
-    var _iteratee = wrapAsync$1(iteratee);
+    var _iteratee = wrapAsync(iteratee);
     if (!test()) return callback(null);
-    var next = rest(function (err, args) {
+    var next = function(err/*, ...args*/) {
         if (err) return callback(err);
         if (test()) return _iteratee(next);
+        var args = slice(arguments, 1);
         callback.apply(null, [null].concat(args));
-    });
+    };
     _iteratee(next);
 }
 
@@ -5739,7 +5816,7 @@ function whilst(test, iteratee, callback) {
  * callback. Invoked with (err, [results]);
  */
 function until(test, iteratee, callback) {
-    whilst(function () {
+    whilst(function() {
         return !test.apply(this, arguments);
     }, iteratee, callback);
 }
@@ -5801,28 +5878,23 @@ function until(test, iteratee, callback) {
  *     callback(null, 'done');
  * }
  */
-var waterfall = function (tasks, callback) {
+var waterfall = function(tasks, callback) {
     callback = once(callback || noop);
     if (!isArray(tasks)) return callback(new Error('First argument to waterfall must be an array of functions'));
     if (!tasks.length) return callback();
     var taskIndex = 0;
 
     function nextTask(args) {
-        if (taskIndex === tasks.length) {
-            return callback.apply(null, [null].concat(args));
-        }
-
-        var taskCallback = onlyOnce(rest(function (err, args) {
-            if (err) {
-                return callback.apply(null, [err].concat(args));
-            }
-            nextTask(args);
-        }));
-
-        args.push(taskCallback);
-
-        var task = wrapAsync$1(tasks[taskIndex++]);
+        var task = wrapAsync(tasks[taskIndex++]);
+        args.push(onlyOnce(next));
         task.apply(null, args);
+    }
+
+    function next(err/*, ...args*/) {
+        if (err || taskIndex === tasks.length) {
+            return callback.apply(null, arguments);
+        }
+        nextTask(slice(arguments, 1));
     }
 
     nextTask([]);
@@ -5876,6 +5948,7 @@ var waterfall = function (tasks, callback) {
  * @see AsyncFunction
  */
 
+
 /**
  * A collection of `async` functions for manipulating collections, such as
  * arrays and objects.
@@ -5893,104 +5966,105 @@ var waterfall = function (tasks, callback) {
  */
 
 var index = {
-  applyEach: applyEach,
-  applyEachSeries: applyEachSeries,
-  apply: apply$2,
-  asyncify: asyncify,
-  auto: auto,
-  autoInject: autoInject,
-  cargo: cargo,
-  compose: compose,
-  concat: concat,
-  concatSeries: concatSeries,
-  constant: constant,
-  detect: detect,
-  detectLimit: detectLimit,
-  detectSeries: detectSeries,
-  dir: dir,
-  doDuring: doDuring,
-  doUntil: doUntil,
-  doWhilst: doWhilst,
-  during: during,
-  each: eachLimit,
-  eachLimit: eachLimit$1,
-  eachOf: eachOf,
-  eachOfLimit: eachOfLimit,
-  eachOfSeries: eachOfSeries,
-  eachSeries: eachSeries,
-  ensureAsync: ensureAsync,
-  every: every,
-  everyLimit: everyLimit,
-  everySeries: everySeries,
-  filter: filter,
-  filterLimit: filterLimit,
-  filterSeries: filterSeries,
-  forever: forever,
-  groupBy: groupBy,
-  groupByLimit: groupByLimit,
-  groupBySeries: groupBySeries,
-  log: log,
-  map: map,
-  mapLimit: mapLimit,
-  mapSeries: mapSeries,
-  mapValues: mapValues,
-  mapValuesLimit: mapValuesLimit,
-  mapValuesSeries: mapValuesSeries,
-  memoize: memoize,
-  nextTick: nextTick,
-  parallel: parallelLimit,
-  parallelLimit: parallelLimit$1,
-  priorityQueue: priorityQueue,
-  queue: queue$1,
-  race: race,
-  reduce: reduce,
-  reduceRight: reduceRight,
-  reflect: reflect,
-  reflectAll: reflectAll,
-  reject: reject,
-  rejectLimit: rejectLimit,
-  rejectSeries: rejectSeries,
-  retry: retry,
-  retryable: retryable,
-  seq: seq$1,
-  series: series,
-  setImmediate: setImmediate$1,
-  some: some,
-  someLimit: someLimit,
-  someSeries: someSeries,
-  sortBy: sortBy,
-  timeout: timeout,
-  times: times,
-  timesLimit: timeLimit,
-  timesSeries: timesSeries,
-  transform: transform,
-  unmemoize: unmemoize,
-  until: until,
-  waterfall: waterfall,
-  whilst: whilst,
+    applyEach: applyEach,
+    applyEachSeries: applyEachSeries,
+    apply: apply,
+    asyncify: asyncify,
+    auto: auto,
+    autoInject: autoInject,
+    cargo: cargo,
+    compose: compose,
+    concat: concat,
+    concatSeries: concatSeries,
+    constant: constant,
+    detect: detect,
+    detectLimit: detectLimit,
+    detectSeries: detectSeries,
+    dir: dir,
+    doDuring: doDuring,
+    doUntil: doUntil,
+    doWhilst: doWhilst,
+    during: during,
+    each: eachLimit,
+    eachLimit: eachLimit$1,
+    eachOf: eachOf,
+    eachOfLimit: eachOfLimit,
+    eachOfSeries: eachOfSeries,
+    eachSeries: eachSeries,
+    ensureAsync: ensureAsync,
+    every: every,
+    everyLimit: everyLimit,
+    everySeries: everySeries,
+    filter: filter,
+    filterLimit: filterLimit,
+    filterSeries: filterSeries,
+    forever: forever,
+    groupBy: groupBy,
+    groupByLimit: groupByLimit,
+    groupBySeries: groupBySeries,
+    log: log,
+    map: map,
+    mapLimit: mapLimit,
+    mapSeries: mapSeries,
+    mapValues: mapValues,
+    mapValuesLimit: mapValuesLimit,
+    mapValuesSeries: mapValuesSeries,
+    memoize: memoize,
+    nextTick: nextTick,
+    parallel: parallelLimit,
+    parallelLimit: parallelLimit$1,
+    priorityQueue: priorityQueue,
+    queue: queue$1,
+    race: race,
+    reduce: reduce,
+    reduceRight: reduceRight,
+    reflect: reflect,
+    reflectAll: reflectAll,
+    reject: reject,
+    rejectLimit: rejectLimit,
+    rejectSeries: rejectSeries,
+    retry: retry,
+    retryable: retryable,
+    seq: seq,
+    series: series,
+    setImmediate: setImmediate$1,
+    some: some,
+    someLimit: someLimit,
+    someSeries: someSeries,
+    sortBy: sortBy,
+    timeout: timeout,
+    times: times,
+    timesLimit: timeLimit,
+    timesSeries: timesSeries,
+    transform: transform,
+    tryEach: tryEach,
+    unmemoize: unmemoize,
+    until: until,
+    waterfall: waterfall,
+    whilst: whilst,
 
-  // aliases
-  all: every,
-  any: some,
-  forEach: eachLimit,
-  forEachSeries: eachSeries,
-  forEachLimit: eachLimit$1,
-  forEachOf: eachOf,
-  forEachOfSeries: eachOfSeries,
-  forEachOfLimit: eachOfLimit,
-  inject: reduce,
-  foldl: reduce,
-  foldr: reduceRight,
-  select: filter,
-  selectLimit: filterLimit,
-  selectSeries: filterSeries,
-  wrapSync: asyncify
+    // aliases
+    all: every,
+    any: some,
+    forEach: eachLimit,
+    forEachSeries: eachSeries,
+    forEachLimit: eachLimit$1,
+    forEachOf: eachOf,
+    forEachOfSeries: eachOfSeries,
+    forEachOfLimit: eachOfLimit,
+    inject: reduce,
+    foldl: reduce,
+    foldr: reduceRight,
+    select: filter,
+    selectLimit: filterLimit,
+    selectSeries: filterSeries,
+    wrapSync: asyncify
 };
 
 exports['default'] = index;
 exports.applyEach = applyEach;
 exports.applyEachSeries = applyEachSeries;
-exports.apply = apply$2;
+exports.apply = apply;
 exports.asyncify = asyncify;
 exports.auto = auto;
 exports.autoInject = autoInject;
@@ -6047,7 +6121,7 @@ exports.rejectLimit = rejectLimit;
 exports.rejectSeries = rejectSeries;
 exports.retry = retry;
 exports.retryable = retryable;
-exports.seq = seq$1;
+exports.seq = seq;
 exports.series = series;
 exports.setImmediate = setImmediate$1;
 exports.some = some;
@@ -6059,6 +6133,7 @@ exports.times = times;
 exports.timesLimit = timeLimit;
 exports.timesSeries = timesSeries;
 exports.transform = transform;
+exports.tryEach = tryEach;
 exports.unmemoize = unmemoize;
 exports.until = until;
 exports.waterfall = waterfall;
@@ -6091,7 +6166,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":85}],5:[function(require,module,exports){
+},{"_process":84}],5:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -6127,22 +6202,22 @@ function placeHoldersCount (b64) {
 
 function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
+  return (b64.length * 3 / 4) - placeHoldersCount(b64)
 }
 
 function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
+  var i, l, tmp, placeHolders, arr
   var len = b64.length
   placeHolders = placeHoldersCount(b64)
 
-  arr = new Arr(len * 3 / 4 - placeHolders)
+  arr = new Arr((len * 3 / 4) - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
   l = placeHolders > 0 ? len - 4 : len
 
   var L = 0
 
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+  for (i = 0; i < l; i += 4) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
     arr[L++] = (tmp >> 16) & 0xFF
     arr[L++] = (tmp >> 8) & 0xFF
@@ -6212,118 +6287,6 @@ function fromByteArray (uint8) {
 },{}],7:[function(require,module,exports){
 arguments[4][6][0].apply(exports,arguments)
 },{"dup":6}],8:[function(require,module,exports){
-(function (global){
-'use strict';
-
-var buffer = require('buffer');
-var Buffer = buffer.Buffer;
-var SlowBuffer = buffer.SlowBuffer;
-var MAX_LEN = buffer.kMaxLength || 2147483647;
-exports.alloc = function alloc(size, fill, encoding) {
-  if (typeof Buffer.alloc === 'function') {
-    return Buffer.alloc(size, fill, encoding);
-  }
-  if (typeof encoding === 'number') {
-    throw new TypeError('encoding must not be number');
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  var enc = encoding;
-  var _fill = fill;
-  if (_fill === undefined) {
-    enc = undefined;
-    _fill = 0;
-  }
-  var buf = new Buffer(size);
-  if (typeof _fill === 'string') {
-    var fillBuf = new Buffer(_fill, enc);
-    var flen = fillBuf.length;
-    var i = -1;
-    while (++i < size) {
-      buf[i] = fillBuf[i % flen];
-    }
-  } else {
-    buf.fill(_fill);
-  }
-  return buf;
-}
-exports.allocUnsafe = function allocUnsafe(size) {
-  if (typeof Buffer.allocUnsafe === 'function') {
-    return Buffer.allocUnsafe(size);
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  return new Buffer(size);
-}
-exports.from = function from(value, encodingOrOffset, length) {
-  if (typeof Buffer.from === 'function' && (!global.Uint8Array || Uint8Array.from !== Buffer.from)) {
-    return Buffer.from(value, encodingOrOffset, length);
-  }
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number');
-  }
-  if (typeof value === 'string') {
-    return new Buffer(value, encodingOrOffset);
-  }
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    var offset = encodingOrOffset;
-    if (arguments.length === 1) {
-      return new Buffer(value);
-    }
-    if (typeof offset === 'undefined') {
-      offset = 0;
-    }
-    var len = length;
-    if (typeof len === 'undefined') {
-      len = value.byteLength - offset;
-    }
-    if (offset >= value.byteLength) {
-      throw new RangeError('\'offset\' is out of bounds');
-    }
-    if (len > value.byteLength - offset) {
-      throw new RangeError('\'length\' is out of bounds');
-    }
-    return new Buffer(value.slice(offset, offset + len));
-  }
-  if (Buffer.isBuffer(value)) {
-    var out = new Buffer(value.length);
-    value.copy(out, 0, 0, value.length);
-    return out;
-  }
-  if (value) {
-    if (Array.isArray(value) || (typeof ArrayBuffer !== 'undefined' && value.buffer instanceof ArrayBuffer) || 'length' in value) {
-      return new Buffer(value);
-    }
-    if (value.type === 'Buffer' && Array.isArray(value.data)) {
-      return new Buffer(value.data);
-    }
-  }
-
-  throw new TypeError('First argument must be a string, Buffer, ' + 'ArrayBuffer, Array, or array-like object.');
-}
-exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
-  if (typeof Buffer.allocUnsafeSlow === 'function') {
-    return Buffer.allocUnsafeSlow(size);
-  }
-  if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
-  }
-  if (size >= MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  return new SlowBuffer(size);
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":9}],9:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -8116,7 +8079,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":5,"ieee754":40,"isarray":44}],10:[function(require,module,exports){
+},{"base64-js":5,"ieee754":39,"isarray":43}],9:[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2017 Trent Mick.
@@ -9747,7 +9710,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":43,"_process":85,"assert":3,"events":38,"fs":7,"os":83,"safe-json-stringify":100,"stream":122,"util":131}],11:[function(require,module,exports){
+},{"../../is-buffer/index.js":42,"_process":84,"assert":3,"events":37,"fs":7,"os":82,"safe-json-stringify":102,"stream":125,"util":134}],10:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9858,7 +9821,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":43}],12:[function(require,module,exports){
+},{"../../is-buffer/index.js":42}],11:[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -9894,7 +9857,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":17,"util":131}],13:[function(require,module,exports){
+},{"abstract-leveldown":16,"util":134}],12:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -9954,7 +9917,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":43,"./deferred-iterator":12,"_process":85,"abstract-leveldown":17,"util":131}],14:[function(require,module,exports){
+},{"../is-buffer/index.js":42,"./deferred-iterator":11,"_process":84,"abstract-leveldown":16,"util":134}],13:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10037,7 +10000,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":85}],15:[function(require,module,exports){
+},{"_process":84}],14:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10090,7 +10053,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":85}],16:[function(require,module,exports){
+},{"_process":84}],15:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -10366,13 +10329,13 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":14,"./abstract-iterator":15,"_process":85,"xtend":133}],17:[function(require,module,exports){
+},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":13,"./abstract-iterator":14,"_process":84,"xtend":136}],16:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
 exports.isLevelDOWN          = require('./is-leveldown')
 
-},{"./abstract-chained-batch":14,"./abstract-iterator":15,"./abstract-leveldown":16,"./is-leveldown":18}],18:[function(require,module,exports){
+},{"./abstract-chained-batch":13,"./abstract-iterator":14,"./abstract-leveldown":15,"./is-leveldown":17}],17:[function(require,module,exports){
 var AbstractLevelDOWN = require('./abstract-leveldown')
 
 function isLevelDOWN (db) {
@@ -10388,7 +10351,7 @@ function isLevelDOWN (db) {
 
 module.exports = isLevelDOWN
 
-},{"./abstract-leveldown":16}],19:[function(require,module,exports){
+},{"./abstract-leveldown":15}],18:[function(require,module,exports){
 const pumpify = require('pumpify')
 const stopwords = []
 
@@ -10454,7 +10417,7 @@ exports.customPipeline = function (pl) {
   return pumpify.obj.apply(this, pl)
 }
 
-},{"./pipeline/CalculateTermFrequency.js":20,"./pipeline/CreateCompositeVector.js":21,"./pipeline/CreateSortVectors.js":22,"./pipeline/CreateStoredDocument.js":23,"./pipeline/FieldedSearch.js":24,"./pipeline/IngestDoc.js":25,"./pipeline/LowCase.js":26,"./pipeline/NormaliseFields.js":27,"./pipeline/RemoveStopWords.js":28,"./pipeline/Spy.js":29,"./pipeline/Tokeniser.js":30,"pumpify":88}],20:[function(require,module,exports){
+},{"./pipeline/CalculateTermFrequency.js":19,"./pipeline/CreateCompositeVector.js":20,"./pipeline/CreateSortVectors.js":21,"./pipeline/CreateStoredDocument.js":22,"./pipeline/FieldedSearch.js":23,"./pipeline/IngestDoc.js":24,"./pipeline/LowCase.js":25,"./pipeline/NormaliseFields.js":26,"./pipeline/RemoveStopWords.js":27,"./pipeline/Spy.js":28,"./pipeline/Tokeniser.js":29,"pumpify":87}],19:[function(require,module,exports){
 const tv = require('term-vector')
 const tf = require('term-frequency')
 const Transform = require('stream').Transform
@@ -10499,7 +10462,7 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"term-frequency":125,"term-vector":126,"util":131}],21:[function(require,module,exports){
+},{"stream":125,"term-frequency":128,"term-vector":129,"util":134}],20:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -10530,7 +10493,7 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],22:[function(require,module,exports){
+},{"stream":125,"util":134}],21:[function(require,module,exports){
 const tf = require('term-frequency')
 const tv = require('term-vector')
 const Transform = require('stream').Transform
@@ -10567,7 +10530,7 @@ CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"term-frequency":125,"term-vector":126,"util":131}],23:[function(require,module,exports){
+},{"stream":125,"term-frequency":128,"term-vector":129,"util":134}],22:[function(require,module,exports){
 // Creates the document that will be returned in the search
 // results. There may be cases where the document that is searchable
 // is not the same as the document that is returned
@@ -10598,7 +10561,7 @@ CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],24:[function(require,module,exports){
+},{"stream":125,"util":134}],23:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -10623,7 +10586,7 @@ FieldedSearch.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],25:[function(require,module,exports){
+},{"stream":125,"util":134}],24:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -10660,7 +10623,7 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
 }
 
 
-},{"stream":122,"util":131}],26:[function(require,module,exports){
+},{"stream":125,"util":134}],25:[function(require,module,exports){
 // insert all search tokens in lower case
 const Transform = require('stream').Transform
 const util = require('util')
@@ -10694,7 +10657,7 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],27:[function(require,module,exports){
+},{"stream":125,"util":134}],26:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -10722,7 +10685,7 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],28:[function(require,module,exports){
+},{"stream":125,"util":134}],27:[function(require,module,exports){
 // removes stopwords from indexed docs
 const Transform = require('stream').Transform
 const util = require('util')
@@ -10753,7 +10716,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],29:[function(require,module,exports){
+},{"stream":125,"util":134}],28:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -10768,7 +10731,7 @@ Spy.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],30:[function(require,module,exports){
+},{"stream":125,"util":134}],29:[function(require,module,exports){
 // split up fields in to arrays of tokens
 const Transform = require('stream').Transform
 const util = require('util')
@@ -10800,7 +10763,7 @@ Tokeniser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],31:[function(require,module,exports){
+},{"stream":125,"util":134}],30:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -11032,7 +10995,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":85,"buffer":9,"end-of-stream":32,"inherits":41,"readable-stream":97,"stream-shift":123}],32:[function(require,module,exports){
+},{"_process":84,"buffer":8,"end-of-stream":31,"inherits":40,"readable-stream":98,"stream-shift":126}],31:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -11105,7 +11068,7 @@ var eos = function(stream, opts, callback) {
 };
 
 module.exports = eos;
-},{"once":33}],33:[function(require,module,exports){
+},{"once":32}],32:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 
@@ -11128,7 +11091,7 @@ function once (fn) {
   return f
 }
 
-},{"wrappy":132}],34:[function(require,module,exports){
+},{"wrappy":135}],33:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -11213,7 +11176,7 @@ var eos = function(stream, opts, callback) {
 
 module.exports = eos;
 
-},{"once":82}],35:[function(require,module,exports){
+},{"once":81}],34:[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -11270,7 +11233,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":37}],36:[function(require,module,exports){
+},{"prr":36}],35:[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -11585,7 +11548,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":35}],37:[function(require,module,exports){
+},{"./custom":34}],36:[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -11649,7 +11612,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -11953,7 +11916,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -13360,7 +13323,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -13446,7 +13409,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -13471,7 +13434,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -13537,7 +13500,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":122}],43:[function(require,module,exports){
+},{"stream":125}],42:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -13560,14 +13523,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],44:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -13577,7 +13540,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":9}],46:[function(require,module,exports){
+},{"buffer":8}],45:[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -13685,7 +13648,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":47}],47:[function(require,module,exports){
+},{"./lib/encodings":46}],46:[function(require,module,exports){
 (function (Buffer){
 
 exports.utf8 = exports['utf-8'] = {
@@ -13765,7 +13728,7 @@ function isBinary(data){
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],48:[function(require,module,exports){
+},{"buffer":8}],47:[function(require,module,exports){
 /* Copyright (c) 2012-2015 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -13789,7 +13752,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":36}],49:[function(require,module,exports){
+},{"errno":35}],48:[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -13847,12 +13810,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":41,"level-errors":48,"readable-stream":56,"xtend":133}],50:[function(require,module,exports){
+},{"inherits":40,"level-errors":47,"readable-stream":55,"xtend":136}],49:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -13945,7 +13908,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":53,"./_stream_writable":55,"_process":85,"core-util-is":11,"inherits":41}],52:[function(require,module,exports){
+},{"./_stream_readable":52,"./_stream_writable":54,"_process":84,"core-util-is":10,"inherits":40}],51:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -13993,7 +13956,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":54,"core-util-is":11,"inherits":41}],53:[function(require,module,exports){
+},{"./_stream_transform":53,"core-util-is":10,"inherits":40}],52:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -14948,7 +14911,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":51,"_process":85,"buffer":9,"core-util-is":11,"events":38,"inherits":41,"isarray":50,"stream":122,"string_decoder/":57,"util":6}],54:[function(require,module,exports){
+},{"./_stream_duplex":50,"_process":84,"buffer":8,"core-util-is":10,"events":37,"inherits":40,"isarray":49,"stream":125,"string_decoder/":56,"util":6}],53:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -15159,7 +15122,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":51,"core-util-is":11,"inherits":41}],55:[function(require,module,exports){
+},{"./_stream_duplex":50,"core-util-is":10,"inherits":40}],54:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -15640,7 +15603,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":51,"_process":85,"buffer":9,"core-util-is":11,"inherits":41,"stream":122}],56:[function(require,module,exports){
+},{"./_stream_duplex":50,"_process":84,"buffer":8,"core-util-is":10,"inherits":40,"stream":125}],55:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -15654,7 +15617,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":51,"./lib/_stream_passthrough.js":52,"./lib/_stream_readable.js":53,"./lib/_stream_transform.js":54,"./lib/_stream_writable.js":55,"_process":85,"stream":122}],57:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":50,"./lib/_stream_passthrough.js":51,"./lib/_stream_readable.js":52,"./lib/_stream_transform.js":53,"./lib/_stream_writable.js":54,"_process":84,"stream":125}],56:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -15877,7 +15840,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":9}],58:[function(require,module,exports){
+},{"buffer":8}],57:[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -16055,7 +16018,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":59,"abstract-leveldown":62,"buffer":9,"idb-wrapper":39,"isbuffer":45,"typedarray-to-buffer":127,"util":131,"xtend":69}],59:[function(require,module,exports){
+},{"./iterator":58,"abstract-leveldown":61,"buffer":8,"idb-wrapper":38,"isbuffer":44,"typedarray-to-buffer":130,"util":134,"xtend":68}],58:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -16129,7 +16092,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":62,"ltgt":81,"util":131}],60:[function(require,module,exports){
+},{"abstract-leveldown":61,"ltgt":79,"util":134}],59:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -16213,9 +16176,9 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":85}],61:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"_process":85,"dup":15}],62:[function(require,module,exports){
+},{"_process":84}],60:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"_process":84,"dup":14}],61:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -16475,7 +16438,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":43,"./abstract-chained-batch":60,"./abstract-iterator":61,"_process":85,"xtend":63}],63:[function(require,module,exports){
+},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":59,"./abstract-iterator":60,"_process":84,"xtend":62}],62:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -16494,7 +16457,7 @@ function extend() {
     return target
 }
 
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -16536,11 +16499,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":67}],66:[function(require,module,exports){
+},{"./shim":66}],65:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -16558,7 +16521,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -16622,7 +16585,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":64,"./isArguments":66}],68:[function(require,module,exports){
+},{"./foreach":63,"./isArguments":65}],67:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -16631,7 +16594,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -16658,7 +16621,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":68,"object-keys":65}],70:[function(require,module,exports){
+},{"./has-keys":67,"object-keys":64}],69:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -16743,7 +16706,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":72,"level-errors":48}],71:[function(require,module,exports){
+},{"./util":71,"level-errors":47}],70:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -16766,6 +16729,7 @@ var EventEmitter        = require('events').EventEmitter
   , OpenError           = errors.OpenError
   , EncodingError       = errors.EncodingError
   , InitializationError = errors.InitializationError
+  , LevelUPError        = errors.LevelUPError
 
   , util                = require('./util')
   , Batch               = require('./batch')
@@ -16773,7 +16737,7 @@ var EventEmitter        = require('events').EventEmitter
 
   , getOptions          = util.getOptions
   , defaultOptions      = util.defaultOptions
-  , getLevelDOWN        = util.getLevelDOWN
+  , getLevelDOWN        = require('./leveldown')
   , dispatchError       = util.dispatchError
   , isDefined           = util.isDefined
 
@@ -16855,11 +16819,16 @@ LevelUP.prototype.open = function (callback) {
   }
 
   this.emit('opening')
-
   this._status = 'opening'
   this.db      = new DeferredLevelDOWN(this.location)
-  dbFactory    = this.options.db || getLevelDOWN()
-  db           = dbFactory(this.location)
+
+  if (typeof this.options.db !== 'function' &&
+      typeof getLevelDOWN !== 'function') {
+    throw new LevelUPError('missing db factory, you need to set options.db')
+  }
+
+  dbFactory = this.options.db || getLevelDOWN()
+  db = dbFactory(this.location)
 
   db.open(this.options, function (err) {
     if (err) {
@@ -17146,7 +17115,7 @@ module.exports.repair  = deprecate(
 
 
 }).call(this,require('_process'))
-},{"./batch":70,"./util":72,"_process":85,"deferred-leveldown":13,"events":38,"level-codec":46,"level-errors":48,"level-iterator-stream":49,"prr":86,"util":131,"xtend":133}],72:[function(require,module,exports){
+},{"./batch":69,"./leveldown":6,"./util":71,"_process":84,"deferred-leveldown":12,"events":37,"level-codec":45,"level-errors":47,"level-iterator-stream":48,"prr":85,"util":134,"xtend":136}],71:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -17154,8 +17123,6 @@ module.exports.repair  = deprecate(
  */
 
 var extend         = require('xtend')
-  , LevelUPError   = require('level-errors').LevelUPError
-  , format         = require('util').format
   , defaultOptions = {
         createIfMissing : true
       , errorIfExists   : false
@@ -17164,49 +17131,12 @@ var extend         = require('xtend')
       , compression     : true
     }
 
-  , leveldown
-
 function getOptions (options) {
   if (typeof options == 'string')
     options = { valueEncoding: options }
   if (typeof options != 'object')
     options = {}
   return options
-}
-
-function getLevelDOWN () {
-  if (leveldown)
-    return leveldown
-
-  var requiredVersion  = require('../package.json').devDependencies.leveldown
-    , leveldownVersion
-
-  try {
-    leveldownVersion = require('leveldown/package.json').version
-  } catch (e) {
-    throw requireError(e)
-  }
-
-  if (!require('semver').satisfies(leveldownVersion, requiredVersion)) {
-    throw new LevelUPError(
-        'Installed version of LevelDOWN ('
-      + leveldownVersion
-      + ') does not match required version ('
-      + requiredVersion
-      + ')'
-    )
-  }
-
-  try {
-    return leveldown = require('leveldown')
-  } catch (e) {
-    throw requireError(e)
-  }
-}
-
-function requireError (e) {
-  var template = 'Failed to require LevelDOWN (%s). Try `npm install leveldown` if it\'s missing'
-  return new LevelUPError(format(template, e.message))
 }
 
 function dispatchError (db, error, callback) {
@@ -17220,212 +17150,11 @@ function isDefined (v) {
 module.exports = {
     defaultOptions  : defaultOptions
   , getOptions      : getOptions
-  , getLevelDOWN    : getLevelDOWN
   , dispatchError   : dispatchError
   , isDefined       : isDefined
 }
 
-},{"../package.json":73,"level-errors":48,"leveldown":6,"leveldown/package.json":6,"semver":6,"util":131,"xtend":133}],73:[function(require,module,exports){
-module.exports={
-  "_args": [
-    [
-      {
-        "raw": "levelup@^1.3.5",
-        "scope": null,
-        "escapedName": "levelup",
-        "name": "levelup",
-        "rawSpec": "^1.3.5",
-        "spec": ">=1.3.5 <2.0.0",
-        "type": "range"
-      },
-      "/Users/fergusmcdowall/node/search-index"
-    ]
-  ],
-  "_from": "levelup@>=1.3.5 <2.0.0",
-  "_id": "levelup@1.3.5",
-  "_inCache": true,
-  "_installable": true,
-  "_location": "/levelup",
-  "_nodeVersion": "7.4.0",
-  "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/levelup-1.3.5.tgz_1488477248468_0.036320413229987025"
-  },
-  "_npmUser": {
-    "name": "ralphtheninja",
-    "email": "ralphtheninja@riseup.net"
-  },
-  "_npmVersion": "4.0.5",
-  "_phantomChildren": {},
-  "_requested": {
-    "raw": "levelup@^1.3.5",
-    "scope": null,
-    "escapedName": "levelup",
-    "name": "levelup",
-    "rawSpec": "^1.3.5",
-    "spec": ">=1.3.5 <2.0.0",
-    "type": "range"
-  },
-  "_requiredBy": [
-    "/",
-    "/search-index-adder",
-    "/search-index-searcher"
-  ],
-  "_resolved": "https://registry.npmjs.org/levelup/-/levelup-1.3.5.tgz",
-  "_shasum": "fa80a972b74011f2537c8b65678bd8b5188e4e66",
-  "_shrinkwrap": null,
-  "_spec": "levelup@^1.3.5",
-  "_where": "/Users/fergusmcdowall/node/search-index",
-  "browser": {
-    "leveldown": false,
-    "leveldown/package": false,
-    "semver": false
-  },
-  "bugs": {
-    "url": "https://github.com/level/levelup/issues"
-  },
-  "contributors": [
-    {
-      "name": "Rod Vagg",
-      "email": "r@va.gg",
-      "url": "https://github.com/rvagg"
-    },
-    {
-      "name": "John Chesley",
-      "email": "john@chesl.es",
-      "url": "https://github.com/chesles/"
-    },
-    {
-      "name": "Jake Verbaten",
-      "email": "raynos2@gmail.com",
-      "url": "https://github.com/raynos"
-    },
-    {
-      "name": "Dominic Tarr",
-      "email": "dominic.tarr@gmail.com",
-      "url": "https://github.com/dominictarr"
-    },
-    {
-      "name": "Max Ogden",
-      "email": "max@maxogden.com",
-      "url": "https://github.com/maxogden"
-    },
-    {
-      "name": "Lars-Magnus Skog",
-      "email": "ralphtheninja@riseup.net",
-      "url": "https://github.com/ralphtheninja"
-    },
-    {
-      "name": "David Björklund",
-      "email": "david.bjorklund@gmail.com",
-      "url": "https://github.com/kesla"
-    },
-    {
-      "name": "Julian Gruber",
-      "email": "julian@juliangruber.com",
-      "url": "https://github.com/juliangruber"
-    },
-    {
-      "name": "Paolo Fragomeni",
-      "email": "paolo@async.ly",
-      "url": "https://github.com/0x00a"
-    },
-    {
-      "name": "Anton Whalley",
-      "email": "anton.whalley@nearform.com",
-      "url": "https://github.com/No9"
-    },
-    {
-      "name": "Matteo Collina",
-      "email": "matteo.collina@gmail.com",
-      "url": "https://github.com/mcollina"
-    },
-    {
-      "name": "Pedro Teixeira",
-      "email": "pedro.teixeira@gmail.com",
-      "url": "https://github.com/pgte"
-    },
-    {
-      "name": "James Halliday",
-      "email": "mail@substack.net",
-      "url": "https://github.com/substack"
-    },
-    {
-      "name": "Jarrett Cruger",
-      "email": "jcrugzz@gmail.com",
-      "url": "https://github.com/jcrugzz"
-    }
-  ],
-  "dependencies": {
-    "deferred-leveldown": "~1.2.1",
-    "level-codec": "~6.1.0",
-    "level-errors": "~1.0.3",
-    "level-iterator-stream": "~1.3.0",
-    "prr": "~1.0.1",
-    "semver": "~5.1.0",
-    "xtend": "~4.0.0"
-  },
-  "description": "Fast & simple storage - a Node.js-style LevelDB wrapper",
-  "devDependencies": {
-    "async": "~1.5.0",
-    "bustermove": "~1.0.0",
-    "delayed": "~1.0.1",
-    "faucet": "~0.0.1",
-    "leveldown": "^1.1.0",
-    "memdown": "~1.1.0",
-    "msgpack-js": "~0.3.0",
-    "referee": "~1.2.0",
-    "rimraf": "~2.4.3",
-    "slow-stream": "0.0.4",
-    "tap": "~2.3.1",
-    "tape": "~4.2.1"
-  },
-  "directories": {},
-  "dist": {
-    "shasum": "fa80a972b74011f2537c8b65678bd8b5188e4e66",
-    "tarball": "https://registry.npmjs.org/levelup/-/levelup-1.3.5.tgz"
-  },
-  "gitHead": "ed5a54202085839784f1189f1266e9c379d64081",
-  "homepage": "https://github.com/level/levelup",
-  "keywords": [
-    "leveldb",
-    "stream",
-    "database",
-    "db",
-    "store",
-    "storage",
-    "json"
-  ],
-  "license": "MIT",
-  "main": "lib/levelup.js",
-  "maintainers": [
-    {
-      "name": "rvagg",
-      "email": "rod@vagg.org"
-    },
-    {
-      "name": "ralphtheninja",
-      "email": "ralphtheninja@riseup.net"
-    },
-    {
-      "name": "juliangruber",
-      "email": "julian@juliangruber.com"
-    }
-  ],
-  "name": "levelup",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/level/levelup.git"
-  },
-  "scripts": {
-    "test": "tape test/*-test.js | faucet"
-  },
-  "version": "1.3.5"
-}
-
-},{}],74:[function(require,module,exports){
+},{"xtend":136}],72:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -18599,7 +18328,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],75:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -19668,7 +19397,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],76:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 (function (global){
 /**
  * Lodash (Custom Build) <https://lodash.com/>
@@ -21520,7 +21249,7 @@ function stubFalse() {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],77:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -21773,7 +21502,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],78:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -22179,7 +21908,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],79:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -23364,7 +23093,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -24264,7 +23993,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],81:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -24312,9 +24041,9 @@ var lowerBoundKey = exports.lowerBoundKey = function (range) {
     )
 }
 
-var lowerBound = exports.lowerBound = function (range) {
+var lowerBound = exports.lowerBound = function (range, def) {
   var k = lowerBoundKey(range)
-  return k && range[k]
+  return k ? range[k] : def
 }
 
 var lowerBoundInclusive = exports.lowerBoundInclusive = function (range) {
@@ -24346,9 +24075,30 @@ var upperBoundKey = exports.upperBoundKey = function (range) {
     )
 }
 
-var upperBound = exports.upperBound = function (range) {
+var upperBound = exports.upperBound = function (range, def) {
   var k = upperBoundKey(range)
-  return k && range[k]
+  return k ? range[k] : def
+}
+
+exports.start = function (range, def) {
+  return range.reverse ? upperBound(range, def) : lowerBound(range, def)
+}
+exports.end = function (range, def) {
+  return range.reverse ? lowerBound(range, def) : upperBound(range, def)
+}
+exports.startInclusive = function (range) {
+  return (
+    range.reverse
+  ? upperBoundInclusive(range)
+  : lowerBoundInclusive(range)
+  )
+}
+exports.endInclusive = function (range) {
+  return (
+    range.reverse
+  ? lowerBoundInclusive(range)
+  : upperBoundInclusive(range)
+  )
 }
 
 function id (e) { return e }
@@ -24415,11 +24165,43 @@ exports.filter = function (range, compare) {
 
 
 
-
-
-
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":43}],82:[function(require,module,exports){
+},{"../is-buffer/index.js":42}],80:[function(require,module,exports){
+
+// nGramLengths is of the form [ 9, 10 ]
+const getNGramsOfMultipleLengths = function (inputArray, nGramLengths) {
+  var outputArray = []
+  nGramLengths.forEach(function (len) {
+    outputArray = outputArray.concat(getNGramsOfSingleLength(inputArray, len))
+  })
+  return outputArray
+}
+
+// nGramLengths is of the form { gte: 9, lte: 10 }
+const getNGramsOfRangeOfLengths = function (inputArray, nGramLengths) {
+  var outputArray = []
+  for (var i = nGramLengths.gte; i <= nGramLengths.lte; i++) {
+    outputArray = outputArray.concat(getNGramsOfSingleLength(inputArray, i))
+  }
+  return outputArray
+}
+
+// nGramLength is a single integer
+const getNGramsOfSingleLength = function (inputArray, nGramLength) {
+  return inputArray.slice(nGramLength - 1).map(function (item, i) {
+    return inputArray.slice(i, i + nGramLength)
+  })
+}
+
+exports.ngram = function (inputArray, nGramLength) {
+  switch (nGramLength.constructor) {
+    case Array: return getNGramsOfMultipleLengths(inputArray, nGramLength)
+    case Number: return getNGramsOfSingleLength(inputArray, nGramLength)
+    case Object: return getNGramsOfRangeOfLengths(inputArray, nGramLength)
+  }
+}
+
+},{}],81:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -24463,7 +24245,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":132}],83:[function(require,module,exports){
+},{"wrappy":135}],82:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -24510,7 +24292,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24557,7 +24339,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":85}],85:[function(require,module,exports){
+},{"_process":84}],84:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -24728,6 +24510,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -24739,9 +24525,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],86:[function(require,module,exports){
-arguments[4][37][0].apply(exports,arguments)
-},{"dup":37}],87:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"dup":36}],86:[function(require,module,exports){
 var once = require('once')
 var eos = require('end-of-stream')
 var fs = require('fs') // we only need fs to get the ReadStream and WriteStream prototypes
@@ -24823,7 +24609,7 @@ var pump = function () {
 
 module.exports = pump
 
-},{"end-of-stream":34,"fs":6,"once":82}],88:[function(require,module,exports){
+},{"end-of-stream":33,"fs":6,"once":81}],87:[function(require,module,exports){
 var pump = require('pump')
 var inherits = require('inherits')
 var Duplexify = require('duplexify')
@@ -24880,10 +24666,31 @@ var define = function(opts) {
 module.exports = define({destroy:false})
 module.exports.obj = define({destroy:false, objectMode:true, highWaterMark:16})
 
-},{"duplexify":31,"inherits":41,"pump":87}],89:[function(require,module,exports){
+},{"duplexify":30,"inherits":40,"pump":86}],88:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":90}],90:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":89}],89:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -24893,6 +24700,10 @@ module.exports = require('./lib/_stream_duplex.js');
 
 /*<replacement>*/
 
+var processNextTick = require('process-nextick-args');
+/*</replacement>*/
+
+/*<replacement>*/
 var objectKeys = Object.keys || function (obj) {
   var keys = [];
   for (var key in obj) {
@@ -24902,10 +24713,6 @@ var objectKeys = Object.keys || function (obj) {
 /*</replacement>*/
 
 module.exports = Duplex;
-
-/*<replacement>*/
-var processNextTick = require('process-nextick-args');
-/*</replacement>*/
 
 /*<replacement>*/
 var util = require('core-util-is');
@@ -24954,12 +24761,61 @@ function onEndNT(self) {
   self.end();
 }
 
+Object.defineProperty(Duplex.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return false;
+    }
+    return this._readableState.destroyed && this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
+    this._writableState.destroyed = value;
+  }
+});
+
+Duplex.prototype._destroy = function (err, cb) {
+  this.push(null);
+  this.end();
+
+  processNextTick(cb, err);
+};
+
 function forEach(xs, f) {
   for (var i = 0, l = xs.length; i < l; i++) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":92,"./_stream_writable":94,"core-util-is":11,"inherits":41,"process-nextick-args":84}],91:[function(require,module,exports){
+},{"./_stream_readable":91,"./_stream_writable":93,"core-util-is":10,"inherits":40,"process-nextick-args":83}],90:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -24986,15 +24842,37 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":93,"core-util-is":11,"inherits":41}],92:[function(require,module,exports){
+},{"./_stream_transform":92,"core-util-is":10,"inherits":40}],91:[function(require,module,exports){
 (function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 'use strict';
 
-module.exports = Readable;
-
 /*<replacement>*/
+
 var processNextTick = require('process-nextick-args');
 /*</replacement>*/
+
+module.exports = Readable;
 
 /*<replacement>*/
 var isArray = require('isarray');
@@ -25015,19 +24893,19 @@ var EElistenerCount = function (emitter, type) {
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream;
-(function () {
-  try {
-    Stream = require('st' + 'ream');
-  } catch (_) {} finally {
-    if (!Stream) Stream = require('events').EventEmitter;
-  }
-})();
+var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-var Buffer = require('buffer').Buffer;
+// TODO(bmeurer): Change this back to const once hole checks are
+// properly optimized away early in Ignition+TurboFan.
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Object.prototype.toString.call(obj) === '[object Uint8Array]' || Buffer.isBuffer(obj);
+}
 /*</replacement>*/
 
 /*<replacement>*/
@@ -25046,9 +24924,12 @@ if (debugUtil && debugUtil.debuglog) {
 /*</replacement>*/
 
 var BufferList = require('./internal/streams/BufferList');
+var destroyImpl = require('./internal/streams/destroy');
 var StringDecoder;
 
 util.inherits(Readable, Stream);
+
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
@@ -25082,7 +24963,7 @@ function ReadableState(options, stream) {
   this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
 
   // cast to ints.
-  this.highWaterMark = ~~this.highWaterMark;
+  this.highWaterMark = Math.floor(this.highWaterMark);
 
   // A linked list is used to store data chunks instead of an array because the
   // linked list can remove elements from the beginning faster than
@@ -25096,10 +24977,10 @@ function ReadableState(options, stream) {
   this.endEmitted = false;
   this.reading = false;
 
-  // a flag to be able to tell if the onwrite cb is called immediately,
-  // or on a later tick.  We set this to true at first, because any
-  // actions that shouldn't happen until "later" should generally also
-  // not happen before the first write call.
+  // a flag to be able to tell if the event 'readable'/'data' is emitted
+  // immediately, or on a later tick.  We set this to true at first, because
+  // any actions that shouldn't happen until "later" should generally also
+  // not happen before the first read call.
   this.sync = true;
 
   // whenever we return null, then we set a flag to say
@@ -25109,14 +24990,13 @@ function ReadableState(options, stream) {
   this.readableListening = false;
   this.resumeScheduled = false;
 
+  // has it been destroyed
+  this.destroyed = false;
+
   // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
   this.defaultEncoding = options.defaultEncoding || 'utf8';
-
-  // when piping, we only care about 'readable' events that happen
-  // after read()ing all the bytes and not getting any pushback.
-  this.ranOut = false;
 
   // the number of writers that are awaiting a drain event in .pipe()s
   this.awaitDrain = 0;
@@ -25143,10 +25023,41 @@ function Readable(options) {
   // legacy
   this.readable = true;
 
-  if (options && typeof options.read === 'function') this._read = options.read;
+  if (options) {
+    if (typeof options.read === 'function') this._read = options.read;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+  }
 
   Stream.call(this);
 }
+
+Object.defineProperty(Readable.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined) {
+      return false;
+    }
+    return this._readableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._readableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
+  }
+});
+
+Readable.prototype.destroy = destroyImpl.destroy;
+Readable.prototype._undestroy = destroyImpl.undestroy;
+Readable.prototype._destroy = function (err, cb) {
+  this.push(null);
+  cb(err);
+};
 
 // Manually shove something into the read() buffer.
 // This returns true if the highWaterMark has not been hit yet,
@@ -25154,74 +25065,85 @@ function Readable(options) {
 // write() some more.
 Readable.prototype.push = function (chunk, encoding) {
   var state = this._readableState;
+  var skipChunkCheck;
 
-  if (!state.objectMode && typeof chunk === 'string') {
-    encoding = encoding || state.defaultEncoding;
-    if (encoding !== state.encoding) {
-      chunk = bufferShim.from(chunk, encoding);
-      encoding = '';
+  if (!state.objectMode) {
+    if (typeof chunk === 'string') {
+      encoding = encoding || state.defaultEncoding;
+      if (encoding !== state.encoding) {
+        chunk = Buffer.from(chunk, encoding);
+        encoding = '';
+      }
+      skipChunkCheck = true;
     }
+  } else {
+    skipChunkCheck = true;
   }
 
-  return readableAddChunk(this, state, chunk, encoding, false);
+  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
 };
 
 // Unshift should *always* be something directly out of read()
 Readable.prototype.unshift = function (chunk) {
-  var state = this._readableState;
-  return readableAddChunk(this, state, chunk, '', true);
+  return readableAddChunk(this, chunk, null, true, false);
 };
 
-Readable.prototype.isPaused = function () {
-  return this._readableState.flowing === false;
-};
-
-function readableAddChunk(stream, state, chunk, encoding, addToFront) {
-  var er = chunkInvalid(state, chunk);
-  if (er) {
-    stream.emit('error', er);
-  } else if (chunk === null) {
+function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
+  var state = stream._readableState;
+  if (chunk === null) {
     state.reading = false;
     onEofChunk(stream, state);
-  } else if (state.objectMode || chunk && chunk.length > 0) {
-    if (state.ended && !addToFront) {
-      var e = new Error('stream.push() after EOF');
-      stream.emit('error', e);
-    } else if (state.endEmitted && addToFront) {
-      var _e = new Error('stream.unshift() after end event');
-      stream.emit('error', _e);
-    } else {
-      var skipAdd;
-      if (state.decoder && !addToFront && !encoding) {
-        chunk = state.decoder.write(chunk);
-        skipAdd = !state.objectMode && chunk.length === 0;
+  } else {
+    var er;
+    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
+    if (er) {
+      stream.emit('error', er);
+    } else if (state.objectMode || chunk && chunk.length > 0) {
+      if (typeof chunk !== 'string' && Object.getPrototypeOf(chunk) !== Buffer.prototype && !state.objectMode) {
+        chunk = _uint8ArrayToBuffer(chunk);
       }
 
-      if (!addToFront) state.reading = false;
-
-      // Don't add to the buffer if we've decoded to an empty string chunk and
-      // we're not in object mode
-      if (!skipAdd) {
-        // if we want the data now, just emit it.
-        if (state.flowing && state.length === 0 && !state.sync) {
-          stream.emit('data', chunk);
-          stream.read(0);
+      if (addToFront) {
+        if (state.endEmitted) stream.emit('error', new Error('stream.unshift() after end event'));else addChunk(stream, state, chunk, true);
+      } else if (state.ended) {
+        stream.emit('error', new Error('stream.push() after EOF'));
+      } else {
+        state.reading = false;
+        if (state.decoder && !encoding) {
+          chunk = state.decoder.write(chunk);
+          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
         } else {
-          // update the buffer info.
-          state.length += state.objectMode ? 1 : chunk.length;
-          if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
-
-          if (state.needReadable) emitReadable(stream);
+          addChunk(stream, state, chunk, false);
         }
       }
-
-      maybeReadMore(stream, state);
+    } else if (!addToFront) {
+      state.reading = false;
     }
-  } else if (!addToFront) {
-    state.reading = false;
   }
 
   return needMoreData(state);
+}
+
+function addChunk(stream, state, chunk, addToFront) {
+  if (state.flowing && state.length === 0 && !state.sync) {
+    stream.emit('data', chunk);
+    stream.read(0);
+  } else {
+    // update the buffer info.
+    state.length += state.objectMode ? 1 : chunk.length;
+    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+
+    if (state.needReadable) emitReadable(stream);
+  }
+  maybeReadMore(stream, state);
+}
+
+function chunkInvalid(state, chunk) {
+  var er;
+  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  return er;
 }
 
 // if it's past the high water mark, we can push in some more.
@@ -25234,6 +25156,10 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
 function needMoreData(state) {
   return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
 }
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+};
 
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
@@ -25383,14 +25309,6 @@ Readable.prototype.read = function (n) {
   return ret;
 };
 
-function chunkInvalid(state, chunk) {
-  var er = null;
-  if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
-    er = new TypeError('Invalid non-string/buffer chunk');
-  }
-  return er;
-}
-
 function onEofChunk(stream, state) {
   if (state.ended) return;
   if (state.decoder) {
@@ -25478,14 +25396,17 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
 
   var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
 
-  var endFn = doEnd ? onend : cleanup;
+  var endFn = doEnd ? onend : unpipe;
   if (state.endEmitted) processNextTick(endFn);else src.once('end', endFn);
 
   dest.on('unpipe', onunpipe);
-  function onunpipe(readable) {
+  function onunpipe(readable, unpipeInfo) {
     debug('onunpipe');
     if (readable === src) {
-      cleanup();
+      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
+        unpipeInfo.hasUnpiped = true;
+        cleanup();
+      }
     }
   }
 
@@ -25511,7 +25432,7 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     dest.removeListener('error', onerror);
     dest.removeListener('unpipe', onunpipe);
     src.removeListener('end', onend);
-    src.removeListener('end', cleanup);
+    src.removeListener('end', unpipe);
     src.removeListener('data', ondata);
 
     cleanedUp = true;
@@ -25604,6 +25525,7 @@ function pipeOnDrain(src) {
 
 Readable.prototype.unpipe = function (dest) {
   var state = this._readableState;
+  var unpipeInfo = { hasUnpiped: false };
 
   // if we're not piping anywhere, then do nothing.
   if (state.pipesCount === 0) return this;
@@ -25619,7 +25541,7 @@ Readable.prototype.unpipe = function (dest) {
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
-    if (dest) dest.emit('unpipe', this);
+    if (dest) dest.emit('unpipe', this, unpipeInfo);
     return this;
   }
 
@@ -25634,7 +25556,7 @@ Readable.prototype.unpipe = function (dest) {
     state.flowing = false;
 
     for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this);
+      dests[i].emit('unpipe', this, unpipeInfo);
     }return this;
   }
 
@@ -25646,7 +25568,7 @@ Readable.prototype.unpipe = function (dest) {
   state.pipesCount -= 1;
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
 
-  dest.emit('unpipe', this);
+  dest.emit('unpipe', this, unpipeInfo);
 
   return this;
 };
@@ -25667,7 +25589,7 @@ Readable.prototype.on = function (ev, fn) {
       if (!state.reading) {
         processNextTick(nReadingNextTick, this);
       } else if (state.length) {
-        emitReadable(this, state);
+        emitReadable(this);
       }
     }
   }
@@ -25774,10 +25696,9 @@ Readable.prototype.wrap = function (stream) {
   }
 
   // proxy certain important events.
-  var events = ['error', 'close', 'destroy', 'pause', 'resume'];
-  forEach(events, function (ev) {
-    stream.on(ev, self.emit.bind(self, ev));
-  });
+  for (var n = 0; n < kProxyEvents.length; n++) {
+    stream.on(kProxyEvents[n], self.emit.bind(self, kProxyEvents[n]));
+  }
 
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
@@ -25869,7 +25790,7 @@ function copyFromBufferString(n, list) {
 // This function is designed to be inlinable, so please take care when making
 // changes to the function body.
 function copyFromBuffer(n, list) {
-  var ret = bufferShim.allocUnsafe(n);
+  var ret = Buffer.allocUnsafe(n);
   var p = list.head;
   var c = 1;
   p.data.copy(ret);
@@ -25930,7 +25851,28 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":90,"./internal/streams/BufferList":95,"_process":85,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":38,"inherits":41,"isarray":44,"process-nextick-args":84,"string_decoder/":124,"util":6}],93:[function(require,module,exports){
+},{"./_stream_duplex":89,"./internal/streams/BufferList":94,"./internal/streams/destroy":95,"./internal/streams/stream":96,"_process":84,"core-util-is":10,"events":37,"inherits":40,"isarray":43,"process-nextick-args":83,"safe-buffer":101,"string_decoder/":127,"util":6}],92:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -26004,7 +25946,9 @@ function afterTransform(stream, er, data) {
 
   var cb = ts.writecb;
 
-  if (!cb) return stream.emit('error', new Error('no writecb in Transform class'));
+  if (!cb) {
+    return stream.emit('error', new Error('write callback called multiple times'));
+  }
 
   ts.writechunk = null;
   ts.writecb = null;
@@ -26097,6 +26041,15 @@ Transform.prototype._read = function (n) {
   }
 };
 
+Transform.prototype._destroy = function (err, cb) {
+  var _this = this;
+
+  Duplex.prototype._destroy.call(this, err, function (err2) {
+    cb(err2);
+    _this.emit('close');
+  });
+};
+
 function done(stream, er, data) {
   if (er) return stream.emit('error', er);
 
@@ -26113,19 +26066,62 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":90,"core-util-is":11,"inherits":41}],94:[function(require,module,exports){
+},{"./_stream_duplex":89,"core-util-is":10,"inherits":40}],93:[function(require,module,exports){
 (function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
 
 'use strict';
 
-module.exports = Writable;
-
 /*<replacement>*/
+
 var processNextTick = require('process-nextick-args');
 /*</replacement>*/
+
+module.exports = Writable;
+
+/* <replacement> */
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+}
+
+// It seems a linked list but it is not
+// there will be only 2 of these for each stream
+function CorkedRequest(state) {
+  var _this = this;
+
+  this.next = null;
+  this.entry = null;
+  this.finish = function () {
+    onCorkedFinish(_this, state);
+  };
+}
+/* </replacement> */
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
@@ -26149,31 +26145,24 @@ var internalUtil = {
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream;
-(function () {
-  try {
-    Stream = require('st' + 'ream');
-  } catch (_) {} finally {
-    if (!Stream) Stream = require('events').EventEmitter;
-  }
-})();
+var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-var Buffer = require('buffer').Buffer;
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Object.prototype.toString.call(obj) === '[object Uint8Array]' || Buffer.isBuffer(obj);
+}
 /*</replacement>*/
+
+var destroyImpl = require('./internal/streams/destroy');
 
 util.inherits(Writable, Stream);
 
 function nop() {}
-
-function WriteReq(chunk, encoding, cb) {
-  this.chunk = chunk;
-  this.encoding = encoding;
-  this.callback = cb;
-  this.next = null;
-}
 
 function WritableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
@@ -26194,7 +26183,10 @@ function WritableState(options, stream) {
   this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
 
   // cast to ints.
-  this.highWaterMark = ~~this.highWaterMark;
+  this.highWaterMark = Math.floor(this.highWaterMark);
+
+  // if _final has been called
+  this.finalCalled = false;
 
   // drain event flag.
   this.needDrain = false;
@@ -26204,6 +26196,9 @@ function WritableState(options, stream) {
   this.ended = false;
   // when 'finish' is emitted
   this.finished = false;
+
+  // has it been destroyed
+  this.destroyed = false;
 
   // should we decode strings into buffers before passing to _write?
   // this is here so that some node-core streams can optimize string
@@ -26286,7 +26281,7 @@ WritableState.prototype.getBuffer = function getBuffer() {
     Object.defineProperty(WritableState.prototype, 'buffer', {
       get: internalUtil.deprecate(function () {
         return this.getBuffer();
-      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.')
+      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
     });
   } catch (_) {}
 })();
@@ -26332,6 +26327,10 @@ function Writable(options) {
     if (typeof options.write === 'function') this._write = options.write;
 
     if (typeof options.writev === 'function') this._writev = options.writev;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+
+    if (typeof options.final === 'function') this._final = options.final;
   }
 
   Stream.call(this);
@@ -26372,7 +26371,11 @@ function validChunk(stream, state, chunk, cb) {
 Writable.prototype.write = function (chunk, encoding, cb) {
   var state = this._writableState;
   var ret = false;
-  var isBuf = Buffer.isBuffer(chunk);
+  var isBuf = _isUint8Array(chunk) && !state.objectMode;
+
+  if (isBuf && !Buffer.isBuffer(chunk)) {
+    chunk = _uint8ArrayToBuffer(chunk);
+  }
 
   if (typeof encoding === 'function') {
     cb = encoding;
@@ -26417,7 +26420,7 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
 
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
-    chunk = bufferShim.from(chunk, encoding);
+    chunk = Buffer.from(chunk, encoding);
   }
   return chunk;
 }
@@ -26427,8 +26430,12 @@ function decodeChunk(state, chunk, encoding) {
 // If we return false, then we need a drain event, so set that flag.
 function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (!isBuf) {
-    chunk = decodeChunk(state, chunk, encoding);
-    if (Buffer.isBuffer(chunk)) encoding = 'buffer';
+    var newChunk = decodeChunk(state, chunk, encoding);
+    if (chunk !== newChunk) {
+      isBuf = true;
+      encoding = 'buffer';
+      chunk = newChunk;
+    }
   }
   var len = state.objectMode ? 1 : chunk.length;
 
@@ -26440,7 +26447,13 @@ function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
 
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
-    state.lastBufferedRequest = new WriteReq(chunk, encoding, cb);
+    state.lastBufferedRequest = {
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
+      callback: cb,
+      next: null
+    };
     if (last) {
       last.next = state.lastBufferedRequest;
     } else {
@@ -26465,10 +26478,26 @@ function doWrite(stream, state, writev, len, chunk, encoding, cb) {
 
 function onwriteError(stream, state, sync, er, cb) {
   --state.pendingcb;
-  if (sync) processNextTick(cb, er);else cb(er);
 
-  stream._writableState.errorEmitted = true;
-  stream.emit('error', er);
+  if (sync) {
+    // defer the callback if we are being called synchronously
+    // to avoid piling up things on the stack
+    processNextTick(cb, er);
+    // this can emit finish, and it will always happen
+    // after error
+    processNextTick(finishMaybe, stream, state);
+    stream._writableState.errorEmitted = true;
+    stream.emit('error', er);
+  } else {
+    // the caller expect this to happen before if
+    // it is async
+    cb(er);
+    stream._writableState.errorEmitted = true;
+    stream.emit('error', er);
+    // this can emit finish, but finish must
+    // always follow error
+    finishMaybe(stream, state);
+  }
 }
 
 function onwriteStateUpdate(state) {
@@ -26533,11 +26562,14 @@ function clearBuffer(stream, state) {
     holder.entry = entry;
 
     var count = 0;
+    var allBuffers = true;
     while (entry) {
       buffer[count] = entry;
+      if (!entry.isBuf) allBuffers = false;
       entry = entry.next;
       count += 1;
     }
+    buffer.allBuffers = allBuffers;
 
     doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
@@ -26611,23 +26643,37 @@ Writable.prototype.end = function (chunk, encoding, cb) {
 function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
-
-function prefinish(stream, state) {
-  if (!state.prefinished) {
+function callFinal(stream, state) {
+  stream._final(function (err) {
+    state.pendingcb--;
+    if (err) {
+      stream.emit('error', err);
+    }
     state.prefinished = true;
     stream.emit('prefinish');
+    finishMaybe(stream, state);
+  });
+}
+function prefinish(stream, state) {
+  if (!state.prefinished && !state.finalCalled) {
+    if (typeof stream._final === 'function') {
+      state.pendingcb++;
+      state.finalCalled = true;
+      processNextTick(callFinal, stream, state);
+    } else {
+      state.prefinished = true;
+      stream.emit('prefinish');
+    }
   }
 }
 
 function finishMaybe(stream, state) {
   var need = needFinish(state);
   if (need) {
+    prefinish(stream, state);
     if (state.pendingcb === 0) {
-      prefinish(stream, state);
       state.finished = true;
       stream.emit('finish');
-    } else {
-      prefinish(stream, state);
     }
   }
   return need;
@@ -26643,99 +26689,205 @@ function endWritable(stream, state, cb) {
   stream.writable = false;
 }
 
-// It seems a linked list but it is not
-// there will be only 2 of these for each stream
-function CorkedRequest(state) {
-  var _this = this;
-
-  this.next = null;
-  this.entry = null;
-  this.finish = function (err) {
-    var entry = _this.entry;
-    _this.entry = null;
-    while (entry) {
-      var cb = entry.callback;
-      state.pendingcb--;
-      cb(err);
-      entry = entry.next;
-    }
-    if (state.corkedRequestsFree) {
-      state.corkedRequestsFree.next = _this;
-    } else {
-      state.corkedRequestsFree = _this;
-    }
-  };
+function onCorkedFinish(corkReq, state, err) {
+  var entry = corkReq.entry;
+  corkReq.entry = null;
+  while (entry) {
+    var cb = entry.callback;
+    state.pendingcb--;
+    cb(err);
+    entry = entry.next;
+  }
+  if (state.corkedRequestsFree) {
+    state.corkedRequestsFree.next = corkReq;
+  } else {
+    state.corkedRequestsFree = corkReq;
+  }
 }
+
+Object.defineProperty(Writable.prototype, 'destroyed', {
+  get: function () {
+    if (this._writableState === undefined) {
+      return false;
+    }
+    return this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._writableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._writableState.destroyed = value;
+  }
+});
+
+Writable.prototype.destroy = destroyImpl.destroy;
+Writable.prototype._undestroy = destroyImpl.undestroy;
+Writable.prototype._destroy = function (err, cb) {
+  this.end();
+  cb(err);
+};
+
 }).call(this,require('_process'))
-},{"./_stream_duplex":90,"_process":85,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":38,"inherits":41,"process-nextick-args":84,"util-deprecate":128}],95:[function(require,module,exports){
+},{"./_stream_duplex":89,"./internal/streams/destroy":95,"./internal/streams/stream":96,"_process":84,"core-util-is":10,"inherits":40,"process-nextick-args":83,"safe-buffer":101,"util-deprecate":131}],94:[function(require,module,exports){
 'use strict';
 
-var Buffer = require('buffer').Buffer;
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Buffer = require('safe-buffer').Buffer;
 /*</replacement>*/
 
-module.exports = BufferList;
-
-function BufferList() {
-  this.head = null;
-  this.tail = null;
-  this.length = 0;
+function copyBuffer(src, target, offset) {
+  src.copy(target, offset);
 }
 
-BufferList.prototype.push = function (v) {
-  var entry = { data: v, next: null };
-  if (this.length > 0) this.tail.next = entry;else this.head = entry;
-  this.tail = entry;
-  ++this.length;
-};
+module.exports = function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
 
-BufferList.prototype.unshift = function (v) {
-  var entry = { data: v, next: this.head };
-  if (this.length === 0) this.tail = entry;
-  this.head = entry;
-  ++this.length;
-};
-
-BufferList.prototype.shift = function () {
-  if (this.length === 0) return;
-  var ret = this.head.data;
-  if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-  --this.length;
-  return ret;
-};
-
-BufferList.prototype.clear = function () {
-  this.head = this.tail = null;
-  this.length = 0;
-};
-
-BufferList.prototype.join = function (s) {
-  if (this.length === 0) return '';
-  var p = this.head;
-  var ret = '' + p.data;
-  while (p = p.next) {
-    ret += s + p.data;
-  }return ret;
-};
-
-BufferList.prototype.concat = function (n) {
-  if (this.length === 0) return bufferShim.alloc(0);
-  if (this.length === 1) return this.head.data;
-  var ret = bufferShim.allocUnsafe(n >>> 0);
-  var p = this.head;
-  var i = 0;
-  while (p) {
-    p.data.copy(ret, i);
-    i += p.data.length;
-    p = p.next;
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
   }
-  return ret;
+
+  BufferList.prototype.push = function push(v) {
+    var entry = { data: v, next: null };
+    if (this.length > 0) this.tail.next = entry;else this.head = entry;
+    this.tail = entry;
+    ++this.length;
+  };
+
+  BufferList.prototype.unshift = function unshift(v) {
+    var entry = { data: v, next: this.head };
+    if (this.length === 0) this.tail = entry;
+    this.head = entry;
+    ++this.length;
+  };
+
+  BufferList.prototype.shift = function shift() {
+    if (this.length === 0) return;
+    var ret = this.head.data;
+    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+    --this.length;
+    return ret;
+  };
+
+  BufferList.prototype.clear = function clear() {
+    this.head = this.tail = null;
+    this.length = 0;
+  };
+
+  BufferList.prototype.join = function join(s) {
+    if (this.length === 0) return '';
+    var p = this.head;
+    var ret = '' + p.data;
+    while (p = p.next) {
+      ret += s + p.data;
+    }return ret;
+  };
+
+  BufferList.prototype.concat = function concat(n) {
+    if (this.length === 0) return Buffer.alloc(0);
+    if (this.length === 1) return this.head.data;
+    var ret = Buffer.allocUnsafe(n >>> 0);
+    var p = this.head;
+    var i = 0;
+    while (p) {
+      copyBuffer(p.data, ret, i);
+      i += p.data.length;
+      p = p.next;
+    }
+    return ret;
+  };
+
+  return BufferList;
+}();
+},{"safe-buffer":101}],95:[function(require,module,exports){
+'use strict';
+
+/*<replacement>*/
+
+var processNextTick = require('process-nextick-args');
+/*</replacement>*/
+
+// undocumented cb() API, needed for core, not for public API
+function destroy(err, cb) {
+  var _this = this;
+
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err && (!this._writableState || !this._writableState.errorEmitted)) {
+      processNextTick(emitErrorNT, this, err);
+    }
+    return;
+  }
+
+  // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
+  }
+
+  // if this is a duplex stream mark the writable part as destroyed as well
+  if (this._writableState) {
+    this._writableState.destroyed = true;
+  }
+
+  this._destroy(err || null, function (err) {
+    if (!cb && err) {
+      processNextTick(emitErrorNT, _this, err);
+      if (_this._writableState) {
+        _this._writableState.errorEmitted = true;
+      }
+    } else if (cb) {
+      cb(err);
+    }
+  });
+}
+
+function undestroy() {
+  if (this._readableState) {
+    this._readableState.destroyed = false;
+    this._readableState.reading = false;
+    this._readableState.ended = false;
+    this._readableState.endEmitted = false;
+  }
+
+  if (this._writableState) {
+    this._writableState.destroyed = false;
+    this._writableState.ended = false;
+    this._writableState.ending = false;
+    this._writableState.finished = false;
+    this._writableState.errorEmitted = false;
+  }
+}
+
+function emitErrorNT(self, err) {
+  self.emit('error', err);
+}
+
+module.exports = {
+  destroy: destroy,
+  undestroy: undestroy
 };
-},{"buffer":9,"buffer-shims":8}],96:[function(require,module,exports){
+},{"process-nextick-args":83}],96:[function(require,module,exports){
+module.exports = require('events').EventEmitter;
+
+},{"events":37}],97:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":97}],97:[function(require,module,exports){
+},{"./readable":98}],98:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -26744,13 +26896,77 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":90,"./lib/_stream_passthrough.js":91,"./lib/_stream_readable.js":92,"./lib/_stream_transform.js":93,"./lib/_stream_writable.js":94}],98:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":89,"./lib/_stream_passthrough.js":90,"./lib/_stream_readable.js":91,"./lib/_stream_transform.js":92,"./lib/_stream_writable.js":93}],99:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":97}],99:[function(require,module,exports){
+},{"./readable":98}],100:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":94}],100:[function(require,module,exports){
+},{"./lib/_stream_writable.js":93}],101:[function(require,module,exports){
+/* eslint-disable node/no-deprecated-api */
+var buffer = require('buffer')
+var Buffer = buffer.Buffer
+
+// alternative to using Object.keys for old browsers
+function copyProps (src, dst) {
+  for (var key in src) {
+    dst[key] = src[key]
+  }
+}
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  copyProps(buffer, exports)
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+// Copy static methods from Buffer
+copyProps(Buffer, SafeBuffer)
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+},{"buffer":8}],102:[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -26811,7 +27027,7 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],101:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 /*
 search-index-adder
 
@@ -26830,7 +27046,6 @@ const RecalibrateDB = require('./lib/delete.js').RecalibrateDB
 const bunyan = require('bunyan')
 const del = require('./lib/delete.js')
 const docProc = require('docproc')
-const leveldown = require('leveldown')
 const levelup = require('levelup')
 const pumpify = require('pumpify')
 
@@ -26841,33 +27056,60 @@ module.exports = function (givenOptions, callback) {
     var Indexer = {}
     Indexer.options = options
 
-    var q = async.queue(function (batch, callback) {
-      const s = new Readable({ objectMode: true })
-      batch.batch.forEach(function (doc) {
-        s.push(doc)
-      })
-      s.push(null)
-      s.pipe(Indexer.defaultPipeline(batch.batchOps))
-        .pipe(Indexer.add())
-        .on('data', function (data) {})
-        .on('end', function () {
-          return callback()
+    var q = async.queue(function (batch, done) {
+      var s
+      if (batch.operation === 'add') {
+        s = new Readable({ objectMode: true })
+        batch.batch.forEach(function (doc) {
+          s.push(doc)
         })
-        .on('error', function (err) {
-          return callback(err)
+        s.push(null)
+        s.pipe(Indexer.defaultPipeline(batch.batchOps))
+          .pipe(Indexer.add())
+          // .on('data', function (data) {})
+          .on('finish', function () {
+            return done()
+          })
+          .on('error', function (err) {
+            return done(err)
+          })
+      } else if (batch.operation === 'delete') {
+        s = new Readable()
+        batch.docIds.forEach(function (docId) {
+          s.push(JSON.stringify(docId))
         })
+        s.push(null)
+        s.pipe(Indexer.deleteStream(options))
+          .on('data', function () {
+            // nowt
+          })
+          .on('end', function () {
+            done(null)
+          })
+      }
     }, 1)
 
     Indexer.add = function () {
       return pumpify.obj(
         new IndexBatch(Indexer),
-        new DBWriteMergeStream(options))
+        new DBWriteMergeStream(options)
+      )
     }
 
     Indexer.concurrentAdd = function (batchOps, batch, done) {
       q.push({
         batch: batch,
-        batchOps: batchOps
+        batchOps: batchOps,
+        operation: 'add'
+      }, function (err) {
+        done(err)
+      })
+    }
+
+    Indexer.concurrentDel = function (docIds, done) {
+      q.push({
+        docIds: docIds,
+        operation: 'delete'
       }, function (err) {
         done(err)
       })
@@ -26936,7 +27178,7 @@ module.exports = function (givenOptions, callback) {
 const getOptions = function (options, done) {
   options = Object.assign({}, {
     deletable: true,
-    batchSize: 100000,
+    batchSize: 1000,
     fieldedSearch: true,
     fieldOptions: {},
     preserveCase: false,
@@ -26947,7 +27189,7 @@ const getOptions = function (options, done) {
     logLevel: 'error',
     nGramLength: 1,
     nGramSeparator: ' ',
-    separator: /\\n|[|' ><.,\-|]+|\\u0003/,
+    separator: /\s|\\n|\\u0003|[-.,<>]/,
     stopwords: [],
     weight: 0
   }, options)
@@ -26956,6 +27198,7 @@ const getOptions = function (options, done) {
     level: options.logLevel
   })
   if (!options.indexes) {
+    const leveldown = require('leveldown')
     levelup(options.indexPath || 'si', {
       valueEncoding: 'json',
       db: leveldown
@@ -26968,7 +27211,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/add.js":102,"./lib/delete.js":103,"./lib/replicate.js":104,"async":4,"bunyan":10,"docproc":19,"leveldown":58,"levelup":71,"pumpify":88,"stream":122}],102:[function(require,module,exports){
+},{"./lib/add.js":104,"./lib/delete.js":105,"./lib/replicate.js":106,"async":4,"bunyan":9,"docproc":18,"leveldown":57,"levelup":70,"pumpify":87,"stream":125}],104:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27028,7 +27271,7 @@ IndexBatch.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":122,"util":131}],103:[function(require,module,exports){
+},{"stream":125,"util":134}],105:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -27149,19 +27392,20 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":122,"util":131}],104:[function(require,module,exports){
+},{"stream":125,"util":134}],106:[function(require,module,exports){
 const Transform = require('stream').Transform
+const Writable = require('stream').Writable
 const util = require('util')
 
 const DBWriteMergeStream = function (options) {
   this.options = options
-  Transform.call(this, { objectMode: true })
+  Writable.call(this, { objectMode: true })
 }
 exports.DBWriteMergeStream = DBWriteMergeStream
-util.inherits(DBWriteMergeStream, Transform)
-DBWriteMergeStream.prototype._transform = function (data, encoding, end) {
+util.inherits(DBWriteMergeStream, Writable)
+DBWriteMergeStream.prototype._write = function (data, encoding, end) {
   if (data.totalKeys) {
-    this.push(data)
+    // this.push(data)
     return end()
   }
   const sep = this.options.keySeparator
@@ -27173,8 +27417,11 @@ DBWriteMergeStream.prototype._transform = function (data, encoding, end) {
     if (data.key.substring(0, 3) === 'TF' + sep) {
       // sort first on magnitude then on ID
       newVal = data.value.concat(val || []).sort(function (a, b) {
-        if (a[0] === b[0]) return b[1] - a[1]
-        else return b[0] - a[0]
+        if (a[0] < b[0]) return 1
+        if (a[0] > b[0]) return -1
+        if (a[1] < b[1]) return 1
+        if (a[1] > b[1]) return -1
+        return 0
       })
     } else if (data.key.substring(0, 3) === 'DF' + sep) {
       newVal = data.value.concat(val || []).sort()
@@ -27185,7 +27432,7 @@ DBWriteMergeStream.prototype._transform = function (data, encoding, end) {
     }
     that.options.indexes.put(data.key, newVal, function (err) {
       err // do something with this error
-      that.push(data)
+      // that.push(data)
       end()
     })
   })
@@ -27223,7 +27470,7 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":122,"util":131}],105:[function(require,module,exports){
+},{"stream":125,"util":134}],107:[function(require,module,exports){
 const AvailableFields = require('./lib/AvailableFields.js').AvailableFields
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
@@ -27231,6 +27478,7 @@ const CalculateEntireResultSet = require('./lib/CalculateEntireResultSet.js').Ca
 const CalculateResultSetPerClause = require('./lib/CalculateResultSetPerClause.js').CalculateResultSetPerClause
 const CalculateTopScoringDocs = require('./lib/CalculateTopScoringDocs.js').CalculateTopScoringDocs
 const CalculateTotalHits = require('./lib/CalculateTotalHits.js').CalculateTotalHits
+const Classify = require('./lib/Classify.js').Classify
 const FetchDocsFromDB = require('./lib/FetchDocsFromDB.js').FetchDocsFromDB
 const FetchStoredDoc = require('./lib/FetchStoredDoc.js').FetchStoredDoc
 const GetIntersectionStream = require('./lib/GetIntersectionStream.js').GetIntersectionStream
@@ -27269,6 +27517,10 @@ const initModule = function (err, Searcher, moduleReady) {
       .pipe(new CalculateResultSetPerClause(Searcher.options, q.filter || {}))
       .pipe(new CalculateEntireResultSet(Searcher.options))
       .pipe(new CalculateCategories(Searcher.options, q))
+  }
+
+  Searcher.classify = function (ops) {
+    return new Classify(Searcher, ops)
   }
 
   Searcher.close = function (callback) {
@@ -27411,7 +27663,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/AvailableFields.js":106,"./lib/CalculateBuckets.js":107,"./lib/CalculateCategories.js":108,"./lib/CalculateEntireResultSet.js":109,"./lib/CalculateResultSetPerClause.js":110,"./lib/CalculateTopScoringDocs.js":111,"./lib/CalculateTotalHits.js":112,"./lib/FetchDocsFromDB.js":113,"./lib/FetchStoredDoc.js":114,"./lib/GetIntersectionStream.js":115,"./lib/MergeOrConditions.js":116,"./lib/ScoreDocsOnField.js":117,"./lib/ScoreTopScoringDocsTFIDF.js":118,"./lib/SortTopScoringDocs.js":119,"./lib/matcher.js":120,"./lib/siUtil.js":121,"bunyan":10,"levelup":71,"stream":122}],106:[function(require,module,exports){
+},{"./lib/AvailableFields.js":108,"./lib/CalculateBuckets.js":109,"./lib/CalculateCategories.js":110,"./lib/CalculateEntireResultSet.js":111,"./lib/CalculateResultSetPerClause.js":112,"./lib/CalculateTopScoringDocs.js":113,"./lib/CalculateTotalHits.js":114,"./lib/Classify.js":115,"./lib/FetchDocsFromDB.js":116,"./lib/FetchStoredDoc.js":117,"./lib/GetIntersectionStream.js":118,"./lib/MergeOrConditions.js":119,"./lib/ScoreDocsOnField.js":120,"./lib/ScoreTopScoringDocsTFIDF.js":121,"./lib/SortTopScoringDocs.js":122,"./lib/matcher.js":123,"./lib/siUtil.js":124,"bunyan":9,"levelup":70,"stream":125}],108:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27426,7 +27678,7 @@ AvailableFields.prototype._transform = function (field, encoding, end) {
   return end()
 }
 
-},{"stream":122,"util":131}],107:[function(require,module,exports){
+},{"stream":125,"util":134}],109:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -27467,7 +27719,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":75,"lodash.uniq":80,"stream":122,"util":131}],108:[function(require,module,exports){
+},{"lodash.intersection":73,"lodash.uniq":78,"stream":125,"util":134}],110:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -27530,7 +27782,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
   })
 }
 
-},{"lodash.intersection":75,"stream":122,"util":131}],109:[function(require,module,exports){
+},{"lodash.intersection":73,"stream":125,"util":134}],111:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -27553,7 +27805,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":79,"stream":122,"util":131}],110:[function(require,module,exports){
+},{"lodash.union":77,"stream":125,"util":134}],112:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -27648,7 +27900,7 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
   })
 }
 
-},{"./siUtil.js":121,"lodash.difference":74,"lodash.intersection":75,"lodash.spread":78,"stream":122,"util":131}],111:[function(require,module,exports){
+},{"./siUtil.js":124,"lodash.difference":72,"lodash.intersection":73,"lodash.spread":76,"stream":125,"util":134}],113:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -27701,7 +27953,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":77,"stream":122,"util":131}],112:[function(require,module,exports){
+},{"lodash.sortedindexof":75,"stream":125,"util":134}],114:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27718,7 +27970,78 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":122,"util":131}],113:[function(require,module,exports){
+},{"stream":125,"util":134}],115:[function(require,module,exports){
+const Transform = require('stream').Transform
+const ngraminator = require('ngraminator')
+const util = require('util')
+
+const checkTokens = function (that, potentialMatches, field, done) {
+  var i = 0 // eslint-disable-line
+  var match = function (i) {
+    if (i === potentialMatches.length) return done()
+    var matchQuery = {
+      beginsWith: potentialMatches[i],
+      // beginsWith: 'strl p 59',
+      field: field,
+      type: 'ID',
+      threshold: 0,
+      limit: 1
+    }
+    that.searcher.match(matchQuery)
+      .on('data', function (match) {
+        if (match.token === potentialMatches[i]) { that.push(match) }
+      }).on('end', function () {
+        match(++i)
+      })
+  }
+  match(0)
+}
+
+const Classify = function (searcher, options) {
+  this.options = Object.assign({}, searcher.options, options)
+  this.searcher = searcher
+  // should maybe be maxNGramLength
+  this.maxNGramLength = this.options.maxNGramLength || 1
+  this.field = this.options.field || '*'
+  this.stack = []
+  Transform.call(this, { objectMode: true })
+}
+
+exports.Classify = Classify
+
+util.inherits(Classify, Transform)
+
+Classify.prototype._transform = function (token, encoding, end) {
+  var stack = this.stack
+  var t = token.toString()
+  var that = this
+  var potentialMatches = []
+  stack.push(t)
+  if (stack.length < this.maxNGramLength) return end()
+  stack.forEach(function (item, i) {
+    potentialMatches.push(stack.slice(0, (1 + i)).join(' ').toLowerCase())
+  })
+  checkTokens(that, potentialMatches, this.field, function () {
+    stack.shift()
+    return end()
+  })
+}
+
+Classify.prototype._flush = function (end) {
+  var that = this
+  var stack = this.stack
+  var potentialMatches = ngraminator.ngram(stack, {
+    gte: 1,
+    lte: that.maxNGramLength
+  }).map(function (token) {
+    return token.join(' ').toLowerCase()
+  })
+  checkTokens(that, potentialMatches, this.field, function () {
+    return end()
+  })
+}
+
+},{"ngraminator":80,"stream":125,"util":134}],116:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27739,7 +28062,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":122,"util":131}],114:[function(require,module,exports){
+},{"stream":125,"util":134}],117:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27763,7 +28086,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":122,"util":131}],115:[function(require,module,exports){
+},{"stream":125,"util":134}],118:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -27798,7 +28121,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":42,"stream":122,"util":131}],116:[function(require,module,exports){
+},{"intersect-arrays-to-stream":41,"stream":125,"util":134}],119:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27861,7 +28184,7 @@ MergeOrConditions.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":122,"util":131}],117:[function(require,module,exports){
+},{"stream":125,"util":134}],120:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -27900,7 +28223,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
     })
 }
 
-},{"lodash.sortedindexof":77,"stream":122,"util":131}],118:[function(require,module,exports){
+},{"lodash.sortedindexof":75,"stream":125,"util":134}],121:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27978,7 +28301,7 @@ ScoreTopScoringDocsTFIDF.prototype._transform = function (clause, encoding, end)
   })
 }
 
-},{"stream":122,"util":131}],119:[function(require,module,exports){
+},{"stream":125,"util":134}],122:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -28024,7 +28347,7 @@ SortTopScoringDocs.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":122,"util":131}],120:[function(require,module,exports){
+},{"stream":125,"util":134}],123:[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const util = require('util')
@@ -28038,27 +28361,6 @@ MatcherStream.prototype._transform = function (q, encoding, end) {
   const sep = this.options.keySeparator
   const that = this
   var results = []
-
-  const formatMatches = function (item) {
-    if (q.type === 'ID') {
-      that.push([item.key.split(sep)[2], item.value])
-    } else if (q.type === 'count') {
-      that.push([item.key.split(sep)[2], item.value.length])
-    } else {
-      that.push(item.key.split(sep)[2])
-    }
-  }
-
-  const sortResults = function (err) {
-    if (err) console.log(err) // TODO something clever with err
-    results.sort(function (a, b) {
-      return b.value.length - a.value.length
-    })
-      .slice(0, q.limit)
-      .forEach(formatMatches)
-    end()
-  }
-
   this.options.indexes.createReadStream({
     start: 'DF' + sep + q.field + sep + q.beginsWith,
     end: 'DF' + sep + q.field + sep + q.beginsWith + sep
@@ -28069,7 +28371,29 @@ MatcherStream.prototype._transform = function (q, encoding, end) {
   .on('error', function (err) {
     that.options.log.error('Oh my!', err)
   })
-  .on('end', sortResults)
+  // .on('end', sortResults)
+  .on('end', function () {
+    results.sort(function (a, b) {
+      return b.value.length - a.value.length
+    })
+      .slice(0, q.limit)
+      .forEach(function (item) {
+        var m = {}
+        switch (q.type) {
+          case 'ID': m = {
+            token: item.key.split(sep)[2],
+            documents: item.value
+          }; break
+          case 'count': m = {
+            token: item.key.split(sep)[2],
+            documentCount: item.value.length
+          }; break
+          default: m = item.key.split(sep)[2]
+        }
+        that.push(m)
+      })
+    return end()
+  })
 }
 
 exports.match = function (q, options) {
@@ -28091,7 +28415,7 @@ exports.match = function (q, options) {
   return s.pipe(new MatcherStream(q, options))
 }
 
-},{"stream":122,"util":131}],121:[function(require,module,exports){
+},{"stream":125,"util":134}],124:[function(require,module,exports){
 exports.getKeySet = function (clause, sep) {
   var keySet = []
   for (var fieldName in clause) {
@@ -28140,7 +28464,7 @@ exports.getQueryDefaults = function (q) {
   }, q)
 }
 
-},{}],122:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28269,7 +28593,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":38,"inherits":41,"readable-stream/duplex.js":89,"readable-stream/passthrough.js":96,"readable-stream/readable.js":97,"readable-stream/transform.js":98,"readable-stream/writable.js":99}],123:[function(require,module,exports){
+},{"events":37,"inherits":40,"readable-stream/duplex.js":88,"readable-stream/passthrough.js":97,"readable-stream/readable.js":98,"readable-stream/transform.js":99,"readable-stream/writable.js":100}],126:[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -28291,11 +28615,10 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],124:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 'use strict';
 
-var Buffer = require('buffer').Buffer;
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
 
 var isEncoding = Buffer.isEncoding || function (encoding) {
   encoding = '' + encoding;
@@ -28372,7 +28695,7 @@ function StringDecoder(encoding) {
   }
   this.lastNeed = 0;
   this.lastTotal = 0;
-  this.lastChar = bufferShim.allocUnsafe(nb);
+  this.lastChar = Buffer.allocUnsafe(nb);
 }
 
 StringDecoder.prototype.write = function (buf) {
@@ -28565,7 +28888,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"buffer":9,"buffer-shims":8}],125:[function(require,module,exports){
+},{"safe-buffer":101}],128:[function(require,module,exports){
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
 exports.logNormalization = 'logNormalization'
 exports.raw = 'raw'
@@ -28615,7 +28938,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{}],126:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -28681,7 +29004,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":76}],127:[function(require,module,exports){
+},{"lodash.isequal":74}],130:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -28704,7 +29027,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],128:[function(require,module,exports){
+},{"buffer":8}],131:[function(require,module,exports){
 (function (global){
 
 /**
@@ -28775,16 +29098,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],129:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"dup":41}],130:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],133:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],131:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -29374,7 +29697,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":130,"_process":85,"inherits":129}],132:[function(require,module,exports){
+},{"./support/isBuffer":133,"_process":84,"inherits":132}],135:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -29409,7 +29732,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],133:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;

@@ -48,8 +48,7 @@ describe('.get-ting: ', function () {
     })
     s.push(null)
     s.pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {}).on('end', function () {
+      .pipe(si.add()).on('finish', function () {
         done()
       })
   })

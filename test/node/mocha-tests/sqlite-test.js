@@ -49,9 +49,7 @@ describe('sqllite compatability: ', function () {
     s.push(null)
     s.pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function (data) {
-      })
-      .on('end', function () {
+      .on('finish', function () {
         si.search({
           query: [{
             AND: {'*': ['cool']}

@@ -31,9 +31,7 @@ describe('simple search test', function() {
       })
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function (d) {
-      })
-      .on('end', function () {
+      .on('finish', function () {
         i.should.be.exactly(10)
         return done()
       })

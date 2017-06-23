@@ -62,8 +62,7 @@ describe('Instantiation: ', function () {
     it('should index test data into the first index', function (done) {
       sOne.pipe(siOne.defaultPipeline())
         .pipe(siOne.add())
-        .on('data', function (data) {})
-        .on('end', function () {
+        .on('finish', function () {
           return done()
         })
     })
@@ -71,8 +70,7 @@ describe('Instantiation: ', function () {
     it('should index test data into the second index', function (done) {
       sTwo.pipe(siTwo.defaultPipeline())
         .pipe(siTwo.add())
-        .on('data', function (data) {})
-        .on('end', function () {
+        .on('finish', function () {
           return done()
         })
     })

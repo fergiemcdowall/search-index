@@ -99,7 +99,7 @@ test('initialize a search index', function (t) {
       .on('data', function (data) {
         // tum te tum...
       })
-      .on('end', function () {
+      .on('finish', function () {
         indexer.close(function (err) {
           t.error(err)
         })

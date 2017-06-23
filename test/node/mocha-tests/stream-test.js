@@ -44,7 +44,7 @@ describe('stopwords: ', function () {
       .pipe(JSONStream.parse())
       .pipe(si.defaultPipeline())
       .pipe(si.add())
-      .on('data', function (data) {}).on('end', function () {
+      .on('data', function (data) {}).on('finish', function () {
         done()
       })
   })

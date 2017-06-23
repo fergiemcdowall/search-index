@@ -110,10 +110,7 @@ describe('sorting: ', function () {
         }
       }))
         .pipe(si.add())
-        .on('data', function (data) {
-
-        })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })

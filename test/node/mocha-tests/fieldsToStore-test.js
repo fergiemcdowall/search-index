@@ -106,10 +106,7 @@ describe('storing fields: ', function () {
           }
         }))
         .pipe(si.add())
-        .on('data', function (data) {
-
-        })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })
@@ -161,7 +158,7 @@ describe('storing fields: ', function () {
         .pipe(si2.add())
         .on('data', function (data) {
         })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })

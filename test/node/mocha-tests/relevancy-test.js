@@ -42,10 +42,7 @@ describe('some simple relevancy tests: ', function () {
       si = thisSI
       s.pipe(si.defaultPipeline())
         .pipe(si.add())
-        .on('data', function (data) {
-
-        })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })

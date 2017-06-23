@@ -116,8 +116,7 @@ describe('categories: ', function () {
       s.pipe(JSONStream.parse())
         .pipe(si.defaultPipeline())
         .pipe(si.add())
-        .on('data', function (data) {})
-        .on('end', function () {
+        .on('finish', function () {
           return done()
         })
     })

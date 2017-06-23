@@ -56,8 +56,7 @@ describe('init the search index', function() {
     getStream()
       .pipe(index.defaultPipeline())
       .pipe(index.add())
-      .on('data', function (data) {})
-      .on('end', function () {
+      .on('finish', function () {
         return done()
       })
   })

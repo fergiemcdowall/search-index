@@ -47,10 +47,7 @@ describe('ngrams (phrase search): ', function () {
             nGramLength: {gte: 1, lte: 3}
           }))
           .pipe(si.add())
-          .on('data', function (data) {
-
-          })
-          .on('end', function () {
+          .on('finish', function () {
             true.should.be.exactly(true)
             return done()
           })
@@ -70,10 +67,7 @@ describe('ngrams (phrase search): ', function () {
           nGramLength: [1, 5]
         }))
         .pipe(si2.add())
-        .on('data', function (data) {
-
-        })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })
@@ -100,10 +94,7 @@ describe('ngrams (phrase search): ', function () {
             }
           }))
           .pipe(si3.add())
-          .on('data', function (data) {
-
-          })
-          .on('end', function () {
+          .on('finish', function () {
             true.should.be.exactly(true)
             return done()
           })
@@ -127,10 +118,7 @@ describe('ngrams (phrase search): ', function () {
             }
           }))
           .pipe(si4.add())
-          .on('data', function (data) {
-
-          })
-          .on('end', function () {
+          .on('finish', function () {
             true.should.be.exactly(true)
             return done()
           })

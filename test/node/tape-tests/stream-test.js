@@ -30,17 +30,9 @@ test('add docs using a stream', function (t) {
   s.push(null)
   s.pipe(index.defaultPipeline())
     .pipe(index.add())
-    .on('end', function () {
+    .on('finish', function () {
       t.pass('ended ok')
     })
-})
-
-test('breather', function(t) {
-  t.plan(1)
-  console.log('waiting...')
-  setTimeout(function () {
-    t.pass('timeout over')
-  }, 1000)
 })
 
 test('verify that large values are sorted', function (t) {

@@ -76,7 +76,7 @@ describe('stopwords: ', function () {
           .pipe(si.add())
           .on('data', function (data) {
           })
-          .on('end', function () {
+          .on('finish', function () {
             true.should.be.exactly(true)
             return done()
           })
@@ -113,7 +113,7 @@ describe('stopwords: ', function () {
         .pipe(siNO.add())
         .on('data', function (data) {
         })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })
@@ -164,7 +164,7 @@ describe('stopwords: ', function () {
         .pipe(siFood.add())
         .on('data', function (data) {
         })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })

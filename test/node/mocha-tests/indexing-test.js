@@ -31,15 +31,16 @@ describe('Indexing API', function () {
     }
     s.push(doc)
     s.push(null)
-    s.pipe(si.defaultPipeline()).pipe(si.add())
-      .on('data', function (data) {})
-      .on('end', function () {
-        si.get(['1']).on('data', function (data) {
-          data.should.eql(doc)
-        })
-        .on('end', function () {
-          return done()
-        })
+    s.pipe(si.defaultPipeline())
+      .pipe(si.add())
+      .on('finish', function () {
+        si.get(['1'])
+          .on('data', function (data) {
+            data.should.eql(doc)
+          })
+          .on('end', function () {
+            return done()
+          })
       })
   })
 
@@ -54,8 +55,7 @@ describe('Indexing API', function () {
     s.push(null)
     s.pipe(si.defaultPipeline())
       .pipe(si.add(undefined))
-      .on('data', function (data) {})
-      .on('end', function () {
+      .on('finish', function () {
         si.get(['2']).on('data', function (data) {
           data.should.eql(doc)
         })
@@ -77,8 +77,7 @@ describe('Indexing API', function () {
     s.pipe(si.defaultPipeline({
       separator: /\s+/
     })).pipe(si.add())
-      .on('data', function (data) {})
-      .on('end', function () {
+      .on('finish', function () {
         si.search({
           query: [{
             AND: {'*': ['14.2.1.0']}
@@ -105,8 +104,7 @@ describe('Indexing API', function () {
     s.pipe(si.defaultPipeline({
       separator: /\s+/
     })).pipe(si.add())
-      .on('data', function (data) {})
-      .on('end', function () {
+      .on('finish', function () {
         si.search({
           query: [{
             AND: {'*': ['14.2.1.0']}

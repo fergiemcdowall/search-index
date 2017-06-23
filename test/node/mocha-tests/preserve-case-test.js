@@ -56,7 +56,7 @@ describe('testing case: ', function () {
         preserveCase: true
       }))
       .pipe(si.add())
-      .on('data', function (data) {}).on('end', function () {
+      .on('finish', function () {
         done()
       })
   })
@@ -106,7 +106,7 @@ describe('testing case: ', function () {
         preserveCase: false
       }))
       .pipe(si2.add())
-      .on('data', function (data) {}).on('end', function () {
+      .on('finish', function () {
         done()
       })
   })

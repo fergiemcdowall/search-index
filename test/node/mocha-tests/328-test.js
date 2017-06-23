@@ -48,7 +48,7 @@ describe('bug 328', function() {
         .on('data', function (data) {
           // nowt
         })
-        .on('end', function () {
+        .on('finish', function () {
           true.should.be.exactly(true)
           return done()
         })

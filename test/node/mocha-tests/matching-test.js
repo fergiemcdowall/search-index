@@ -66,10 +66,7 @@ describe('Matching epub: ', function () {
       }
     }))
       .pipe(index.add())
-      .on('data', function (data) {
-        // nowt
-      })
-      .on('end', function () {
+      .on('finish', function () {
         true.should.be.exactly(true)
         return done()
       })
