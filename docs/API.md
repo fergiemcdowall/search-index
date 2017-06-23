@@ -343,10 +343,7 @@ being sent on top of one another then it is safer to use
 // s is a Readable stream in object mode
 s.pipe(si.defaultPipeline(batchOptions))
   .pipe(si.add())
-  .on('data', function(d) {
-    // this function needs to be called if you want to listen for the end event
-  })
-  .on('end', function() {
+  .on('finish', function() {
     // complete
   })
 ```

@@ -10,10 +10,7 @@ request(url)                      // <- could also be something like fs.getReadS
   .pipe(JSONStream.parse())
   .pipe(index.defaultPipeline())
   .pipe(index.add())
-  .on('data', function(d) {
-    // this function needs to be called if you want to listen for the end event
-  })
-  .on('end', function() {
+  .on('finish', function() {
     // complete
   })
 ```
@@ -120,6 +117,5 @@ The `.add` is a writable stream that accepts the processed documents
 dataStream                       // <- stream of docs to be indexed
   .pipe(index.defaultPipeline())
   .pipe(index.add())
-                                 // <- you must drain and end the stream here (see top of page)
 ```
 
