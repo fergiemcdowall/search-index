@@ -40,8 +40,7 @@ describe('Indexing API', function () { // jshint ignore:line
       should.exist(si)
       if (err) false.should.eql(true)
       var i = 0
-      s.pipe(si.defaultPipeline())
-        .pipe(si.add())
+      s.pipe(si.feed({ objectMode: true }))
         .on('finish', function () {
           si.dbReadStream()
             .on('data', function (data) {

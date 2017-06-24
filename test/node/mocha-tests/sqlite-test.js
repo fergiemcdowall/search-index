@@ -47,8 +47,7 @@ describe('sqllite compatability: ', function () {
       body: 'this is my doc'
     })
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
+    s.pipe(si.feed({ objectMode: true }))
       .on('finish', function () {
         si.search({
           query: [{

@@ -114,8 +114,7 @@ describe('categories: ', function () {
       if (err) false.should.eql(true)
       si = thisSI
       s.pipe(JSONStream.parse())
-        .pipe(si.defaultPipeline())
-        .pipe(si.add())
+        .pipe(si.feed({ objectMode: true }))
         .on('finish', function () {
           return done()
         })

@@ -52,10 +52,10 @@ describe('testing case: ', function () {
 
   it('should index test data into the index', function (done) {
     getDocStream().pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline({
+      .pipe(si.feed({
+        objectMode: true,
         preserveCase: true
       }))
-      .pipe(si.add())
       .on('finish', function () {
         done()
       })
@@ -102,10 +102,10 @@ describe('testing case: ', function () {
 
   it('should index test data into the index', function (done) {
     getDocStream().pipe(JSONStream.parse())
-      .pipe(si2.defaultPipeline({
+      .pipe(si2.feed({
+        objectMode: true,
         preserveCase: false
       }))
-      .pipe(si2.add())
       .on('finish', function () {
         done()
       })

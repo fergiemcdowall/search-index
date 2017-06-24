@@ -31,8 +31,7 @@ describe('Indexing API', function () {
     }
     s.push(doc)
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
+    s.pipe(si.feed({ objectMode: true }))
       .on('finish', function () {
         si.get(['1'])
           .on('data', function (data) {
@@ -41,27 +40,6 @@ describe('Indexing API', function () {
           .on('end', function () {
             return done()
           })
-      })
-  })
-
-  it('should allow indexing with undefined options object', function (done) {
-    var s = new Readable({ objectMode: true })
-    var doc = {
-      id: '2',
-      title: 'Mad Science is on the Rise',
-      body: 'Mad,  mad things are happening.'
-    }
-    s.push(doc)
-    s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add(undefined))
-      .on('finish', function () {
-        si.get(['2']).on('data', function (data) {
-          data.should.eql(doc)
-        })
-        .on('end', function () {
-          return done()
-        })
       })
   })
 
@@ -74,9 +52,10 @@ describe('Indexing API', function () {
     var i = 0
     s.push(doc)
     s.push(null)
-    s.pipe(si.defaultPipeline({
+    s.pipe(si.feed({
+      objectMode: true,
       separator: /\s+/
-    })).pipe(si.add())
+    }))
       .on('finish', function () {
         si.search({
           query: [{
@@ -101,9 +80,10 @@ describe('Indexing API', function () {
     var i = 0
     s.push(doc)
     s.push(null)
-    s.pipe(si.defaultPipeline({
+    s.pipe(si.feed({
+      objectMode: true,
       separator: /\s+/
-    })).pipe(si.add())
+    }))
       .on('finish', function () {
         si.search({
           query: [{
@@ -122,7 +102,7 @@ describe('Indexing API', function () {
   it('can count docs', function (done) {
     si.countDocs(function (err, docCount) {
       if (err) false.should.eql(true)
-      docCount.should.be.exactly(3)
+      docCount.should.be.exactly(2)
       return done()
     })
   })

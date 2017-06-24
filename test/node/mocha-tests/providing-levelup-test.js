@@ -38,12 +38,8 @@ describe('Making a search-index with a vanilla (leveldown) levelup: ', function 
       body: 'this is my doc'
     })
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {
-
-      })
-      .on('end', function () {
+    s.pipe(si.feed({ objectMode: true }))
+      .on('finish', function () {
         si.search({
           query: [{
             AND: {'*': ['now sadly defunct']}

@@ -97,8 +97,7 @@ describe('scanning: ', function () {
     }, function (err, thisSi) {
       ;(err === null).should.be.exactly(true)
       si = thisSi
-      s.pipe(si.defaultPipeline())
-        .pipe(si.add())
+      s.pipe(si.feed({ objectMode: true }))
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

@@ -94,8 +94,7 @@ describe('boosting', function () {
     }, function (err, thisSI) {
       if (err) false.should.eql(true)
       si = thisSI
-      s.pipe(si.defaultPipeline())
-        .pipe(si.add())
+      s.pipe(si.feed({ objectMode: true }))
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

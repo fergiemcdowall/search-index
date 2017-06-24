@@ -23,16 +23,9 @@ describe('simple search test', function() {
   })
 
   it('should post and index a file of data', function (done) {
-    var i = 0
     fs.createReadStream('./node_modules/reuters-21578-json/data/fullFileStream/justTen.str')
-      .pipe(JSONStream.parse())
-      .on('data', function (d) {
-        i++
-      })
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
+      .pipe(si.feed())
       .on('finish', function () {
-        i.should.be.exactly(10)
         return done()
       })
       .on('error', function (error) {

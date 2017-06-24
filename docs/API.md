@@ -23,6 +23,7 @@
  * [concurrentDel(...)](#concurrentdel)
  * [defaultPipeline(...)](#defaultpipeline)
  * [del(...)](#del)
+ * [feed(...)](#feed)
  * [flush(...)](#flush)
 
 ### Syncing
@@ -430,6 +431,22 @@ si.del(docIDs, function(err) {
 
 * **docIDs** an array of document IDs referencing documents that are
     to be deleted.
+
+
+### feed(...)
+
+Returns a writable stream that allows you to add documents to the index.
+
+```javascript
+index.feed(options)
+```
+
+Options is an object that is passed on to `defaultPipeline` and in
+addition contains its own parameters
+
+  * **objectMode** _boolean: default:false_ Specifies whether the
+      stream will accept objects or strings
+
 
 ### flush(...)
 

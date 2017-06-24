@@ -54,7 +54,8 @@ describe('Matching epub: ', function () {
       spineItemPath: 'epub_content/accessible_epub_4/EPUB/ch03s09.xhtml'
     })
     s.push(null)
-    s.pipe(index.defaultPipeline({
+    s.pipe(index.feed({
+      objectMode: true,
       batchName: 'epubdata',
       fieldOptions: {
         id: {
@@ -65,7 +66,6 @@ describe('Matching epub: ', function () {
         }
       }
     }))
-      .pipe(index.add())
       .on('finish', function () {
         true.should.be.exactly(true)
         return done()

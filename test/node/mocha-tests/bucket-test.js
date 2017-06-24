@@ -54,8 +54,7 @@ describe('init the search index', function() {
 
   it('should index test data into the index', function (done) {
     getStream()
-      .pipe(index.defaultPipeline())
-      .pipe(index.add())
+      .pipe(index.feed({ objectMode: true }))
       .on('finish', function () {
         return done()
       })

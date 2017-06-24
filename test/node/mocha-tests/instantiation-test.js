@@ -60,16 +60,14 @@ describe('Instantiation: ', function () {
     })
 
     it('should index test data into the first index', function (done) {
-      sOne.pipe(siOne.defaultPipeline())
-        .pipe(siOne.add())
+      sOne.pipe(siOne.feed({ objectMode: true }))
         .on('finish', function () {
           return done()
         })
     })
 
     it('should index test data into the second index', function (done) {
-      sTwo.pipe(siTwo.defaultPipeline())
-        .pipe(siTwo.add())
+      sTwo.pipe(siTwo.feed({ objectMode: true }))
         .on('finish', function () {
           return done()
         })

@@ -28,8 +28,7 @@ test('add docs using a stream', function (t) {
     })
   }
   s.push(null)
-  s.pipe(index.defaultPipeline())
-    .pipe(index.add())
+  s.pipe(index.feed({ objectMode: true }))
     .on('finish', function () {
       t.pass('ended ok')
     })

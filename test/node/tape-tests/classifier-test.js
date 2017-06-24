@@ -94,11 +94,7 @@ test('initialize a search index', function (t) {
     logLevel: logLevel
   }, function (err, indexer) {
     t.error(err)
-    s.pipe(indexer.defaultPipeline())
-      .pipe(indexer.add())
-      .on('data', function (data) {
-        // tum te tum...
-      })
+    s.pipe(indexer.feed({ objectMode: true }))
       .on('finish', function () {
         indexer.close(function (err) {
           t.error(err)

@@ -42,7 +42,8 @@ describe('ngrams (phrase search): ', function () {
         if (err) false.should.eql(true)
         si = thisSi
         getDataStream()
-          .pipe(si.defaultPipeline({
+          .pipe(si.feed({
+            objectMode: true,
             stopwords: [],
             nGramLength: {gte: 1, lte: 3}
           }))
@@ -62,11 +63,11 @@ describe('ngrams (phrase search): ', function () {
       if (err) false.should.eql(true)
       si2 = thisSi
       getDataStream()
-        .pipe(si2.defaultPipeline({
+        .pipe(si2.feed({
+          objectMode: true,
           stopwords: [],
           nGramLength: [1, 5]
         }))
-        .pipe(si2.add())
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()
@@ -83,7 +84,8 @@ describe('ngrams (phrase search): ', function () {
         if (err) false.should.eql(true)
         si3 = thisSi
         getDataStream()
-          .pipe(si3.defaultPipeline({
+          .pipe(si3.feed({
+            objectMode: true,
             fieldOptions: {
               name: {
                 nGramLength: {gte: 1, lte: 3}
@@ -93,7 +95,6 @@ describe('ngrams (phrase search): ', function () {
               }
             }
           }))
-          .pipe(si3.add())
           .on('finish', function () {
             true.should.be.exactly(true)
             return done()
@@ -110,14 +111,14 @@ describe('ngrams (phrase search): ', function () {
         if (err) false.should.eql(true)
         si4 = thisSi
         getDataStream()
-          .pipe(si4.defaultPipeline({
+          .pipe(si4.feed({
+            objectMode: true,
             fieldOptions: {
               name: {
                 separator: 'x'
               }
             }
           }))
-          .pipe(si4.add())
           .on('finish', function () {
             true.should.be.exactly(true)
             return done()

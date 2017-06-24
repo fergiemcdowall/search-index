@@ -36,12 +36,8 @@ describe('Indexing and searching non-ascii characters: ', function () {
   })
 
   it('should index test data', function (done) {
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
-      .on('data', function (data) {
-
-      })
-      .on('end', function () {
+    s.pipe(si.feed({ objectMode: true }))
+      .on('finish', function () {
         true.should.be.exactly(true)
         return done()
       })

@@ -43,8 +43,7 @@ describe('bug 328', function() {
     }, function (err, thisSI) {
       if (err) false.should.eql(true)
       si = thisSI
-      s.pipe(si.defaultPipeline())
-        .pipe(si.add())
+      s.pipe(si.feed({ objectMode: true }))
         .on('data', function (data) {
           // nowt
         })

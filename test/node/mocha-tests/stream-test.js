@@ -41,9 +41,7 @@ describe('stopwords: ', function () {
     this.timeout(5000)
     const filePath = './node_modules/reuters-21578-json/data/fullFileStream/justTen.str'
     fs.createReadStream(filePath)
-      .pipe(JSONStream.parse())
-      .pipe(si.defaultPipeline())
-      .pipe(si.add())
+      .pipe(si.feed())
       .on('data', function (data) {}).on('finish', function () {
         done()
       })

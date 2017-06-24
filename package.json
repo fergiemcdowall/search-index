@@ -1,7 +1,7 @@
 {
   "name": "search-index",
   "description": "A persistent full text search engine for the browser and Node.js",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "homepage": "https://github.com/fergiemcdowall/search-index",
   "engines": {
     "node": ">=4"
@@ -10,7 +10,7 @@
   "dependencies": {
     "bunyan": "^1.8.10",
     "levelup": "^1.3.8",
-    "search-index-adder": "^0.3.0",
+    "search-index-adder": "^0.3.1",
     "search-index-searcher": "^0.2.3"
   },
   "devDependencies": {

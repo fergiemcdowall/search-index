@@ -72,10 +72,7 @@ describe('stopwords: ', function () {
         if (err) false.should.eql(true)
         si = thisSi
         getDataStream()
-          .pipe(si.defaultPipeline())
-          .pipe(si.add())
-          .on('data', function (data) {
-          })
+          .pipe(si.feed({ objectMode: true }))
           .on('finish', function () {
             true.should.be.exactly(true)
             return done()
@@ -107,12 +104,10 @@ describe('stopwords: ', function () {
       if (err) false.should.eql(true)
       siNO = thisSi
       getDataStream()
-        .pipe(siNO.defaultPipeline({
+        .pipe(siNO.feed({
+          objectMode: true,
           stopwords: sw.no
         }))
-        .pipe(siNO.add())
-        .on('data', function (data) {
-        })
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()
@@ -158,12 +153,10 @@ describe('stopwords: ', function () {
       if (err) false.should.eql(true)
       siFood = thisSi
       getFoodStream()
-        .pipe(siFood.defaultPipeline({
+        .pipe(siFood.feed({
+          objectMode: true,
           stopwords: []
         }))
-        .pipe(siFood.add())
-        .on('data', function (data) {
-        })
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

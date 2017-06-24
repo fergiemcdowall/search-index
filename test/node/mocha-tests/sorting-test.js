@@ -98,7 +98,8 @@ describe('sorting: ', function () {
     }, function (err, thisSI) {
       should(err).not.ok
       si = thisSI
-      s.pipe(si.defaultPipeline({
+      s.pipe(si.feed({
+        objectMode: true,
         fieldOptions: {
           price: {
             sortable: true
@@ -109,7 +110,6 @@ describe('sorting: ', function () {
           }
         }
       }))
-        .pipe(si.add())
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

@@ -98,14 +98,14 @@ describe('storing fields: ', function () {
       if (err) false.should.eql(true)
       si = thisSI
       getStream()
-        .pipe(si.defaultPipeline({
+        .pipe(si.feed({
+          objectMode: true,
           fieldOptions: {
             description: {
               storeable: false
             }
           }
         }))
-        .pipe(si.add())
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()
@@ -148,16 +148,14 @@ describe('storing fields: ', function () {
       if (err) false.should.eql(true)
       si2 = thisSI
       getStream()
-        .pipe(si2.defaultPipeline({
+        .pipe(si2.feed({
+          objectMode: true,
           fieldOptions: {
             name: {
               storeable: true
             }
           }
         }))
-        .pipe(si2.add())
-        .on('data', function (data) {
-        })
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

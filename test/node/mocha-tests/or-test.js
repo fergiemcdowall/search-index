@@ -93,8 +93,7 @@ describe('OR-ing: ', function () {
     }, function (err, thisSI) {
       ;(!err).should.be.exactly(true)
       si = thisSI
-      s.pipe(si.defaultPipeline())
-        .pipe(si.add())
+      s.pipe(si.feed({ objectMode: true }))
         .on('finish', function () {
           true.should.be.exactly(true)
           return done()

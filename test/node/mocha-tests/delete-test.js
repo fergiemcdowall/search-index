@@ -49,8 +49,7 @@ describe('deleting: ', function () {
       test: 'this is the fourth doc'
     })
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
+    s.pipe(si.feed({ objectMode: true }))
       .on('finish', function () {
         done()
       })
@@ -100,8 +99,7 @@ describe('deleting: ', function () {
       test: 'this is the first doc'
     })
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add())
+    s.pipe(si.feed({ objectMode: true }))
       .on('finish', function () {
         done()
       })

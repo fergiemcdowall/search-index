@@ -47,8 +47,8 @@ describe('.get-ting: ', function () {
       test: 'this is the fourth doc'
     })
     s.push(null)
-    s.pipe(si.defaultPipeline())
-      .pipe(si.add()).on('finish', function () {
+    s.pipe(si.feed({ objectMode: true }))
+      .on('finish', function () {
         done()
       })
   })
