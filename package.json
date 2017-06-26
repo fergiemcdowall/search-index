@@ -10,13 +10,13 @@
   "dependencies": {
     "bunyan": "^1.8.10",
     "levelup": "^1.3.8",
-    "search-index-adder": "^0.3.1",
-    "search-index-searcher": "^0.2.3"
+    "search-index-adder": "^0.3.3",
+    "search-index-searcher": "^0.2.5"
   },
   "devDependencies": {
     "JSONStream": "^1.1.4",
     "brfs": "^1.4.3",
-    "browser-run": "^3.3.0",
+    "browser-run": "^4.0.3",
     "browserify": "^13.1.0",
     "commitizen": "^2.9.6",
     "conventional-github-releaser": "^1.1.11",
