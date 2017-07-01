@@ -3,14 +3,14 @@ const test = require('tape')
 const SearchIndex = require('../../../')
 const num = require('written-number')
 const Readable = require('stream').Readable
-const batchSize = 100
+const batchSize = 10
 
 var si
 
 test('initialize a search index', t => {
   t.plan(1)
   SearchIndex({
-    indexPath: sandbox + 'reindex-test'
+    indexPath: sandbox + 'wildcard-test'
   }, (err, newSi) => {
     t.error(err)
     si = newSi
@@ -27,7 +27,10 @@ test('make an index', t => {
     })
   }
   s.push(null)
-  s.pipe(si.feed({ objectMode: true }))
+  s.pipe(si.feed({
+    objectMode: true,
+    wildcard: false
+  }))
     .on('finish', function() {
       t.pass('finished')
     })
@@ -36,23 +39,46 @@ test('make an index', t => {
     })
 })
 
-test('search', t => {
-  t.plan(20)
+test('wildcard search shouldnt work', t => {
+  t.plan(1)
   si.search()
-    .on('data', function() {
+    .on('data', function() {})
+    .on('end', function() {
+      t.pass('no results here')
+    })
+    .on('error', function(err) {
+      t.error(err)
+    })
+})
+
+test('search for a word should work', t => {
+  t.plan(11)
+  si.search('amazing')
+    .on('data', function(d) {
       t.pass('got a result')
     })
+    .on('end', function() {
+      t.pass('ended')
+    })
+    .on('error', function(err) {
+      t.error(err)
+    })
 })
 
-test('reindex a document', t => {
+test('reindex for wildcards', t => {
   t.plan(1)
   var s = new Readable({ objectMode: true })
-  s.push({
-    id: 5,
-    tokens: 'this is the all new amazing doc number five'
-  })
+  for (var i = 1; i <= batchSize; i++) {
+    s.push({
+      id: i,
+      tokens: 'this is the amazing doc number ' + num(i)
+    })
+  }
   s.push(null)
-  s.pipe(si.feed({ objectMode: true }))
+  s.pipe(si.feed({
+    objectMode: true,
+    wildcard: true
+  }))
     .on('finish', function() {
       t.pass('finished')
     })
@@ -61,32 +87,14 @@ test('reindex a document', t => {
     })
 })
 
-test('search', t => {
-  t.plan(1)
-  si.search({
-    query: [{
-      AND: {id: ['5']}
-    }]
-  })
-    .on('data', function(d) {
-      t.looseEquals(d.document, {
-        id: 5,
-        tokens: 'this is the all new amazing doc number five'
-      })
+test('wildcard search should now work', t => {
+  t.plan(11)
+  si.search()
+    .on('data', function() {
+      t.pass('git a doc')
     })
-})
-
-test('index a document that wasnt in the index from before', t => {
-  t.plan(1)
-  var s = new Readable({ objectMode: true })
-  s.push({
-    id: 78,
-    tokens: 'a totally new doc'
-  })
-  s.push(null)
-  s.pipe(si.feed({ objectMode: true }))
-    .on('finish', function() {
-      t.pass('finished')
+    .on('end', function() {
+      t.pass('end')
     })
     .on('error', function(err) {
       t.error(err)
