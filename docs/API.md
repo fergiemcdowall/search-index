@@ -35,7 +35,9 @@
  
 (viewable under `index.options`)
 
+ *  [appendOnly](#appendonly)
  *  [batchSize](#batchsize)
+ *  [compositeField](#compositefield)
  *  [db](#db)
  *  [fieldedSearch](#fieldedsearch)
  *  [fieldOptions](#fieldoptions)
@@ -47,6 +49,7 @@
  *  [nGramLength](#ngramlength)
  *  [separator](#separator)
  *  [stopwords](#stopwords)
+ *  [wildcard](#wildcard)
 
 
 ## Opening and Closing
