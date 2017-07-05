@@ -527,12 +527,22 @@ si.dbReadStream(options)
 
 ## Options and Settings
 
+### appendOnly
+_boolean_
+
+When adding docs- dont check to see if it they exist already.
+
 ### batchsize
 _number_
 
 Specifies how many documents to process, before merging them into the
 index. When the end of the stream is reached all remaning documents
 will be merged, even if batchsize is not reached.
+
+### compositeField
+_boolean_
+
+Allow search across all fields (`*`)
 
 ### db
 _a levelup instance_
@@ -633,3 +643,8 @@ An array of [stopwords](https://en.wikipedia.org/wiki/Stop_words)
 * `zh` - Chinese Simplified*
 
 *Some languages like `ja` Japanese and `zh` Chinese Simplified have no space between words. For these languages you need to split the text into words before adding it to search-index. You can check out [TinySegmenter](http://chasen.org/%7Etaku/software/TinySegmenter/) for Japanese and [chinese-tokenizer](https://github.com/yishn/chinese-tokenizer) for Chinese.
+
+### Wildcard
+_boolean_
+
+Should wildcard search be generated for this field
