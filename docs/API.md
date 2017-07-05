@@ -340,6 +340,19 @@ being sent on top of one another then it is safer to use
 
  * **batchOptions** is an object describing [indexing options](#defaultpipeline)
 
+`add` will heed the following `batchOptions`:
+
+ * **appendOnly** _boolean: default:false_ If set to true, documents
+     will not be deleted before being added. This is useful when you
+     are creating an index from scratch and want to speed up indexing
+     time. Normally all documents should have unique IDs, or no
+     IDs. If you add a document with `appendOnly: true` to an index
+     that already contains a document with that ID, then the new
+     document will simply overwrite the old one withough deleting the
+     previous one. In this way advanced users can augment existing
+     documents by setting `appendOnly: false`.
+
+
 ```javascript
 // s is a Readable stream in object mode
 s.pipe(si.defaultPipeline(batchOptions))
@@ -394,6 +407,9 @@ pipeline stages can be inserted before and after processing if required.
 **options** is an object where each key corresponds to a field name in
   the documents to be indexed and can contain the following settings:
 
+ * **compositeField** _boolean: default:true_ should a composite (`*`)
+     field be generated? Setting to `false` saves space and speeds up
+     indexing, but disables search on all fields
  * **defaultFieldOptions** _Object_ default options to use for this
    batch
  * **fieldOptions** _Object_ overrides `defaultFieldOptions`, can have
@@ -417,6 +433,7 @@ pipeline stages can be inserted before and after processing if required.
    * **weight** _number: default:0_ this number will be added to the
      score for the field allowing some fields to count more or less
      than others.
+   * **wildcard** _boolean: default:true_ Enables (`*`) search
 
 
 ### del(...)
