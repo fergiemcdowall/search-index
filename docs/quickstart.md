@@ -17,11 +17,7 @@ Initialize a search index and add the data
 const indexData = function(err, newIndex) {
   if (!err) {
     index = newIndex
-    request(url)                      // get a stream of documents
-      .pipe(JSONStream.parse())       // turn into JSON
-      .pipe(index.defaultPipeline())  // vectorize
-      .pipe(index.add())              // index
-      .on('data', function(data) {})
+    request(url).pipe(index.feed())
   }
 }
 require('search-index')(ops, indexData)
@@ -47,7 +43,6 @@ index.search({
 Save this file as `index.js`, do `npm install JSONStream chalk request term-cluster`, and run it as `node index.js` to get a really basic CLI search engine for some old Reuters articles.
 
 ```javascript
-const JSONStream = require('JSONStream')
 const chalk = require('chalk')
 const request = require('request')
 const tc = require('term-cluster')
@@ -64,11 +59,8 @@ const indexData = function(err, newIndex) {
   if (!err) {
     index = newIndex
     request(url)
-      .pipe(JSONStream.parse())
-      .pipe(index.defaultPipeline())
-      .pipe(index.add())
-      .on('data', function(data) {})
-      .on('end', searchCLI)
+      .pipe(index.feed()
+      .on('finish', searchCLI)
   }
 }
 
