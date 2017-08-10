@@ -588,8 +588,7 @@ If true, a cache of the field is stored in the index
 ### searchable
 _boolean_
 
-If true, this field will be searchable by wildcard ('*'). See also
-[fieldedSearch](#fieldedsearch)
+If true, this field will be searchable, if it is false, the field will be available, but not searchable
 
 ### indexPath
 _string_
