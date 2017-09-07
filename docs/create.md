@@ -31,7 +31,7 @@ The default options are equivalent to this:
   logLevel: 'error',
   nGramLength: 1,
   nGramSeparator: ' ',
-  separator: /[\|' \.,\-|(\n)]+/,
+  separator: /[' .,\-|(\n)]+/,
   stopwords: require('stopword').en,
 }
 ```
