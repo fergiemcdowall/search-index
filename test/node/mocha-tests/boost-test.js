@@ -152,7 +152,7 @@ describe('boosting', function () {
         },
         {
           AND: {'description': ['swiss', 'watch']},
-          BOOST: 10
+          WEIGHT: 10
         }
       ]
     }).on('data', function (data) {
@@ -172,7 +172,7 @@ describe('boosting', function () {
       query: [
         {
           AND: {'name': ['watch']},
-          BOOST: 10
+          WEIGHT: 10
         },
         {
           AND: {'description': ['swiss', 'watch']}
@@ -195,7 +195,7 @@ describe('boosting', function () {
       query: [
         {
           AND: {'name': ['watch']},
-          BOOST: -10
+          WEIGHT: 0.1
         },
         {
           AND: {'description': ['swiss', 'watch']}

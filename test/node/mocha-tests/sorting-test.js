@@ -14,7 +14,7 @@ const batch = [
   {
     id: '1',
     name: 'Apple Watch',
-    description: 'Receive and respond to notiﬁcations in an instant. Watch this amazing watch',
+    description: 'Receive and respond to notiﬁcations in an instant. Watch this amazing apple watch',
     price: 20002,
     age: 346
   },
@@ -28,7 +28,7 @@ const batch = [
   {
     id: '3',
     name: "Versace Men's Swiss",
-    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch",
+    description: "Versace Men's Swiss Chronograph Mystique Sport Two-Tone Ion-Plated Stainless Steel Bracelet Watch that is not apple",
     price: 4716,
     age: 8293
   },
@@ -101,22 +101,19 @@ describe('sorting: ', function () {
       s.pipe(si.feed({
         objectMode: true,
         fieldOptions: {
-          price: {
-            sortable: true
-          },
           name: {
-            sortable: true,
             separator: '%'  // index field as one token
           }
         }
       }))
-        .on('finish', function () {
-          true.should.be.exactly(true)
-          return done()
-        })
+       .on('finish', function () {
+         true.should.be.exactly(true)
+         return done()
+       })
     })
   })
 
+  
   it('simple search, sorted by ID', function (done) {
     var results = [ '9', '8', '7', '6', '5', '4', '3', '2', '10', '1' ]
     si.search({
@@ -130,7 +127,7 @@ describe('sorting: ', function () {
       return done()
     })
   })
-
+  
   it('simple search, sorted by relevance', function (done) {
     var results = [ '7', '3', '2', '10', '1', '9' ]
     si.search({
@@ -144,7 +141,7 @@ describe('sorting: ', function () {
       return done()
     })
   })
-
+  
   it('simple search, sorted by price', function (done) {
     var i = 0
     var results = [ '2', '3', '7', '10', '1', '9' ]
@@ -168,34 +165,52 @@ describe('sorting: ', function () {
       return done()
     })
   })
-
-  it('simple search, sorted by name', function (done) {
+  
+  
+  it('simple search, sorted by price', function (done) {
     var i = 0
-    var results = [ '1', '10', '7', '3', '9', '2' ]
-    var names = [
-      'Apple Watch',
-      'Armani Swiss Moon Phase',
-      'TW Steel',
-      "Versace Men's Swiss",
-      'Victorinox Night Vision ',
-      'Victorinox Swiss Army'
-    ]
+    var results = [ '2', '3', '7', '10', '1', '9' ]
+    var prices = [ '99', '4716', '33333', '30000', '20002', '1000' ]
     si.search({
       query: {
         AND: {'*': ['watch']}
       },
       sort: {
-        field: 'name',
+        field: 'price',
+        direction: 'desc'
+      }
+    }).on('data', function (data) {
+      i++
+      data.id.should.eql(results.shift())
+      data.score.should.eql(prices.shift())
+    }).on('end', function () {
+      results.length.should.be.exactly(0)
+      prices.length.should.be.exactly(0)
+      i.should.be.exactly(6)
+      return done()
+    })
+  })
+  
+  it('OR search, sorted by price', function (done) {
+    var i = 0
+    var results = [ '9', '1', '10', '3' ]
+    si.search({
+      query: [
+        {
+          AND: {'*': ['swiss', 'watch']}
+        }, {
+          AND: {'*': ['apple']}
+        }],
+      sort: {
+        field: 'price',
         direction: 'asc'
       }
     }).on('data', function (data) {
       i++
       data.id.should.eql(results.shift())
-      data.document.name.should.eql(names.shift())
     }).on('end', function () {
       results.length.should.be.exactly(0)
-      names.length.should.be.exactly(0)
-      i.should.be.exactly(6)
+      i.should.be.exactly(4)
       return done()
     })
   })

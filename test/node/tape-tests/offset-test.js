@@ -92,6 +92,8 @@ test('search with offset', t => {
     })
 })
 
+
+
 test('search with offset and pageSize defined as strings', t => {
   t.plan(2)
   var i = 0
@@ -105,6 +107,7 @@ test('search with offset and pageSize defined as strings', t => {
     pageSize: "7"
   })
     .on('data', hit => {
+      /* console.log(hit.id)*/
       if (i == 0) t.equal(hit.id, '050')
       i++
     })
