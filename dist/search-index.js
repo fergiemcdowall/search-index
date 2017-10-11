@@ -88,7 +88,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./siUtil.js":2,"js-logger":45,"leveldown":59,"levelup":72,"search-index-adder":105,"search-index-searcher":110}],2:[function(require,module,exports){
+},{"./siUtil.js":2,"js-logger":42,"leveldown":56,"levelup":69,"search-index-adder":100,"search-index-searcher":105}],2:[function(require,module,exports){
 module.exports = function(siOptions) {
   var siUtil = {}
 
@@ -381,501 +381,7 @@ if(!module.parent && process.title !== 'browser') {
 
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":86,"buffer":9,"jsonparse":46,"through":153}],4:[function(require,module,exports){
-(function (global){
-'use strict';
-
-// compare and isBuffer taken from https://github.com/feross/buffer/blob/680e9e5e488f22aac27599a57dc844a6315928dd/index.js
-// original notice:
-
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
- */
-function compare(a, b) {
-  if (a === b) {
-    return 0;
-  }
-
-  var x = a.length;
-  var y = b.length;
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i];
-      y = b[i];
-      break;
-    }
-  }
-
-  if (x < y) {
-    return -1;
-  }
-  if (y < x) {
-    return 1;
-  }
-  return 0;
-}
-function isBuffer(b) {
-  if (global.Buffer && typeof global.Buffer.isBuffer === 'function') {
-    return global.Buffer.isBuffer(b);
-  }
-  return !!(b != null && b._isBuffer);
-}
-
-// based on node assert, original notice:
-
-// http://wiki.commonjs.org/wiki/Unit_Testing/1.0
-//
-// THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
-//
-// Originally from narwhal.js (http://narwhaljs.org)
-// Copyright (c) 2009 Thomas Robinson <280north.com>
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the 'Software'), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-var util = require('util/');
-var hasOwn = Object.prototype.hasOwnProperty;
-var pSlice = Array.prototype.slice;
-var functionsHaveNames = (function () {
-  return function foo() {}.name === 'foo';
-}());
-function pToString (obj) {
-  return Object.prototype.toString.call(obj);
-}
-function isView(arrbuf) {
-  if (isBuffer(arrbuf)) {
-    return false;
-  }
-  if (typeof global.ArrayBuffer !== 'function') {
-    return false;
-  }
-  if (typeof ArrayBuffer.isView === 'function') {
-    return ArrayBuffer.isView(arrbuf);
-  }
-  if (!arrbuf) {
-    return false;
-  }
-  if (arrbuf instanceof DataView) {
-    return true;
-  }
-  if (arrbuf.buffer && arrbuf.buffer instanceof ArrayBuffer) {
-    return true;
-  }
-  return false;
-}
-// 1. The assert module provides functions that throw
-// AssertionError's when particular conditions are not met. The
-// assert module must conform to the following interface.
-
-var assert = module.exports = ok;
-
-// 2. The AssertionError is defined in assert.
-// new assert.AssertionError({ message: message,
-//                             actual: actual,
-//                             expected: expected })
-
-var regex = /\s*function\s+([^\(\s]*)\s*/;
-// based on https://github.com/ljharb/function.prototype.name/blob/adeeeec8bfcc6068b187d7d9fb3d5bb1d3a30899/implementation.js
-function getName(func) {
-  if (!util.isFunction(func)) {
-    return;
-  }
-  if (functionsHaveNames) {
-    return func.name;
-  }
-  var str = func.toString();
-  var match = str.match(regex);
-  return match && match[1];
-}
-assert.AssertionError = function AssertionError(options) {
-  this.name = 'AssertionError';
-  this.actual = options.actual;
-  this.expected = options.expected;
-  this.operator = options.operator;
-  if (options.message) {
-    this.message = options.message;
-    this.generatedMessage = false;
-  } else {
-    this.message = getMessage(this);
-    this.generatedMessage = true;
-  }
-  var stackStartFunction = options.stackStartFunction || fail;
-  if (Error.captureStackTrace) {
-    Error.captureStackTrace(this, stackStartFunction);
-  } else {
-    // non v8 browsers so we can have a stacktrace
-    var err = new Error();
-    if (err.stack) {
-      var out = err.stack;
-
-      // try to strip useless frames
-      var fn_name = getName(stackStartFunction);
-      var idx = out.indexOf('\n' + fn_name);
-      if (idx >= 0) {
-        // once we have located the function frame
-        // we need to strip out everything before it (and its line)
-        var next_line = out.indexOf('\n', idx + 1);
-        out = out.substring(next_line + 1);
-      }
-
-      this.stack = out;
-    }
-  }
-};
-
-// assert.AssertionError instanceof Error
-util.inherits(assert.AssertionError, Error);
-
-function truncate(s, n) {
-  if (typeof s === 'string') {
-    return s.length < n ? s : s.slice(0, n);
-  } else {
-    return s;
-  }
-}
-function inspect(something) {
-  if (functionsHaveNames || !util.isFunction(something)) {
-    return util.inspect(something);
-  }
-  var rawname = getName(something);
-  var name = rawname ? ': ' + rawname : '';
-  return '[Function' +  name + ']';
-}
-function getMessage(self) {
-  return truncate(inspect(self.actual), 128) + ' ' +
-         self.operator + ' ' +
-         truncate(inspect(self.expected), 128);
-}
-
-// At present only the three keys mentioned above are used and
-// understood by the spec. Implementations or sub modules can pass
-// other keys to the AssertionError's constructor - they will be
-// ignored.
-
-// 3. All of the following functions must throw an AssertionError
-// when a corresponding condition is not met, with a message that
-// may be undefined if not provided.  All assertion methods provide
-// both the actual and expected values to the assertion error for
-// display purposes.
-
-function fail(actual, expected, message, operator, stackStartFunction) {
-  throw new assert.AssertionError({
-    message: message,
-    actual: actual,
-    expected: expected,
-    operator: operator,
-    stackStartFunction: stackStartFunction
-  });
-}
-
-// EXTENSION! allows for well behaved errors defined elsewhere.
-assert.fail = fail;
-
-// 4. Pure assertion tests whether a value is truthy, as determined
-// by !!guard.
-// assert.ok(guard, message_opt);
-// This statement is equivalent to assert.equal(true, !!guard,
-// message_opt);. To test strictly for the value true, use
-// assert.strictEqual(true, guard, message_opt);.
-
-function ok(value, message) {
-  if (!value) fail(value, true, message, '==', assert.ok);
-}
-assert.ok = ok;
-
-// 5. The equality assertion tests shallow, coercive equality with
-// ==.
-// assert.equal(actual, expected, message_opt);
-
-assert.equal = function equal(actual, expected, message) {
-  if (actual != expected) fail(actual, expected, message, '==', assert.equal);
-};
-
-// 6. The non-equality assertion tests for whether two objects are not equal
-// with != assert.notEqual(actual, expected, message_opt);
-
-assert.notEqual = function notEqual(actual, expected, message) {
-  if (actual == expected) {
-    fail(actual, expected, message, '!=', assert.notEqual);
-  }
-};
-
-// 7. The equivalence assertion tests a deep equality relation.
-// assert.deepEqual(actual, expected, message_opt);
-
-assert.deepEqual = function deepEqual(actual, expected, message) {
-  if (!_deepEqual(actual, expected, false)) {
-    fail(actual, expected, message, 'deepEqual', assert.deepEqual);
-  }
-};
-
-assert.deepStrictEqual = function deepStrictEqual(actual, expected, message) {
-  if (!_deepEqual(actual, expected, true)) {
-    fail(actual, expected, message, 'deepStrictEqual', assert.deepStrictEqual);
-  }
-};
-
-function _deepEqual(actual, expected, strict, memos) {
-  // 7.1. All identical values are equivalent, as determined by ===.
-  if (actual === expected) {
-    return true;
-  } else if (isBuffer(actual) && isBuffer(expected)) {
-    return compare(actual, expected) === 0;
-
-  // 7.2. If the expected value is a Date object, the actual value is
-  // equivalent if it is also a Date object that refers to the same time.
-  } else if (util.isDate(actual) && util.isDate(expected)) {
-    return actual.getTime() === expected.getTime();
-
-  // 7.3 If the expected value is a RegExp object, the actual value is
-  // equivalent if it is also a RegExp object with the same source and
-  // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
-  } else if (util.isRegExp(actual) && util.isRegExp(expected)) {
-    return actual.source === expected.source &&
-           actual.global === expected.global &&
-           actual.multiline === expected.multiline &&
-           actual.lastIndex === expected.lastIndex &&
-           actual.ignoreCase === expected.ignoreCase;
-
-  // 7.4. Other pairs that do not both pass typeof value == 'object',
-  // equivalence is determined by ==.
-  } else if ((actual === null || typeof actual !== 'object') &&
-             (expected === null || typeof expected !== 'object')) {
-    return strict ? actual === expected : actual == expected;
-
-  // If both values are instances of typed arrays, wrap their underlying
-  // ArrayBuffers in a Buffer each to increase performance
-  // This optimization requires the arrays to have the same type as checked by
-  // Object.prototype.toString (aka pToString). Never perform binary
-  // comparisons for Float*Arrays, though, since e.g. +0 === -0 but their
-  // bit patterns are not identical.
-  } else if (isView(actual) && isView(expected) &&
-             pToString(actual) === pToString(expected) &&
-             !(actual instanceof Float32Array ||
-               actual instanceof Float64Array)) {
-    return compare(new Uint8Array(actual.buffer),
-                   new Uint8Array(expected.buffer)) === 0;
-
-  // 7.5 For all other Object pairs, including Array objects, equivalence is
-  // determined by having the same number of owned properties (as verified
-  // with Object.prototype.hasOwnProperty.call), the same set of keys
-  // (although not necessarily the same order), equivalent values for every
-  // corresponding key, and an identical 'prototype' property. Note: this
-  // accounts for both named and indexed properties on Arrays.
-  } else if (isBuffer(actual) !== isBuffer(expected)) {
-    return false;
-  } else {
-    memos = memos || {actual: [], expected: []};
-
-    var actualIndex = memos.actual.indexOf(actual);
-    if (actualIndex !== -1) {
-      if (actualIndex === memos.expected.indexOf(expected)) {
-        return true;
-      }
-    }
-
-    memos.actual.push(actual);
-    memos.expected.push(expected);
-
-    return objEquiv(actual, expected, strict, memos);
-  }
-}
-
-function isArguments(object) {
-  return Object.prototype.toString.call(object) == '[object Arguments]';
-}
-
-function objEquiv(a, b, strict, actualVisitedObjects) {
-  if (a === null || a === undefined || b === null || b === undefined)
-    return false;
-  // if one is a primitive, the other must be same
-  if (util.isPrimitive(a) || util.isPrimitive(b))
-    return a === b;
-  if (strict && Object.getPrototypeOf(a) !== Object.getPrototypeOf(b))
-    return false;
-  var aIsArgs = isArguments(a);
-  var bIsArgs = isArguments(b);
-  if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs))
-    return false;
-  if (aIsArgs) {
-    a = pSlice.call(a);
-    b = pSlice.call(b);
-    return _deepEqual(a, b, strict);
-  }
-  var ka = objectKeys(a);
-  var kb = objectKeys(b);
-  var key, i;
-  // having the same number of owned properties (keys incorporates
-  // hasOwnProperty)
-  if (ka.length !== kb.length)
-    return false;
-  //the same set of keys (although not necessarily the same order),
-  ka.sort();
-  kb.sort();
-  //~~~cheap key test
-  for (i = ka.length - 1; i >= 0; i--) {
-    if (ka[i] !== kb[i])
-      return false;
-  }
-  //equivalent values for every corresponding key, and
-  //~~~possibly expensive deep test
-  for (i = ka.length - 1; i >= 0; i--) {
-    key = ka[i];
-    if (!_deepEqual(a[key], b[key], strict, actualVisitedObjects))
-      return false;
-  }
-  return true;
-}
-
-// 8. The non-equivalence assertion tests for any deep inequality.
-// assert.notDeepEqual(actual, expected, message_opt);
-
-assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
-  if (_deepEqual(actual, expected, false)) {
-    fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
-  }
-};
-
-assert.notDeepStrictEqual = notDeepStrictEqual;
-function notDeepStrictEqual(actual, expected, message) {
-  if (_deepEqual(actual, expected, true)) {
-    fail(actual, expected, message, 'notDeepStrictEqual', notDeepStrictEqual);
-  }
-}
-
-
-// 9. The strict equality assertion tests strict equality, as determined by ===.
-// assert.strictEqual(actual, expected, message_opt);
-
-assert.strictEqual = function strictEqual(actual, expected, message) {
-  if (actual !== expected) {
-    fail(actual, expected, message, '===', assert.strictEqual);
-  }
-};
-
-// 10. The strict non-equality assertion tests for strict inequality, as
-// determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
-
-assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
-  if (actual === expected) {
-    fail(actual, expected, message, '!==', assert.notStrictEqual);
-  }
-};
-
-function expectedException(actual, expected) {
-  if (!actual || !expected) {
-    return false;
-  }
-
-  if (Object.prototype.toString.call(expected) == '[object RegExp]') {
-    return expected.test(actual);
-  }
-
-  try {
-    if (actual instanceof expected) {
-      return true;
-    }
-  } catch (e) {
-    // Ignore.  The instanceof check doesn't work for arrow functions.
-  }
-
-  if (Error.isPrototypeOf(expected)) {
-    return false;
-  }
-
-  return expected.call({}, actual) === true;
-}
-
-function _tryBlock(block) {
-  var error;
-  try {
-    block();
-  } catch (e) {
-    error = e;
-  }
-  return error;
-}
-
-function _throws(shouldThrow, block, expected, message) {
-  var actual;
-
-  if (typeof block !== 'function') {
-    throw new TypeError('"block" argument must be a function');
-  }
-
-  if (typeof expected === 'string') {
-    message = expected;
-    expected = null;
-  }
-
-  actual = _tryBlock(block);
-
-  message = (expected && expected.name ? ' (' + expected.name + ').' : '.') +
-            (message ? ' ' + message : '.');
-
-  if (shouldThrow && !actual) {
-    fail(actual, expected, 'Missing expected exception' + message);
-  }
-
-  var userProvidedMessage = typeof message === 'string';
-  var isUnwantedException = !shouldThrow && util.isError(actual);
-  var isUnexpectedException = !shouldThrow && actual && !expected;
-
-  if ((isUnwantedException &&
-      userProvidedMessage &&
-      expectedException(actual, expected)) ||
-      isUnexpectedException) {
-    fail(actual, expected, 'Got unwanted exception' + message);
-  }
-
-  if ((shouldThrow && actual && expected &&
-      !expectedException(actual, expected)) || (!shouldThrow && actual)) {
-    throw actual;
-  }
-}
-
-// 11. Expected to throw an error:
-// assert.throws(block, Error_opt, message_opt);
-
-assert.throws = function(block, /*optional*/error, /*optional*/message) {
-  _throws(true, block, error, message);
-};
-
-// EXTENSION! This is annoying to write outside this module.
-assert.doesNotThrow = function(block, /*optional*/error, /*optional*/message) {
-  _throws(false, block, error, message);
-};
-
-assert.ifError = function(err) { if (err) throw err; };
-
-var objectKeys = Object.keys || function (obj) {
-  var keys = [];
-  for (var key in obj) {
-    if (hasOwn.call(obj, key)) keys.push(key);
-  }
-  return keys;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"util/":158}],5:[function(require,module,exports){
+},{"_process":82,"buffer":7,"jsonparse":43,"through":148}],4:[function(require,module,exports){
 (function (process,global){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -6454,7 +5960,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":86}],6:[function(require,module,exports){
+},{"_process":82}],5:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -6570,11 +6076,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
-},{}],8:[function(require,module,exports){
-arguments[4][7][0].apply(exports,arguments)
-},{"dup":7}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -8367,1638 +7871,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":6,"ieee754":39,"isarray":43}],10:[function(require,module,exports){
-(function (Buffer,process){
-/**
- * Copyright (c) 2017 Trent Mick.
- * Copyright (c) 2017 Joyent Inc.
- *
- * The bunyan logging library for node.js.
- *
- * -*- mode: js -*-
- * vim: expandtab:ts=4:sw=4
- */
-
-var VERSION = '1.8.12';
-
-/*
- * Bunyan log format version. This becomes the 'v' field on all log records.
- * This will be incremented if there is any backward incompatible change to
- * the log record format. Details will be in 'CHANGES.md' (the change log).
- */
-var LOG_VERSION = 0;
-
-
-var xxx = function xxx(s) {     // internal dev/debug logging
-    var args = ['XX' + 'X: '+s].concat(
-        Array.prototype.slice.call(arguments, 1));
-    console.error.apply(this, args);
-};
-var xxx = function xxx() {};  // comment out to turn on debug logging
-
-
-/*
- * Runtime environment notes:
- *
- * Bunyan is intended to run in a number of runtime environments. Here are
- * some notes on differences for those envs and how the code copes.
- *
- * - node.js: The primary target environment.
- * - NW.js: http://nwjs.io/  An *app* environment that feels like both a
- *   node env -- it has node-like globals (`process`, `global`) and
- *   browser-like globals (`window`, `navigator`). My *understanding* is that
- *   bunyan can operate as if this is vanilla node.js.
- * - browser: Failing the above, we sniff using the `window` global
- *   <https://developer.mozilla.org/en-US/docs/Web/API/Window/window>.
- *      - browserify: http://browserify.org/  A browser-targetting bundler of
- *        node.js deps. The runtime is a browser env, so can't use fs access,
- *        etc. Browserify's build looks for `require(<single-string>)` imports
- *        to bundle. For some imports it won't be able to handle, we "hide"
- *        from browserify with `require('frobshizzle' + '')`.
- * - Other? Please open issues if things are broken.
- */
-var runtimeEnv;
-if (typeof (process) !== 'undefined' && process.versions) {
-    if (process.versions.nw) {
-        runtimeEnv = 'nw';
-    } else if (process.versions.node) {
-        runtimeEnv = 'node';
-    }
-}
-if (!runtimeEnv && typeof (window) !== 'undefined' &&
-    window.window === window) {
-    runtimeEnv = 'browser';
-}
-if (!runtimeEnv) {
-    throw new Error('unknown runtime environment');
-}
-
-
-var os, fs, dtrace;
-if (runtimeEnv === 'browser') {
-    os = {
-        hostname: function () {
-            return window.location.host;
-        }
-    };
-    fs = {};
-    dtrace = null;
-} else {
-    os = require('os');
-    fs = require('fs');
-    try {
-        dtrace = require('dtrace-provider' + '');
-    } catch (e) {
-        dtrace = null;
-    }
-}
-var util = require('util');
-var assert = require('assert');
-var EventEmitter = require('events').EventEmitter;
-var stream = require('stream');
-
-try {
-    var safeJsonStringify = require('safe-json-stringify');
-} catch (e) {
-    safeJsonStringify = null;
-}
-if (process.env.BUNYAN_TEST_NO_SAFE_JSON_STRINGIFY) {
-    safeJsonStringify = null;
-}
-
-// The 'mv' module is required for rotating-file stream support.
-try {
-    var mv = require('mv' + '');
-} catch (e) {
-    mv = null;
-}
-
-try {
-    var sourceMapSupport = require('source-map-support' + '');
-} catch (_) {
-    sourceMapSupport = null;
-}
-
-
-//---- Internal support stuff
-
-/**
- * A shallow copy of an object. Bunyan logging attempts to never cause
- * exceptions, so this function attempts to handle non-objects gracefully.
- */
-function objCopy(obj) {
-    if (obj == null) {  // null or undefined
-        return obj;
-    } else if (Array.isArray(obj)) {
-        return obj.slice();
-    } else if (typeof (obj) === 'object') {
-        var copy = {};
-        Object.keys(obj).forEach(function (k) {
-            copy[k] = obj[k];
-        });
-        return copy;
-    } else {
-        return obj;
-    }
-}
-
-var format = util.format;
-if (!format) {
-    // If node < 0.6, then use its `util.format`:
-    // <https://github.com/joyent/node/blob/master/lib/util.js#L22>:
-    var inspect = util.inspect;
-    var formatRegExp = /%[sdj%]/g;
-    format = function format(f) {
-        if (typeof (f) !== 'string') {
-            var objects = [];
-            for (var i = 0; i < arguments.length; i++) {
-                objects.push(inspect(arguments[i]));
-            }
-            return objects.join(' ');
-        }
-
-        var i = 1;
-        var args = arguments;
-        var len = args.length;
-        var str = String(f).replace(formatRegExp, function (x) {
-            if (i >= len)
-                return x;
-            switch (x) {
-                case '%s': return String(args[i++]);
-                case '%d': return Number(args[i++]);
-                case '%j': return fastAndSafeJsonStringify(args[i++]);
-                case '%%': return '%';
-                default:
-                    return x;
-            }
-        });
-        for (var x = args[i]; i < len; x = args[++i]) {
-            if (x === null || typeof (x) !== 'object') {
-                str += ' ' + x;
-            } else {
-                str += ' ' + inspect(x);
-            }
-        }
-        return str;
-    };
-}
-
-
-/**
- * Gather some caller info 3 stack levels up.
- * See <http://code.google.com/p/v8/wiki/JavaScriptStackTraceApi>.
- */
-function getCaller3Info() {
-    if (this === undefined) {
-        // Cannot access caller info in 'strict' mode.
-        return;
-    }
-    var obj = {};
-    var saveLimit = Error.stackTraceLimit;
-    var savePrepare = Error.prepareStackTrace;
-    Error.stackTraceLimit = 3;
-
-    Error.prepareStackTrace = function (_, stack) {
-        var caller = stack[2];
-        if (sourceMapSupport) {
-            caller = sourceMapSupport.wrapCallSite(caller);
-        }
-        obj.file = caller.getFileName();
-        obj.line = caller.getLineNumber();
-        var func = caller.getFunctionName();
-        if (func)
-            obj.func = func;
-    };
-    Error.captureStackTrace(this, getCaller3Info);
-    this.stack;
-
-    Error.stackTraceLimit = saveLimit;
-    Error.prepareStackTrace = savePrepare;
-    return obj;
-}
-
-
-function _indent(s, indent) {
-    if (!indent) indent = '    ';
-    var lines = s.split(/\r?\n/g);
-    return indent + lines.join('\n' + indent);
-}
-
-
-/**
- * Warn about an bunyan processing error.
- *
- * @param msg {String} Message with which to warn.
- * @param dedupKey {String} Optional. A short string key for this warning to
- *      have its warning only printed once.
- */
-function _warn(msg, dedupKey) {
-    assert.ok(msg);
-    if (dedupKey) {
-        if (_warned[dedupKey]) {
-            return;
-        }
-        _warned[dedupKey] = true;
-    }
-    process.stderr.write(msg + '\n');
-}
-function _haveWarned(dedupKey) {
-    return _warned[dedupKey];
-}
-var _warned = {};
-
-
-function ConsoleRawStream() {}
-ConsoleRawStream.prototype.write = function (rec) {
-    if (rec.level < INFO) {
-        console.log(rec);
-    } else if (rec.level < WARN) {
-        console.info(rec);
-    } else if (rec.level < ERROR) {
-        console.warn(rec);
-    } else {
-        console.error(rec);
-    }
-};
-
-
-//---- Levels
-
-var TRACE = 10;
-var DEBUG = 20;
-var INFO = 30;
-var WARN = 40;
-var ERROR = 50;
-var FATAL = 60;
-
-var levelFromName = {
-    'trace': TRACE,
-    'debug': DEBUG,
-    'info': INFO,
-    'warn': WARN,
-    'error': ERROR,
-    'fatal': FATAL
-};
-var nameFromLevel = {};
-Object.keys(levelFromName).forEach(function (name) {
-    nameFromLevel[levelFromName[name]] = name;
-});
-
-// Dtrace probes.
-var dtp = undefined;
-var probes = dtrace && {};
-
-/**
- * Resolve a level number, name (upper or lowercase) to a level number value.
- *
- * @param nameOrNum {String|Number} A level name (case-insensitive) or positive
- *      integer level.
- * @api public
- */
-function resolveLevel(nameOrNum) {
-    var level;
-    var type = typeof (nameOrNum);
-    if (type === 'string') {
-        level = levelFromName[nameOrNum.toLowerCase()];
-        if (!level) {
-            throw new Error(format('unknown level name: "%s"', nameOrNum));
-        }
-    } else if (type !== 'number') {
-        throw new TypeError(format('cannot resolve level: invalid arg (%s):',
-            type, nameOrNum));
-    } else if (nameOrNum < 0 || Math.floor(nameOrNum) !== nameOrNum) {
-        throw new TypeError(format('level is not a positive integer: %s',
-            nameOrNum));
-    } else {
-        level = nameOrNum;
-    }
-    return level;
-}
-
-
-function isWritable(obj) {
-    if (obj instanceof stream.Writable) {
-        return true;
-    }
-    return typeof (obj.write) === 'function';
-}
-
-
-//---- Logger class
-
-/**
- * Create a Logger instance.
- *
- * @param options {Object} See documentation for full details. At minimum
- *    this must include a 'name' string key. Configuration keys:
- *      - `streams`: specify the logger output streams. This is an array of
- *        objects with these fields:
- *          - `type`: The stream type. See README.md for full details.
- *            Often this is implied by the other fields. Examples are
- *            'file', 'stream' and "raw".
- *          - `level`: Defaults to 'info'.
- *          - `path` or `stream`: The specify the file path or writeable
- *            stream to which log records are written. E.g.
- *            `stream: process.stdout`.
- *          - `closeOnExit` (boolean): Optional. Default is true for a
- *            'file' stream when `path` is given, false otherwise.
- *        See README.md for full details.
- *      - `level`: set the level for a single output stream (cannot be used
- *        with `streams`)
- *      - `stream`: the output stream for a logger with just one, e.g.
- *        `process.stdout` (cannot be used with `streams`)
- *      - `serializers`: object mapping log record field names to
- *        serializing functions. See README.md for details.
- *      - `src`: Boolean (default false). Set true to enable 'src' automatic
- *        field with log call source info.
- *    All other keys are log record fields.
- *
- * An alternative *internal* call signature is used for creating a child:
- *    new Logger(<parent logger>, <child options>[, <child opts are simple>]);
- *
- * @param _childSimple (Boolean) An assertion that the given `_childOptions`
- *    (a) only add fields (no config) and (b) no serialization handling is
- *    required for them. IOW, this is a fast path for frequent child
- *    creation.
- */
-function Logger(options, _childOptions, _childSimple) {
-    xxx('Logger start:', options)
-    if (!(this instanceof Logger)) {
-        return new Logger(options, _childOptions);
-    }
-
-    // Input arg validation.
-    var parent;
-    if (_childOptions !== undefined) {
-        parent = options;
-        options = _childOptions;
-        if (!(parent instanceof Logger)) {
-            throw new TypeError(
-                'invalid Logger creation: do not pass a second arg');
-        }
-    }
-    if (!options) {
-        throw new TypeError('options (object) is required');
-    }
-    if (!parent) {
-        if (!options.name) {
-            throw new TypeError('options.name (string) is required');
-        }
-    } else {
-        if (options.name) {
-            throw new TypeError(
-                'invalid options.name: child cannot set logger name');
-        }
-    }
-    if (options.stream && options.streams) {
-        throw new TypeError('cannot mix "streams" and "stream" options');
-    }
-    if (options.streams && !Array.isArray(options.streams)) {
-        throw new TypeError('invalid options.streams: must be an array')
-    }
-    if (options.serializers && (typeof (options.serializers) !== 'object' ||
-            Array.isArray(options.serializers))) {
-        throw new TypeError('invalid options.serializers: must be an object')
-    }
-
-    EventEmitter.call(this);
-
-    // Fast path for simple child creation.
-    if (parent && _childSimple) {
-        // `_isSimpleChild` is a signal to stream close handling that this child
-        // owns none of its streams.
-        this._isSimpleChild = true;
-
-        this._level = parent._level;
-        this.streams = parent.streams;
-        this.serializers = parent.serializers;
-        this.src = parent.src;
-        var fields = this.fields = {};
-        var parentFieldNames = Object.keys(parent.fields);
-        for (var i = 0; i < parentFieldNames.length; i++) {
-            var name = parentFieldNames[i];
-            fields[name] = parent.fields[name];
-        }
-        var names = Object.keys(options);
-        for (var i = 0; i < names.length; i++) {
-            var name = names[i];
-            fields[name] = options[name];
-        }
-        return;
-    }
-
-    // Start values.
-    var self = this;
-    if (parent) {
-        this._level = parent._level;
-        this.streams = [];
-        for (var i = 0; i < parent.streams.length; i++) {
-            var s = objCopy(parent.streams[i]);
-            s.closeOnExit = false; // Don't own parent stream.
-            this.streams.push(s);
-        }
-        this.serializers = objCopy(parent.serializers);
-        this.src = parent.src;
-        this.fields = objCopy(parent.fields);
-        if (options.level) {
-            this.level(options.level);
-        }
-    } else {
-        this._level = Number.POSITIVE_INFINITY;
-        this.streams = [];
-        this.serializers = null;
-        this.src = false;
-        this.fields = {};
-    }
-
-    if (!dtp && dtrace) {
-        dtp = dtrace.createDTraceProvider('bunyan');
-
-        for (var level in levelFromName) {
-            var probe;
-
-            probes[levelFromName[level]] = probe =
-                dtp.addProbe('log-' + level, 'char *');
-
-            // Explicitly add a reference to dtp to prevent it from being GC'd
-            probe.dtp = dtp;
-        }
-
-        dtp.enable();
-    }
-
-    // Handle *config* options (i.e. options that are not just plain data
-    // for log records).
-    if (options.stream) {
-        self.addStream({
-            type: 'stream',
-            stream: options.stream,
-            closeOnExit: false,
-            level: options.level
-        });
-    } else if (options.streams) {
-        options.streams.forEach(function (s) {
-            self.addStream(s, options.level);
-        });
-    } else if (parent && options.level) {
-        this.level(options.level);
-    } else if (!parent) {
-        if (runtimeEnv === 'browser') {
-            /*
-             * In the browser we'll be emitting to console.log by default.
-             * Any console.log worth its salt these days can nicely render
-             * and introspect objects (e.g. the Firefox and Chrome console)
-             * so let's emit the raw log record. Are there browsers for which
-             * that breaks things?
-             */
-            self.addStream({
-                type: 'raw',
-                stream: new ConsoleRawStream(),
-                closeOnExit: false,
-                level: options.level
-            });
-        } else {
-            self.addStream({
-                type: 'stream',
-                stream: process.stdout,
-                closeOnExit: false,
-                level: options.level
-            });
-        }
-    }
-    if (options.serializers) {
-        self.addSerializers(options.serializers);
-    }
-    if (options.src) {
-        this.src = true;
-    }
-    xxx('Logger: ', self)
-
-    // Fields.
-    // These are the default fields for log records (minus the attributes
-    // removed in this constructor). To allow storing raw log records
-    // (unrendered), `this.fields` must never be mutated. Create a copy for
-    // any changes.
-    var fields = objCopy(options);
-    delete fields.stream;
-    delete fields.level;
-    delete fields.streams;
-    delete fields.serializers;
-    delete fields.src;
-    if (this.serializers) {
-        this._applySerializers(fields);
-    }
-    if (!fields.hostname && !self.fields.hostname) {
-        fields.hostname = os.hostname();
-    }
-    if (!fields.pid) {
-        fields.pid = process.pid;
-    }
-    Object.keys(fields).forEach(function (k) {
-        self.fields[k] = fields[k];
-    });
-}
-
-util.inherits(Logger, EventEmitter);
-
-
-/**
- * Add a stream
- *
- * @param stream {Object}. Object with these fields:
- *    - `type`: The stream type. See README.md for full details.
- *      Often this is implied by the other fields. Examples are
- *      'file', 'stream' and "raw".
- *    - `path` or `stream`: The specify the file path or writeable
- *      stream to which log records are written. E.g.
- *      `stream: process.stdout`.
- *    - `level`: Optional. Falls back to `defaultLevel`.
- *    - `closeOnExit` (boolean): Optional. Default is true for a
- *      'file' stream when `path` is given, false otherwise.
- *    See README.md for full details.
- * @param defaultLevel {Number|String} Optional. A level to use if
- *      `stream.level` is not set. If neither is given, this defaults to INFO.
- */
-Logger.prototype.addStream = function addStream(s, defaultLevel) {
-    var self = this;
-    if (defaultLevel === null || defaultLevel === undefined) {
-        defaultLevel = INFO;
-    }
-
-    s = objCopy(s);
-
-    // Implicit 'type' from other args.
-    if (!s.type) {
-        if (s.stream) {
-            s.type = 'stream';
-        } else if (s.path) {
-            s.type = 'file'
-        }
-    }
-    s.raw = (s.type === 'raw');  // PERF: Allow for faster check in `_emit`.
-
-    if (s.level !== undefined) {
-        s.level = resolveLevel(s.level);
-    } else {
-        s.level = resolveLevel(defaultLevel);
-    }
-    if (s.level < self._level) {
-        self._level = s.level;
-    }
-
-    switch (s.type) {
-    case 'stream':
-        assert.ok(isWritable(s.stream),
-                  '"stream" stream is not writable: ' + util.inspect(s.stream));
-
-        if (!s.closeOnExit) {
-            s.closeOnExit = false;
-        }
-        break;
-    case 'file':
-        if (s.reemitErrorEvents === undefined) {
-            s.reemitErrorEvents = true;
-        }
-        if (!s.stream) {
-            s.stream = fs.createWriteStream(s.path,
-                                            {flags: 'a', encoding: 'utf8'});
-            if (!s.closeOnExit) {
-                s.closeOnExit = true;
-            }
-        } else {
-            if (!s.closeOnExit) {
-                s.closeOnExit = false;
-            }
-        }
-        break;
-    case 'rotating-file':
-        assert.ok(!s.stream,
-                  '"rotating-file" stream should not give a "stream"');
-        assert.ok(s.path);
-        assert.ok(mv, '"rotating-file" stream type is not supported: '
-                      + 'missing "mv" module');
-        s.stream = new RotatingFileStream(s);
-        if (!s.closeOnExit) {
-            s.closeOnExit = true;
-        }
-        break;
-    case 'raw':
-        if (!s.closeOnExit) {
-            s.closeOnExit = false;
-        }
-        break;
-    default:
-        throw new TypeError('unknown stream type "' + s.type + '"');
-    }
-
-    if (s.reemitErrorEvents && typeof (s.stream.on) === 'function') {
-        // TODO: When we have `<logger>.close()`, it should remove event
-        //      listeners to not leak Logger instances.
-        s.stream.on('error', function onStreamError(err) {
-            self.emit('error', err, s);
-        });
-    }
-
-    self.streams.push(s);
-    delete self.haveNonRawStreams;  // reset
-}
-
-
-/**
- * Add serializers
- *
- * @param serializers {Object} Optional. Object mapping log record field names
- *    to serializing functions. See README.md for details.
- */
-Logger.prototype.addSerializers = function addSerializers(serializers) {
-    var self = this;
-
-    if (!self.serializers) {
-        self.serializers = {};
-    }
-    Object.keys(serializers).forEach(function (field) {
-        var serializer = serializers[field];
-        if (typeof (serializer) !== 'function') {
-            throw new TypeError(format(
-                'invalid serializer for "%s" field: must be a function',
-                field));
-        } else {
-            self.serializers[field] = serializer;
-        }
-    });
-}
-
-
-
-/**
- * Create a child logger, typically to add a few log record fields.
- *
- * This can be useful when passing a logger to a sub-component, e.g. a
- * 'wuzzle' component of your service:
- *
- *    var wuzzleLog = log.child({component: 'wuzzle'})
- *    var wuzzle = new Wuzzle({..., log: wuzzleLog})
- *
- * Then log records from the wuzzle code will have the same structure as
- * the app log, *plus the component='wuzzle' field*.
- *
- * @param options {Object} Optional. Set of options to apply to the child.
- *    All of the same options for a new Logger apply here. Notes:
- *      - The parent's streams are inherited and cannot be removed in this
- *        call. Any given `streams` are *added* to the set inherited from
- *        the parent.
- *      - The parent's serializers are inherited, though can effectively be
- *        overwritten by using duplicate keys.
- *      - Can use `level` to set the level of the streams inherited from
- *        the parent. The level for the parent is NOT affected.
- * @param simple {Boolean} Optional. Set to true to assert that `options`
- *    (a) only add fields (no config) and (b) no serialization handling is
- *    required for them. IOW, this is a fast path for frequent child
- *    creation. See 'tools/timechild.js' for numbers.
- */
-Logger.prototype.child = function (options, simple) {
-    return new (this.constructor)(this, options || {}, simple);
-}
-
-
-/**
- * A convenience method to reopen 'file' streams on a logger. This can be
- * useful with external log rotation utilities that move and re-open log files
- * (e.g. logrotate on Linux, logadm on SmartOS/Illumos). Those utilities
- * typically have rotation options to copy-and-truncate the log file, but
- * you may not want to use that. An alternative is to do this in your
- * application:
- *
- *      var log = bunyan.createLogger(...);
- *      ...
- *      process.on('SIGUSR2', function () {
- *          log.reopenFileStreams();
- *      });
- *      ...
- *
- * See <https://github.com/trentm/node-bunyan/issues/104>.
- */
-Logger.prototype.reopenFileStreams = function () {
-    var self = this;
-    self.streams.forEach(function (s) {
-        if (s.type === 'file') {
-            if (s.stream) {
-                // Not sure if typically would want this, or more immediate
-                // `s.stream.destroy()`.
-                s.stream.end();
-                s.stream.destroySoon();
-                delete s.stream;
-            }
-            s.stream = fs.createWriteStream(s.path,
-                {flags: 'a', encoding: 'utf8'});
-            s.stream.on('error', function (err) {
-                self.emit('error', err, s);
-            });
-        }
-    });
-};
-
-
-/* BEGIN JSSTYLED */
-/**
- * Close this logger.
- *
- * This closes streams (that it owns, as per 'endOnClose' attributes on
- * streams), etc. Typically you **don't** need to bother calling this.
-Logger.prototype.close = function () {
-    if (this._closed) {
-        return;
-    }
-    if (!this._isSimpleChild) {
-        self.streams.forEach(function (s) {
-            if (s.endOnClose) {
-                xxx('closing stream s:', s);
-                s.stream.end();
-                s.endOnClose = false;
-            }
-        });
-    }
-    this._closed = true;
-}
- */
-/* END JSSTYLED */
-
-
-/**
- * Get/set the level of all streams on this logger.
- *
- * Get Usage:
- *    // Returns the current log level (lowest level of all its streams).
- *    log.level() -> INFO
- *
- * Set Usage:
- *    log.level(INFO)       // set all streams to level INFO
- *    log.level('info')     // can use 'info' et al aliases
- */
-Logger.prototype.level = function level(value) {
-    if (value === undefined) {
-        return this._level;
-    }
-    var newLevel = resolveLevel(value);
-    var len = this.streams.length;
-    for (var i = 0; i < len; i++) {
-        this.streams[i].level = newLevel;
-    }
-    this._level = newLevel;
-}
-
-
-/**
- * Get/set the level of a particular stream on this logger.
- *
- * Get Usage:
- *    // Returns an array of the levels of each stream.
- *    log.levels() -> [TRACE, INFO]
- *
- *    // Returns a level of the identified stream.
- *    log.levels(0) -> TRACE      // level of stream at index 0
- *    log.levels('foo')           // level of stream with name 'foo'
- *
- * Set Usage:
- *    log.levels(0, INFO)         // set level of stream 0 to INFO
- *    log.levels(0, 'info')       // can use 'info' et al aliases
- *    log.levels('foo', WARN)     // set stream named 'foo' to WARN
- *
- * Stream names: When streams are defined, they can optionally be given
- * a name. For example,
- *       log = new Logger({
- *         streams: [
- *           {
- *             name: 'foo',
- *             path: '/var/log/my-service/foo.log'
- *             level: 'trace'
- *           },
- *         ...
- *
- * @param name {String|Number} The stream index or name.
- * @param value {Number|String} The level value (INFO) or alias ('info').
- *    If not given, this is a 'get' operation.
- * @throws {Error} If there is no stream with the given name.
- */
-Logger.prototype.levels = function levels(name, value) {
-    if (name === undefined) {
-        assert.equal(value, undefined);
-        return this.streams.map(
-            function (s) { return s.level });
-    }
-    var stream;
-    if (typeof (name) === 'number') {
-        stream = this.streams[name];
-        if (stream === undefined) {
-            throw new Error('invalid stream index: ' + name);
-        }
-    } else {
-        var len = this.streams.length;
-        for (var i = 0; i < len; i++) {
-            var s = this.streams[i];
-            if (s.name === name) {
-                stream = s;
-                break;
-            }
-        }
-        if (!stream) {
-            throw new Error(format('no stream with name "%s"', name));
-        }
-    }
-    if (value === undefined) {
-        return stream.level;
-    } else {
-        var newLevel = resolveLevel(value);
-        stream.level = newLevel;
-        if (newLevel < this._level) {
-            this._level = newLevel;
-        }
-    }
-}
-
-
-/**
- * Apply registered serializers to the appropriate keys in the given fields.
- *
- * Pre-condition: This is only called if there is at least one serializer.
- *
- * @param fields (Object) The log record fields.
- * @param excludeFields (Object) Optional mapping of keys to `true` for
- *    keys to NOT apply a serializer.
- */
-Logger.prototype._applySerializers = function (fields, excludeFields) {
-    var self = this;
-
-    xxx('_applySerializers: excludeFields', excludeFields);
-
-    // Check each serializer against these (presuming number of serializers
-    // is typically less than number of fields).
-    Object.keys(this.serializers).forEach(function (name) {
-        if (fields[name] === undefined ||
-            (excludeFields && excludeFields[name]))
-        {
-            return;
-        }
-        xxx('_applySerializers; apply to "%s" key', name)
-        try {
-            fields[name] = self.serializers[name](fields[name]);
-        } catch (err) {
-            _warn(format('bunyan: ERROR: Exception thrown from the "%s" '
-                + 'Bunyan serializer. This should never happen. This is a bug '
-                + 'in that serializer function.\n%s',
-                name, err.stack || err));
-            fields[name] = format('(Error in Bunyan log "%s" serializer '
-                + 'broke field. See stderr for details.)', name);
-        }
-    });
-}
-
-
-/**
- * Emit a log record.
- *
- * @param rec {log record}
- * @param noemit {Boolean} Optional. Set to true to skip emission
- *      and just return the JSON string.
- */
-Logger.prototype._emit = function (rec, noemit) {
-    var i;
-
-    // Lazily determine if this Logger has non-'raw' streams. If there are
-    // any, then we need to stringify the log record.
-    if (this.haveNonRawStreams === undefined) {
-        this.haveNonRawStreams = false;
-        for (i = 0; i < this.streams.length; i++) {
-            if (!this.streams[i].raw) {
-                this.haveNonRawStreams = true;
-                break;
-            }
-        }
-    }
-
-    // Stringify the object (creates a warning str on error).
-    var str;
-    if (noemit || this.haveNonRawStreams) {
-        str = fastAndSafeJsonStringify(rec) + '\n';
-    }
-
-    if (noemit)
-        return str;
-
-    var level = rec.level;
-    for (i = 0; i < this.streams.length; i++) {
-        var s = this.streams[i];
-        if (s.level <= level) {
-            xxx('writing log rec "%s" to "%s" stream (%d <= %d): %j',
-                rec.msg, s.type, s.level, level, rec);
-            s.stream.write(s.raw ? rec : str);
-        }
-    };
-
-    return str;
-}
-
-
-/**
- * Build a record object suitable for emitting from the arguments
- * provided to the a log emitter.
- */
-function mkRecord(log, minLevel, args) {
-    var excludeFields, fields, msgArgs;
-    if (args[0] instanceof Error) {
-        // `log.<level>(err, ...)`
-        fields = {
-            // Use this Logger's err serializer, if defined.
-            err: (log.serializers && log.serializers.err
-                ? log.serializers.err(args[0])
-                : Logger.stdSerializers.err(args[0]))
-        };
-        excludeFields = {err: true};
-        if (args.length === 1) {
-            msgArgs = [fields.err.message];
-        } else {
-            msgArgs = args.slice(1);
-        }
-    } else if (typeof (args[0]) !== 'object' || Array.isArray(args[0])) {
-        // `log.<level>(msg, ...)`
-        fields = null;
-        msgArgs = args.slice();
-    } else if (Buffer.isBuffer(args[0])) {  // `log.<level>(buf, ...)`
-        // Almost certainly an error, show `inspect(buf)`. See bunyan
-        // issue #35.
-        fields = null;
-        msgArgs = args.slice();
-        msgArgs[0] = util.inspect(msgArgs[0]);
-    } else {  // `log.<level>(fields, msg, ...)`
-        fields = args[0];
-        if (fields && args.length === 1 && fields.err &&
-            fields.err instanceof Error)
-        {
-            msgArgs = [fields.err.message];
-        } else {
-            msgArgs = args.slice(1);
-        }
-    }
-
-    // Build up the record object.
-    var rec = objCopy(log.fields);
-    var level = rec.level = minLevel;
-    var recFields = (fields ? objCopy(fields) : null);
-    if (recFields) {
-        if (log.serializers) {
-            log._applySerializers(recFields, excludeFields);
-        }
-        Object.keys(recFields).forEach(function (k) {
-            rec[k] = recFields[k];
-        });
-    }
-    rec.msg = format.apply(log, msgArgs);
-    if (!rec.time) {
-        rec.time = (new Date());
-    }
-    // Get call source info
-    if (log.src && !rec.src) {
-        rec.src = getCaller3Info()
-    }
-    rec.v = LOG_VERSION;
-
-    return rec;
-};
-
-
-/**
- * Build an array that dtrace-provider can use to fire a USDT probe. If we've
- * already built the appropriate string, we use it. Otherwise, build the
- * record object and stringify it.
- */
-function mkProbeArgs(str, log, minLevel, msgArgs) {
-    return [ str || log._emit(mkRecord(log, minLevel, msgArgs), true) ];
-}
-
-
-/**
- * Build a log emitter function for level minLevel. I.e. this is the
- * creator of `log.info`, `log.error`, etc.
- */
-function mkLogEmitter(minLevel) {
-    return function () {
-        var log = this;
-        var str = null;
-        var rec = null;
-
-        if (!this._emit) {
-            /*
-             * Show this invalid Bunyan usage warning *once*.
-             *
-             * See <https://github.com/trentm/node-bunyan/issues/100> for
-             * an example of how this can happen.
-             */
-            var dedupKey = 'unbound';
-            if (!_haveWarned[dedupKey]) {
-                var caller = getCaller3Info();
-                _warn(format('bunyan usage error: %s:%s: attempt to log '
-                    + 'with an unbound log method: `this` is: %s',
-                    caller.file, caller.line, util.inspect(this)),
-                    dedupKey);
-            }
-            return;
-        } else if (arguments.length === 0) {   // `log.<level>()`
-            return (this._level <= minLevel);
-        }
-
-        var msgArgs = new Array(arguments.length);
-        for (var i = 0; i < msgArgs.length; ++i) {
-            msgArgs[i] = arguments[i];
-        }
-
-        if (this._level <= minLevel) {
-            rec = mkRecord(log, minLevel, msgArgs);
-            str = this._emit(rec);
-        }
-
-        if (probes) {
-            probes[minLevel].fire(mkProbeArgs, str, log, minLevel, msgArgs);
-        }
-    }
-}
-
-
-/**
- * The functions below log a record at a specific level.
- *
- * Usages:
- *    log.<level>()  -> boolean is-trace-enabled
- *    log.<level>(<Error> err, [<string> msg, ...])
- *    log.<level>(<string> msg, ...)
- *    log.<level>(<object> fields, <string> msg, ...)
- *
- * where <level> is the lowercase version of the log level. E.g.:
- *
- *    log.info()
- *
- * @params fields {Object} Optional set of additional fields to log.
- * @params msg {String} Log message. This can be followed by additional
- *    arguments that are handled like
- *    [util.format](http://nodejs.org/docs/latest/api/all.html#util.format).
- */
-Logger.prototype.trace = mkLogEmitter(TRACE);
-Logger.prototype.debug = mkLogEmitter(DEBUG);
-Logger.prototype.info = mkLogEmitter(INFO);
-Logger.prototype.warn = mkLogEmitter(WARN);
-Logger.prototype.error = mkLogEmitter(ERROR);
-Logger.prototype.fatal = mkLogEmitter(FATAL);
-
-
-
-//---- Standard serializers
-// A serializer is a function that serializes a JavaScript object to a
-// JSON representation for logging. There is a standard set of presumed
-// interesting objects in node.js-land.
-
-Logger.stdSerializers = {};
-
-// Serialize an HTTP request.
-Logger.stdSerializers.req = function (req) {
-    if (!req || !req.connection)
-        return req;
-    return {
-        method: req.method,
-        url: req.url,
-        headers: req.headers,
-        remoteAddress: req.connection.remoteAddress,
-        remotePort: req.connection.remotePort
-    };
-    // Trailers: Skipping for speed. If you need trailers in your app, then
-    // make a custom serializer.
-    //if (Object.keys(trailers).length > 0) {
-    //  obj.trailers = req.trailers;
-    //}
-};
-
-// Serialize an HTTP response.
-Logger.stdSerializers.res = function (res) {
-    if (!res || !res.statusCode)
-        return res;
-    return {
-        statusCode: res.statusCode,
-        header: res._header
-    }
-};
-
-
-/*
- * This function dumps long stack traces for exceptions having a cause()
- * method. The error classes from
- * [verror](https://github.com/davepacheco/node-verror) and
- * [restify v2.0](https://github.com/mcavage/node-restify) are examples.
- *
- * Based on `dumpException` in
- * https://github.com/davepacheco/node-extsprintf/blob/master/lib/extsprintf.js
- */
-function getFullErrorStack(ex)
-{
-    var ret = ex.stack || ex.toString();
-    if (ex.cause && typeof (ex.cause) === 'function') {
-        var cex = ex.cause();
-        if (cex) {
-            ret += '\nCaused by: ' + getFullErrorStack(cex);
-        }
-    }
-    return (ret);
-}
-
-// Serialize an Error object
-// (Core error properties are enumerable in node 0.4, not in 0.6).
-var errSerializer = Logger.stdSerializers.err = function (err) {
-    if (!err || !err.stack)
-        return err;
-    var obj = {
-        message: err.message,
-        name: err.name,
-        stack: getFullErrorStack(err),
-        code: err.code,
-        signal: err.signal
-    }
-    return obj;
-};
-
-
-// A JSON stringifier that handles cycles safely - tracks seen values in a Set.
-function safeCyclesSet() {
-    var seen = new Set();
-    return function (key, val) {
-        if (!val || typeof (val) !== 'object') {
-            return val;
-        }
-        if (seen.has(val)) {
-            return '[Circular]';
-        }
-        seen.add(val);
-        return val;
-    };
-}
-
-/**
- * A JSON stringifier that handles cycles safely - tracks seen vals in an Array.
- *
- * Note: This approach has performance problems when dealing with large objects,
- * see trentm/node-bunyan#445, but since this is the only option for node 0.10
- * and earlier (as Set was introduced in Node 0.12), it's used as a fallback
- * when Set is not available.
- */
-function safeCyclesArray() {
-    var seen = [];
-    return function (key, val) {
-        if (!val || typeof (val) !== 'object') {
-            return val;
-        }
-        if (seen.indexOf(val) !== -1) {
-            return '[Circular]';
-        }
-        seen.push(val);
-        return val;
-    };
-}
-
-/**
- * A JSON stringifier that handles cycles safely.
- *
- * Usage: JSON.stringify(obj, safeCycles())
- *
- * Choose the best safe cycle function from what is available - see
- * trentm/node-bunyan#445.
- */
-var safeCycles = typeof (Set) !== 'undefined' ? safeCyclesSet : safeCyclesArray;
-
-/**
- * A fast JSON.stringify that handles cycles and getter exceptions (when
- * safeJsonStringify is installed).
- *
- * This function attempts to use the regular JSON.stringify for speed, but on
- * error (e.g. JSON cycle detection exception) it falls back to safe stringify
- * handlers that can deal with cycles and/or getter exceptions.
- */
-function fastAndSafeJsonStringify(rec) {
-    try {
-        return JSON.stringify(rec);
-    } catch (ex) {
-        try {
-            return JSON.stringify(rec, safeCycles());
-        } catch (e) {
-            if (safeJsonStringify) {
-                return safeJsonStringify(rec);
-            } else {
-                var dedupKey = e.stack.split(/\n/g, 3).join('\n');
-                _warn('bunyan: ERROR: Exception in '
-                    + '`JSON.stringify(rec)`. You can install the '
-                    + '"safe-json-stringify" module to have Bunyan fallback '
-                    + 'to safer stringification. Record:\n'
-                    + _indent(format('%s\n%s', util.inspect(rec), e.stack)),
-                    dedupKey);
-                return format('(Exception in JSON.stringify(rec): %j. '
-                    + 'See stderr for details.)', e.message);
-            }
-        }
-    }
-}
-
-
-var RotatingFileStream = null;
-if (mv) {
-
-RotatingFileStream = function RotatingFileStream(options) {
-    this.path = options.path;
-
-    this.count = (options.count == null ? 10 : options.count);
-    assert.equal(typeof (this.count), 'number',
-        format('rotating-file stream "count" is not a number: %j (%s) in %j',
-            this.count, typeof (this.count), this));
-    assert.ok(this.count >= 0,
-        format('rotating-file stream "count" is not >= 0: %j in %j',
-            this.count, this));
-
-    // Parse `options.period`.
-    if (options.period) {
-        // <number><scope> where scope is:
-        //    h   hours (at the start of the hour)
-        //    d   days (at the start of the day, i.e. just after midnight)
-        //    w   weeks (at the start of Sunday)
-        //    m   months (on the first of the month)
-        //    y   years (at the start of Jan 1st)
-        // with special values 'hourly' (1h), 'daily' (1d), "weekly" (1w),
-        // 'monthly' (1m) and 'yearly' (1y)
-        var period = {
-            'hourly': '1h',
-            'daily': '1d',
-            'weekly': '1w',
-            'monthly': '1m',
-            'yearly': '1y'
-        }[options.period] || options.period;
-        var m = /^([1-9][0-9]*)([hdwmy]|ms)$/.exec(period);
-        if (!m) {
-            throw new Error(format('invalid period: "%s"', options.period));
-        }
-        this.periodNum = Number(m[1]);
-        this.periodScope = m[2];
-    } else {
-        this.periodNum = 1;
-        this.periodScope = 'd';
-    }
-
-    var lastModified = null;
-    try {
-        var fileInfo = fs.statSync(this.path);
-        lastModified = fileInfo.mtime.getTime();
-    }
-    catch (err) {
-        // file doesn't exist
-    }
-    var rotateAfterOpen = false;
-    if (lastModified) {
-        var lastRotTime = this._calcRotTime(0);
-        if (lastModified < lastRotTime) {
-            rotateAfterOpen = true;
-        }
-    }
-
-    // TODO: template support for backup files
-    // template: <path to which to rotate>
-    //      default is %P.%n
-    //      '/var/log/archive/foo.log'  -> foo.log.%n
-    //      '/var/log/archive/foo.log.%n'
-    //      codes:
-    //          XXX support strftime codes (per node version of those)
-    //              or whatever module. Pick non-colliding for extra
-    //              codes
-    //          %P      `path` base value
-    //          %n      integer number of rotated log (1,2,3,...)
-    //          %d      datetime in YYYY-MM-DD_HH-MM-SS
-    //                      XXX what should default date format be?
-    //                          prior art? Want to avoid ':' in
-    //                          filenames (illegal on Windows for one).
-
-    this.stream = fs.createWriteStream(this.path,
-        {flags: 'a', encoding: 'utf8'});
-
-    this.rotQueue = [];
-    this.rotating = false;
-    if (rotateAfterOpen) {
-        this._debug('rotateAfterOpen -> call rotate()');
-        this.rotate();
-    } else {
-        this._setupNextRot();
-    }
-}
-
-util.inherits(RotatingFileStream, EventEmitter);
-
-RotatingFileStream.prototype._debug = function () {
-    // Set this to `true` to add debug logging.
-    if (false) {
-        if (arguments.length === 0) {
-            return true;
-        }
-        var args = Array.prototype.slice.call(arguments);
-        args[0] = '[' + (new Date().toISOString()) + ', '
-            + this.path + '] ' + args[0];
-        console.log.apply(this, args);
-    } else {
-        return false;
-    }
-};
-
-RotatingFileStream.prototype._setupNextRot = function () {
-    this.rotAt = this._calcRotTime(1);
-    this._setRotationTimer();
-}
-
-RotatingFileStream.prototype._setRotationTimer = function () {
-    var self = this;
-    var delay = this.rotAt - Date.now();
-    // Cap timeout to Node's max setTimeout, see
-    // <https://github.com/joyent/node/issues/8656>.
-    var TIMEOUT_MAX = 2147483647; // 2^31-1
-    if (delay > TIMEOUT_MAX) {
-        delay = TIMEOUT_MAX;
-    }
-    this.timeout = setTimeout(
-        function () {
-            self._debug('_setRotationTimer timeout -> call rotate()');
-            self.rotate();
-        },
-        delay);
-    if (typeof (this.timeout.unref) === 'function') {
-        this.timeout.unref();
-    }
-}
-
-RotatingFileStream.prototype._calcRotTime =
-function _calcRotTime(periodOffset) {
-    this._debug('_calcRotTime: %s%s', this.periodNum, this.periodScope);
-    var d = new Date();
-
-    this._debug('  now local: %s', d);
-    this._debug('    now utc: %s', d.toISOString());
-    var rotAt;
-    switch (this.periodScope) {
-    case 'ms':
-        // Hidden millisecond period for debugging.
-        if (this.rotAt) {
-            rotAt = this.rotAt + this.periodNum * periodOffset;
-        } else {
-            rotAt = Date.now() + this.periodNum * periodOffset;
-        }
-        break;
-    case 'h':
-        if (this.rotAt) {
-            rotAt = this.rotAt + this.periodNum * 60 * 60 * 1000 * periodOffset;
-        } else {
-            // First time: top of the next hour.
-            rotAt = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(),
-                d.getUTCDate(), d.getUTCHours() + periodOffset);
-        }
-        break;
-    case 'd':
-        if (this.rotAt) {
-            rotAt = this.rotAt + this.periodNum * 24 * 60 * 60 * 1000
-                * periodOffset;
-        } else {
-            // First time: start of tomorrow (i.e. at the coming midnight) UTC.
-            rotAt = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(),
-                d.getUTCDate() + periodOffset);
-        }
-        break;
-    case 'w':
-        // Currently, always on Sunday morning at 00:00:00 (UTC).
-        if (this.rotAt) {
-            rotAt = this.rotAt + this.periodNum * 7 * 24 * 60 * 60 * 1000
-                * periodOffset;
-        } else {
-            // First time: this coming Sunday.
-            var dayOffset = (7 - d.getUTCDay());
-            if (periodOffset < 1) {
-                dayOffset = -d.getUTCDay();
-            }
-            if (periodOffset > 1 || periodOffset < -1) {
-                dayOffset += 7 * periodOffset;
-            }
-            rotAt = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(),
-                d.getUTCDate() + dayOffset);
-        }
-        break;
-    case 'm':
-        if (this.rotAt) {
-            rotAt = Date.UTC(d.getUTCFullYear(),
-                d.getUTCMonth() + this.periodNum * periodOffset, 1);
-        } else {
-            // First time: the start of the next month.
-            rotAt = Date.UTC(d.getUTCFullYear(),
-                d.getUTCMonth() + periodOffset, 1);
-        }
-        break;
-    case 'y':
-        if (this.rotAt) {
-            rotAt = Date.UTC(d.getUTCFullYear() + this.periodNum * periodOffset,
-                0, 1);
-        } else {
-            // First time: the start of the next year.
-            rotAt = Date.UTC(d.getUTCFullYear() + periodOffset, 0, 1);
-        }
-        break;
-    default:
-        assert.fail(format('invalid period scope: "%s"', this.periodScope));
-    }
-
-    if (this._debug()) {
-        this._debug('  **rotAt**: %s (utc: %s)', rotAt,
-            new Date(rotAt).toUTCString());
-        var now = Date.now();
-        this._debug('        now: %s (%sms == %smin == %sh to go)',
-            now,
-            rotAt - now,
-            (rotAt-now)/1000/60,
-            (rotAt-now)/1000/60/60);
-    }
-    return rotAt;
-};
-
-RotatingFileStream.prototype.rotate = function rotate() {
-    // XXX What about shutdown?
-    var self = this;
-
-    // If rotation period is > ~25 days, we have to break into multiple
-    // setTimeout's. See <https://github.com/joyent/node/issues/8656>.
-    if (self.rotAt && self.rotAt > Date.now()) {
-        return self._setRotationTimer();
-    }
-
-    this._debug('rotate');
-    if (self.rotating) {
-        throw new TypeError('cannot start a rotation when already rotating');
-    }
-    self.rotating = true;
-
-    self.stream.end();  // XXX can do moves sync after this? test at high rate
-
-    function del() {
-        var toDel = self.path + '.' + String(n - 1);
-        if (n === 0) {
-            toDel = self.path;
-        }
-        n -= 1;
-        self._debug('  rm %s', toDel);
-        fs.unlink(toDel, function (delErr) {
-            //XXX handle err other than not exists
-            moves();
-        });
-    }
-
-    function moves() {
-        if (self.count === 0 || n < 0) {
-            return finish();
-        }
-        var before = self.path;
-        var after = self.path + '.' + String(n);
-        if (n > 0) {
-            before += '.' + String(n - 1);
-        }
-        n -= 1;
-        fs.exists(before, function (exists) {
-            if (!exists) {
-                moves();
-            } else {
-                self._debug('  mv %s %s', before, after);
-                mv(before, after, function (mvErr) {
-                    if (mvErr) {
-                        self.emit('error', mvErr);
-                        finish(); // XXX finish here?
-                    } else {
-                        moves();
-                    }
-                });
-            }
-        })
-    }
-
-    function finish() {
-        self._debug('  open %s', self.path);
-        self.stream = fs.createWriteStream(self.path,
-            {flags: 'a', encoding: 'utf8'});
-        var q = self.rotQueue, len = q.length;
-        for (var i = 0; i < len; i++) {
-            self.stream.write(q[i]);
-        }
-        self.rotQueue = [];
-        self.rotating = false;
-        self.emit('drain');
-        self._setupNextRot();
-    }
-
-    var n = this.count;
-    del();
-};
-
-RotatingFileStream.prototype.write = function write(s) {
-    if (this.rotating) {
-        this.rotQueue.push(s);
-        return false;
-    } else {
-        return this.stream.write(s);
-    }
-};
-
-RotatingFileStream.prototype.end = function end(s) {
-    this.stream.end();
-};
-
-RotatingFileStream.prototype.destroy = function destroy(s) {
-    this.stream.destroy();
-};
-
-RotatingFileStream.prototype.destroySoon = function destroySoon(s) {
-    this.stream.destroySoon();
-};
-
-} /* if (mv) */
-
-
-
-/**
- * RingBuffer is a Writable Stream that just stores the last N records in
- * memory.
- *
- * @param options {Object}, with the following fields:
- *
- *    - limit: number of records to keep in memory
- */
-function RingBuffer(options) {
-    this.limit = options && options.limit ? options.limit : 100;
-    this.writable = true;
-    this.records = [];
-    EventEmitter.call(this);
-}
-
-util.inherits(RingBuffer, EventEmitter);
-
-RingBuffer.prototype.write = function (record) {
-    if (!this.writable)
-        throw (new Error('RingBuffer has been ended already'));
-
-    this.records.push(record);
-
-    if (this.records.length > this.limit)
-        this.records.shift();
-
-    return (true);
-};
-
-RingBuffer.prototype.end = function () {
-    if (arguments.length > 0)
-        this.write.apply(this, Array.prototype.slice.call(arguments));
-    this.writable = false;
-};
-
-RingBuffer.prototype.destroy = function () {
-    this.writable = false;
-    this.emit('close');
-};
-
-RingBuffer.prototype.destroySoon = function () {
-    this.destroy();
-};
-
-
-//---- Exports
-
-module.exports = Logger;
-
-module.exports.TRACE = TRACE;
-module.exports.DEBUG = DEBUG;
-module.exports.INFO = INFO;
-module.exports.WARN = WARN;
-module.exports.ERROR = ERROR;
-module.exports.FATAL = FATAL;
-module.exports.resolveLevel = resolveLevel;
-module.exports.levelFromName = levelFromName;
-module.exports.nameFromLevel = nameFromLevel;
-
-module.exports.VERSION = VERSION;
-module.exports.LOG_VERSION = LOG_VERSION;
-
-module.exports.createLogger = function createLogger(options) {
-    return new Logger(options);
-};
-
-module.exports.RingBuffer = RingBuffer;
-module.exports.RotatingFileStream = RotatingFileStream;
-
-// Useful for custom `type == 'raw'` streams that may do JSON stringification
-// of log records themselves. Usage:
-//    var str = JSON.stringify(rec, bunyan.safeCycles());
-module.exports.safeCycles = safeCycles;
-
-}).call(this,{"isBuffer":require("../../is-buffer/index.js")},require('_process'))
-},{"../../is-buffer/index.js":42,"_process":86,"assert":4,"events":37,"fs":8,"os":84,"safe-json-stringify":104,"stream":148,"util":158}],11:[function(require,module,exports){
+},{"base64-js":5,"ieee754":36,"isarray":40}],8:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10109,7 +7982,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":42}],12:[function(require,module,exports){
+},{"../../is-buffer/index.js":39}],9:[function(require,module,exports){
 var util = require('util')
   , AbstractIterator = require('abstract-leveldown').AbstractIterator
 
@@ -10145,7 +8018,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":17,"util":158}],13:[function(require,module,exports){
+},{"abstract-leveldown":14,"util":153}],10:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -10205,7 +8078,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":42,"./deferred-iterator":12,"_process":86,"abstract-leveldown":17,"util":158}],14:[function(require,module,exports){
+},{"../is-buffer/index.js":39,"./deferred-iterator":9,"_process":82,"abstract-leveldown":14,"util":153}],11:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2017 Rod Vagg, MIT License */
 
@@ -10297,7 +8170,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 module.exports = AbstractChainedBatch
 
 }).call(this,require('_process'))
-},{"_process":86}],15:[function(require,module,exports){
+},{"_process":82}],12:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2017 Rod Vagg, MIT License */
 
@@ -10350,7 +8223,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":86}],16:[function(require,module,exports){
+},{"_process":82}],13:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2017 Rod Vagg, MIT License */
 
@@ -10625,13 +8498,13 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":14,"./abstract-iterator":15,"_process":86,"xtend":160}],17:[function(require,module,exports){
+},{"../../../is-buffer/index.js":39,"./abstract-chained-batch":11,"./abstract-iterator":12,"_process":82,"xtend":155}],14:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
 exports.isLevelDOWN          = require('./is-leveldown')
 
-},{"./abstract-chained-batch":14,"./abstract-iterator":15,"./abstract-leveldown":16,"./is-leveldown":18}],18:[function(require,module,exports){
+},{"./abstract-chained-batch":11,"./abstract-iterator":12,"./abstract-leveldown":13,"./is-leveldown":15}],15:[function(require,module,exports){
 var AbstractLevelDOWN = require('./abstract-leveldown')
 
 function isLevelDOWN (db) {
@@ -10647,7 +8520,7 @@ function isLevelDOWN (db) {
 
 module.exports = isLevelDOWN
 
-},{"./abstract-leveldown":16}],19:[function(require,module,exports){
+},{"./abstract-leveldown":13}],16:[function(require,module,exports){
 const pumpify = require('pumpify')
 const stopwords = []
 
@@ -10714,7 +8587,7 @@ exports.customPipeline = function (pl) {
   return pumpify.obj.apply(this, pl)
 }
 
-},{"./pipeline/CalculateTermFrequency.js":20,"./pipeline/CharacterNormaliser.js":21,"./pipeline/CreateCompositeVector.js":22,"./pipeline/CreateSortVectors.js":23,"./pipeline/CreateStoredDocument.js":24,"./pipeline/FieldedSearch.js":25,"./pipeline/IngestDoc.js":26,"./pipeline/LowCase.js":27,"./pipeline/NormaliseFields.js":28,"./pipeline/RemoveStopWords.js":29,"./pipeline/Spy.js":30,"./pipeline/Tokeniser.js":31,"pumpify":89}],20:[function(require,module,exports){
+},{"./pipeline/CalculateTermFrequency.js":17,"./pipeline/CharacterNormaliser.js":18,"./pipeline/CreateCompositeVector.js":19,"./pipeline/CreateSortVectors.js":20,"./pipeline/CreateStoredDocument.js":21,"./pipeline/FieldedSearch.js":22,"./pipeline/IngestDoc.js":23,"./pipeline/LowCase.js":24,"./pipeline/NormaliseFields.js":25,"./pipeline/RemoveStopWords.js":26,"./pipeline/Spy.js":27,"./pipeline/Tokeniser.js":28,"pumpify":85}],17:[function(require,module,exports){
 const tv = require('term-vector')
 const tf = require('term-frequency')
 const Transform = require('stream').Transform
@@ -10761,7 +8634,7 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"term-frequency":151,"term-vector":152,"util":158}],21:[function(require,module,exports){
+},{"stream":143,"term-frequency":146,"term-vector":147,"util":153}],18:[function(require,module,exports){
 // removes stopwords from indexed docs
 const Transform = require('stream').Transform
 const util = require('util')
@@ -10794,7 +8667,7 @@ CharacterNormaliser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],22:[function(require,module,exports){
+},{"stream":143,"util":153}],19:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -10830,7 +8703,7 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],23:[function(require,module,exports){
+},{"stream":143,"util":153}],20:[function(require,module,exports){
 const tf = require('term-frequency')
 const tv = require('term-vector')
 const Transform = require('stream').Transform
@@ -10867,7 +8740,7 @@ CreateSortVectors.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"term-frequency":151,"term-vector":152,"util":158}],24:[function(require,module,exports){
+},{"stream":143,"term-frequency":146,"term-vector":147,"util":153}],21:[function(require,module,exports){
 // Creates the document that will be returned in the search
 // results. There may be cases where the document that is searchable
 // is not the same as the document that is returned
@@ -10898,7 +8771,7 @@ CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],25:[function(require,module,exports){
+},{"stream":143,"util":153}],22:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -10923,7 +8796,7 @@ FieldedSearch.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],26:[function(require,module,exports){
+},{"stream":143,"util":153}],23:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -10959,7 +8832,7 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],27:[function(require,module,exports){
+},{"stream":143,"util":153}],24:[function(require,module,exports){
 // insert all search tokens in lower case
 const Transform = require('stream').Transform
 const util = require('util')
@@ -10993,7 +8866,7 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],28:[function(require,module,exports){
+},{"stream":143,"util":153}],25:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -11037,7 +8910,7 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],29:[function(require,module,exports){
+},{"stream":143,"util":153}],26:[function(require,module,exports){
 // removes stopwords from indexed docs
 const Transform = require('stream').Transform
 const util = require('util')
@@ -11068,7 +8941,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],30:[function(require,module,exports){
+},{"stream":143,"util":153}],27:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -11083,7 +8956,7 @@ Spy.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],31:[function(require,module,exports){
+},{"stream":143,"util":153}],28:[function(require,module,exports){
 // split up fields in to arrays of tokens
 const Transform = require('stream').Transform
 const util = require('util')
@@ -11115,7 +8988,7 @@ Tokeniser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],32:[function(require,module,exports){
+},{"stream":143,"util":153}],29:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -11347,7 +9220,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":86,"buffer":9,"end-of-stream":33,"inherits":40,"readable-stream":100,"stream-shift":149}],33:[function(require,module,exports){
+},{"_process":82,"buffer":7,"end-of-stream":30,"inherits":37,"readable-stream":96,"stream-shift":144}],30:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -11432,7 +9305,7 @@ var eos = function(stream, opts, callback) {
 
 module.exports = eos;
 
-},{"once":83}],34:[function(require,module,exports){
+},{"once":80}],31:[function(require,module,exports){
 var prr = require('prr')
 
 function init (type, message, cause) {
@@ -11489,7 +9362,7 @@ module.exports = function (errno) {
   }
 }
 
-},{"prr":36}],35:[function(require,module,exports){
+},{"prr":33}],32:[function(require,module,exports){
 var all = module.exports.all = [
   {
     errno: -2,
@@ -11804,7 +9677,7 @@ all.forEach(function (error) {
 module.exports.custom = require('./custom')(module.exports)
 module.exports.create = module.exports.custom.createError
 
-},{"./custom":34}],36:[function(require,module,exports){
+},{"./custom":31}],33:[function(require,module,exports){
 /*!
   * prr
   * (c) 2013 Rod Vagg <rod@vagg.org>
@@ -11868,7 +9741,7 @@ module.exports.create = module.exports.custom.createError
 
   return prr
 })
-},{}],37:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12172,7 +10045,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],38:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /*global window:false, self:false, define:false, module:false */
 
 /**
@@ -13579,7 +11452,7 @@ function isUndefined(arg) {
 
 }, this);
 
-},{}],39:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -13665,7 +11538,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],40:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -13690,7 +11563,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],41:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 
 // This module takes an arbitrary number of sorted arrays, and returns
 // the intersection as a stream. Arrays need to be sorted in order for
@@ -13756,7 +11629,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":148}],42:[function(require,module,exports){
+},{"stream":143}],39:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -13779,14 +11652,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],43:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],44:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = isBuffer;
@@ -13796,7 +11669,7 @@ function isBuffer (o) {
     || /\[object (.+Array|Array.+)\]/.test(Object.prototype.toString.call(o));
 }
 
-},{"buffer":9}],45:[function(require,module,exports){
+},{"buffer":7}],42:[function(require,module,exports){
 /*!
  * js-logger - http://github.com/jonnyreeves/js-logger
  * Jonny Reeves, http://jonnyreeves.co.uk/
@@ -14067,7 +11940,7 @@ function isBuffer (o) {
 	}
 }(this));
 
-},{}],46:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function (Buffer){
 /*global Buffer*/
 // Named constants with unique integer values
@@ -14484,7 +12357,7 @@ Parser.C = C;
 module.exports = Parser;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],47:[function(require,module,exports){
+},{"buffer":7}],44:[function(require,module,exports){
 var encodings = require('./lib/encodings');
 
 module.exports = Codec;
@@ -14592,7 +12465,7 @@ Codec.prototype.valueAsBuffer = function(opts){
 };
 
 
-},{"./lib/encodings":48}],48:[function(require,module,exports){
+},{"./lib/encodings":45}],45:[function(require,module,exports){
 (function (Buffer){
 exports.utf8 = exports['utf-8'] = {
   encode: function(data){
@@ -14672,7 +12545,7 @@ function isBinary(data){
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],49:[function(require,module,exports){
+},{"buffer":7}],46:[function(require,module,exports){
 /* Copyright (c) 2012-2017 LevelUP contributors
  * See list at <https://github.com/rvagg/node-levelup#contributing>
  * MIT License
@@ -14696,7 +12569,7 @@ module.exports = {
   , EncodingError       : createError('EncodingError', LevelUPError)
 }
 
-},{"errno":35}],50:[function(require,module,exports){
+},{"errno":32}],47:[function(require,module,exports){
 var inherits = require('inherits');
 var Readable = require('readable-stream').Readable;
 var extend = require('xtend');
@@ -14754,12 +12627,12 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":40,"level-errors":49,"readable-stream":57,"xtend":160}],51:[function(require,module,exports){
+},{"inherits":37,"level-errors":46,"readable-stream":54,"xtend":155}],48:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],52:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -14852,7 +12725,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":54,"./_stream_writable":56,"_process":86,"core-util-is":11,"inherits":40}],53:[function(require,module,exports){
+},{"./_stream_readable":51,"./_stream_writable":53,"_process":82,"core-util-is":8,"inherits":37}],50:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14900,7 +12773,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":55,"core-util-is":11,"inherits":40}],54:[function(require,module,exports){
+},{"./_stream_transform":52,"core-util-is":8,"inherits":37}],51:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -15855,7 +13728,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":52,"_process":86,"buffer":9,"core-util-is":11,"events":37,"inherits":40,"isarray":51,"stream":148,"string_decoder/":58,"util":7}],55:[function(require,module,exports){
+},{"./_stream_duplex":49,"_process":82,"buffer":7,"core-util-is":8,"events":34,"inherits":37,"isarray":48,"stream":143,"string_decoder/":55,"util":6}],52:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16066,7 +13939,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":52,"core-util-is":11,"inherits":40}],56:[function(require,module,exports){
+},{"./_stream_duplex":49,"core-util-is":8,"inherits":37}],53:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -16547,7 +14420,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":52,"_process":86,"buffer":9,"core-util-is":11,"inherits":40,"stream":148}],57:[function(require,module,exports){
+},{"./_stream_duplex":49,"_process":82,"buffer":7,"core-util-is":8,"inherits":37,"stream":143}],54:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -16561,7 +14434,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":52,"./lib/_stream_passthrough.js":53,"./lib/_stream_readable.js":54,"./lib/_stream_transform.js":55,"./lib/_stream_writable.js":56,"_process":86,"stream":148}],58:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":49,"./lib/_stream_passthrough.js":50,"./lib/_stream_readable.js":51,"./lib/_stream_transform.js":52,"./lib/_stream_writable.js":53,"_process":82,"stream":143}],55:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16784,7 +14657,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":9}],59:[function(require,module,exports){
+},{"buffer":7}],56:[function(require,module,exports){
 (function (Buffer){
 module.exports = Level
 
@@ -16962,7 +14835,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":60,"abstract-leveldown":63,"buffer":9,"idb-wrapper":38,"isbuffer":44,"typedarray-to-buffer":154,"util":158,"xtend":70}],60:[function(require,module,exports){
+},{"./iterator":57,"abstract-leveldown":60,"buffer":7,"idb-wrapper":35,"isbuffer":41,"typedarray-to-buffer":149,"util":153,"xtend":67}],57:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -17036,7 +14909,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":63,"ltgt":81,"util":158}],61:[function(require,module,exports){
+},{"abstract-leveldown":60,"ltgt":78,"util":153}],58:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -17120,7 +14993,7 @@ AbstractChainedBatch.prototype.write = function (options, callback) {
 
 module.exports = AbstractChainedBatch
 }).call(this,require('_process'))
-},{"_process":86}],62:[function(require,module,exports){
+},{"_process":82}],59:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -17173,7 +15046,7 @@ AbstractIterator.prototype.end = function (callback) {
 module.exports = AbstractIterator
 
 }).call(this,require('_process'))
-},{"_process":86}],63:[function(require,module,exports){
+},{"_process":82}],60:[function(require,module,exports){
 (function (Buffer,process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -17433,7 +15306,7 @@ module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":42,"./abstract-chained-batch":61,"./abstract-iterator":62,"_process":86,"xtend":64}],64:[function(require,module,exports){
+},{"../../../is-buffer/index.js":39,"./abstract-chained-batch":58,"./abstract-iterator":59,"_process":82,"xtend":61}],61:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -17452,7 +15325,7 @@ function extend() {
     return target
 }
 
-},{}],65:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -17494,11 +15367,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],66:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":68}],67:[function(require,module,exports){
+},{"./shim":65}],64:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -17516,7 +15389,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],68:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -17580,7 +15453,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":65,"./isArguments":67}],69:[function(require,module,exports){
+},{"./foreach":62,"./isArguments":64}],66:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -17589,7 +15462,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],70:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -17616,7 +15489,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":69,"object-keys":66}],71:[function(require,module,exports){
+},{"./has-keys":66,"object-keys":63}],68:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -17701,7 +15574,7 @@ Batch.prototype.write = function (callback) {
 
 module.exports = Batch
 
-},{"./util":73,"level-errors":49}],72:[function(require,module,exports){
+},{"./util":70,"level-errors":46}],69:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
@@ -18068,7 +15941,7 @@ module.exports.repair = deprecate(
 )
 
 }).call(this,require('_process'))
-},{"./batch":71,"./leveldown":7,"./util":73,"_process":86,"deferred-leveldown":13,"events":37,"level-codec":47,"level-errors":49,"level-iterator-stream":50,"prr":87,"util":158,"xtend":160}],73:[function(require,module,exports){
+},{"./batch":68,"./leveldown":6,"./util":70,"_process":82,"deferred-leveldown":10,"events":34,"level-codec":44,"level-errors":46,"level-iterator-stream":47,"prr":83,"util":153,"xtend":155}],70:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -18104,7 +15977,7 @@ module.exports = {
   isDefined: isDefined
 }
 
-},{}],74:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -19278,7 +17151,7 @@ function isObjectLike(value) {
 module.exports = difference;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],75:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -20347,7 +18220,7 @@ function isObjectLike(value) {
 module.exports = intersection;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],76:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (global){
 /**
  * Lodash (Custom Build) <https://lodash.com/>
@@ -22199,7 +20072,7 @@ function stubFalse() {
 module.exports = isEqual;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],77:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -22452,7 +20325,7 @@ function identity(value) {
 
 module.exports = sortedIndexOf;
 
-},{}],78:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -22858,7 +20731,7 @@ function toNumber(value) {
 
 module.exports = spread;
 
-},{}],79:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -24043,7 +21916,7 @@ function noop() {
 module.exports = union;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -24943,7 +22816,7 @@ function noop() {
 module.exports = uniq;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],81:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 (function (Buffer){
 
 exports.compare = function (a, b) {
@@ -25116,7 +22989,7 @@ exports.filter = function (range, compare) {
 
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")})
-},{"../is-buffer/index.js":42}],82:[function(require,module,exports){
+},{"../is-buffer/index.js":39}],79:[function(require,module,exports){
 
 // nGramLengths is of the form [ 9, 10 ]
 const getNGramsOfMultipleLengths = function (inputArray, nGramLengths) {
@@ -25151,7 +23024,7 @@ exports.ngram = function (inputArray, nGramLength) {
   }
 }
 
-},{}],83:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -25195,54 +23068,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":159}],84:[function(require,module,exports){
-exports.endianness = function () { return 'LE' };
-
-exports.hostname = function () {
-    if (typeof location !== 'undefined') {
-        return location.hostname
-    }
-    else return '';
-};
-
-exports.loadavg = function () { return [] };
-
-exports.uptime = function () { return 0 };
-
-exports.freemem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.totalmem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.cpus = function () { return [] };
-
-exports.type = function () { return 'Browser' };
-
-exports.release = function () {
-    if (typeof navigator !== 'undefined') {
-        return navigator.appVersion;
-    }
-    return '';
-};
-
-exports.networkInterfaces
-= exports.getNetworkInterfaces
-= function () { return {} };
-
-exports.arch = function () { return 'javascript' };
-
-exports.platform = function () { return 'browser' };
-
-exports.tmpdir = exports.tmpDir = function () {
-    return '/tmp';
-};
-
-exports.EOL = '\n';
-
-},{}],85:[function(require,module,exports){
+},{"wrappy":154}],81:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25289,7 +23115,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":86}],86:[function(require,module,exports){
+},{"_process":82}],82:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -25475,9 +23301,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],87:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"dup":36}],88:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],84:[function(require,module,exports){
 var once = require('once')
 var eos = require('end-of-stream')
 var fs = require('fs') // we only need fs to get the ReadStream and WriteStream prototypes
@@ -25559,7 +23385,7 @@ var pump = function () {
 
 module.exports = pump
 
-},{"end-of-stream":33,"fs":7,"once":83}],89:[function(require,module,exports){
+},{"end-of-stream":30,"fs":6,"once":80}],85:[function(require,module,exports){
 var pump = require('pump')
 var inherits = require('inherits')
 var Duplexify = require('duplexify')
@@ -25616,10 +23442,10 @@ var define = function(opts) {
 module.exports = define({destroy:false})
 module.exports.obj = define({destroy:false, objectMode:true, highWaterMark:16})
 
-},{"duplexify":32,"inherits":40,"pump":88}],90:[function(require,module,exports){
+},{"duplexify":29,"inherits":37,"pump":84}],86:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":91}],91:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":87}],87:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -25744,7 +23570,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":93,"./_stream_writable":95,"core-util-is":11,"inherits":40,"process-nextick-args":85}],92:[function(require,module,exports){
+},{"./_stream_readable":89,"./_stream_writable":91,"core-util-is":8,"inherits":37,"process-nextick-args":81}],88:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -25792,7 +23618,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":94,"core-util-is":11,"inherits":40}],93:[function(require,module,exports){
+},{"./_stream_transform":90,"core-util-is":8,"inherits":37}],89:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -26802,7 +24628,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":91,"./internal/streams/BufferList":96,"./internal/streams/destroy":97,"./internal/streams/stream":98,"_process":86,"core-util-is":11,"events":37,"inherits":40,"isarray":43,"process-nextick-args":85,"safe-buffer":103,"string_decoder/":150,"util":7}],94:[function(require,module,exports){
+},{"./_stream_duplex":87,"./internal/streams/BufferList":92,"./internal/streams/destroy":93,"./internal/streams/stream":94,"_process":82,"core-util-is":8,"events":34,"inherits":37,"isarray":40,"process-nextick-args":81,"safe-buffer":99,"string_decoder/":145,"util":6}],90:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -27017,7 +24843,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":91,"core-util-is":11,"inherits":40}],95:[function(require,module,exports){
+},{"./_stream_duplex":87,"core-util-is":8,"inherits":37}],91:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -27684,7 +25510,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":91,"./internal/streams/destroy":97,"./internal/streams/stream":98,"_process":86,"core-util-is":11,"inherits":40,"process-nextick-args":85,"safe-buffer":103,"util-deprecate":155}],96:[function(require,module,exports){
+},{"./_stream_duplex":87,"./internal/streams/destroy":93,"./internal/streams/stream":94,"_process":82,"core-util-is":8,"inherits":37,"process-nextick-args":81,"safe-buffer":99,"util-deprecate":150}],92:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -27759,7 +25585,7 @@ module.exports = function () {
 
   return BufferList;
 }();
-},{"safe-buffer":103}],97:[function(require,module,exports){
+},{"safe-buffer":99}],93:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -27832,13 +25658,13 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":85}],98:[function(require,module,exports){
+},{"process-nextick-args":81}],94:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":37}],99:[function(require,module,exports){
+},{"events":34}],95:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":100}],100:[function(require,module,exports){
+},{"./readable":96}],96:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -27847,13 +25673,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":91,"./lib/_stream_passthrough.js":92,"./lib/_stream_readable.js":93,"./lib/_stream_transform.js":94,"./lib/_stream_writable.js":95}],101:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":87,"./lib/_stream_passthrough.js":88,"./lib/_stream_readable.js":89,"./lib/_stream_transform.js":90,"./lib/_stream_writable.js":91}],97:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":100}],102:[function(require,module,exports){
+},{"./readable":96}],98:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":95}],103:[function(require,module,exports){
+},{"./lib/_stream_writable.js":91}],99:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -27917,68 +25743,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":9}],104:[function(require,module,exports){
-var hasProp = Object.prototype.hasOwnProperty;
-
-function throwsMessage(err) {
-	return '[Throws: ' + (err ? err.message : '?') + ']';
-}
-
-function safeGetValueFromPropertyOnObject(obj, property) {
-	if (hasProp.call(obj, property)) {
-		try {
-			return obj[property];
-		}
-		catch (err) {
-			return throwsMessage(err);
-		}
-	}
-
-	return obj[property];
-}
-
-function ensureProperties(obj) {
-	var seen = [ ]; // store references to objects we have seen before
-
-	function visit(obj) {
-		if (obj === null || typeof obj !== 'object') {
-			return obj;
-		}
-
-		if (seen.indexOf(obj) !== -1) {
-			return '[Circular]';
-		}
-		seen.push(obj);
-
-		if (typeof obj.toJSON === 'function') {
-			try {
-				return visit(obj.toJSON());
-			} catch(err) {
-				return throwsMessage(err);
-			}
-		}
-
-		if (Array.isArray(obj)) {
-			return obj.map(visit);
-		}
-
-		return Object.keys(obj).reduce(function(result, prop) {
-			// prevent faulty defined getter properties
-			result[prop] = visit(safeGetValueFromPropertyOnObject(obj, prop));
-			return result;
-		}, {});
-	};
-
-	return visit(obj);
-}
-
-module.exports = function(data) {
-	return JSON.stringify(ensureProperties(data));
-}
-
-module.exports.ensureProperties = ensureProperties;
-
-},{}],105:[function(require,module,exports){
+},{"buffer":7}],100:[function(require,module,exports){
 /*
 search-index-adder
 
@@ -27987,7 +25752,7 @@ standalone
 
 */
 
-const bunyan = require('bunyan')
+const Logger = require('js-logger')
 const levelup = require('levelup')
 const API = require('./lib/API.js')
 
@@ -28026,7 +25791,8 @@ const getOptions = function (options, done) {
     storeVector: true,
     searchable: true,
     indexPath: 'si',
-    logLevel: 'error',
+    logLevel: 'ERROR',
+    logHandler: Logger.createDefaultHandler(),
     nGramLength: 1,
     nGramSeparator: ' ',
     separator: /\s|\\n|\\u0003|[-.,<>]/,
@@ -28034,10 +25800,13 @@ const getOptions = function (options, done) {
     weight: 0,
     wildcard: true
   }, options)
-  options.log = bunyan.createLogger({
-    name: 'search-index',
-    level: options.logLevel
-  })
+  options.log = Logger.get('search-index-adder')
+  // We pass the log level as string because the Logger[logLevel] returns
+  // an object, and Object.assign deosn't make deep assign so it breakes
+  // We used toUpperCase() for backward compatibility
+  options.log.setLevel(Logger[options.logLevel.toUpperCase()])
+  // Use the global one because the library doesn't support providing handler to named logger
+  Logger.setHandler(options.logHandler)
   if (!options.indexes) {
     const leveldown = require('leveldown')
     levelup(options.indexPath || 'si', {
@@ -28052,7 +25821,7 @@ const getOptions = function (options, done) {
   }
 }
 
-},{"./lib/API.js":106,"bunyan":10,"leveldown":59,"levelup":72}],106:[function(require,module,exports){
+},{"./lib/API.js":101,"js-logger":42,"leveldown":56,"levelup":69}],101:[function(require,module,exports){
 const DBEntries = require('./delete.js').DBEntries
 const DBWriteCleanStream = require('./replicate.js').DBWriteCleanStream
 const DBWriteMergeStream = require('./replicate.js').DBWriteMergeStream
@@ -28213,7 +25982,7 @@ module.exports = function (options) {
   return Indexer
 }
 
-},{"./add.js":107,"./delete.js":108,"./replicate.js":109,"JSONStream":3,"async":5,"docproc":19,"pumpify":89,"stream":148}],107:[function(require,module,exports){
+},{"./add.js":102,"./delete.js":103,"./replicate.js":104,"JSONStream":3,"async":4,"docproc":16,"pumpify":85,"stream":143}],102:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -28287,7 +26056,7 @@ IndexBatch.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":148,"util":158}],108:[function(require,module,exports){
+},{"stream":143,"util":153}],103:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -28451,7 +26220,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":148,"util":158}],109:[function(require,module,exports){
+},{"stream":143,"util":153}],104:[function(require,module,exports){
 const Transform = require('stream').Transform
 const Writable = require('stream').Writable
 const util = require('util')
@@ -28528,7 +26297,8 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":148,"util":158}],110:[function(require,module,exports){
+},{"stream":143,"util":153}],105:[function(require,module,exports){
+const Logger = require('js-logger')
 const AvailableFields = require('./lib/AvailableFields.js').AvailableFields
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
 const CalculateCategories = require('./lib/CalculateCategories.js').CalculateCategories
@@ -28545,7 +26315,6 @@ const MergeOrConditionsFieldSort = require('./lib/MergeOrConditionsFieldSort.js'
 const Readable = require('stream').Readable
 const ScoreDocsOnField = require('./lib/ScoreDocsOnField.js').ScoreDocsOnField
 const ScoreTopScoringDocsTFIDF = require('./lib/ScoreTopScoringDocsTFIDF.js').ScoreTopScoringDocsTFIDF
-const bunyan = require('bunyan')
 const levelup = require('levelup')
 const matcher = require('./lib/matcher.js')
 const siUtil = require('./lib/siUtil.js')
@@ -28707,16 +26476,21 @@ const getOptions = function (options, done) {
     store: true,
     indexPath: 'si',
     keySeparator: '￮',
-    logLevel: 'error',
+    logLevel: 'ERROR',
+    logHandler: Logger.createDefaultHandler(),
     nGramLength: 1,
     nGramSeparator: ' ',
     separator: /[|' .,\-|(\n)]+/,
     stopwords: sw.en
   }, options)
-  Searcher.options.log = bunyan.createLogger({
-    name: 'search-index',
-    level: options.logLevel
-  })
+  Searcher.options.log = Logger.get('search-index-searcher')
+  // We pass the log level as string because the Logger[logLevel] returns
+  // an object, and Object.assign deosn't make deep assign so it breakes
+  // We used toUpperCase() for backward compatibility
+  Searcher.options.log.setLevel(Logger[Searcher.options.logLevel.toUpperCase()])
+  // Use the global one because the library doesn't support providing handler to named logger
+  Logger.setHandler(Searcher.options.logHandler)
+
   if (!options.indexes) {
     levelup(Searcher.options.indexPath || 'si', {
       valueEncoding: 'json'
@@ -28735,7 +26509,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/AvailableFields.js":111,"./lib/CalculateBuckets.js":112,"./lib/CalculateCategories.js":113,"./lib/CalculateEntireResultSet.js":114,"./lib/CalculateResultSetPerClause.js":115,"./lib/CalculateTopScoringDocs.js":116,"./lib/CalculateTotalHits.js":117,"./lib/Classify.js":118,"./lib/FetchDocsFromDB.js":119,"./lib/FetchStoredDoc.js":120,"./lib/GetIntersectionStream.js":121,"./lib/MergeOrConditionsFieldSort.js":122,"./lib/MergeOrConditionsTFIDF.js":123,"./lib/ScoreDocsOnField.js":124,"./lib/ScoreTopScoringDocsTFIDF.js":125,"./lib/matcher.js":126,"./lib/siUtil.js":127,"bunyan":10,"levelup":72,"stopword":128,"stream":148}],111:[function(require,module,exports){
+},{"./lib/AvailableFields.js":106,"./lib/CalculateBuckets.js":107,"./lib/CalculateCategories.js":108,"./lib/CalculateEntireResultSet.js":109,"./lib/CalculateResultSetPerClause.js":110,"./lib/CalculateTopScoringDocs.js":111,"./lib/CalculateTotalHits.js":112,"./lib/Classify.js":113,"./lib/FetchDocsFromDB.js":114,"./lib/FetchStoredDoc.js":115,"./lib/GetIntersectionStream.js":116,"./lib/MergeOrConditionsFieldSort.js":117,"./lib/MergeOrConditionsTFIDF.js":118,"./lib/ScoreDocsOnField.js":119,"./lib/ScoreTopScoringDocsTFIDF.js":120,"./lib/matcher.js":121,"./lib/siUtil.js":122,"js-logger":42,"levelup":69,"stopword":123,"stream":143}],106:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -28750,7 +26524,7 @@ AvailableFields.prototype._transform = function (field, encoding, end) {
   return end()
 }
 
-},{"stream":148,"util":158}],112:[function(require,module,exports){
+},{"stream":143,"util":153}],107:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -28791,7 +26565,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":75,"lodash.uniq":80,"stream":148,"util":158}],113:[function(require,module,exports){
+},{"lodash.intersection":72,"lodash.uniq":77,"stream":143,"util":153}],108:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -28854,7 +26628,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
   })
 }
 
-},{"lodash.intersection":75,"stream":148,"util":158}],114:[function(require,module,exports){
+},{"lodash.intersection":72,"stream":143,"util":153}],109:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -28877,7 +26651,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":79,"stream":148,"util":158}],115:[function(require,module,exports){
+},{"lodash.union":76,"stream":143,"util":153}],110:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -28973,7 +26747,7 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
   })
 }
 
-},{"./siUtil.js":127,"lodash.difference":74,"lodash.intersection":75,"lodash.spread":78,"stream":148,"util":158}],116:[function(require,module,exports){
+},{"./siUtil.js":122,"lodash.difference":71,"lodash.intersection":72,"lodash.spread":75,"stream":143,"util":153}],111:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -29040,7 +26814,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":77,"stream":148,"util":158}],117:[function(require,module,exports){
+},{"lodash.sortedindexof":74,"stream":143,"util":153}],112:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -29057,7 +26831,7 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":148,"util":158}],118:[function(require,module,exports){
+},{"stream":143,"util":153}],113:[function(require,module,exports){
 const Transform = require('stream').Transform
 const ngraminator = require('ngraminator')
 const util = require('util')
@@ -29127,7 +26901,7 @@ Classify.prototype._flush = function (end) {
   })
 }
 
-},{"ngraminator":82,"stream":148,"util":158}],119:[function(require,module,exports){
+},{"ngraminator":79,"stream":143,"util":153}],114:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -29148,7 +26922,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":148,"util":158}],120:[function(require,module,exports){
+},{"stream":143,"util":153}],115:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -29172,7 +26946,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":148,"util":158}],121:[function(require,module,exports){
+},{"stream":143,"util":153}],116:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -29207,7 +26981,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":41,"stream":148,"util":158}],122:[function(require,module,exports){
+},{"intersect-arrays-to-stream":38,"stream":143,"util":153}],117:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -29268,7 +27042,7 @@ const getResultMap = (resultSet) => {
   return resultMap
 }
 
-},{"stream":148,"util":158}],123:[function(require,module,exports){
+},{"stream":143,"util":153}],118:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -29327,7 +27101,7 @@ const getResultMap = (resultSet) => {
   return resultMap
 }
 
-},{"stream":148,"util":158}],124:[function(require,module,exports){
+},{"stream":143,"util":153}],119:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -29378,7 +27152,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
       })
 }
 
-},{"lodash.sortedindexof":77,"stream":148,"util":158}],125:[function(require,module,exports){
+},{"lodash.sortedindexof":74,"stream":143,"util":153}],120:[function(require,module,exports){
 /*
    Look at the top scoring docs, and work out which terms give hits in them
  */
@@ -29465,7 +27239,7 @@ const gett = (field, key, gte, lte, df, weight, options) => {
   })
 }
 
-},{"stream":148,"util":158}],126:[function(require,module,exports){
+},{"stream":143,"util":153}],121:[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const util = require('util')
@@ -29590,7 +27364,7 @@ exports.match = function (q, options) {
   }
 }
 
-},{"stream":148,"util":158}],127:[function(require,module,exports){
+},{"stream":143,"util":153}],122:[function(require,module,exports){
 exports.getKeySet = function (clause, sep) {
   var keySet = []
   for (var fieldName in clause) {
@@ -29639,7 +27413,7 @@ exports.getQueryDefaults = function (q) {
   }, q)
 }
 
-},{}],128:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 const defaultStopwords = require('./stopwords_en.js').words
 
 exports.removeStopwords = function(tokens, stopwords) {
@@ -29672,7 +27446,7 @@ exports.ru = require('./stopwords_ru.js').words
 exports.sv = require('./stopwords_sv.js').words
 exports.zh = require('./stopwords_zh.js').words
 
-},{"./stopwords_ar.js":129,"./stopwords_bn.js":130,"./stopwords_br.js":131,"./stopwords_da.js":132,"./stopwords_de.js":133,"./stopwords_en.js":134,"./stopwords_es.js":135,"./stopwords_fa.js":136,"./stopwords_fr.js":137,"./stopwords_hi.js":138,"./stopwords_it.js":139,"./stopwords_ja.js":140,"./stopwords_nl.js":141,"./stopwords_no.js":142,"./stopwords_pl.js":143,"./stopwords_pt.js":144,"./stopwords_ru.js":145,"./stopwords_sv.js":146,"./stopwords_zh.js":147}],129:[function(require,module,exports){
+},{"./stopwords_ar.js":124,"./stopwords_bn.js":125,"./stopwords_br.js":126,"./stopwords_da.js":127,"./stopwords_de.js":128,"./stopwords_en.js":129,"./stopwords_es.js":130,"./stopwords_fa.js":131,"./stopwords_fr.js":132,"./stopwords_hi.js":133,"./stopwords_it.js":134,"./stopwords_ja.js":135,"./stopwords_nl.js":136,"./stopwords_no.js":137,"./stopwords_pl.js":138,"./stopwords_pt.js":139,"./stopwords_ru.js":140,"./stopwords_sv.js":141,"./stopwords_zh.js":142}],124:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -29704,7 +27478,7 @@ var words = ["،","آض","آمينَ","آه","آهاً","آي","أ","أب","أج
 // tell the world about the noise words.
 exports.words = words
 
-},{}],130:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -29735,7 +27509,7 @@ var words = ["অতএব","অথচ","অথবা","অনুযায়ী
 // tell the world about the noise words.
 exports.words = words
 
-},{}],131:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /*
 Copyright (c) 2017, Micael Levi
 
@@ -30022,7 +27796,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],132:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -30054,7 +27828,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],133:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /*
 */
 
@@ -30067,7 +27841,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],134:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 
@@ -30107,7 +27881,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],135:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -30145,7 +27919,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],136:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
@@ -30185,7 +27959,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],137:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /*
  Copyright (c) 2014, Ismaël Héry
 
@@ -30381,7 +28155,7 @@ var words = ['être', 'avoir', 'faire',
 
 exports.words = words
 
-},{}],138:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -30432,7 +28206,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],139:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -30486,7 +28260,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],140:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 // Original copyright:
 /*
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30547,7 +28321,7 @@ var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し
 // tell the world about the noise words.
 exports.words = words
 
-},{}],141:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
 
@@ -30592,7 +28366,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],142:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 /*
 Copyright (c) 2014, Kristoffer Brabrand
 
@@ -30636,7 +28410,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],143:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 /*
 Copyright (c) 2013, Paweł Łaskarzewski
 
@@ -30700,7 +28474,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],144:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 /*
 Copyright (c) 2011, Luís Rodrigues
 
@@ -30838,7 +28612,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],145:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 /*
 Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
 
@@ -30881,7 +28655,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],146:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -30913,7 +28687,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],147:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -30960,7 +28734,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],148:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -31089,7 +28863,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":37,"inherits":40,"readable-stream/duplex.js":90,"readable-stream/passthrough.js":99,"readable-stream/readable.js":100,"readable-stream/transform.js":101,"readable-stream/writable.js":102}],149:[function(require,module,exports){
+},{"events":34,"inherits":37,"readable-stream/duplex.js":86,"readable-stream/passthrough.js":95,"readable-stream/readable.js":96,"readable-stream/transform.js":97,"readable-stream/writable.js":98}],144:[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -31111,7 +28885,7 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],150:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('safe-buffer').Buffer;
@@ -31384,7 +29158,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":103}],151:[function(require,module,exports){
+},{"safe-buffer":99}],146:[function(require,module,exports){
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
 exports.logNormalization = 'logNormalization'
 exports.raw = 'raw'
@@ -31434,7 +29208,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{}],152:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -31500,7 +29274,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":76}],153:[function(require,module,exports){
+},{"lodash.isequal":73}],148:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -31612,7 +29386,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":86,"stream":148}],154:[function(require,module,exports){
+},{"_process":82,"stream":143}],149:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -31635,7 +29409,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":9}],155:[function(require,module,exports){
+},{"buffer":7}],150:[function(require,module,exports){
 (function (global){
 
 /**
@@ -31706,16 +29480,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],156:[function(require,module,exports){
-arguments[4][40][0].apply(exports,arguments)
-},{"dup":40}],157:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"dup":37}],152:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],158:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -32305,7 +30079,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":157,"_process":86,"inherits":156}],159:[function(require,module,exports){
+},{"./support/isBuffer":152,"_process":82,"inherits":151}],154:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -32340,7 +30114,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],160:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
