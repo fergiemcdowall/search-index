@@ -2,7 +2,7 @@
 /* global it */
 
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const s = require('stream').Readable({ objectMode: true})
 const sandboxPath = 'test/sandbox'
 const should = require('should')

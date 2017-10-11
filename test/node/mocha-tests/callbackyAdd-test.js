@@ -2,7 +2,7 @@
 /* global it */
 
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const should = require('should')
 
 describe('Callbacky Add', function () {

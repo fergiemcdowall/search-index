@@ -1,6 +1,6 @@
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'warn'
+const logLevel = process.env.LOG_LEVEL || 'warn'
 const sandbox = process.env.SANDBOX || 'test/sandbox'
 const test = require('tape')
 

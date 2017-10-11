@@ -3,7 +3,7 @@
 
 const Readable = require('stream').Readable
 const levelup = require('levelup')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const sandbox = 'test/sandbox'
 const searchIndex = require('../../../')
 const should = require('should')

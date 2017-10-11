@@ -2,7 +2,7 @@
 /* global describe */
 
 const fs = require('fs')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const sandboxPath = 'test/sandbox'
 const searchindex = require('../../../')
 const should = require('should')
