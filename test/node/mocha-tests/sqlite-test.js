@@ -4,7 +4,7 @@
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
 const levelup = require('levelup')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const sandbox = 'test/sandbox'
 const should = require('should')
 const sqldown = require('sqldown')

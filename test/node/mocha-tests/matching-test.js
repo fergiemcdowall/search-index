@@ -3,7 +3,7 @@
 
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const should = require('should')
 
 var s = new Readable({ objectMode: true })

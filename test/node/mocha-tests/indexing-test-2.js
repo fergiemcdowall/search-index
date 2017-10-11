@@ -2,7 +2,7 @@
 /* global describe */
 
 const Readable = require('stream').Readable
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const s = new Readable({ objectMode: true })
 const sandboxPath = 'test/sandbox'
 const should = require('should')

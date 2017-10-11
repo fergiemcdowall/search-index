@@ -4,7 +4,7 @@
 const JSONStream = require('JSONStream')
 const Readable = require('stream').Readable
 const SearchIndex = require('../../../')
-const logLevel = process.env.NODE_ENV || 'error'
+const logLevel = process.env.LOG_LEVEL || 'error'
 const sandboxPath = 'test/sandbox'
 const should = require('should')
 
