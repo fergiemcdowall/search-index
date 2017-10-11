@@ -46,6 +46,7 @@
  *  [searchable](#searchable)
  *  [indexPath](#indexpath)
  *  [logLevel](#loglevel)
+ *  [logHandler](#logHandler)
  *  [nGramLength](#ngramlength)
  *  [separator](#separator)
  *  [stopwords](#stopwords)
@@ -598,7 +599,12 @@ The location of the datastore. If `db` is specified, then indexPath is ignored
 ### logLevel
 _string_
 
-A [bunyan](https://github.com/trentm/node-bunyan) log level.
+A [js-logger](https://github.com/jonnyreeves/js-logger) log level (can be lower or upper case - 'error' or 'ERROR').
+
+### logHandler
+_function_
+
+A [js-logger](https://github.com/jonnyreeves/js-logger) log handler function.
 
 ### nGramLength
 _number_ or _array_ or _object_
