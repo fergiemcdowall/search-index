@@ -381,7 +381,7 @@ if(!module.parent && process.title !== 'browser') {
 
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":81,"buffer":7,"jsonparse":42,"through":147}],4:[function(require,module,exports){
+},{"_process":81,"buffer":7,"jsonparse":42,"through":148}],4:[function(require,module,exports){
 (function (process,global){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -8018,7 +8018,7 @@ DeferredIterator.prototype._operation = function (method, args) {
 
 module.exports = DeferredIterator;
 
-},{"abstract-leveldown":14,"util":152}],10:[function(require,module,exports){
+},{"abstract-leveldown":14,"util":153}],10:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -8078,7 +8078,7 @@ module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
 }).call(this,{"isBuffer":require("../is-buffer/index.js")},require('_process'))
-},{"../is-buffer/index.js":38,"./deferred-iterator":9,"_process":81,"abstract-leveldown":14,"util":152}],11:[function(require,module,exports){
+},{"../is-buffer/index.js":38,"./deferred-iterator":9,"_process":81,"abstract-leveldown":14,"util":153}],11:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2017 Rod Vagg, MIT License */
 
@@ -8498,7 +8498,7 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 module.exports = AbstractLevelDOWN
 
 }).call(this,{"isBuffer":require("../../../is-buffer/index.js")},require('_process'))
-},{"../../../is-buffer/index.js":38,"./abstract-chained-batch":11,"./abstract-iterator":12,"_process":81,"xtend":154}],14:[function(require,module,exports){
+},{"../../../is-buffer/index.js":38,"./abstract-chained-batch":11,"./abstract-iterator":12,"_process":81,"xtend":155}],14:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
@@ -8630,7 +8630,7 @@ CalculateTermFrequency.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"term-frequency":145,"term-vector":146,"util":152}],18:[function(require,module,exports){
+},{"stream":143,"term-frequency":146,"term-vector":147,"util":153}],18:[function(require,module,exports){
 // removes stopwords from indexed docs
 const Transform = require('stream').Transform
 const util = require('util')
@@ -8663,7 +8663,7 @@ CharacterNormaliser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],19:[function(require,module,exports){
+},{"stream":143,"util":153}],19:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -8699,7 +8699,7 @@ CreateCompositeVector.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],20:[function(require,module,exports){
+},{"stream":143,"util":153}],20:[function(require,module,exports){
 // Creates the document that will be returned in the search
 // results. There may be cases where the document that is searchable
 // is not the same as the document that is returned
@@ -8730,7 +8730,7 @@ CreateStoredDocument.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],21:[function(require,module,exports){
+},{"stream":143,"util":153}],21:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -8755,7 +8755,7 @@ FieldedSearch.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],22:[function(require,module,exports){
+},{"stream":143,"util":153}],22:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -8790,7 +8790,7 @@ IngestDoc.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],23:[function(require,module,exports){
+},{"stream":143,"util":153}],23:[function(require,module,exports){
 // insert all search tokens in lower case
 const Transform = require('stream').Transform
 const util = require('util')
@@ -8824,7 +8824,7 @@ LowCase.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],24:[function(require,module,exports){
+},{"stream":143,"util":153}],24:[function(require,module,exports){
 const util = require('util')
 const Transform = require('stream').Transform
 
@@ -8868,7 +8868,7 @@ NormaliseFields.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],25:[function(require,module,exports){
+},{"stream":143,"util":153}],25:[function(require,module,exports){
 // removes stopwords from indexed docs
 const Transform = require('stream').Transform
 const util = require('util')
@@ -8899,7 +8899,7 @@ RemoveStopWords.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],26:[function(require,module,exports){
+},{"stream":143,"util":153}],26:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -8914,7 +8914,7 @@ Spy.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],27:[function(require,module,exports){
+},{"stream":143,"util":153}],27:[function(require,module,exports){
 // split up fields in to arrays of tokens
 const Transform = require('stream').Transform
 const util = require('util')
@@ -8946,7 +8946,7 @@ Tokeniser.prototype._transform = function (doc, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],28:[function(require,module,exports){
+},{"stream":143,"util":153}],28:[function(require,module,exports){
 (function (process,Buffer){
 var stream = require('readable-stream')
 var eos = require('end-of-stream')
@@ -9178,7 +9178,7 @@ Duplexify.prototype.end = function(data, enc, cb) {
 module.exports = Duplexify
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":81,"buffer":7,"end-of-stream":29,"inherits":36,"readable-stream":95,"stream-shift":143}],29:[function(require,module,exports){
+},{"_process":81,"buffer":7,"end-of-stream":29,"inherits":36,"readable-stream":95,"stream-shift":144}],29:[function(require,module,exports){
 var once = require('once');
 
 var noop = function() {};
@@ -11587,7 +11587,7 @@ exports.getIntersectionStream = function(sortedSets) {
   return s
 }
 
-},{"stream":142}],38:[function(require,module,exports){
+},{"stream":143}],38:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -12585,7 +12585,7 @@ ReadStream.prototype._cleanup = function(){
 };
 
 
-},{"inherits":36,"level-errors":45,"readable-stream":53,"xtend":154}],47:[function(require,module,exports){
+},{"inherits":36,"level-errors":45,"readable-stream":53,"xtend":155}],47:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -13686,7 +13686,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":48,"_process":81,"buffer":7,"core-util-is":8,"events":33,"inherits":36,"isarray":47,"stream":142,"string_decoder/":54,"util":6}],51:[function(require,module,exports){
+},{"./_stream_duplex":48,"_process":81,"buffer":7,"core-util-is":8,"events":33,"inherits":36,"isarray":47,"stream":143,"string_decoder/":54,"util":6}],51:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14378,7 +14378,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":48,"_process":81,"buffer":7,"core-util-is":8,"inherits":36,"stream":142}],53:[function(require,module,exports){
+},{"./_stream_duplex":48,"_process":81,"buffer":7,"core-util-is":8,"inherits":36,"stream":143}],53:[function(require,module,exports){
 (function (process){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
@@ -14392,7 +14392,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable') {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":48,"./lib/_stream_passthrough.js":49,"./lib/_stream_readable.js":50,"./lib/_stream_transform.js":51,"./lib/_stream_writable.js":52,"_process":81,"stream":142}],54:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":48,"./lib/_stream_passthrough.js":49,"./lib/_stream_readable.js":50,"./lib/_stream_transform.js":51,"./lib/_stream_writable.js":52,"_process":81,"stream":143}],54:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14793,7 +14793,7 @@ var checkKeyValue = Level.prototype._checkKeyValue = function (obj, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./iterator":56,"abstract-leveldown":59,"buffer":7,"idb-wrapper":34,"isbuffer":40,"typedarray-to-buffer":148,"util":152,"xtend":66}],56:[function(require,module,exports){
+},{"./iterator":56,"abstract-leveldown":59,"buffer":7,"idb-wrapper":34,"isbuffer":40,"typedarray-to-buffer":149,"util":153,"xtend":66}],56:[function(require,module,exports){
 var util = require('util')
 var AbstractIterator  = require('abstract-leveldown').AbstractIterator
 var ltgt = require('ltgt')
@@ -14867,7 +14867,7 @@ Iterator.prototype._next = function (callback) {
   this.callback = callback
 }
 
-},{"abstract-leveldown":59,"ltgt":77,"util":152}],57:[function(require,module,exports){
+},{"abstract-leveldown":59,"ltgt":77,"util":153}],57:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -15899,7 +15899,7 @@ module.exports.repair = deprecate(
 )
 
 }).call(this,require('_process'))
-},{"./batch":67,"./leveldown":6,"./util":69,"_process":81,"deferred-leveldown":10,"events":33,"level-codec":43,"level-errors":45,"level-iterator-stream":46,"prr":82,"util":152,"xtend":154}],69:[function(require,module,exports){
+},{"./batch":67,"./leveldown":6,"./util":69,"_process":81,"deferred-leveldown":10,"events":33,"level-codec":43,"level-errors":45,"level-iterator-stream":46,"prr":82,"util":153,"xtend":155}],69:[function(require,module,exports){
 /* Copyright (c) 2012-2016 LevelUP contributors
  * See list at <https://github.com/level/levelup#contributing>
  * MIT License
@@ -23026,7 +23026,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":153}],80:[function(require,module,exports){
+},{"wrappy":154}],80:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24586,7 +24586,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":86,"./internal/streams/BufferList":91,"./internal/streams/destroy":92,"./internal/streams/stream":93,"_process":81,"core-util-is":8,"events":33,"inherits":36,"isarray":39,"process-nextick-args":80,"safe-buffer":98,"string_decoder/":144,"util":6}],89:[function(require,module,exports){
+},{"./_stream_duplex":86,"./internal/streams/BufferList":91,"./internal/streams/destroy":92,"./internal/streams/stream":93,"_process":81,"core-util-is":8,"events":33,"inherits":36,"isarray":39,"process-nextick-args":80,"safe-buffer":98,"string_decoder/":145,"util":6}],89:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -25468,7 +25468,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":86,"./internal/streams/destroy":92,"./internal/streams/stream":93,"_process":81,"core-util-is":8,"inherits":36,"process-nextick-args":80,"safe-buffer":98,"util-deprecate":149}],91:[function(require,module,exports){
+},{"./_stream_duplex":86,"./internal/streams/destroy":92,"./internal/streams/stream":93,"_process":81,"core-util-is":8,"inherits":36,"process-nextick-args":80,"safe-buffer":98,"util-deprecate":150}],91:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -25729,6 +25729,7 @@ module.exports = function (givenOptions, callback) {
     Indexer.deleter = api.deleter
     Indexer.feed = api.feed
     Indexer.flush = api.flush
+    Indexer.synonyms = api.synonyms
     return callback(err, Indexer)
   })
 }
@@ -25926,6 +25927,19 @@ module.exports = function (options) {
     })
   }
 
+  const synonyms = function (synonyms, APICallback) {
+    var batch = []
+    Object.keys(synonyms).forEach(synonym => {
+      batch.push({
+        key: 'SYNONYM' + options.keySeparator + synonym,
+        // TODO: provide some option about whether to bump synonym down to
+        // lower case
+        value: synonyms[synonym].toLowerCase()
+      })
+    })
+    options.indexes.batch(batch, APICallback)
+  }
+
   const Indexer = {}
   Indexer.add = add
   Indexer.concurrentAdd = concurrentAdd
@@ -25937,10 +25951,11 @@ module.exports = function (options) {
   Indexer.deleter = deleter
   Indexer.feed = feed
   Indexer.flush = flush
+  Indexer.synonyms = synonyms
   return Indexer
 }
 
-},{"./add.js":101,"./delete.js":102,"./replicate.js":103,"JSONStream":3,"async":4,"docproc":16,"pumpify":84,"stream":142}],101:[function(require,module,exports){
+},{"./add.js":101,"./delete.js":102,"./replicate.js":103,"JSONStream":3,"async":4,"docproc":16,"pumpify":84,"stream":143}],101:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26014,7 +26029,7 @@ IndexBatch.prototype._flush = function (end) {
   return end()
 }
 
-},{"stream":142,"util":152}],102:[function(require,module,exports){
+},{"stream":143,"util":153}],102:[function(require,module,exports){
 // deletes all references to a document from the search index
 
 const util = require('util')
@@ -26178,7 +26193,7 @@ RecalibrateDB.prototype._transform = function (dbEntry, encoding, end) {
   })
 }
 
-},{"stream":142,"util":152}],103:[function(require,module,exports){
+},{"stream":143,"util":153}],103:[function(require,module,exports){
 const Transform = require('stream').Transform
 const Writable = require('stream').Writable
 const util = require('util')
@@ -26252,7 +26267,7 @@ DBWriteCleanStream.prototype._flush = function (end) {
 }
 exports.DBWriteCleanStream = DBWriteCleanStream
 
-},{"stream":142,"util":152}],104:[function(require,module,exports){
+},{"stream":143,"util":153}],104:[function(require,module,exports){
 const Logger = require('js-logger')
 const AvailableFields = require('./lib/AvailableFields.js').AvailableFields
 const CalculateBuckets = require('./lib/CalculateBuckets.js').CalculateBuckets
@@ -26268,6 +26283,7 @@ const GetIntersectionStream = require('./lib/GetIntersectionStream.js').GetInter
 const MergeOrConditionsTFIDF = require('./lib/MergeOrConditionsTFIDF.js').MergeOrConditionsTFIDF
 const MergeOrConditionsFieldSort = require('./lib/MergeOrConditionsFieldSort.js').MergeOrConditionsFieldSort
 const Readable = require('stream').Readable
+const ReplaceSynonyms = require('./lib/ReplaceSynonyms.js').ReplaceSynonyms
 const ScoreDocsOnField = require('./lib/ScoreDocsOnField.js').ScoreDocsOnField
 const ScoreTopScoringDocsTFIDF = require('./lib/ScoreTopScoringDocsTFIDF.js').ScoreTopScoringDocsTFIDF
 const levelup = require('levelup')
@@ -26375,12 +26391,14 @@ const initModule = function (err, Searcher, moduleReady) {
 
        */
       return s
+        .pipe(new ReplaceSynonyms(Searcher.options))
         .pipe(new CalculateResultSetPerClause(Searcher.options))
         .pipe(new ScoreDocsOnField(Searcher.options, (q.offset + q.pageSize), q.sort))
         .pipe(new MergeOrConditionsFieldSort(q))
         .pipe(new FetchStoredDoc(Searcher.options))
     } else {
       return s
+        .pipe(new ReplaceSynonyms(Searcher.options))
         .pipe(new CalculateResultSetPerClause(Searcher.options))
         .pipe(new CalculateTopScoringDocs(Searcher.options, q.offset, q.pageSize))
         .pipe(new ScoreTopScoringDocsTFIDF(Searcher.options))
@@ -26464,7 +26482,7 @@ module.exports = function (givenOptions, moduleReady) {
   })
 }
 
-},{"./lib/AvailableFields.js":105,"./lib/CalculateBuckets.js":106,"./lib/CalculateCategories.js":107,"./lib/CalculateEntireResultSet.js":108,"./lib/CalculateResultSetPerClause.js":109,"./lib/CalculateTopScoringDocs.js":110,"./lib/CalculateTotalHits.js":111,"./lib/Classify.js":112,"./lib/FetchDocsFromDB.js":113,"./lib/FetchStoredDoc.js":114,"./lib/GetIntersectionStream.js":115,"./lib/MergeOrConditionsFieldSort.js":116,"./lib/MergeOrConditionsTFIDF.js":117,"./lib/ScoreDocsOnField.js":118,"./lib/ScoreTopScoringDocsTFIDF.js":119,"./lib/matcher.js":120,"./lib/siUtil.js":121,"js-logger":41,"levelup":68,"stopword":122,"stream":142}],105:[function(require,module,exports){
+},{"./lib/AvailableFields.js":105,"./lib/CalculateBuckets.js":106,"./lib/CalculateCategories.js":107,"./lib/CalculateEntireResultSet.js":108,"./lib/CalculateResultSetPerClause.js":109,"./lib/CalculateTopScoringDocs.js":110,"./lib/CalculateTotalHits.js":111,"./lib/Classify.js":112,"./lib/FetchDocsFromDB.js":113,"./lib/FetchStoredDoc.js":114,"./lib/GetIntersectionStream.js":115,"./lib/MergeOrConditionsFieldSort.js":116,"./lib/MergeOrConditionsTFIDF.js":117,"./lib/ReplaceSynonyms.js":118,"./lib/ScoreDocsOnField.js":119,"./lib/ScoreTopScoringDocsTFIDF.js":120,"./lib/matcher.js":121,"./lib/siUtil.js":122,"js-logger":41,"levelup":68,"stopword":123,"stream":143}],105:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26479,7 +26497,7 @@ AvailableFields.prototype._transform = function (field, encoding, end) {
   return end()
 }
 
-},{"stream":142,"util":152}],106:[function(require,module,exports){
+},{"stream":143,"util":153}],106:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const _uniq = require('lodash.uniq')
 const Transform = require('stream').Transform
@@ -26520,7 +26538,7 @@ CalculateBuckets.prototype._transform = function (mergedQueryClauses, encoding, 
   })
 }
 
-},{"lodash.intersection":71,"lodash.uniq":76,"stream":142,"util":152}],107:[function(require,module,exports){
+},{"lodash.intersection":71,"lodash.uniq":76,"stream":143,"util":153}],107:[function(require,module,exports){
 const _intersection = require('lodash.intersection')
 const Transform = require('stream').Transform
 const util = require('util')
@@ -26583,7 +26601,7 @@ CalculateCategories.prototype._transform = function (mergedQueryClauses, encodin
   })
 }
 
-},{"lodash.intersection":71,"stream":142,"util":152}],108:[function(require,module,exports){
+},{"lodash.intersection":71,"stream":143,"util":153}],108:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _union = require('lodash.union')
 const util = require('util')
@@ -26606,7 +26624,7 @@ CalculateEntireResultSet.prototype._flush = function (end) {
   return end()
 }
 
-},{"lodash.union":75,"stream":142,"util":152}],109:[function(require,module,exports){
+},{"lodash.union":75,"stream":143,"util":153}],109:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _difference = require('lodash.difference')
 const _intersection = require('lodash.intersection')
@@ -26702,7 +26720,7 @@ CalculateResultSetPerClause.prototype._transform = function (queryClause, encodi
   })
 }
 
-},{"./siUtil.js":121,"lodash.difference":70,"lodash.intersection":71,"lodash.spread":74,"stream":142,"util":152}],110:[function(require,module,exports){
+},{"./siUtil.js":122,"lodash.difference":70,"lodash.intersection":71,"lodash.spread":74,"stream":143,"util":153}],110:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -26769,7 +26787,7 @@ CalculateTopScoringDocs.prototype._transform = function (clauseSet, encoding, en
     })
 }
 
-},{"lodash.sortedindexof":73,"stream":142,"util":152}],111:[function(require,module,exports){
+},{"lodash.sortedindexof":73,"stream":143,"util":153}],111:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26786,7 +26804,7 @@ CalculateTotalHits.prototype._transform = function (mergedQueryClauses, encoding
   end()
 }
 
-},{"stream":142,"util":152}],112:[function(require,module,exports){
+},{"stream":143,"util":153}],112:[function(require,module,exports){
 const Transform = require('stream').Transform
 const ngraminator = require('ngraminator')
 const util = require('util')
@@ -26856,7 +26874,7 @@ Classify.prototype._flush = function (end) {
   })
 }
 
-},{"ngraminator":78,"stream":142,"util":152}],113:[function(require,module,exports){
+},{"ngraminator":78,"stream":143,"util":153}],113:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26877,7 +26895,7 @@ FetchDocsFromDB.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"stream":142,"util":152}],114:[function(require,module,exports){
+},{"stream":143,"util":153}],114:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26901,7 +26919,7 @@ FetchStoredDoc.prototype._transform = function (doc, encoding, end) {
   })
 }
 
-},{"stream":142,"util":152}],115:[function(require,module,exports){
+},{"stream":143,"util":153}],115:[function(require,module,exports){
 const Transform = require('stream').Transform
 const iats = require('intersect-arrays-to-stream')
 const util = require('util')
@@ -26936,7 +26954,7 @@ GetIntersectionStream.prototype._transform = function (line, encoding, end) {
   })
 }
 
-},{"intersect-arrays-to-stream":37,"stream":142,"util":152}],116:[function(require,module,exports){
+},{"intersect-arrays-to-stream":37,"stream":143,"util":153}],116:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -26997,7 +27015,7 @@ const getResultMap = (resultSet) => {
   return resultMap
 }
 
-},{"stream":142,"util":152}],117:[function(require,module,exports){
+},{"stream":143,"util":153}],117:[function(require,module,exports){
 const Transform = require('stream').Transform
 const util = require('util')
 
@@ -27042,7 +27060,6 @@ MergeOrConditionsTFIDF.prototype._flush = function (end) {
     that.push(doc)
   })
   return end()
-  
 }
 
 // Make a merged map of the top scoring documents
@@ -27056,7 +27073,76 @@ const getResultMap = (resultSet) => {
   return resultMap
 }
 
-},{"stream":142,"util":152}],118:[function(require,module,exports){
+},{"stream":143,"util":153}],118:[function(require,module,exports){
+const Transform = require('stream').Transform
+const util = require('util')
+
+const ReplaceSynonyms = function (options, filter, requestedBuckets) {
+  this.options = options
+  Transform.call(this, { objectMode: true })
+}
+exports.ReplaceSynonyms = ReplaceSynonyms
+util.inherits(ReplaceSynonyms, Transform)
+ReplaceSynonyms.prototype._transform = function (clause, encoding, end) {
+  const that = this
+  var tokens = {}   // should probably be a Set
+  var synonyms = {}
+  var queryChain = []
+
+  const queryDB = function (key) {
+    return new Promise((resolve, reject) => {
+      that.options.indexes.get(
+        'SYNONYM' + that.options.keySeparator + key, (err, res) => {
+          if (err) resolve({})
+          else {
+            resolve({
+              key: key,
+              value: res
+            })
+          }
+        })
+    })
+  }
+
+  // only consider AND tokens when checking for synonyms
+  // (TODO: NOT tokens)
+
+  // make set of synonyms.
+  // One token can appear in query several times, so only ask index
+  // for a synonym once
+  for (var k in clause.AND) {
+    clause.AND[k].forEach(token => {
+      tokens[token] = '' // init with empty value
+    })
+  }
+
+  // Queue synonym queries
+  for (var j in tokens) {
+    queryChain.push(queryDB(j))
+  }
+
+  // Run synonym queries
+  Promise.all(queryChain)
+    .then(values => {
+      // if found, push synonyms into set
+      values.forEach(value => {
+        if (value.key !== undefined) {
+          synonyms[value.key] = value.value
+        }
+      })
+      // replace query tokens that have synonyms
+      for (var k in clause.AND) {
+        clause.AND[k] = clause.AND[k].map(token => {
+          return synonyms[token] || token
+        })
+      }
+      // push clause back into pipeline
+      that.push(clause)
+      return end()
+    })
+}
+
+},{"stream":143,"util":153}],119:[function(require,module,exports){
 const Transform = require('stream').Transform
 const _sortedIndexOf = require('lodash.sortedindexof')
 const util = require('util')
@@ -27107,7 +27193,7 @@ ScoreDocsOnField.prototype._transform = function (clauseSet, encoding, end) {
       })
 }
 
-},{"lodash.sortedindexof":73,"stream":142,"util":152}],119:[function(require,module,exports){
+},{"lodash.sortedindexof":73,"stream":143,"util":153}],120:[function(require,module,exports){
 /*
    Look at the top scoring docs, and work out which terms give hits in them
  */
@@ -27170,7 +27256,26 @@ const gett = (field, key, gte, lte, df, weight, options) => {
   var s = options.keySeparator
   return new Promise((resolve, reject) => {
     options.indexes.get('DOCUMENT-VECTOR' + s + field + s + key + s, (err, value) => {
-      if (err) return reject(err)
+      // ERROR
+      // an error here probably means that the
+      // index was created with storeVector: false, so all vectors are
+      // given a default magnitude of 1
+      if (err) {
+        return resolve([
+          {
+            field: field,
+            term: gte,     // just pick gte here (could also be lte)
+            tf: 1,
+            df: 1,
+            tfidf: 1,
+            weight: 1,
+            score: 1
+          }
+        ])
+      }
+
+      // NO ERROR
+      // Document vector was found, so do a proper weighting
       var matchedTerms = Object.keys(value).filter((t) => {
         if ((t >= gte) && (t <= lte)) return true
       })
@@ -27194,7 +27299,7 @@ const gett = (field, key, gte, lte, df, weight, options) => {
   })
 }
 
-},{"stream":142,"util":152}],120:[function(require,module,exports){
+},{"stream":143,"util":153}],121:[function(require,module,exports){
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
 const util = require('util')
@@ -27319,7 +27424,7 @@ exports.match = function (q, options) {
   }
 }
 
-},{"stream":142,"util":152}],121:[function(require,module,exports){
+},{"stream":143,"util":153}],122:[function(require,module,exports){
 exports.getKeySet = function (clause, sep) {
   var keySet = []
   for (var fieldName in clause) {
@@ -27334,6 +27439,8 @@ exports.getKeySet = function (clause, sep) {
   }
   return keySet
 }
+
+//
 
 exports.getQueryDefaults = function (q) {
   // if a string is given- turn it into a query
@@ -27368,7 +27475,7 @@ exports.getQueryDefaults = function (q) {
   }, q)
 }
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 const defaultStopwords = require('./stopwords_en.js').words
 
 exports.removeStopwords = function(tokens, stopwords) {
@@ -27401,7 +27508,7 @@ exports.ru = require('./stopwords_ru.js').words
 exports.sv = require('./stopwords_sv.js').words
 exports.zh = require('./stopwords_zh.js').words
 
-},{"./stopwords_ar.js":123,"./stopwords_bn.js":124,"./stopwords_br.js":125,"./stopwords_da.js":126,"./stopwords_de.js":127,"./stopwords_en.js":128,"./stopwords_es.js":129,"./stopwords_fa.js":130,"./stopwords_fr.js":131,"./stopwords_hi.js":132,"./stopwords_it.js":133,"./stopwords_ja.js":134,"./stopwords_nl.js":135,"./stopwords_no.js":136,"./stopwords_pl.js":137,"./stopwords_pt.js":138,"./stopwords_ru.js":139,"./stopwords_sv.js":140,"./stopwords_zh.js":141}],123:[function(require,module,exports){
+},{"./stopwords_ar.js":124,"./stopwords_bn.js":125,"./stopwords_br.js":126,"./stopwords_da.js":127,"./stopwords_de.js":128,"./stopwords_en.js":129,"./stopwords_es.js":130,"./stopwords_fa.js":131,"./stopwords_fr.js":132,"./stopwords_hi.js":133,"./stopwords_it.js":134,"./stopwords_ja.js":135,"./stopwords_nl.js":136,"./stopwords_no.js":137,"./stopwords_pl.js":138,"./stopwords_pt.js":139,"./stopwords_ru.js":140,"./stopwords_sv.js":141,"./stopwords_zh.js":142}],124:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -27433,7 +27540,7 @@ var words = ["،","آض","آمينَ","آه","آهاً","آي","أ","أب","أج
 // tell the world about the noise words.
 exports.words = words
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -27464,7 +27571,7 @@ var words = ["অতএব","অথচ","অথবা","অনুযায়ী
 // tell the world about the noise words.
 exports.words = words
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /*
 Copyright (c) 2017, Micael Levi
 
@@ -27751,7 +27858,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -27783,7 +27890,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /*
 */
 
@@ -27796,7 +27903,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 
@@ -27836,7 +27943,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -27874,7 +27981,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel
 Farsi Stop Words by Fardin Koochaki <me@fardinak.com>
@@ -27914,7 +28021,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /*
  Copyright (c) 2014, Ismaël Héry
 
@@ -28110,7 +28217,7 @@ var words = ['être', 'avoir', 'faire',
 
 exports.words = words
 
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 /*
 The MIT License (MIT)
 
@@ -28161,7 +28268,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -28215,7 +28322,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],134:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 // Original copyright:
 /*
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -28276,7 +28383,7 @@ var words = ['の', 'に', 'は', 'を', 'た', 'が', 'で', 'て', 'と', 'し
 // tell the world about the noise words.
 exports.words = words
 
-},{}],135:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 /*
 Copyright (c) 2011, Chris Umbel, Martijn de Boer, Damien van Holten
 
@@ -28321,7 +28428,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],136:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 /*
 Copyright (c) 2014, Kristoffer Brabrand
 
@@ -28365,7 +28472,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],137:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 /*
 Copyright (c) 2013, Paweł Łaskarzewski
 
@@ -28429,7 +28536,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],138:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 /*
 Copyright (c) 2011, Luís Rodrigues
 
@@ -28567,7 +28674,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],139:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 /*
 Copyright (c) 2011, Polyakov Vladimir, Chris Umbel
 
@@ -28610,7 +28717,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],140:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 /*
 Creative Commons – Attribution / ShareAlike 3.0 license
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -28642,7 +28749,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],141:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 /*
 Copyright (c) 2011, David Przybilla, Chris Umbel
 
@@ -28689,7 +28796,7 @@ var words = [
 // tell the world about the noise words.
 exports.words = words
 
-},{}],142:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28818,7 +28925,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":33,"inherits":36,"readable-stream/duplex.js":85,"readable-stream/passthrough.js":94,"readable-stream/readable.js":95,"readable-stream/transform.js":96,"readable-stream/writable.js":97}],143:[function(require,module,exports){
+},{"events":33,"inherits":36,"readable-stream/duplex.js":85,"readable-stream/passthrough.js":94,"readable-stream/readable.js":95,"readable-stream/transform.js":96,"readable-stream/writable.js":97}],144:[function(require,module,exports){
 module.exports = shift
 
 function shift (stream) {
@@ -28840,7 +28947,7 @@ function getStateLength (state) {
   return state.length
 }
 
-},{}],144:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('safe-buffer').Buffer;
@@ -29113,7 +29220,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":98}],145:[function(require,module,exports){
+},{"safe-buffer":98}],146:[function(require,module,exports){
 exports.doubleNormalization0point5 = 'doubleNormalization0point5'
 exports.logNormalization = 'logNormalization'
 exports.raw = 'raw'
@@ -29163,7 +29270,7 @@ exports.getTermFrequency = function (docVector, options) {
   }
 }
 
-},{}],146:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 /**
  * search-index module.
  * @module term-vector
@@ -29229,7 +29336,7 @@ var getTermVectorForNgramLength = function (tokens, nGramLength) {
   return vector
 }
 
-},{"lodash.isequal":72}],147:[function(require,module,exports){
+},{"lodash.isequal":72}],148:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -29341,7 +29448,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":81,"stream":142}],148:[function(require,module,exports){
+},{"_process":81,"stream":143}],149:[function(require,module,exports){
 (function (Buffer){
 /**
  * Convert a typed array to a Buffer without a copy
@@ -29364,7 +29471,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":7}],149:[function(require,module,exports){
+},{"buffer":7}],150:[function(require,module,exports){
 (function (global){
 
 /**
@@ -29435,16 +29542,16 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],150:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 arguments[4][36][0].apply(exports,arguments)
-},{"dup":36}],151:[function(require,module,exports){
+},{"dup":36}],152:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],152:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30034,7 +30141,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":151,"_process":81,"inherits":150}],153:[function(require,module,exports){
+},{"./support/isBuffer":152,"_process":81,"inherits":151}],154:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -30069,7 +30176,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],154:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
