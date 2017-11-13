@@ -34,7 +34,7 @@ si.match(options)
   .on('data', function (match) {
     // a match
   })
-  .end('end', function () {
+  .on('end', function () {
     // all matches returned
   })
 ```
@@ -52,7 +52,7 @@ si.match(options)
   .on('data', function (match) {
     // a match
   })
-  .end('end', function () {
+  .on('end', function () {
     // all matches returned
   })
 ```
@@ -79,7 +79,7 @@ si.match(options)
   .on('data', function (match) {
     // a match
   })
-  .end('end', function () {
+  .on('end', function () {
     // all matches returned
   })
 ```
@@ -109,7 +109,7 @@ si.match(options)
   .on('data', function (match) {
     // a match
   })
-  .end('end', function () {
+  .on('end', function () {
     // all matches returned
   })
 ```
