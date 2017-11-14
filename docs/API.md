@@ -247,7 +247,7 @@ index.match({
   `beginsWith` is longer than this number
 * **limit** _number default:10_ maximum amount of matches to return
 * **type** _string default:'simple'_ the type of matcher to use, can
-  only be `simple` (default), `ID` or `count.
+  only be `simple` (default), `ID` or `count`.
 
 
 ### search(...)
