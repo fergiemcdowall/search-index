@@ -57,6 +57,7 @@
     "search"
   ],
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "browser": {
     "leveldown": "level-js"
   },
