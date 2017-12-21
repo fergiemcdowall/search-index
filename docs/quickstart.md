@@ -59,7 +59,7 @@ const indexData = function(err, newIndex) {
   if (!err) {
     index = newIndex
     request(url)
-      .pipe(index.feed()
+      .pipe(index.feed())
       .on('finish', searchCLI)
   }
 }
