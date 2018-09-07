@@ -42,7 +42,7 @@
     "written-number": "^0.5.0"
   },
   "optionalDependencies": {
-    "leveldown": "^1.7.0"
+    "leveldown": "^3.0.0"
   },
   "author": {
     "email": "fergusmcdowall@gmail.com",
