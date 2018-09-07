@@ -83,7 +83,7 @@
     "tag-release": "npm run -s changelog | git tag -a v$(npm run -s print-version-from-package-json) --file - --cleanup=verbatim",
     "test": "npm run empty-sandbox && date && npm run lint && npm run test-node && npm run test-browser && npm run dist-min",
     "test-browser": "node test/browser/runtest.js",
-    "test-node": "tape test/node/tape-tests/*.js && mocha test/node/mocha-tests --recursive --timeout 10000",
+    "test-node": "tape test/node/tape-tests/*.js && mocha test/node/mocha-tests --recursive --timeout 12500",
     "test-with-local-deps": "npm install && npm install ../search-index-adder ../search-index-searcher && npm test"
   },
   "config": {
