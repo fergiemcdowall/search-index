@@ -114,8 +114,8 @@ si.match(options)
   })
 ```
 
-...returns a list of suggestions, together with the sets of IDs for
-the documents that they appear in
+...returns a list of suggestions, together with the total number of documents
+that they appear in
 
 ```javascript
 [['london', 5],
