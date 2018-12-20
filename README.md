@@ -1,9 +1,13 @@
-# search-index-2
+# search-index
 
-new version of search-index that is totally different from the old version
+### A network resilient, persistent full-text search library for the browser and Node.js
 
-
-This version will eventually be merged into `search-index`
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/fergiemcdowall/search-index)
+[![npm](https://img.shields.io/npm/v/search-index.svg?style=flat-square)](https://www.npmjs.com/package/search-index)
+[![npm](https://img.shields.io/npm/dm/search-index.svg?style=flat-square)](https://npm-stat.com/charts.html?package=search-index)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENCE)
+[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)](https://travis-ci.org/fergiemcdowall/search-index)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
 ## API
