@@ -1,0 +1,33 @@
+{
+  "name": "search-index",
+  "version": "1.0.0",
+  "description": "new version of search-index that is totally different from the old version",
+  "main": "lib/main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "rm -rf test/sandbox && mkdir test/sandbox && tape test/*-test.js && standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fergiemcdowall/search-index-2.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fergiemcdowall/search-index-2/issues"
+  },
+  "homepage": "https://github.com/fergiemcdowall/search-index-2#readme",
+  "devDependencies": {
+    "level-out": "^1.0.0",
+    "standard": "^12.0.1",
+    "tape": "^4.9.1",
+    "world-bank-dataset": "^1.0.0"
+  },
+  "dependencies": {
+    "fergies-inverted-index": "^0.0.9",
+    "term-vector": "^1.0.0",
+    "traverse": "^0.6.6"
+  }
+}
