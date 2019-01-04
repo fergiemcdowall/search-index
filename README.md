@@ -38,7 +38,7 @@ Command     |  Accepts    | Returns    | Writes | Description
 const si = require('search-index')
 
 // EITHER:
-const idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
+idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
 // some time later...
 idx.PUT([ /* my array of objects */ ]).then(doStuff)
 
