@@ -35,16 +35,16 @@ Command     |  Accepts    | Returns    | Writes | Description
 ```javascript
 
 // Make a new index, or open an existing one with this name
+const si = require('search-index')
 // EITHER:
-require('search-index').INIT({ name: 'idx' }) // index now available globally as "idx"
-// idx not immediately available if promise resolution is ignored
+const idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
 // some time later...
 idx.PUT([ /* my array of objects */ ]).then(doStuff)
 
 // OR:
-require('search-index').OPEN({ name: 'idx' }).then(idx => {
-  idx.PUT([ /* my array of objects */ ]).then(doStuff) // no global, idx must be passed around
+si(ops, (err, idx) => {
   // idx is always open and available
+  idx.PUT([ /* my array of objects */ ]).then(doStuff)
 })
 
 ```
