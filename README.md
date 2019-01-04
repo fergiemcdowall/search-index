@@ -110,4 +110,4 @@ NOT(
 
 
 
-(See the [tests](https://github.com/fergiemcdowall/search-index-2/tree/master/test) for more examples.)
+(See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.)
