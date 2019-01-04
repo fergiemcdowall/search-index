@@ -36,6 +36,7 @@ Command     |  Accepts    | Returns    | Writes | Description
 
 // Make a new index, or open an existing one with this name
 const si = require('search-index')
+
 // EITHER:
 const idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
 // some time later...
