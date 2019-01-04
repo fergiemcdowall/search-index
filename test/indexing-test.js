@@ -36,11 +36,11 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si2.OPEN({
+  si2({
     name: sandbox + 'simple-test'
-  }).then(s => {
+  }, (err, s) => {
     global.si = s
-    t.pass('si created')
+    t.error(err)
   })
 })
 

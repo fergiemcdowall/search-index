@@ -1,6 +1,6 @@
 const test = require('tape')
 const sandbox = 'test/sandbox/'
-const si2 = require('../lib/main.js')
+const si = require('../lib/main.js')
 
 const indexName = sandbox + 'delete-test'
 
@@ -36,7 +36,13 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si2.INIT({ name: indexName }).then(t.pass)
+  global[indexName] = si({ name: indexName })
+  t.pass('ok')
+})
+
+test('give lazy loading some time to complete', t => {
+  t.plan(1)
+  setTimeout(t.pass, 500)
 })
 
 test('can add some worldbank data', t => {

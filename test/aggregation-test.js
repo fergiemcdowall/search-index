@@ -1,4 +1,4 @@
-const si2 = require('../')
+const si = require('../')
 const sandbox = 'test/sandbox/'
 const test = require('tape')
 const wbd = require('world-bank-dataset')
@@ -7,7 +7,13 @@ const indexName = sandbox + 'wb'
 
 test('create a little world bank index', t => {
   t.plan(1)
-  si2.INIT({ name: indexName }).then(t.pass)
+  global[indexName] = si({ name: indexName })
+  t.ok('loaded')
+})
+
+test('give lazy loading some time to complete', t => {
+  t.plan(1)
+  setTimeout(t.pass, 500)
 })
 
 test('can add some worldbank data', t => {
