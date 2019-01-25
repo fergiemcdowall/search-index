@@ -146,7 +146,7 @@ test('can search by numeric value', t => {
     resultSet => si.SCORE.numericField({
       resultSet: resultSet,
       fieldName: 'importantNumber',
-      sort: (a, b) => a.score < b.score,
+      sort: (a, b) => b.score - a.score,
       offset: 0,
       limit: 10
     })
@@ -448,7 +448,6 @@ test('SEARCH with embedded OR', t => {
 test('DICTIONARY with specified field', t => {
   t.plan(1)
   si.DICTIONARY('body.text').then(res => {
-    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -466,7 +465,7 @@ test('DICTIONARY with specified field', t => {
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   si.DICTIONARY().then(res => {
-    console.log(JSON.stringify(res, null, 2))
+    //    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       '200',
       '500',

@@ -37,7 +37,7 @@ test('can add some worldbank data', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName].AGGREGATE(
+  global[indexName].BUCKETFILTER(
     // global[indexName].INDEX.DISTINCT('totalamt').then(global[indexName].INDEX.EACH),
     global[indexName].INDEX.DISTINCT('totalamt')
       .then(result => Promise.all(result.map(global[indexName].BUCKET))),
@@ -162,7 +162,7 @@ test('can aggregate totalamt', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName].AGGREGATE(
+  global[indexName].BUCKETFILTER(
     global[indexName].DISTINCT('impagency').then(result => Promise.all(result.map(global[indexName].BUCKET))),
     global[indexName].SEARCH('board_approval_month:October')
   ).then(result => {
