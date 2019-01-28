@@ -93,7 +93,7 @@ NOT(
 - <a href="#DISTINCT"><code>db.<b>DISTINCT()</b></code></a>
 - <a href="#DOCUMENTS"><code>db.<b>DOCUMENTS()</b></code></a>
 - <a href="#GET"><code>db.<b>GET()</b></code></a>
-- <a href="#INDEX"><code>db.<b>INDEX()</b></code></a>
+- <a href="#INDEX"><code>db.<b>INDEX</b></code></a>
 - <a href="#NOT"><code>db.<b>AND()</b></code></a>
 - <a href="#OR"><code>db.<b>AND()</b></code></a>
 - <a href="#PUT"><code>db.<b>AND()</b></code></a>
@@ -187,7 +187,7 @@ Get documents by ID
 
 <a name="GET"></a>
 
-### `db.GET([ ...Promise ]).then(result)`
+### `db.GET(property).then(result)`
 
 `db.GET` returns all object ids for objects that contain the given
 property, aggregated by object id.
@@ -207,9 +207,9 @@ db.GET('h').then(result)
 
 <a name="INDEX"></a>
 
-### `db.INDEX([ ...Promise ]).then(result)`
+### `db.INDEX`
 
-Return the underlying [index](https://github.com/fergiemcdowall/fergies-inverted-index/).
+Points to the underlying [index](https://github.com/fergiemcdowall/fergies-inverted-index/).
 
 
 <a name="NOT"></a>
