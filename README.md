@@ -10,24 +10,6 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
-## API
-
-Command     |  Accepts    | Returns    | Writes | Description
------------ |  ---------- | ---------- | ------ | -----------
-`AGGREGATE` |             |            | no     | Can create aggregations by intersecting an array of BUCKETs with a query
-`AND`       |  properties | ids        | no     | Boolean AND. Return IDs of objects that have prop.A AND prop.B
-`BUCKET`    |  properties | ids        | no     | Get all document ids in this namespace
-`DELETE`    |  ids        | ids        | yes    | Delete a set of documents
-`DICTIONARY`|  field name | words      | no     | Return every word in specified field (or entire index if no field specified)
-`DISTINCT`  |  properties | properties | no     | Gets a list of available properties in a space
-`DOCUMENTS` |  ids        | objects    | no     | Get an object by its ID
-`GET`       |  properties | ids        | no     | Get the IDs of objects with a property in the given range
-`INDEX`     |  -          | index      | both   | Get the underlying [index](https://github.com/fergiemcdowall/fergies-inverted-index/).
-`NOT`       |  ids        | ids        | no     | Get all IDs of objects in set A that are not in set B
-`OR`        |  properties | ids        | no     | Boolean OR. Return IDs of objects that have either prop.A OR prop.b
-`PUT`       |  objects    | ids        | yes    | Add objects to index
-`SEARCH`    |  properties | objects    | no     | Equivalent to AND followed by DOCUMENTS
-
 ## Getting started
 
 ### Initialise and populate an index
@@ -35,18 +17,11 @@ Command     |  Accepts    | Returns    | Writes | Description
 ```javascript
 
 // Make a new index, or open an existing one with this name
-const si = require('search-index')
+import si from 'search-index'
 
-// EITHER:
 idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
-// some time later...
-idx.PUT([ /* my array of objects */ ]).then(doStuff)
 
-// OR:
-si(ops, (err, idx) => {
-  // idx is always open and available
-  idx.PUT([ /* my array of objects */ ]).then(doStuff)
-})
+idx.PUT([ /* my array of objects */ ]).then(doStuff)
 
 ```
 
@@ -106,9 +81,173 @@ NOT(
 
 ```
 
-### Aggregation
+
+## API
+
+- <a href="#si"><code><b>si()</b></code></a>
+- <a href="#AND"><code>db.<b>AND()</b></code></a>
+- <a href="#BUCKET"><code>db.<b>BUCKET()</b></code></a>
+- <a href="#BUCKETFILTER"><code>db.<b>BUCKETFILTER()</b></code></a>
+- <a href="#DELETE"><code>db.<b>DELETE()</b></code></a>
+- <a href="#DICTIONARY"><code>db.<b>DICTIONARY()</b></code></a>
+- <a href="#DISTINCT"><code>db.<b>DISTINCT()</b></code></a>
+- <a href="#DOCUMENTS"><code>db.<b>DOCUMENTS()</b></code></a>
+- <a href="#GET"><code>db.<b>GET()</b></code></a>
+- <a href="#INDEX"><code>db.<b>INDEX()</b></code></a>
+- <a href="#NOT"><code>db.<b>AND()</b></code></a>
+- <a href="#OR"><code>db.<b>AND()</b></code></a>
+- <a href="#PUT"><code>db.<b>AND()</b></code></a>
+- <a href="#SEARCH"><code>db.<b>AND()</b></code></a>
 
 
+<a name="si"></a>
 
+### `si([options[, callback]])`
+
+```javascript
+import si from 'search-index'
+
+// creates a DB called "myDB" using levelDB (node.js), or indexedDB (browser)
+const db = si({ name: 'myDB' })
+```
+
+In some cases you will want to start operating on the database
+instentaneously. In these cases you can wait for the callback:
+
+```javascript
+import si from 'search-index'
+
+// creates a DB called "myDB" using levelDB (node.js), or indexedDB (browser)
+si({ name: 'myDB' }, (err, db) => {
+  // db is guaranteed to be open and available
+})
+```
+
+
+<a name="AND"></a>
+
+### `db.AND([ ...Promise ]).then(result)`
+
+Boolean AND. Return IDs of objects that have prop.A AND prop.B
+
+
+<a name="BUCKET"></a>
+
+### `db.BUCKET([ ...Promise ]).then(result)`
+
+Return IDs of objects that match the query
+
+
+<a name="BUCKETFILTER"></a>
+
+### `db.BUCKETFILTER([ ...bucket ], filter query).then(result)`
+
+The first argument is an array of buckets, the second is an expression
+that filters each bucket
+
+
+<a name="DELETE"></a>
+
+### `db.DELETE([ ...Promise ]).then(result)`
+
+Deletes all objects by ID
+
+
+<a name="DICTIONARY"></a>
+
+### `db.DICTIONARY(options).then(result)`
+
+Options:
+
+* gte : greater than or equal to
+* lte : less than or equal to
+
+Gets an array of tokens stored in the index.
+
+
+<a name="DISTINCT"></a>
+
+### `db.DISTINCT(options).then(result)`
+
+`db.DISTINCT` returns every value in the db that is greater than equal
+to `gte` and less than or equal to `lte` (sorted alphabetically)
+
+For example- get all names between `h` and `l`:
+
+```javascript
+db.DISTINCT({ gte: 'h', lte: 'l' }).then(result)
+```
+
+<a name="DOCUMENTS"></a>
+
+### `db.DOCUMENTS([ ...id ]).then(result)`
+
+Get documents by ID
+
+
+<a name="GET"></a>
+
+### `db.GET([ ...Promise ]).then(result)`
+
+`db.GET` returns all object ids for objects that contain the given
+property, aggregated by object id.
+
+For example get all names between `h` and `l`:
+
+```javascript
+db.GET({ gte: 'h', lte: 'l' }).then(result)
+```
+
+Or to get all objects that have a `name` property that begins with 'h'
+
+```javascript
+db.GET('h').then(result)
+```
+
+
+<a name="INDEX"></a>
+
+### `db.INDEX([ ...Promise ]).then(result)`
+
+Return the underlying [index](https://github.com/fergiemcdowall/fergies-inverted-index/).
+
+
+<a name="NOT"></a>
+
+### `db.NOT([ ...Promise ]).then(result)`
+
+Where A and B are sets, `db.NOT` Returns the ids of objects that are
+present in A, but not in B.
+
+
+<a name="OR"></a>
+
+### `db.OR([ ...Promise ]).then(result)`
+
+Return ids of objects that are in one or more of the query clauses
+
+
+<a name="PUT"></a>
+
+### `db.PUT([ ...Promise ]).then(result)`
+
+Add objects to database
+
+
+<a name="SEARCH"></a>
+
+### `db.SEARCH([ ...Promise ]).then(result)`
+
+Search the database
+
+```javascript
+  idx.SEARCH(
+    idx.OR('bananas', 'different'),  // search clauses can be nested promises
+    'coolness'                       // or strings (defaults to GET)
+  ).then(result)
+```
+
+
+### More examples
 
 (See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.)
