@@ -1,8 +1,8 @@
-const util = require('./util.js')
-const trav = require('traverse')
-const tv = require('term-vector')
+import util from './util.js'
+import trav from 'traverse'
+import tv from 'term-vector'
 
-module.exports = fii => {
+export default function (fii) {
   const invertDoc = function (obj) {
     var invertedDoc = {}
     // take a plain old JSON object and parse out all of the leaf-nodes

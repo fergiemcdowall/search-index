@@ -1,7 +1,7 @@
-const fii = require('fergies-inverted-index')
-const writer = require('./write.js')
-const reader = require('./read.js')
-const util = require('./util.js')
+import fii from 'fergies-inverted-index'
+import writer from './write.js'
+import reader from './read.js'
+import util from './util.js'
 
 global.D = 0 // total docs in index
 global.searchableFields = [] // fields that are available for searching
@@ -22,12 +22,13 @@ const makeASearchIndex = idx => {
     NOT: r.SET_DIFFERENCE,
     OR: r.OR,
     PUT: w.PUT,
-    SCORE: r.SCORE,
+    SCORENUMERIC: r.SCORENUMERIC,
+    SCORETFIDF: r.SCORETFIDF,
     SEARCH: r.SEARCH
   }
 }
 
-module.exports = (ops, callback) => {
+export default function (ops, callback) {
   // if no callback then return lazy load
   if (!callback) {
     let idx = fii(ops)

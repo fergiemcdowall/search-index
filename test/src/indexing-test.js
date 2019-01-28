@@ -1,8 +1,8 @@
 /* global si */
+import si from '../../dist/search-index.esm.js'
+import test from 'tape'
 
-const test = require('tape')
 const sandbox = 'test/sandbox/'
-const si2 = require('../lib/main.js')
 
 const data = [
   {
@@ -36,17 +36,17 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si2({
+  si({
     name: sandbox + 'simple-test'
-  }, (err, s) => {
-    global.si = s
+  }, (err, idx) => {
+    global.idx = idx
     t.error(err)
   })
 })
 
 test('can add some worldbank data', t => {
   t.plan(1)
-  si.PUT(data).then(() => {
+  idx.PUT(data).then(() => {
     t.pass('ok')
   })
 })
@@ -54,7 +54,7 @@ test('can add some worldbank data', t => {
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
-  si.SEARCH(
+  idx.SEARCH(
     'body.text:cool', // use colon? eg "body.text:cool"
     'body.text:really',
     'body.text:bananas'
@@ -77,7 +77,7 @@ test('can search', t => {
 
 test('can search in any field', t => {
   t.plan(1)
-  si.SEARCH(
+  idx.SEARCH(
     'cool',
     'really',
     'bananas'
@@ -99,7 +99,7 @@ test('can search in any field', t => {
 
 test('can do 0-hit', t => {
   t.plan(1)
-  si.SEARCH(
+  idx.SEARCH(
     'cool',
     'really',
     'sdasdadsasd',
@@ -111,7 +111,7 @@ test('can do 0-hit', t => {
 
 test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
-  si.SEARCH(
+  idx.SEARCH(
     'title:cool',
     'body.metadata:documentness'
   ).then(res => {
@@ -140,42 +140,42 @@ test('can do a mixture of fielded search and any-field search', t => {
 
 test('can search by numeric value', t => {
   t.plan(1)
-  si.AND(
+  idx.AND(
     'importantNumber:*'
   ).then(
-    resultSet => si.SCORE.numericField({
+    resultSet => idx.SCORENUMERIC({
       resultSet: resultSet,
       fieldName: 'importantNumber',
       sort: (a, b) => b.score - a.score,
       offset: 0,
       limit: 10
     })
-  ).then(si.DOCUMENTS)
-    .then(res => {
-      t.looseEqual(res, [
-        { _id: 'a',
-          match: [ 'importantNumber.5000:5000' ],
-          score: 5000,
-          obj: data[0]
-        },
-        { _id: 'b',
-          match: [ 'importantNumber.500:500' ],
-          score: 500,
-          obj: data[1]
-        },
-        { _id: 'c',
-          match: [ 'importantNumber.200:200' ],
-          score: 200,
-          obj: data[2]
-        }
-      ])
-    })
+  ).then(idx.DOCUMENTS)
+   .then(res => {
+     t.looseEqual(res, [
+       { _id: 'a',
+         match: [ 'importantNumber.5000:5000' ],
+         score: 5000,
+         obj: data[0]
+       },
+       { _id: 'b',
+         match: [ 'importantNumber.500:500' ],
+         score: 500,
+         obj: data[1]
+       },
+       { _id: 'c',
+         match: [ 'importantNumber.200:200' ],
+         score: 200,
+         obj: data[2]
+       }
+     ])
+   })
 })
 
 // OR-ing
 test('can search by numeric value and OR', t => {
   t.plan(1)
-  si.OR(
+  idx.OR(
     'importantNumber:200',
     'importantNumber:5000'
   ).then(res => t.looseEqual(res, [
@@ -193,7 +193,7 @@ test('can search by numeric value and OR', t => {
 // OR-ing
 test('can search by numeric value and OR with one term on any field', t => {
   t.plan(1)
-  si.OR(
+  idx.OR(
     '200',
     'importantNumber:5000'
   ).then(res => t.looseEqual(res, [
@@ -210,7 +210,7 @@ test('can search by numeric value and OR with one term on any field', t => {
 
 test('can GET', t => {
   t.plan(1)
-  si.GET(
+  idx.GET(
     'body.text:cool'
   ).then(res => t.looseEqual(res, [
     {
@@ -224,7 +224,7 @@ test('can GET', t => {
 
 test('can GET with no field specified', t => {
   t.plan(1)
-  si.GET(
+  idx.GET(
     'cool'
   ).then(res => {
     t.looseEqual(res, [
@@ -248,7 +248,7 @@ test('can GET with no field specified', t => {
 
 test('can AND', t => {
   t.plan(1)
-  si.AND(
+  idx.AND(
     'title:quite',
     'body.metadata:coolness'
   ).then(res => {
@@ -273,8 +273,8 @@ test('can AND', t => {
 
 test('can AND with embedded OR', t => {
   t.plan(1)
-  si.AND(
-    si.OR('title:quite', 'body.text:different'),
+  idx.AND(
+    idx.OR('title:quite', 'body.text:different'),
     'body.metadata:coolness'
   ).then(res => {
     t.looseEqual(res, [
@@ -305,10 +305,10 @@ test('can AND with embedded OR', t => {
 
 test('can AND with embedded OR and embedded AND', t => {
   t.plan(1)
-  si.AND(
-    si.OR(
+  idx.AND(
+    idx.OR(
       'title:quite',
-      si.AND(
+      idx.AND(
         'body.text:totally',
         'body.text:different'
       )
@@ -344,7 +344,7 @@ test('can AND with embedded OR and embedded AND', t => {
 
 test('can NOT', t => {
   t.plan(1)
-  si.NOT(
+  idx.NOT(
     'cool',
     'bananas'
   ).then(res => {
@@ -362,29 +362,29 @@ test('can NOT', t => {
 
 test('can OR', t => {
   t.plan(1)
-  si.OR('body.text:bananas', 'body.text:different')
-    .then(res => {
-      t.looseEqual(res, [
-        {
-          _id: 'b',
-          match: [
-            'body.text.bananas:0.17'
-          ]
-        }, {
-          _id: 'c',
-          match: [
-            'body.text.different:0.33'
-          ]
-        }
-      ])
-    })
+  idx.OR('body.text:bananas', 'body.text:different')
+   .then(res => {
+     t.looseEqual(res, [
+       {
+         _id: 'b',
+         match: [
+           'body.text.bananas:0.17'
+         ]
+       }, {
+         _id: 'c',
+         match: [
+           'body.text.different:0.33'
+         ]
+       }
+     ])
+   })
 })
 
 test('AND with embedded OR', t => {
   t.plan(1)
-  si.AND(
+  idx.AND(
     'bananas',
-    si.OR('body.text:cool', 'body.text:coolness')
+    idx.OR('body.text:cool', 'body.text:coolness')
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b', match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
@@ -394,9 +394,9 @@ test('AND with embedded OR', t => {
 
 test('AND with embedded OR', t => {
   t.plan(1)
-  si.AND(
-    si.OR('bananas', 'different'),
-    si.OR('cool', 'coolness')
+  idx.AND(
+    idx.OR('bananas', 'different'),
+    idx.OR('cool', 'coolness')
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b',
@@ -416,9 +416,8 @@ test('AND with embedded OR', t => {
 
 test('SEARCH with embedded OR', t => {
   t.plan(1)
-  const { SEARCH, OR } = si
-  SEARCH(
-    OR('bananas', 'different'),
+  idx.SEARCH(
+    idx.OR('bananas', 'different'),
     'coolness'
   ).then(res => {
     t.looseEqual(res, [
@@ -447,7 +446,7 @@ test('SEARCH with embedded OR', t => {
 
 test('DICTIONARY with specified field', t => {
   t.plan(1)
-  si.DICTIONARY('body.text').then(res => {
+  idx.DICTIONARY('body.text').then(res => {
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -464,7 +463,7 @@ test('DICTIONARY with specified field', t => {
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
-  si.DICTIONARY().then(res => {
+  idx.DICTIONARY().then(res => {
     //    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       '200',

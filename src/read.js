@@ -1,5 +1,7 @@
-module.exports = fii => {
-  const SCORE = require('./scorers.js')
+import { TFIDF, numericField } from './scorers.js'
+
+export default function (fii) {
+//  const SCORE = require('./scorers.js')
 
   const flatten = arr => [].concat.apply([], arr)
 
@@ -36,7 +38,7 @@ module.exports = fii => {
   }
 
   const SEARCH = (...q) => AND(...q)
-    .then(resultSet => SCORE.TFIDF({
+    .then(resultSet => TFIDF({
       resultSet: resultSet,
       offset: 0,
       limit: 10
@@ -85,7 +87,8 @@ module.exports = fii => {
     DOCUMENTS: DOCUMENTS,
     GET: GET,
     OR: OR,
-    SCORE: SCORE,
+    SCORENUMERIC: numericField,
+    SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
     SET_DIFFERENCE: SET_DIFFERENCE
   }

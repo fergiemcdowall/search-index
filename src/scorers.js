@@ -1,5 +1,5 @@
 // TODO: put in some defaults
-exports.TFIDF = ops => {
+export function TFIDF (ops) {
   const calculateScore = (x, i, resultset) => {
     const idf = Math.log((global.D + 1) / resultset.length)
     x.score = +x.match.reduce(
@@ -17,7 +17,7 @@ exports.TFIDF = ops => {
 }
 
 // TODO: put in some defaults
-exports.numericField = ops => {
+export function numericField (ops) {
   const calculateScore = (x, i, resultset) => {
     x.score = +x.match.filter(
       item => item.startsWith(ops.fieldName)

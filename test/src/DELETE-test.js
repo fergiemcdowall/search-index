@@ -1,8 +1,9 @@
-const test = require('tape')
-const sandbox = 'test/sandbox/'
-const si = require('../lib/main.js')
+import si from '../../dist/search-index.esm.js'
+import test from 'tape'
+import wbd from 'world-bank-dataset'
 
-const indexName = sandbox + 'delete-test'
+const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'DELETE-TEST'
 
 const data = [
   {

@@ -1,4 +1,4 @@
-module.exports = fii => {
+export default function (fii) {
   const prefetchSearchableFields = () => {
     const tmp = []
     return new Promise((resolve, reject) => {
