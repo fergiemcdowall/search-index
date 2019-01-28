@@ -19,9 +19,9 @@
 // Make a new index, or open an existing one with this name
 import si from 'search-index'
 
-idx = si({ name: 'idx' }) // "lazy load"- idx may not be immediately initialized
+db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
 
-idx.PUT([ /* my array of objects */ ]).then(doStuff)
+db.PUT([ /* my array of objects */ ]).then(doStuff)
 
 ```
 
@@ -31,7 +31,7 @@ idx.PUT([ /* my array of objects */ ]).then(doStuff)
 
 // (given objects that contain: { land: <land>, colour: <colour>, population: <number> ... })
 
-const { SEARCH, OR } = idx
+const { SEARCH, OR } = db
 
 // get all objects where land=SCOTLAND and colour=GREEN
 SEARCH('land:SCOTLAND', 'colour:GREEN').then(result)
@@ -56,13 +56,13 @@ SEARCH(
 
 ```javascript
 
-const { AND, NOT, OR } = idx
+const { AND, DOCUMENTS, NOT, OR } = db
 
 // AND returns a set of IDs with matched properties
 AND('land:SCOTLAND', 'colour:GREEN').then(result)
 
 // as above, but returning the whole document
-AND('land:SCOTLAND', 'colour:GREEN').then(idx.DOCUMENTS).then(result)
+AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(result)
 
 // either land:SCOTLAND OR land:IRELAND
 OR('land:SCOTLAND', 'land:IRELAND').then(result)
@@ -94,10 +94,10 @@ NOT(
 - <a href="#DOCUMENTS"><code>db.<b>DOCUMENTS()</b></code></a>
 - <a href="#GET"><code>db.<b>GET()</b></code></a>
 - <a href="#INDEX"><code>db.<b>INDEX</b></code></a>
-- <a href="#NOT"><code>db.<b>AND()</b></code></a>
-- <a href="#OR"><code>db.<b>AND()</b></code></a>
-- <a href="#PUT"><code>db.<b>AND()</b></code></a>
-- <a href="#SEARCH"><code>db.<b>AND()</b></code></a>
+- <a href="#NOT"><code>db.<b>NOT()</b></code></a>
+- <a href="#OR"><code>db.<b>OR()</b></code></a>
+- <a href="#PUT"><code>db.<b>PUT()</b></code></a>
+- <a href="#SEARCH"><code>db.<b>SEARCH()</b></code></a>
 
 
 <a name="si"></a>
