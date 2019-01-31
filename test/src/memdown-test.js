@@ -42,7 +42,7 @@ const data = [
 var db
 
 test('create a fii with memdown', t => {
-  t.plan(4)
+  t.plan(3)
   levelup(encode(memdown(indexName), {
     valueEncoding: 'json'
   }), (err, store) => {
@@ -50,7 +50,7 @@ test('create a fii with memdown', t => {
     db = si({
       fii: fii({ store: store })
     })
-    t.ok(!fs.existsSync('test/' + indexName))
+//    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
     db.PUT(data).then(() => {
       t.pass('ok')
     }).then(() => {

@@ -4,7 +4,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var encode = _interopDefault(require('encoding-down'));
 var fii = _interopDefault(require('fergies-inverted-index'));
-var fs = _interopDefault(require('fs'));
+require('fs');
 var levelup = _interopDefault(require('levelup'));
 var memdown = _interopDefault(require('memdown'));
 var trav = _interopDefault(require('traverse'));
@@ -326,7 +326,7 @@ const data = [
 var db;
 
 test('create a fii with memdown', t => {
-  t.plan(4);
+  t.plan(3);
   levelup(encode(memdown(indexName), {
     valueEncoding: 'json'
   }), (err, store) => {
@@ -334,7 +334,7 @@ test('create a fii with memdown', t => {
     db = main({
       fii: fii({ store: store })
     });
-    t.ok(!fs.existsSync('test/' + indexName));
+//    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
     db.PUT(data).then(() => {
       t.pass('ok');
     }).then(() => {
