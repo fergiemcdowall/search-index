@@ -274,7 +274,7 @@ const makeASearchIndex = idx => {
 function main (ops, callback) {
   // if no callback then return lazy load
   if (!callback) {
-    let idx = fii(ops);
+    let idx = ops.fii || fii(ops);
     // lazy calibration
     util(idx).calibrate();
     return makeASearchIndex(idx)
