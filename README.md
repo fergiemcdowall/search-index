@@ -19,7 +19,7 @@
 // Make a new index, or open an existing one with this name
 import si from 'search-index'
 
-db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
+const db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
 
 db.PUT([ /* my array of objects */ ]).then(doStuff)
 
