@@ -1,6 +1,6 @@
 /* global si */
 import si from '../dist/search-index.esm.js'
-
+global.si = si
 const data = [
   {
     _id: 'a',
@@ -30,8 +30,8 @@ const data = [
     importantNumber: 200
   }
 ]
-
-const db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
-db.PUT(data).then(
-  console.log('Data indexed')
-)
+global.data = data
+//const db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
+//db.PUT(data).then(
+//  console.log('Data indexed')
+//)

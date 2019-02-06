@@ -8,5 +8,18 @@
 
   <body>
     Content of the document......
+    <script>
+      let results = []
+      const db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
+      db.PUT(data).then(
+        console.log('Data indexed')
+      )
+      setTimeout(function(){; 
+        db.SEARCH('document').then(results => {
+          console.log(results)
+        })
+      }, 3000);
+
+    </script>
   </body>
 </html> 
