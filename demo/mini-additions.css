@@ -1,0 +1,17 @@
+#addContainer {
+  background:#cccccc;
+  padding:20px;
+}
+
+#searchBar {
+  background:#eeeeee;
+  padding:20px;
+}
+
+#searchResults {
+  padding:20px;
+} 
+
+input {
+  width:90%;
+}

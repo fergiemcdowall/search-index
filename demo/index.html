@@ -2,24 +2,35 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="./mini-default.min.css">
+    <link rel="stylesheet" href="./mini-additions.css">
     <script src="./browser-si-webpacked.js"></script>
-    <title>Title of the document</title>
+    <title>search-index browser example</title>
   </head>
 
   <body>
-    Content of the document......
-    <script>
-      let results = []
-      const db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
-      db.PUT(data).then(
-        console.log('Data indexed')
-      )
-      setTimeout(function(){; 
-        db.SEARCH('document').then(results => {
-          console.log(results)
-        })
-      }, 3000);
-
-    </script>
+    <h1>Search-index browser example</h1>
+    
+    
+    <div id="addContainer">
+      <h2>Add content</h2>
+      <b>Title:</b>
+      <input type="text" id="title" placeholder="Document title" /><br />
+      <b>Text:</b>
+      <input type="text" id="body" placeholder="Body text" /><br />
+      <button type="button" id="indexContent">Add</button>
+    </div>
+    
+    
+    <div id="searchBar">
+      <h2>Search for content</h2>
+      <input id="searchQuery" placeholder="search query" />
+    </div>
+    
+    
+    <div id="searchResults"></div>                                                                                   
+    
+    
+    <script src="./search-app.js"></script>
   </body>
 </html> 
