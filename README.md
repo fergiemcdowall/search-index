@@ -40,7 +40,7 @@ In the `/dist` folder there is a file called
 called `searchIndex`:
 
 ```html
-<script type='text/javascript' src='./search-index.js'></script>
+<script type='text/javascript' src='./search-index.1.0.2.js'></script>
 <script type='text/javascript'>
   searchIndex({ name: 'myDB' }, (err, db) => {
     // db is now available
