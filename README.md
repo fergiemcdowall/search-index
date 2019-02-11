@@ -14,16 +14,41 @@
 
 ### Initialise and populate an index
 
-```javascript
+#### Default method
 
+`search-index` can be invoked with ES6 `import` or commonjs `require`
+using either lazy loading or a callback:
+
+```javascript
 // Make a new index, or open an existing one with this name
 import si from 'search-index'
 
-db = si({ name: 'mySearchIndex' }) // "lazy load"- db may not be immediately initialized
+// "lazy load"- db may not be immediately initialized
+db = si({ name: 'mySearchIndex' })
 
+// db exists in a leveldb instance if run on a server, and an
+// indexedDB instance if run in a browser
 db.PUT([ /* my array of objects */ ]).then(doStuff)
 
 ```
+
+#### Script tag method
+
+In the `/dist` folder there is a file called
+`search-index.<version>.js` that can be used as a standalone in a
+`<script>` tag. The library is then available under a global variable
+called `searchIndex`:
+
+```html
+<script type='text/javascript' src='./search-index.js'></script>
+<script type='text/javascript'>
+  searchIndex({ name: 'myDB' }, (err, db) => {
+    // db is now available
+  })
+</script>
+
+```
+
 
 ### Search the index
 

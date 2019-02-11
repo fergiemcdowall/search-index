@@ -87,17 +87,20 @@ function writer (fii$$1) {
       return newInvertedDoc
     }, {});
 
-  const addSearchableFields = (iDocs) => new Promise((resolve, reject) => {
+  const addSearchableFields = iDocs => new Promise((resolve, reject) => {
     const fields = new Set([].concat.apply([], iDocs.map(Object.keys)));
     fields.delete('_id'); // id not searchable
     fields.delete('!doc'); // !doc not searchable
-    var batch = fii$$1.STORE.batch();
-    Array.from(fields).map(f => {
-      batch.put('￮FIELD￮' + f + '￮', true);
+    fii$$1.STORE.batch(Array.from(fields).map(f => {
+      return {
+        type: 'put',
+        key: '￮FIELD￮' + f + '￮',
+        value: true
+      }
+    }), err => {
+      if (err) console.log(err);
+      util(fii$$1).calibrate().then(resolve);
     });
-    batch.write()
-      .then(util(fii$$1).calibrate)
-      .then(resolve);
   });
 
   const PUT = docs => fii$$1.PUT(docs
@@ -699,6 +702,14 @@ test('AND with embedded OR', t => {
     ]);
   });
 });
+
+
+// test('debug', t => {
+//   t.plan(1)
+//   idx.INDEX.STORE.createReadStream()
+//     .on('data', console.log)
+//     .on('close', () => { t.pass('close') })
+// })
 
 test('SEARCH with embedded OR', t => {
   t.plan(1);

@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>webpack library example - Transalating numbers</title>
+    <script type='text/javascript' src='https://unpkg.com/lodash@4.16.6'></script>
+  </head>
+  <body>
+    <div id='root'>
+    </div>
+    <script type='text/javascript' src='./search-index.js'></script>
+    <script type='text/javascript'>
+     searchIndex({ name: 'myDB' }, (err, db) => {
+         db.PUT([{
+             _id: '1',
+             title: 'document number 1'
+         }]).then(() => {
+             db.GET('1').then(res => console.log(JSON.stringify(res, null, 2)))
+         })
+     })
+     //      document.getElementById('root').innerHTML = " This is a browser example where and api is called to transalate 'One' to '1' \n Results: wordtonum('One') === " + webpackNumbers.wordtonum('One');
+    </script>
+  </body>
+</html>
