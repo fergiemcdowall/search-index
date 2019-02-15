@@ -45,17 +45,20 @@ export default function (fii) {
       return newInvertedDoc
     }, {})
 
-  const addSearchableFields = (iDocs) => new Promise((resolve, reject) => {
+  const addSearchableFields = iDocs => new Promise((resolve, reject) => {
     const fields = new Set([].concat.apply([], iDocs.map(Object.keys)))
     fields.delete('_id') // id not searchable
     fields.delete('!doc') // !doc not searchable
-    var batch = fii.STORE.batch()
-    Array.from(fields).map(f => {
-      batch.put('￮FIELD￮' + f + '￮', true)
+    fii.STORE.batch(Array.from(fields).map(f => {
+      return {
+        type: 'put',
+        key: '￮FIELD￮' + f + '￮',
+        value: true
+      }
+    }), err => {
+      if (err) console.log(err)
+      util(fii).calibrate().then(resolve)
     })
-    batch.write()
-      .then(util(fii).calibrate)
-      .then(resolve)
   })
 
   const PUT = docs => fii.PUT(docs

@@ -414,6 +414,14 @@ test('AND with embedded OR', t => {
   })
 })
 
+
+// test('debug', t => {
+//   t.plan(1)
+//   idx.INDEX.STORE.createReadStream()
+//     .on('data', console.log)
+//     .on('close', () => { t.pass('close') })
+// })
+
 test('SEARCH with embedded OR', t => {
   t.plan(1)
   idx.SEARCH(
