@@ -6,19 +6,25 @@ db = searchIndex({ name: 'searchIndexInBrowser' })
 // Functions
 const search = function (q) {
   emptyElements(['searchResults'])
-  db.SEARCH(q).then(function(results) {
-    //console.log(Array.isArray(results))
-    console.log(JSON.stringify(results[0]))
-    results.forEach(function(result) {
-      console.log(result);
-      populateResultsDiv(result)
+  db.SEARCH(q)
+    .then(function(results) {
+      //console.log(Array.isArray(results))
+      console.log(JSON.stringify(results[0]))
+      results.forEach(function(result) {
+        console.log(result);
+        populateResultsDiv(result)
     })
-  })
+    .catch(function (error) {
+      console.log(error.message)
+    })
 }
 
 const indexData = function (data) {
   emptyElements(['title','body'])
-  db.PUT([data]).then(console.log('Indexed'))
+  db.PUT([data])
+    .then(function(message) {
+      console.log(message)
+    })
 }
 
 const populateResultsDiv = function(result) {
