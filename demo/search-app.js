@@ -1,5 +1,6 @@
 // "lazy load"- db may not be immediately initialized
-db = si({ name: 'searchIndexInBrowser' })
+db = searchIndex({ name: 'searchIndexInBrowser' })
+
 
 
 // Functions
