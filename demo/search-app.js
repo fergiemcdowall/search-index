@@ -1,7 +1,6 @@
 // "lazy load"- db may not be immediately initialized
 const db = searchIndex({ name: 'searchIndexInBrowser' })
 
-// Functions
 const search = function (q) {
   emptyElements(['searchResults'])
   db.SEARCH(q)
@@ -31,6 +30,11 @@ const indexData = function (data) {
     })
 }
 
+const generateID = function (str) {
+  return str.split('').reduce((prevHash, currVal) =>
+    (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0, 0);
+}
+
 const populateResultsDiv = function(result) {
   console.log('Boom')
   console.log(result)
@@ -41,6 +45,7 @@ const populateResultsDiv = function(result) {
   document.getElementById('searchResults').appendChild(node)
 }
 
+// Empty HTML elements
 const emptyElements = function (elements) {
   elements.forEach(function(element) {
     document.getElementById(element).innerHTML = ''
@@ -48,15 +53,16 @@ const emptyElements = function (elements) {
   })
 }
 
-// index data
+// Listen to button click and initiate indexing of data
 document.getElementById("indexContent").onmousedown = function() {
   const docTitle = document.getElementById("title").value
   const docBody = document.getElementById("body").value
-  if ((docTitle + docBody).length > 0) indexData({ title: docTitle, body: docBody })
-  console.log({ title: docTitle, body: docBody })
+  const docId = generateID(docTitle + docBody)
+  if ((docTitle + docBody).length > 0) indexData({ _id: docId, title: docTitle, body: docBody })
+  console.log({ _id: docId, title: docTitle, body: docBody })
 }
 
-// do a search
+// Listen to key up and initiate a search
 document.getElementById("searchQuery").onkeyup = function() {
   search(document.getElementById("searchQuery").value)
   console.log('Search query: ')
