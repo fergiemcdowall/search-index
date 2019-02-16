@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./mini-default.min.css">
+    <link rel="stylesheet" href="./mini-additions.css">
+    <!--<script src="./browser-si-webpacked.js"></script>-->
+    <script src="./search-index.js"></script>
+    <title>search-index browser example</title>
+  </head>
+
+  <body>
+    <div id="header">
+      <h1>Search-index browser example</h1>
+    </div>
+
+    <div id="addContainer">
+      <h2>Add content</h2>
+      <b>Title:</b>
+      <input type="text" id="title" placeholder="Document title" /><br />
+      <b>Text:</b>
+      <input type="text" id="body" placeholder="Body text" /><br />
+      <button type="button" id="indexContent">Add</button>
+    </div>
+
+    <div id="searchBar">
+      <h2>Search for content</h2>
+      <input id="searchQuery" placeholder="search query" />
+    </div>
+
+    <div id="searchResults"></div>                                                                                   
+
+    <script src="./search-app.js"></script>
+  </body>
+</html> 

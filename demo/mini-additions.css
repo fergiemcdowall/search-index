@@ -1,0 +1,25 @@
+h1, h2, h3, h4, h5, h6 {
+  margin-left:0px;
+}
+
+#header {
+  padding-left:20px;
+}
+
+#addContainer {
+  background:#cccccc;
+  padding:20px;
+}
+
+#searchBar {
+  background:#eeeeee;
+  padding:20px;
+}
+
+#searchResults {
+  padding:20px;
+} 
+
+input {
+  width:90%;
+}
