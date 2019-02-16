@@ -30,6 +30,7 @@ const indexData = function (data) {
     })
 }
 
+// Workaround for a possible bug when ID is generated
 const generateID = function (str) {
   return str.split('').reduce((prevHash, currVal) =>
     (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0, 0);
