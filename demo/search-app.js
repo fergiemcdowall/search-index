@@ -1,7 +1,5 @@
 // "lazy load"- db may not be immediately initialized
-db = searchIndex({ name: 'searchIndexInBrowser' })
-
-
+const db = searchIndex({ name: 'searchIndexInBrowser' })
 
 // Functions
 const search = function (q) {
@@ -15,8 +13,10 @@ const search = function (q) {
         populateResultsDiv(result)
     })
     .catch(function (error) {
+      console.log('Error while searching:')
       console.log(error.message)
     })
+  })
 }
 
 const indexData = function (data) {
@@ -24,6 +24,10 @@ const indexData = function (data) {
   db.PUT([data])
     .then(function(message) {
       console.log(message)
+    })
+    .catch(function (error) {
+      console.log('Error while indexing:')
+      console.log(error.message)
     })
 }
 
@@ -58,18 +62,3 @@ document.getElementById("searchQuery").onkeyup = function() {
   console.log('Search query: ')
   console.log(document.getElementById("searchQuery").value)
 }
-
-
-
-// First iteration to get anything going 
-/*
-db.PUT(data).then(
-  console.log('Data indexed')
-)
-setTimeout(function(){
-  db.SEARCH('document').then(results => {
-    console.log(results)
-  })
-}, 500)
-*/
-
