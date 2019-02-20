@@ -166,12 +166,15 @@ function reader (fii$$1) {
     return x
   });
 
-  const DICTIONARY = prefix => new Promise((resolve, reject) => {
+  const DICTIONARY = q => new Promise((resolve, reject) => {
     const dict = new Set();
-    const ks = fii$$1.STORE.createKeyStream({
-      gte: prefix || '',
-      lte: (prefix || '') + '￮'
-    });
+    // if query is string convert to object
+    if (typeof q === 'string') q = { gte: q, lte: q + '￮' };
+    // if no query, make empty query
+    else q = Object.assign({ gte: '', lte: '￮' }, q);
+    // append separator if not there already
+    q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮';
+    const ks = fii$$1.STORE.createKeyStream(q);
     ks.on('data', d => dict.add(d.split(':')[0].split('.').pop()));
     ks.on('end', () => resolve(Array.from(dict).sort()));
   });
@@ -757,6 +760,22 @@ test('DICTIONARY with specified field', t => {
     ]);
   });
 });
+
+test('DICTIONARY with gte lte', t => {
+  t.plan(1);
+  idx.DICTIONARY({
+    gte: 'body.text.d',
+    lte: 'body.text.r'
+  }).then(res => {
+    t.looseEqual(res, [
+      'different',
+      'document',
+      'is',
+      'really',
+    ]);
+  });
+});
+
 
 test('DICTIONARY without specified field', t => {
   t.plan(1);

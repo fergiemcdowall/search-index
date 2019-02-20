@@ -469,6 +469,22 @@ test('DICTIONARY with specified field', t => {
   })
 })
 
+test('DICTIONARY with gte lte', t => {
+  t.plan(1)
+  idx.DICTIONARY({
+    gte: 'body.text.d',
+    lte: 'body.text.r'
+  }).then(res => {
+    t.looseEqual(res, [
+      'different',
+      'document',
+      'is',
+      'really',
+    ])
+  })
+})
+
+
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   idx.DICTIONARY().then(res => {

@@ -11,12 +11,15 @@ export default function (fii) {
     return x
   })
 
-  const DICTIONARY = prefix => new Promise((resolve, reject) => {
+  const DICTIONARY = q => new Promise((resolve, reject) => {
     const dict = new Set()
-    const ks = fii.STORE.createKeyStream({
-      gte: prefix || '',
-      lte: (prefix || '') + '￮'
-    })
+    // if query is string convert to object
+    if (typeof q === 'string') q = { gte: q, lte: q + '￮' }
+    // if no query, make empty query
+    else q = Object.assign({ gte: '', lte: '￮' }, q)
+    // append separator if not there already
+    q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮'
+    const ks = fii.STORE.createKeyStream(q)
     ks.on('data', d => dict.add(d.split(':')[0].split('.').pop()))
     ks.on('end', () => resolve(Array.from(dict).sort()))
   })
