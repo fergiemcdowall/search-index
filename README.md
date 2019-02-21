@@ -187,7 +187,26 @@ Options:
 * gte : greater than or equal to
 * lte : less than or equal to
 
-Gets an array of tokens stored in the index.
+Gets an array of tokens stored in the index. Usefull for i.e. auto-complete or auto-suggest scenarios.
+
+Examples on usage:
+
+```javascript
+// get all tokens in the index
+idx.DICTIONARY().then( /* array of tokens */ )
+
+// get all tokens in the body.text field
+idx.DICTIONARY('body.text').then( /* array of tokens */ )
+
+// get tokens in the body.text field that starts with 'cool'
+idx.DICTIONARY('body.text.cool').then( /* array of tokens */ )
+
+// you can also use gte/lte ("greater/less than or equal")
+idx.DICTIONARY({
+  gte: 'body.text.a',
+  lte: 'body.text.g'
+}).then( /* array of tokens */ )
+```
 
 
 <a name="DISTINCT"></a>
