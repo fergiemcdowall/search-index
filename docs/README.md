@@ -1,6 +1,7 @@
 # Documentation
 
 * <a href="#initializing"><b>Initializing search-index</b></a>
+* <a href="#db"><b>Using something else than default db</b></a>
 * <a href="#adding"><b>Adding content</b></a>
 * <a href="#search"><b>Search the index</b></a>
 * <a href="#query-boolean"><b>Query the index using boolean expressions (AND, OR, NOT)</b></a>
@@ -44,6 +45,34 @@ called `searchIndex`:
 </script>
 
 ```
+
+<a name="db"></a>
+
+## Using something else than default db
+
+For node.js, levelDB is the default db and for the browser it is indexedDB. If you want to use something else, you can. 
+
+```javascript
+import encode from 'encoding-down'
+import fii from 'fergies-inverted-index'
+import levelup from 'levelup'
+import memdown from 'memdown'
+import si from '../../dist/search-index.esm.js'
+
+
+levelup(encode(memdown('myDB'), {
+  valueEncoding: 'json'
+}), (err, store) => {
+  t.error(err)
+  db = si({
+    fii: fii({ store: store })
+  })
+})
+
+// Your DB will now be stored in memory only
+// Nice for i.e. mocking a DB when developing
+```
+
 
 <a name="adding"></a>
 
