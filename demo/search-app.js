@@ -1,33 +1,32 @@
 // "lazy load"- db may not be immediately initialized
 const db = searchIndex({ name: 'searchIndexInBrowser' })
 
-const search = function (q) {
-  emptyElements(['searchResults'])
-  db.SEARCH(q)
-    .then(function(results) {
-      //console.log(Array.isArray(results))
-      console.log(JSON.stringify(results[0]))
-      results.forEach(function(result) {
-        console.log(result);
-        populateResultsDiv(result)
-    })
-    .catch(function (error) {
-      console.log('Error while searching:')
-      console.log(error.message)
-    })
-  })
-}
-
 const indexData = function (data) {
   emptyElements(['title','body'])
   db.PUT([data])
     .then(function(message) {
       console.log(message)
     })
-    .catch(function (error) {
+    .catch(function (err) {
       console.log('Error while indexing:')
-      console.log(error.message)
+      console.log(err.message)
     })
+}
+
+const search = function (q) {
+  emptyElements(['searchResults'])
+  db.SEARCH(...(q.split(' ')))
+    .then(function(results) {
+      console.log(JSON.stringify(results[0]))
+      results.forEach(function(result) {
+        console.log(result);
+        populateResultsDiv(result)
+    })
+    .catch(function (err) {
+      console.log('Error while searching:')
+      console.log(err)
+    })
+  })
 }
 
 // Workaround for a possible bug when ID is generated
