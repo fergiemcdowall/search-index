@@ -10,9 +10,15 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
-## Getting started
+## Documentation and API
 
-### Initialise and populate an index
+* [search-index API](https://github.com/fergiemcdowall/search-index/tree/demo-and-doc/docs/API.md)
+* [code examples](https://github.com/fergiemcdowall/search-index/tree/demo-and-doc/docs/README.md)
+
+
+## Quick start
+
+### Initialise, populate an index and search it
 
 #### Default method
 
@@ -26,9 +32,11 @@ import si from 'search-index'
 // "lazy load"- db may not be immediately initialized
 db = si({ name: 'mySearchIndex' })
 
-// db exists in a leveldb instance if run on a server, and an
-// indexedDB instance if run in a browser
+// db exists in a leveldb instance if run on a server
 db.PUT([ /* my array of objects */ ]).then(doStuff)
+
+// search for terms without specifing any fields
+db.SEARCH('SCOTLAND', 'GREEN').then(result)
 
 ```
 
@@ -44,17 +52,20 @@ called `searchIndex`:
 <script type='text/javascript'>
   searchIndex({ name: 'myDB' }, (err, db) => {
     // db is now available
+
+    // db exists in a indexedDB instance if run in a browser
+    db.PUT([ /* my array of objects */ ]).then(doStuff)
+
+    // search for terms without specifing any fields
+    db.SEARCH('SCOTLAND', 'GREEN').then(result)
   })
 </script>
 
 ```
 
-
-
-
 ## Browser demo
 
-You'll find a simple browser example in the [`/demo`](https://github.com/fergiemcdowall/search-index/demo/) folder.
+There is a [simple browser example](https://eklem.github.io/search-index/demo/), and the files can be found in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
 
 ## More examples
 
