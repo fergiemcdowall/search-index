@@ -50,66 +50,12 @@ called `searchIndex`:
 ```
 
 
-### Search the index
-
-```javascript
-
-// (given objects that contain: { land: <land>, colour: <colour>, population: <number> ... })
-
-const { SEARCH, OR } = db
-
-// get all objects where land=SCOTLAND and colour=GREEN
-SEARCH('land:SCOTLAND', 'colour:GREEN').then(result)
-// (^result is a result set scored and ranked with tfidf)
-
-// you can look as deeply as you want
-SEARCH('metadata.land.fullname:SCOTLAND', 'metadata.colour:GREEN').then(result)
-
-// or search for terms without specifing any fields
-SEARCH('SCOTLAND', 'GREEN').then(result)
-
-// or combine with boolean expressions (see below)
-SEARCH(
-  OR('SCOTLAND', 'IRELAND'),
-  'GREEN'
-).then(result)
-// (these queries can be as deeply nested as required)
-```
 
 
-### Query the index using boolean expressions (AND, OR, NOT)
+## Browser demo
 
-```javascript
+You'll find a simple browser example in the [`/demo`](https://github.com/fergiemcdowall/search-index/demo/) folder.
 
-const { AND, DOCUMENTS, NOT, OR } = db
+## More examples
 
-// AND returns a set of IDs with matched properties
-AND('land:SCOTLAND', 'colour:GREEN').then(result)
-
-// as above, but returning the whole document
-AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(result)
-
-// either land:SCOTLAND OR land:IRELAND
-OR('land:SCOTLAND', 'land:IRELAND').then(result)
-
-// queries can be embedded within each other
-AND(
-  'land:SCOTLAND',
-  OR('colour:GREEN', 'colour:BLUE')
-).then(result)
-
-// get all object IDs where land=SCOTLAND and colour is NOT GREEN
-NOT(
-  'land:SCOTLAND',                      // everything in this set
-  AND('colour:GREEN', 'colour:RED').    // minus everything in this set
-).then(result)
-
-```
-
-
-
-
-
-### More examples
-
-(See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.)
+See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.
