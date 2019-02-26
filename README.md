@@ -18,7 +18,7 @@
 
 ## Quick start
 
-### Initialise, populate an index and search it
+### Initialise search-index
 
 #### Default method
 
@@ -32,12 +32,10 @@ import si from 'search-index'
 // "lazy load"- db may not be immediately initialized
 db = si({ name: 'mySearchIndex' })
 
-// db exists in a leveldb instance if run on a server
-db.PUT([ /* my array of objects */ ]).then(doStuff)
-
-// search for terms without specifing any fields
-db.SEARCH('SCOTLAND', 'GREEN').then(result)
-
+// ... or callback to be sure you have it in time
+si({ name: 'myDB' }, (err, db) => {
+  // db is guaranteed to be open and available
+})
 ```
 
 #### Script tag method
@@ -52,16 +50,25 @@ called `searchIndex`:
 <script type='text/javascript'>
   searchIndex({ name: 'myDB' }, (err, db) => {
     // db is now available
-
-    // db exists in a indexedDB instance if run in a browser
-    db.PUT([ /* my array of objects */ ]).then(doStuff)
-
-    // search for terms without specifing any fields
-    db.SEARCH('SCOTLAND', 'GREEN').then(result)
   })
 </script>
+```
+
+### Add documents to index
+
+```javascript
+// db exists in a leveldb instance if run on a server
+db.PUT([ /* my array of objects */ ]).then(doStuff)
+```
+
+### Search index
+
+```javascript
+// search for terms without specifing any fields
+db.SEARCH('SCOTLAND', 'GREEN').then(result)
 
 ```
+
 
 ## Browser demo
 
