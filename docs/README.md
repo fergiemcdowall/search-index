@@ -7,7 +7,7 @@
 * <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
 * <a href="#query"><b>Query the index</b></a>
-  * <a href="#query-boolean"><b>Using boolean expressions (AND, OR, NOT)</b></a>
+  * <a href="#query-boolean">Using boolean expressions (AND, OR, NOT)</a>
 * <a href="#autocomplete"><b>Autocomplete / autosuggest</b></a>
 
 <a name="initializing"></a>
