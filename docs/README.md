@@ -1,7 +1,9 @@
 # Documentation
 
 * <a href="#initializing"><b>Initializing search-index</b></a>
-* <a href="#db"><b>Using something else than default db</b></a>
+  * <a href="#init-default">Default method</a>
+  * <a href="#init-default">Script tag method</a>
+  * <a href="#init-db">Using something else than default db</a>
 * <a href="#adding"><b>Adding content</b></a>
 * <a href="#search"><b>Search the index</b></a>
 * <a href="#query-boolean"><b>Query the index using boolean expressions (AND, OR, NOT)</b></a>
@@ -11,6 +13,7 @@
 
 ## Initializing search-index
 
+<a name="init-default"></a>
 ### Default method
 
 `search-index` can be invoked with ES6 `import` or commonjs `require`
@@ -29,6 +32,8 @@ db.PUT([ /* my array of objects */ ]).then(doStuff)
 
 ```
 
+<a name="init-scripttag"></a>
+
 ### Script tag method
 
 In the `/dist` folder there is a file called
@@ -46,7 +51,7 @@ called `searchIndex`:
 
 ```
 
-<a name="db"></a>
+<a name="init-switchdb"></a>
 
 ## Using something else than default db
 
