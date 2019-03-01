@@ -6,6 +6,7 @@
   * <a href="#init-db">Using something else than default db</a>
 * <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
+  * <a href="#search-querysplit">Splitting a multiple word query the right way</a>
 * <a href="#query"><b>Query the index</b></a>
   * <a href="#query-boolean">Using boolean expressions (AND, OR, NOT)</a>
 * <a href="#autocomplete"><b>Autocomplete / autosuggest</b></a>
@@ -115,12 +116,35 @@ SEARCH(
 // (these queries can be as deeply nested as required)
 ```
 
+<a name="search-querysplit"></a>
 
-<a name="query></a>
+### Splitting a multiple word query the right way
+
+search-index store words, so searching for a string containing many words won't work. You need to split your query into a row of single words. 
+
+You can't do this:
+```javascript
+let queryString = 'interesting query'
+idx.SEARCH(queryString.split(' '))
+
+// Feeds an array ['interesting','query'] to the searh API and will never return any results
+```
+
+So, then you need to use the [spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax):
+
+```javascript
+let queryString = 'interesting query'
+idx.SEARCH(...queryString.split(' '))
+
+// will input 'interesting','query' to the search API and will return results with the words 'interesting' and 'query' in them.
+```
+
+
+<a name="query"></a>
 
 ## Query the index
 
-<a name="query-boolean></a>
+<a name="query-boolean"></a>
          
 ### Using boolean expressions (AND, OR, NOT)
 
