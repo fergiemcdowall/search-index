@@ -1,6 +1,6 @@
-# Documentation
+# Documentation - search-index
 
-* <a href="#initializing"><b>Initializing search-index</b></a>
+* <a href="#initializing"><b>Initializing</b></a>
   * <a href="#init-default">Default method</a>
   * <a href="#init-default">Script tag method</a>
   * <a href="#init-db">Using something else than default db</a>
