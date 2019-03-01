@@ -4,9 +4,10 @@
   * <a href="#init-default">Default method</a>
   * <a href="#init-default">Script tag method</a>
   * <a href="#init-db">Using something else than default db</a>
-* <a href="#adding"><b>Adding content</b></a>
+* <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
-* <a href="#query-boolean"><b>Query the index using boolean expressions (AND, OR, NOT)</b></a>
+* <a href="#query"><b>Query the index</b></a>
+  * <a href="#query-boolean"><b>Using boolean expressions (AND, OR, NOT)</b></a>
 * <a href="#autocomplete"><b>Autocomplete / autosuggest</b></a>
 
 <a name="initializing"></a>
@@ -81,12 +82,12 @@ levelup(encode(memdown('myDB'), {
 
 <a name="adding"></a>
 
-## Adding content
+## Add content
 
 wip
 
 
-<a name="search></a>
+<a name="search"></a>
 
 ## Search the index
 
@@ -115,9 +116,13 @@ SEARCH(
 ```
 
 
-<a name="query-boolean></a>
+<a name="query></a>
 
-## Query the index using boolean expressions (AND, OR, NOT)
+## Query the index
+
+<a name="query-boolean></a>
+         
+### Using boolean expressions (AND, OR, NOT)
 
 ```javascript
 
