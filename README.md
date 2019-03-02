@@ -12,8 +12,8 @@
 
 ## Documentation and API
 
-* [search-index API](https://github.com/fergiemcdowall/search-index/tree/demo-and-doc/docs/API.md)
-* [code examples](https://github.com/fergiemcdowall/search-index/tree/demo-and-doc/docs/README.md)
+* [search-index API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
+* [code examples](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
 
 
 ## Quick start
