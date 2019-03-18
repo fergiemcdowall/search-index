@@ -72,7 +72,7 @@ db.SEARCH('SCOTLAND', 'GREEN').then(result)
 
 ## Browser demo
 
-There is a [simple browser example](https://eklem.github.io/search-index/demo/), and the files can be found in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
+There is a [simple browser example](https://fergiemcdowall.github.io/search-index/demo/), and the files can be found in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
 
 ## More examples
 
