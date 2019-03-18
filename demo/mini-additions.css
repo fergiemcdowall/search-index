@@ -20,6 +20,12 @@ h1, h2, h3, h4, h5, h6 {
   padding:20px;
 } 
 
+#searchResults div {
+  padding-bottom:10px;
+  border-bottom:2px solid #ddd;
+  margin-bottom:10px;
+}
+
 input {
   width:90%;
 }

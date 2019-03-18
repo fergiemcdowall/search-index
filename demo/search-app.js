@@ -41,7 +41,7 @@ const populateResultsDiv = function(result) {
   //result = JSON.parse(result)
   var node = document.createElement('div')
   node.innerHTML = '<b>' + result.obj.title + '</b><br>'
-    + result.obj.body + '<br>---'
+    + result.obj.body
   document.getElementById('searchResults').appendChild(node)
 }
 

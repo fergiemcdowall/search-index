@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./mini-default.min.css">
     <link rel="stylesheet" href="./mini-additions.css">
-    <!--<script src="./browser-si-webpacked.js"></script>-->
-    <script src="../dist/search-index.1.0.4.js"></script>
+    <script src="../dist/search-index.1.0.5.js"></script>
     <title>search-index browser example</title>
   </head>
 
@@ -17,16 +16,16 @@
 
     <div id="addContainer">
       <h2>Add content</h2>
-      <b>Title:</b>
+      <label for="title">Title:</label>
       <input type="text" id="title" placeholder="Document title" /><br />
-      <b>Text:</b>
+      <label for="body">Text:</label>
       <input type="text" id="body" placeholder="Body text" /><br />
       <button type="button" id="indexContent">Add</button>
     </div>
 
     <div id="searchBar">
       <h2>Search for content</h2>
-      <input id="searchQuery" placeholder="search query" />
+      <input aria-label="search query" id="searchQuery" placeholder="search query" />
     </div>
 
     <div id="searchResults"></div>                                                                                   
