@@ -10,10 +10,11 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
-## Documentation and API
+## Documentation, API and browser example
 
 * [search-index API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
 * [code examples](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
+* [browser example](https://fergiemcdowall.github.io/search-index/demo/)
 
 
 ## Quick start
@@ -70,9 +71,9 @@ db.SEARCH('SCOTLAND', 'GREEN').then(result)
 ```
 
 
-## Browser demo
+## Browser example
 
-There is a [simple browser example](https://fergiemcdowall.github.io/search-index/demo/), and the files can be found in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
+There is a [browser example](https://fergiemcdowall.github.io/search-index/demo/), and you find the explanation for the files in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
 
 ## More examples
 
