@@ -6,9 +6,10 @@
   * <a href="#init-db">Using something else than default db</a>
 * <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
-  * <a href="#search-querysplit">Splitting a multiple word query the right way</a>
-* <a href="#query"><b>Query the index</b></a>
+  * <a href="#search-standard">Splitting a multiple word query the right way</a>
   * <a href="#query-boolean">Using boolean expressions (AND, OR, NOT)</a>
+  * <a href="#combine-standard-or">Combine standard search with boolean OR</a>
+  * <a href="#search-querysplit">Splitting a multiple word query the right way</a>
 * <a href="#autocomplete"><b>Autocomplete / autosuggest</b></a>
 
 <a name="initializing"></a>
@@ -94,6 +95,9 @@ wip
 
 The `db.SEARCH()` is the same as `db.AND().then(db.DOCUMENTS)`. It's a quick and standard way to get documents back from the index. If you want to do boolean search with any of the AND, OR or NOT or a combination, you have to chain it with a `.then(DOCUMENTS)` to get the matching documents to the IDs you've retrieved. 
 
+<a name="search-standard"></a>
+
+### Standard search queries
 ```javascript
 
 // (given objects that contain: { land: <land>, colour: <colour>, population: <number> ... })
@@ -109,8 +113,47 @@ SEARCH('metadata.land.fullname:SCOTLAND', 'metadata.colour:GREEN').then(result)
 
 // or search for terms without specifing any fields
 SEARCH('SCOTLAND', 'GREEN').then(result)
+```
 
-// or combine with boolean expressions (see below)
+<a name="query-boolean"></a>
+         
+### Using boolean expressions (AND, OR, NOT)
+
+The boolean search operators AND, OR and NOT will only give you id's back, so you need to chain it with a `.then(DOCUMENTS)` to get actual documents for those id's back.
+
+```javascript
+
+const { AND, DOCUMENTS, NOT, OR } = db
+
+// AND returns a set of IDs with matched properties
+AND('land:SCOTLAND', 'colour:GREEN').then(result)
+
+// as above, but returning the whole document
+AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(result)
+
+// either land:SCOTLAND OR land:IRELAND
+OR('land:SCOTLAND', 'land:IRELAND').then(result)
+
+// queries can be embedded within each other
+AND(
+  'land:SCOTLAND',
+  OR('colour:GREEN', 'colour:BLUE')
+).then(result)
+
+// get all object IDs where land=SCOTLAND and colour is NOT GREEN
+NOT(
+  'land:SCOTLAND',                      // everything in this set
+  AND('colour:GREEN', 'colour:RED')    // minus everything in this set
+).then(result)
+
+```
+
+<a name="combine-standard-or"></a>
+
+### Combine standard search with boolean OR
+
+```javascript
+// SEARCH combined with boolean OR 
 SEARCH(
   OR('SCOTLAND', 'IRELAND'),
   'GREEN'
@@ -141,44 +184,6 @@ idx.SEARCH(...queryString.split(' '))
 // will input 'interesting','query' to the search API and will return results with the words 'interesting' and 'query' in them.
 ```
 
-
-<a name="query"></a>
-
-## Query the index
-
-<a name="query-boolean"></a>
-         
-### Using boolean expressions (AND, OR, NOT)
-
-```javascript
-
-const { AND, DOCUMENTS, NOT, OR } = db
-
-// AND returns a set of IDs with matched properties
-AND('land:SCOTLAND', 'colour:GREEN').then(result)
-
-// as above, but returning the whole document
-AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(result)
-
-// either land:SCOTLAND OR land:IRELAND
-OR('land:SCOTLAND', 'land:IRELAND').then(result)
-
-// queries can be embedded within each other
-AND(
-  'land:SCOTLAND',
-  OR('colour:GREEN', 'colour:BLUE')
-).then(result)
-
-// get all object IDs where land=SCOTLAND and colour is NOT GREEN
-NOT(
-  'land:SCOTLAND',                      // everything in this set
-  AND('colour:GREEN', 'colour:RED')    // minus everything in this set
-).then(result)
-
-```
-
-
-wip
 
 <a name="autocomplete"></a>
 
