@@ -172,7 +172,7 @@ AND(
 // get all object IDs where land=SCOTLAND and colour is NOT GREEN
 NOT(
   'land:SCOTLAND',                      // everything in this set
-  AND('colour:GREEN', 'colour:RED').    // minus everything in this set
+  AND('colour:GREEN', 'colour:RED')    // minus everything in this set
 ).then(result)
 
 ```
