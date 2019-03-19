@@ -68,3 +68,8 @@ document.getElementById("searchQuery").onkeyup = function() {
   console.log('Search query: ')
   console.log(document.getElementById("searchQuery").value)
 }
+
+// Helper functions for output when in the Browser Developer Tools - console window. Mostly Firefox works for now
+let resultsLog = (x)=>console.log(x)
+let resultsCount = (x)=>console.log(x.length)
+let resultsDir = (x)=>console.dir(x)
