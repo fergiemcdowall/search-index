@@ -173,7 +173,7 @@ Add objects to database
 
 ## `db.SEARCH([ ...Promise ]).then(result)`
 
-Search the database
+Search the database and get documents back. 
 
 ```javascript
   idx.SEARCH(
