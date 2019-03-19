@@ -6,7 +6,7 @@
   * <a href="#init-db">Using something else than default db</a>
 * <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
-  * <a href="#search-standard">Splitting a multiple word query the right way</a>
+  * <a href="#search-standard">Standard search queries</a>
   * <a href="#query-boolean">Using boolean expressions (AND, OR, NOT)</a>
   * <a href="#combine-standard-or">Combine standard search with boolean OR</a>
   * <a href="#search-querysplit">Splitting a multiple word query the right way</a>
