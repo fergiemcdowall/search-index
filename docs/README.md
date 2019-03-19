@@ -92,6 +92,8 @@ wip
 
 ## Search the index
 
+The `db.SEARCH()` is the same as `db.AND().then(db.DOCUMENTS)`. It's a quick and standard way to get documents back from the index. If you want to do boolean search with any of the AND, OR or NOT or a combination, you have to chain it with a `.then(DOCUMENTS)` to get the matching documents to the IDs you've retrieved. 
+
 ```javascript
 
 // (given objects that contain: { land: <land>, colour: <colour>, population: <number> ... })
