@@ -2,8 +2,8 @@
 
 * <a href="#initializing"><b>Initializing</b></a>
   * <a href="#init-default">Default method</a>
-  * <a href="#init-default">Script tag method</a>
-  * <a href="#init-db">Using something else than default db</a>
+  * <a href="#init-scripttag">Script tag method</a>
+  * <a href="#init-switchdb">Using something else than default db</a>
 * <a href="#add"><b>Add content</b></a>
 * <a href="#search"><b>Search the index</b></a>
   * <a href="#search-standard">Standard search queries</a>
@@ -56,7 +56,7 @@ called `searchIndex`:
 
 <a name="init-switchdb"></a>
 
-## Using something else than default db
+### Using something else than default db
 
 For node.js, levelDB is the default db and for the browser it is indexedDB. If you want to use something else, you can. 
 
