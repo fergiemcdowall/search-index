@@ -12,9 +12,9 @@
 
 ## Documentation, API and browser example
 
-* [search-index API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
-* [code examples](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
-* [browser demo](https://fergiemcdowall.github.io/search-index/demo/) and [short documentation](https://github.com/fergiemcdowall/search-index/tree/master/demo/)
+* [API - search-index ](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
+* [Example code](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
+* [Browser demo](https://fergiemcdowall.github.io/search-index/demo/) and [short documentation](https://github.com/fergiemcdowall/search-index/tree/master/demo/)
 
 
 ## Quick start
