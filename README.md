@@ -62,7 +62,7 @@ called `searchIndex`:
 db.PUT([ /* my array of objects */ ]).then(doStuff)
 ```
 
-### Search index
+### Search the index
 
 ```javascript
 // search for terms without specifing any fields
