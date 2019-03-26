@@ -14,7 +14,7 @@
 
 * [search-index API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
 * [code examples](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
-* [browser example](https://fergiemcdowall.github.io/search-index/demo/)
+* [browser demo](https://fergiemcdowall.github.io/search-index/demo/) and [short documentation](https://github.com/fergiemcdowall/search-index/tree/master/demo/)
 
 
 ## Quick start
@@ -70,10 +70,6 @@ db.SEARCH('SCOTLAND', 'GREEN').then(result)
 
 ```
 
-
-## Browser example
-
-There is a [browser example](https://fergiemcdowall.github.io/search-index/demo/), and you find the explanation for the files in the [`demo`](https://github.com/fergiemcdowall/search-index/tree/master/demo/) folder.
 
 ## More examples
 
