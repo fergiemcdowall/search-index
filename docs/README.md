@@ -71,10 +71,11 @@ import si from '../../dist/search-index.esm.js'
 levelup(encode(memdown('myDB'), {
   valueEncoding: 'json'
 }), (err, store) => {
-  t.error(err)
+  if (err) return console.error(err)
   db = si({
     fii: fii({ store: store })
   })
+  // db is now available
 })
 
 // Your DB will now be stored in memory only
