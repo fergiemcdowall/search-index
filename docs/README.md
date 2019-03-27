@@ -72,7 +72,7 @@ levelup(encode(memdown('myDB'), {
   valueEncoding: 'json'
 }), (err, store) => {
   if (err) return console.error(err)
-  db = si({
+  let db = si({
     fii: fii({ store: store })
   })
   // db is now available
