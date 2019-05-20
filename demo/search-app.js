@@ -21,12 +21,12 @@ const search = function (q) {
       results.forEach(function(result) {
         console.log(result);
         populateResultsDiv(result)
+      })
     })
     .catch(function (err) {
       console.log('Error while searching:')
       console.log(err)
     })
-  })
 }
 
 // Workaround for a possible bug when ID is generated

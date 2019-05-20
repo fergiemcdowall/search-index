@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "main": "dist/search-index.cjs.js",
   "module": "dist/search-index.esm.js",
