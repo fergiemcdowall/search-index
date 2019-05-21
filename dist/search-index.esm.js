@@ -5,7 +5,7 @@ import tv from 'term-vector';
 function util (fii) {
   const prefetchSearchableFields = () => {
     const tmp = [];
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fii.STORE.createKeyStream({
         gte: '￮FIELD!',
         lte: '￮FIELD￮￮'
@@ -15,12 +15,12 @@ function util (fii) {
   };
 
   const countDocs = () => {
-    var i = 0;
-    return new Promise((resolve, reject) => {
+    let i = 0;
+    return new Promise((resolve) => {
       fii.STORE.createKeyStream({
         gte: '￮DOC￮!',
         lte: '￮DOC￮￮'
-      }).on('data', d => i++)
+      }).on('data', () => i++)
         .on('end', () => resolve(global.D = i));
     })
   };
@@ -41,21 +41,21 @@ function util (fii) {
 
 function writer (fii) {
   const invertDoc = function (obj) {
-    var invertedDoc = {};
+    const invertedDoc = {};
     // take a plain old JSON object and parse out all of the leaf-nodes
     trav(obj).forEach(function (node) {
       if (typeof node === 'undefined') return
-      var that = this;
-      var searchable = true;
+      const self = this;
+      let searchable = true;
       this.path.forEach(item => {
         // denotes that a field is indexable
         if (item === '_id') searchable = false;
         if (item.substring(0, 1) === '!') searchable = false;
       });
       if (searchable && this.isLeaf) {
-        invertedDoc[that.path.filter(item => {  // eslint-disable-line
+        invertedDoc[self.path.filter(item => {  // eslint-disable-line
           return isNaN(item)
-        }).join('.')] = (that.node + '').split(' ');
+        }).join('.')] = (self.node + '').split(' ');
       }
     });
     return invertedDoc
@@ -67,14 +67,13 @@ function writer (fii) {
       // for fields that are length 1 with a number return number
       // (trying to find a sensible way to deal with numbers)
       if ((invertedDoc[key].length === 1) && (!isNaN(invertedDoc[key][0]))) {
-        // invertedDoc[key] = {'_SELF': invertedDoc[key][0]}
         const val = invertedDoc[key][0];
         newInvertedDoc[key] = {};
         newInvertedDoc[key][val] = val;
         return newInvertedDoc
       }
       // for all other fields generate term frequency
-      newInvertedDoc[key] = tv(invertedDoc[key]).reduce((acc, cur, i, arr) => {
+      newInvertedDoc[key] = tv(invertedDoc[key]).reduce((acc, cur, _, arr) => {
         // TODO: make scoring precision an option
         acc[cur.term] = (cur.positions.length / arr.length).toFixed(2);
         return acc
@@ -82,7 +81,7 @@ function writer (fii) {
       return newInvertedDoc
     }, {});
 
-  const addSearchableFields = iDocs => new Promise((resolve, reject) => {
+  const addSearchableFields = iDocs => new Promise((resolve) => {
     const fields = new Set([].concat.apply([], iDocs.map(Object.keys)));
     fields.delete('_id'); // id not searchable
     fields.delete('!doc'); // !doc not searchable
@@ -117,8 +116,8 @@ function writer (fii) {
 
 // TODO: put in some defaults
 function TFIDF (ops) {
-  const calculateScore = (x, i, resultset) => {
-    const idf = Math.log((global.D + 1) / resultset.length);
+  const calculateScore = (x, _, resultSet) => {
+    const idf = Math.log((global.D + 1) / resultSet.length);
     x.score = +x.match.reduce(
       (acc, cur) => acc + idf * +cur.split(':')[1], 0
     ).toFixed(2); // TODO: make precision an option
@@ -135,7 +134,7 @@ function TFIDF (ops) {
 
 // TODO: put in some defaults
 function numericField (ops) {
-  const calculateScore = (x, i, resultset) => {
+  const calculateScore = (x) => {
     x.score = +x.match.filter(
       item => item.startsWith(ops.fieldName)
     )[0].split(':')[1];
@@ -151,8 +150,6 @@ function numericField (ops) {
 }
 
 function reader (fii) {
-//  const SCORE = require('./scorers.js')
-
   const flatten = arr => [].concat.apply([], arr);
 
   const flattenMatch = result => result.map(x => {
@@ -161,7 +158,7 @@ function reader (fii) {
     return x
   });
 
-  const DICTIONARY = q => new Promise((resolve, reject) => {
+  const DICTIONARY = q => new Promise((resolve) => {
     const dict = new Set();
     // if query is string convert to object
     if (typeof q === 'string') q = { gte: q, lte: q + '￮' };
@@ -175,7 +172,7 @@ function reader (fii) {
   });
 
   const DOCUMENTS = hits => new Promise(
-    (resolve, reject) =>
+    (resolve) =>
       fii.OBJECT(hits).then(
         documents => resolve(hits.map((hit, i) => {
           hit.obj = documents[i]['!doc'];
@@ -207,7 +204,7 @@ function reader (fii) {
     if (typeof a === 'string') a = GET(a);
     if (typeof b === 'string') b = GET(b);
     return Promise.all([a, b]).then(result => {
-      var [ a, b ] = result;
+      let [ a, b ] = result;
       b = b.map(item => item._id);
       return a.filter(item => b.indexOf(item._id))
     })
@@ -275,7 +272,7 @@ const makeASearchIndex = idx => {
 function main (ops, callback) {
   // if no callback then return lazy load
   if (!callback) {
-    let idx = ops.fii || fii(ops);
+    const idx = ops.fii || fii(ops);
     // lazy calibration
     util(idx).calibrate();
     return makeASearchIndex(idx)
