@@ -6,11 +6,11 @@ var fii = _interopDefault(require('fergies-inverted-index'));
 var trav = _interopDefault(require('traverse'));
 var tv = _interopDefault(require('term-vector'));
 
-function util (fii$$1) {
+function util (fii) {
   const prefetchSearchableFields = () => {
     const tmp = [];
     return new Promise((resolve, reject) => {
-      fii$$1.STORE.createKeyStream({
+      fii.STORE.createKeyStream({
         gte: '￮FIELD!',
         lte: '￮FIELD￮￮'
       }).on('data', d => tmp.push(d.split('￮')[2]))
@@ -21,7 +21,7 @@ function util (fii$$1) {
   const countDocs = () => {
     var i = 0;
     return new Promise((resolve, reject) => {
-      fii$$1.STORE.createKeyStream({
+      fii.STORE.createKeyStream({
         gte: '￮DOC￮!',
         lte: '￮DOC￮￮'
       }).on('data', d => i++)
@@ -31,7 +31,7 @@ function util (fii$$1) {
 
   const calibrate = () => {
     // can handle lazy opening
-    if (fii$$1.STORE.isOpen()) {
+    if (fii.STORE.isOpen()) {
       return prefetchSearchableFields().then(countDocs)
     } else setTimeout(calibrate, 1000); // will rerun function every 1000ms until fii.STORE.isOpen()
   };
@@ -43,7 +43,7 @@ function util (fii$$1) {
   }
 }
 
-function writer (fii$$1) {
+function writer (fii) {
   const invertDoc = function (obj) {
     var invertedDoc = {};
     // take a plain old JSON object and parse out all of the leaf-nodes
@@ -90,7 +90,7 @@ function writer (fii$$1) {
     const fields = new Set([].concat.apply([], iDocs.map(Object.keys)));
     fields.delete('_id'); // id not searchable
     fields.delete('!doc'); // !doc not searchable
-    fii$$1.STORE.batch(Array.from(fields).map(f => {
+    fii.STORE.batch(Array.from(fields).map(f => {
       return {
         type: 'put',
         key: '￮FIELD￮' + f + '￮',
@@ -98,11 +98,11 @@ function writer (fii$$1) {
       }
     }), err => {
       if (err) console.log(err);
-      util(fii$$1).calibrate().then(resolve);
+      util(fii).calibrate().then(resolve);
     });
   });
 
-  const PUT = docs => fii$$1.PUT(docs
+  const PUT = docs => fii.PUT(docs
     .map(invertDoc)
     .map(calculateTermFrequency)
     .map(
@@ -114,7 +114,7 @@ function writer (fii$$1) {
     )).then(addSearchableFields);
 
   return {
-    DELETE: (..._ids) => fii$$1.DELETE(..._ids),
+    DELETE: (..._ids) => fii.DELETE(..._ids),
     PUT: PUT
   }
 }
@@ -154,7 +154,7 @@ function numericField (ops) {
     .slice(ops.offset, ops.limit)
 }
 
-function reader (fii$$1) {
+function reader (fii) {
 //  const SCORE = require('./scorers.js')
 
   const flatten = arr => [].concat.apply([], arr);
@@ -173,14 +173,14 @@ function reader (fii$$1) {
     else q = Object.assign({ gte: '', lte: '￮' }, q);
     // append separator if not there already
     q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮';
-    const ks = fii$$1.STORE.createKeyStream(q);
+    const ks = fii.STORE.createKeyStream(q);
     ks.on('data', d => dict.add(d.split(':')[0].split('.').pop()));
     ks.on('end', () => resolve(Array.from(dict).sort()));
   });
 
   const DOCUMENTS = hits => new Promise(
     (resolve, reject) =>
-      fii$$1.OBJECT(hits).then(
+      fii.OBJECT(hits).then(
         documents => resolve(hits.map((hit, i) => {
           hit.obj = documents[i]['!doc'];
           return hit
@@ -189,7 +189,7 @@ function reader (fii$$1) {
   );
 
   const AND = function (...keys) {
-    return fii$$1.AND(
+    return fii.AND(
       ...keys.map(GET)
     ).then(flattenMatch)
   };
@@ -202,7 +202,7 @@ function reader (fii$$1) {
     }))
     .then(resultSet => DOCUMENTS(resultSet));
 
-  const OR = (...q) => fii$$1.OR(
+  const OR = (...q) => fii.OR(
     ...flatten(q.map(GET))
   ).then(flattenMatch);
 
@@ -221,14 +221,14 @@ function reader (fii$$1) {
     // could be a nested AND/OR/something else
     if (clause instanceof Promise) return clause
     // ELSE wildcard (*) search
-    if (clause.slice(-2) === ':*') return fii$$1.GET(clause.replace(':*', '.'))
+    if (clause.slice(-2) === ':*') return fii.GET(clause.replace(':*', '.'))
     // ELSE a clause with a specified field ("<fieldpath>:clause")
-    if (clause.indexOf(':') > -1) return fii$$1.GET(clause.replace(':', '.') + ':')
+    if (clause.indexOf(':') > -1) return fii.GET(clause.replace(':', '.') + ':')
     // ELSE a clause without specified field ("clause")
     return OR(...global.searchableFields.map(f => f + ':' + clause))
   };
 
-  const DISTINCT = term => fii$$1.DISTINCT(term).then(result => {
+  const DISTINCT = term => fii.DISTINCT(term).then(result => {
     return [...result.reduce((acc, cur) => {
       acc.add(cur.split(':')[0]);
       return acc
@@ -237,8 +237,8 @@ function reader (fii$$1) {
 
   return {
     AND: AND,
-    BUCKET: fii$$1.BUCKET,
-    BUCKETFILTER: fii$$1.BUCKETFILTER,
+    BUCKET: fii.BUCKET,
+    BUCKETFILTER: fii.BUCKETFILTER,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
