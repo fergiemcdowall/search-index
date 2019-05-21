@@ -1,9 +1,0 @@
-{
-  "parser": "babel-eslint",
-  "rules": {
-    "indent": ["error", 2],
-    "no-var": "error",
-    "prefer-const": "error",
-    "no-unused-vars": "error"
-  }
-}

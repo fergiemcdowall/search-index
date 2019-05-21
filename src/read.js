@@ -55,11 +55,8 @@ export default function (fii) {
     if (typeof a === 'string') a = GET(a)
     if (typeof b === 'string') b = GET(b)
     return Promise.all([a, b]).then(result => {
-      const a = result[0];
-      let b = result[1];
-
+      let [ a, b ] = result;
       b = b.map(item => item._id)
-
       return a.filter(item => b.indexOf(item._id))
     })
   }

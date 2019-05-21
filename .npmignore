@@ -6,9 +6,6 @@ docs
 .babelrc
 .gitignore
 .travis.yml
-.eslintrc
-.eslintignore
-.editorconfig
 _config.yml
 rollup.config.js
 search-index-logo.png

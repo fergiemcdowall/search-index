@@ -49,7 +49,7 @@ test('create a fii with memdown', t => {
     db = si({
       fii: fii({ store: store })
     })
-    //    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
+//    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
     db.PUT(data).then(() => {
       t.pass('ok')
     }).then(() => {
@@ -73,8 +73,5 @@ test('create a fii with memdown', t => {
         ])
       })
     })
-
   })
-
-
 })
