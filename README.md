@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/v/search-index.svg?style=flat-square)](https://www.npmjs.com/package/search-index)
 [![npm](https://img.shields.io/npm/dm/search-index.svg?style=flat-square)](https://npm-stat.com/charts.html?package=search-index)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENCE)
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)](https://travis-ci.org/fergiemcdowall/search-index)
+[![Travis](https://img.shields.io/travis/fergiemcdowall/search-index.svg?logo=travis&label=)](https://travis-ci.org/fergiemcdowall/search-index)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
