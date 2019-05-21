@@ -1,6 +1,6 @@
 {
   "presets": [
-    "env"
+    "@babel/preset-env"
   ],
   "plugins": [
     "add-module-exports"
