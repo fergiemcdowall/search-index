@@ -8,11 +8,14 @@
     "lib": "lib"
   },
   "scripts": {
+    "compile-for-node": "npm run empty-dist && rollup -c",
+    "compile-all": "npm run compile-for-node && webpack && ln -s dist/search-index-$(node -p \"require('./package.json').version\").js dist/search-index.js",
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
+    "empty-dist": "rm -rf dist && mkdir dist",
     "lint": "standard --fix test/* src/*",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
-    "test-browser": "npm run empty-sandbox && webpack && cat test/sandbox/bundle.js | tape-run",
-    "test-node": "rollup -c && npm run empty-sandbox && tape test/cjs/*.js"
+    "test-browser": "npm run empty-sandbox && npm run compile-all && cat test/sandbox/bundle.js | tape-run",
+    "test-node": "npm run compile-for-node && npm run empty-sandbox && tape test/cjs/*.js"
   },
   "repository": {
     "type": "git",

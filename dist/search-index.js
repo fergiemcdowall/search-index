@@ -1,1 +1,1 @@
-search-index.1.0.4.js
+dist/search-index-1.0.6.js
