@@ -4,21 +4,21 @@ import tv from 'term-vector'
 
 export default function (fii) {
   const invertDoc = function (obj) {
-    var invertedDoc = {}
+    const invertedDoc = {}
     // take a plain old JSON object and parse out all of the leaf-nodes
     trav(obj).forEach(function (node) {
       if (typeof node === 'undefined') return
-      var that = this
-      var searchable = true
+      const self = this
+      let searchable = true
       this.path.forEach(item => {
         // denotes that a field is indexable
         if (item === '_id') searchable = false
         if (item.substring(0, 1) === '!') searchable = false
       })
       if (searchable && this.isLeaf) {
-        invertedDoc[that.path.filter(item => {  // eslint-disable-line
+        invertedDoc[self.path.filter(item => {  // eslint-disable-line
           return isNaN(item)
-        }).join('.')] = (that.node + '').split(' ')
+        }).join('.')] = (self.node + '').split(' ')
       }
     })
     return invertedDoc
@@ -30,14 +30,13 @@ export default function (fii) {
       // for fields that are length 1 with a number return number
       // (trying to find a sensible way to deal with numbers)
       if ((invertedDoc[key].length === 1) && (!isNaN(invertedDoc[key][0]))) {
-        // invertedDoc[key] = {'_SELF': invertedDoc[key][0]}
         const val = invertedDoc[key][0]
         newInvertedDoc[key] = {}
         newInvertedDoc[key][val] = val
         return newInvertedDoc
       }
       // for all other fields generate term frequency
-      newInvertedDoc[key] = tv(invertedDoc[key]).reduce((acc, cur, i, arr) => {
+      newInvertedDoc[key] = tv(invertedDoc[key]).reduce((acc, cur, _, arr) => {
         // TODO: make scoring precision an option
         acc[cur.term] = (cur.positions.length / arr.length).toFixed(2)
         return acc
@@ -45,7 +44,7 @@ export default function (fii) {
       return newInvertedDoc
     }, {})
 
-  const addSearchableFields = iDocs => new Promise((resolve, reject) => {
+  const addSearchableFields = iDocs => new Promise((resolve) => {
     const fields = new Set([].concat.apply([], iDocs.map(Object.keys)))
     fields.delete('_id') // id not searchable
     fields.delete('!doc') // !doc not searchable

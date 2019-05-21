@@ -3,7 +3,6 @@ import { version } from './package.json'
 import glob from 'glob'
 
 export default () => ([
-
   // this stanza creates the stand-alone version of search-index that
   // can be included in the <script> tag
   {
@@ -42,6 +41,5 @@ export default () => ([
       fs: 'empty'
     }
   }
-  
 ])
 

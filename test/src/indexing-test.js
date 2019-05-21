@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 /* global si */
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
@@ -151,25 +152,25 @@ test('can search by numeric value', t => {
       limit: 10
     })
   ).then(idx.DOCUMENTS)
-   .then(res => {
-     t.looseEqual(res, [
-       { _id: 'a',
-         match: [ 'importantNumber.5000:5000' ],
-         score: 5000,
-         obj: data[0]
-       },
-       { _id: 'b',
-         match: [ 'importantNumber.500:500' ],
-         score: 500,
-         obj: data[1]
-       },
-       { _id: 'c',
-         match: [ 'importantNumber.200:200' ],
-         score: 200,
-         obj: data[2]
-       }
-     ])
-   })
+    .then(res => {
+      t.looseEqual(res, [
+        { _id: 'a',
+          match: [ 'importantNumber.5000:5000' ],
+          score: 5000,
+          obj: data[0]
+        },
+        { _id: 'b',
+          match: [ 'importantNumber.500:500' ],
+          score: 500,
+          obj: data[1]
+        },
+        { _id: 'c',
+          match: [ 'importantNumber.200:200' ],
+          score: 200,
+          obj: data[2]
+        }
+      ])
+    })
 })
 
 // OR-ing
@@ -363,21 +364,21 @@ test('can NOT', t => {
 test('can OR', t => {
   t.plan(1)
   idx.OR('body.text:bananas', 'body.text:different')
-   .then(res => {
-     t.looseEqual(res, [
-       {
-         _id: 'b',
-         match: [
-           'body.text.bananas:0.17'
-         ]
-       }, {
-         _id: 'c',
-         match: [
-           'body.text.different:0.33'
-         ]
-       }
-     ])
-   })
+    .then(res => {
+      t.looseEqual(res, [
+        {
+          _id: 'b',
+          match: [
+            'body.text.bananas:0.17'
+          ]
+        }, {
+          _id: 'c',
+          match: [
+            'body.text.different:0.33'
+          ]
+        }
+      ])
+    })
 })
 
 test('AND with embedded OR', t => {

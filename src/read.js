@@ -1,8 +1,6 @@
 import { TFIDF, numericField } from './scorers.js'
 
 export default function (fii) {
-//  const SCORE = require('./scorers.js')
-
   const flatten = arr => [].concat.apply([], arr)
 
   const flattenMatch = result => result.map(x => {
@@ -11,7 +9,7 @@ export default function (fii) {
     return x
   })
 
-  const DICTIONARY = q => new Promise((resolve, reject) => {
+  const DICTIONARY = q => new Promise((resolve) => {
     const dict = new Set()
     // if query is string convert to object
     if (typeof q === 'string') q = { gte: q, lte: q + '￮' }
@@ -25,7 +23,7 @@ export default function (fii) {
   })
 
   const DOCUMENTS = hits => new Promise(
-    (resolve, reject) =>
+    (resolve) =>
       fii.OBJECT(hits).then(
         documents => resolve(hits.map((hit, i) => {
           hit.obj = documents[i]['!doc']
@@ -57,8 +55,11 @@ export default function (fii) {
     if (typeof a === 'string') a = GET(a)
     if (typeof b === 'string') b = GET(b)
     return Promise.all([a, b]).then(result => {
-      var [ a, b ] = result
+      const a = result[0];
+      let b = result[1];
+
       b = b.map(item => item._id)
+
       return a.filter(item => b.indexOf(item._id))
     })
   }

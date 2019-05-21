@@ -2,3 +2,6 @@ src
 test
 .gitignore
 .travis.yml
+.eslintrc
+.eslintignore
+.editorconfig
