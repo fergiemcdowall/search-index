@@ -38,8 +38,7 @@ const generateID = function (str) {
 const populateResultsDiv = function(result) {
   console.log('Boom')
   console.log(result)
-  //result = JSON.parse(result)
-  var node = document.createElement('div')
+  const node = document.createElement('div')
   node.innerHTML = '<b>' + result.obj.title + '</b><br>'
     + result.obj.body
   document.getElementById('searchResults').appendChild(node)

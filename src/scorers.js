@@ -1,7 +1,7 @@
 // TODO: put in some defaults
 export function TFIDF (ops) {
-  const calculateScore = (x, i, resultset) => {
-    const idf = Math.log((global.D + 1) / resultset.length)
+  const calculateScore = (x, _, resultSet) => {
+    const idf = Math.log((global.D + 1) / resultSet.length)
     x.score = +x.match.reduce(
       (acc, cur) => acc + idf * +cur.split(':')[1], 0
     ).toFixed(2) // TODO: make precision an option
@@ -18,7 +18,7 @@ export function TFIDF (ops) {
 
 // TODO: put in some defaults
 export function numericField (ops) {
-  const calculateScore = (x, i, resultset) => {
+  const calculateScore = (x) => {
     x.score = +x.match.filter(
       item => item.startsWith(ops.fieldName)
     )[0].split(':')[1]

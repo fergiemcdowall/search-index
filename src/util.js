@@ -1,7 +1,7 @@
 export default function (fii) {
   const prefetchSearchableFields = () => {
     const tmp = []
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fii.STORE.createKeyStream({
         gte: '￮FIELD!',
         lte: '￮FIELD￮￮'
@@ -11,12 +11,12 @@ export default function (fii) {
   }
 
   const countDocs = () => {
-    var i = 0
-    return new Promise((resolve, reject) => {
+    let i = 0
+    return new Promise((resolve) => {
       fii.STORE.createKeyStream({
         gte: '￮DOC￮!',
         lte: '￮DOC￮￮'
-      }).on('data', d => i++)
+      }).on('data', () => i++)
         .on('end', () => resolve(global.D = i))
     })
   }

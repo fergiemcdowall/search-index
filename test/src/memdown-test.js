@@ -1,6 +1,5 @@
 import encode from 'encoding-down'
 import fii from 'fergies-inverted-index'
-import fs from 'fs'
 import levelup from 'levelup'
 import memdown from 'memdown'
 import si from '../../dist/search-index.esm.js'
@@ -39,7 +38,7 @@ const data = [
   }
 ]
 
-var db
+let db
 
 test('create a fii with memdown', t => {
   t.plan(3)
@@ -74,8 +73,5 @@ test('create a fii with memdown', t => {
         ])
       })
     })
-
   })
-  
-
 })

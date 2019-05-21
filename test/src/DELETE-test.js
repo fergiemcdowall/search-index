@@ -1,6 +1,5 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
-import wbd from 'world-bank-dataset'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'DELETE-TEST'
@@ -123,5 +122,5 @@ test('verify DELETE', t => {
   ]
   global[indexName].INDEX.STORE.createReadStream()
     .on('data', d => indexStructure.push(d))
-    .on('end', d => t.looseEquals(indexStructure, expectedIndexStructure))
+    .on('end', () => t.looseEquals(indexStructure, expectedIndexStructure))
 })
