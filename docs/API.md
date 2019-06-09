@@ -1,19 +1,60 @@
 # API
 
+
+## Initialisation
 * <a href="#si"><code><b>si()</b></code></a>
-* <a href="#AND"><code>db.<b>AND()</b></code></a>
-* <a href="#BUCKET"><code>db.<b>BUCKET()</b></code></a>
-* <a href="#BUCKETFILTER"><code>db.<b>BUCKETFILTER()</b></code></a>
+
+## Altering the index
 * <a href="#DELETE"><code>db.<b>DELETE()</b></code></a>
-* <a href="#DICTIONARY"><code>db.<b>DICTIONARY()</b></code></a>
-* <a href="#DISTINCT"><code>db.<b>DISTINCT()</b></code></a>
+* <a href="#PUT"><code>db.<b>PUT()</b></code></a>
+
+## Composable querying
+* <a href="#AND"><code>db.<b>AND()</b></code></a>
 * <a href="#DOCUMENTS"><code>db.<b>DOCUMENTS()</b></code></a>
-* <a href="#GET"><code>db.<b>GET()</b></code></a>
-* <a href="#INDEX"><code>db.<b>INDEX</b></code></a>
 * <a href="#NOT"><code>db.<b>NOT()</b></code></a>
 * <a href="#OR"><code>db.<b>OR()</b></code></a>
-* <a href="#PUT"><code>db.<b>PUT()</b></code></a>
+
+## Searching
+* <a href="#GET"><code>db.<b>GET()</b></code></a>
 * <a href="#SEARCH"><code>db.<b>SEARCH()</b></code></a>
+
+## Tokenisation
+* <a href="#DICTIONARY"><code>db.<b>DICTIONARY()</b></code></a>
+
+## Aggregation
+* <a href="#BUCKET"><code>db.<b>BUCKET()</b></code></a>
+* <a href="#BUCKETFILTER"><code>db.<b>BUCKETFILTER()</b></code></a>
+* <a href="#DISTINCT"><code>db.<b>DISTINCT()</b></code></a>
+
+## Accessing the underlying index
+* <a href="#INDEX"><code>db.<b>INDEX</b></code></a>
+
+
+## FAQ
+
+### How do I get my data into search-index?
+
+### What is the difference between AND, GET and SEARCH?
+
+* **AND** `AND` returns a set of documents that contain *all* of the
+terms contained in the query
+
+* **GET** `GET` returns a set of documents that contain the terms
+contained in the query. `GET` is the same as `AND` or `OR` with only
+one term specified.
+
+* **SEARCH** `SEARCH` performs an `AND` query and returns a set of
+documents which is ordered in terms of relevance. Search-index uses a
+TF-IDF algorithm to determine relevance.
+
+
+### What is the difference between documents and objects?
+
+### How do I get out entire documents and not just document IDs?
+
+### How do I compose queries?
+
+### How do I perform a simple aggregation on a field value?
 
 
 <a name="si"></a>
