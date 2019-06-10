@@ -277,4 +277,69 @@ AND(
 ).then(console.log)  // returns a result
 ```
 
-## How do I perform a simple aggregation on a field value?
+## How do I perform a simple aggregation on a field?
+
+### Get a list of unique values for a field
+
+Use `DISTINCT` to get a list of unique values for a field called "agency":
+
+```javascript
+db.DISTINCT('agency').then(console.log)
+/*
+[
+  'agency.POLICE',
+  'agency.DOJ',
+  'agency.SUPREMECOURT'
+]
+*/
+
+```
+
+### Get a set of document ids per unique field value
+
+```javascript
+db.DISTINCT('agency')
+ .then(result => Promise.all(result.map(db.BUCKET)))
+ .then(console.log)
+/*
+[
+  { match: 'agency.POLICE', _id: [ 2,3,4,7 ] },
+  { match: 'agency.DOJ', _id: [ 1, 6 ]
+  { match: 'agency.SUPREMECOURT', _id: [ 5, 7 ]
+]
+*/
+
+```
+
+### Get counts per unique field value
+
+```javascript
+db.DISTINCT('agency')
+ .then(result => Promise.all(result.map(db.BUCKET)))
+ .then(result => result.map(item => { item.count = item._id.length; return item } ))
+ .then(console.log)
+/*
+[
+  { match: 'agency.POLICE', _id: [ 2,3,4,7 ], count: 4 },
+  { match: 'agency.DOJ', _id: [ 1, 6 ], count: 2 },
+  { match: 'agency.SUPREMECOURT', _id: [ 5, 7 ], count: 2 }
+]
+*/
+
+```
+
+
+### Define custom "buckets"
+
+TODO
+
+### Combine an aggregation with a search
+
+```javascript
+const bucketStructure = db.DISTINCT('agency')
+ .then(result => Promise.all(result.map(db.BUCKET)))
+const search = db.SEARCH('board_approval_month:October')
+// here the aggregation will only be performed on documents matching that
+// satisfy the search criteria ('board_approval_month:October')
+db.BUCKETFILTER(bucketStructure, search).then(/* result */)
+```

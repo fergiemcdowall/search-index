@@ -59,6 +59,95 @@ test('can aggregate totalamt using underlying index', t => {
   ))
 })
 
+test('can aggregate totalamt using BUCKETFILTER (alternative invokation)', t => {
+  t.plan(1)
+
+  const b = global[indexName].DISTINCT('totalamt')
+    .then(result => Promise.all(result.map(global[indexName].BUCKET)))
+  const s = global[indexName].SEARCH('board_approval_month:October')
+  
+  global[indexName].BUCKETFILTER(b, s).then(result => t.looseEqual(
+    result,
+    [ { match: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { match: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { match: 'totalamt.13100000',
+        _id: [ '52b213b38594d8a2be17c784' ] },
+      { match: 'totalamt.160000000',
+        _id: [ '52b213b38594d8a2be17c788' ] },
+      { match: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] },
+      { match: 'totalamt.500000000',
+        _id: [ '52b213b38594d8a2be17c786' ] } ]
+  ))
+})
+
+
+test('BUCKETing', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    {gte: 'totalamt.00', lte:'totalamt.25'}
+  ).then(result => t.looseEqual(
+    result,
+    { match: { gte: 'totalamt.00', lte: 'totalamt.25' },
+      _id: [ '52b213b38594d8a2be17c780', '52b213b38594d8a2be17c781',
+             '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c784',
+             '52b213b38594d8a2be17c785', '52b213b38594d8a2be17c787',
+             '52b213b38594d8a2be17c788', '52b213b38594d8a2be17c789' ] }
+  ))
+})
+
+test('BUCKETing', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    {gte: 'totalamt.26', lte:'totalamt.70'}
+  ).then(result => t.looseEqual(
+    result,
+    { match: { gte: 'totalamt.26', lte: 'totalamt.70' },
+      _id: [ '52b213b38594d8a2be17c782', '52b213b38594d8a2be17c786' ] }
+  ))
+})
+
+
+test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
+  t.plan(1)  
+  const b = Promise.all([
+    'totalamt.0',
+    'totalamt.10000000',
+    'totalamt.200000000'
+  ].map(global[indexName].BUCKET))
+  const s = global[indexName].SEARCH('board_approval_month:October')  
+  global[indexName].BUCKETFILTER(b, s).then(result => t.looseEqual(
+    result,
+    [ { match: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { match: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { match: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] } ]
+  ))
+})
+
+test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
+  t.plan(1)  
+  const b = Promise.all([
+    'totalamt.0',
+    'totalamt.10000000',
+    'totalamt.200000000'
+  ].map(global[indexName].BUCKET))
+  b.then(result => t.looseEqual(
+    result,
+    [ { match: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c781', '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { match: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { match: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] } ]
+  ))
+})
+
+
 test('can aggregate totalamt', t => {
   t.plan(1)
   global[indexName].DISTINCT('impagency').then(result => t.looseEqual(
