@@ -34,6 +34,7 @@
     "@babel/register": "^7.4.4",
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
+    "doctoc": "^1.4.0",
     "level-out": "^1.0.0",
     "memdown": "^4.0.0",
     "rollup": "^1.12.3",
