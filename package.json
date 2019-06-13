@@ -46,7 +46,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "0.0.12",
+    "fergies-inverted-index": "1.0.0",
     "http-serve": "^1.0.1",
     "term-vector": "^1.0.0",
     "traverse": "^0.6.6"
