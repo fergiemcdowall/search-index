@@ -13,6 +13,7 @@
     "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
     "empty-dist": "rm -rf dist && mkdir dist",
     "lint": "standard --fix test/* src/*",
+    "toc": "doctoc docs/API.md",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run empty-sandbox && npm run compile-all && cat test/sandbox/bundle.js | tape-run",
     "test-node": "npm run compile-for-node && npm run empty-sandbox && tape test/cjs/*.js"
@@ -34,6 +35,7 @@
     "@babel/register": "^7.4.4",
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
+    "doctoc": "^1.4.0",
     "level-out": "^1.0.0",
     "memdown": "^4.0.0",
     "rollup": "^1.12.3",
@@ -45,7 +47,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "0.0.12",
+    "fergies-inverted-index": "1.0.0",
     "http-serve": "^1.0.1",
     "term-vector": "^1.0.0",
     "traverse": "^0.6.6"

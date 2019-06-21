@@ -44,20 +44,129 @@ test('can aggregate totalamt using underlying index', t => {
     global[indexName].SEARCH('board_approval_month:October')
   ).then(result => t.looseEqual(
     result,
-    [ { match: 'totalamt.0:0',
+    [ { gte: 'totalamt.0:0',
+        lte: 'totalamt.0:0',
         _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
-      { match: 'totalamt.10000000:10000000',
+      { gte: 'totalamt.10000000:10000000',
+        lte: 'totalamt.10000000:10000000',
         _id: [ '52b213b38594d8a2be17c785' ] },
-      { match: 'totalamt.13100000:13100000',
+      { gte: 'totalamt.13100000:13100000',
+        lte: 'totalamt.13100000:13100000',
         _id: [ '52b213b38594d8a2be17c784' ] },
-      { match: 'totalamt.160000000:160000000',
+      { gte: 'totalamt.160000000:160000000',
+        lte: 'totalamt.160000000:160000000',
         _id: [ '52b213b38594d8a2be17c788' ] },
-      { match: 'totalamt.200000000:200000000',
+      { gte: 'totalamt.200000000:200000000',
+        lte: 'totalamt.200000000:200000000',
         _id: [ '52b213b38594d8a2be17c789' ] },
-      { match: 'totalamt.500000000:500000000',
+      { gte: 'totalamt.500000000:500000000',
+        lte: 'totalamt.500000000:500000000',
         _id: [ '52b213b38594d8a2be17c786' ] } ]
   ))
 })
+
+test('can aggregate totalamt using BUCKETFILTER (alternative invokation)', t => {
+  t.plan(1)
+
+  const b = global[indexName].DISTINCT('totalamt')
+    .then(result => Promise.all(result.map(global[indexName].BUCKET)))
+  const s = global[indexName].SEARCH('board_approval_month:October')
+  
+  global[indexName].BUCKETFILTER(b, s).then(result => t.looseEqual(
+    result,
+    [ { gte: 'totalamt.0',
+        lte: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { gte: 'totalamt.10000000',
+        lte: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { gte: 'totalamt.13100000',
+        lte: 'totalamt.13100000',
+        _id: [ '52b213b38594d8a2be17c784' ] },
+      { gte: 'totalamt.160000000',
+        lte: 'totalamt.160000000',
+        _id: [ '52b213b38594d8a2be17c788' ] },
+      { gte: 'totalamt.200000000',
+        lte: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] },
+      { gte: 'totalamt.500000000',
+        lte: 'totalamt.500000000',
+        _id: [ '52b213b38594d8a2be17c786' ] } ]
+  ))
+})
+
+
+test('BUCKETing', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    {gte: 'totalamt.00', lte:'totalamt.25'}
+  ).then(result => t.looseEqual(
+    result,
+    { gte: 'totalamt.00',
+      lte: 'totalamt.25',
+      _id: [ '52b213b38594d8a2be17c780', '52b213b38594d8a2be17c781',
+             '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c784',
+             '52b213b38594d8a2be17c785', '52b213b38594d8a2be17c787',
+             '52b213b38594d8a2be17c788', '52b213b38594d8a2be17c789' ] }
+  ))
+})
+
+test('BUCKETing', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    {gte: 'totalamt.26', lte:'totalamt.70'}
+  ).then(result => t.looseEqual(
+    result,
+    { gte: 'totalamt.26',
+      lte: 'totalamt.70',
+      _id: [ '52b213b38594d8a2be17c782', '52b213b38594d8a2be17c786' ] }
+  ))
+})
+
+
+test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
+  t.plan(1)  
+  const b = Promise.all([
+    'totalamt.0',
+    'totalamt.10000000',
+    'totalamt.200000000'
+  ].map(global[indexName].BUCKET))
+  const s = global[indexName].SEARCH('board_approval_month:October')  
+  global[indexName].BUCKETFILTER(b, s).then(result => t.looseEqual(
+    result,
+    [ { gte: 'totalamt.0',
+        lte: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { gte: 'totalamt.10000000',
+        lte: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { gte: 'totalamt.200000000',
+        lte: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] } ]
+  ))
+})
+
+test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
+  t.plan(1)  
+  const b = Promise.all([
+    'totalamt.0',
+    'totalamt.10000000',
+    'totalamt.200000000'
+  ].map(global[indexName].BUCKET))
+  b.then(result => t.looseEqual(
+    result,
+    [ { gte: 'totalamt.0',
+        lte: 'totalamt.0',
+        _id: [ '52b213b38594d8a2be17c781', '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+      { gte: 'totalamt.10000000',
+        lte: 'totalamt.10000000',
+        _id: [ '52b213b38594d8a2be17c785' ] },
+      { gte: 'totalamt.200000000',
+        lte: 'totalamt.200000000',
+        _id: [ '52b213b38594d8a2be17c789' ] } ]
+  ))
+})
+
 
 test('can aggregate totalamt', t => {
   t.plan(1)
@@ -98,32 +207,44 @@ test('can aggregate totalamt', t => {
      t.looseEqual(
        result,
        [
-         { match: 'impagency.ADMINISTRATION',
+         { gte: 'impagency.ADMINISTRATION',
+           lte: 'impagency.ADMINISTRATION',
            _id: [ '52b213b38594d8a2be17c787' ] },
-         { match: 'impagency.AND',
+         { gte: 'impagency.AND',
+           lte: 'impagency.AND',
            _id:
             [ '52b213b38594d8a2be17c782',
               '52b213b38594d8a2be17c784',
               '52b213b38594d8a2be17c786' ] },
-         { match: 'impagency.COMMUNICATIONS',
+         { gte: 'impagency.COMMUNICATIONS',
+           lte: 'impagency.COMMUNICATIONS',
            _id: [ '52b213b38594d8a2be17c782' ] },
-         { match: 'impagency.DEPARTMANT,',
+         { gte: 'impagency.DEPARTMANT,',
+           lte: 'impagency.DEPARTMANT,',
            _id: [ '52b213b38594d8a2be17c788' ] },
-         { match: 'impagency.EDUCATION',
+         { gte: 'impagency.EDUCATION',
+           lte: 'impagency.EDUCATION',
            _id: [ '52b213b38594d8a2be17c780' ] },
-         { match: 'impagency.ENERGY',
+         { gte: 'impagency.ENERGY',
+           lte: 'impagency.ENERGY',
            _id: [ '52b213b38594d8a2be17c787' ] },
-         { match: 'impagency.FINANCE',
+         { gte: 'impagency.FINANCE',
+           lte: 'impagency.FINANCE',
            _id: [ '52b213b38594d8a2be17c781', '52b213b38594d8a2be17c789' ] },
-         { match: 'impagency.HIGHWAYS',
+         { gte: 'impagency.HIGHWAYS',
+           lte: 'impagency.HIGHWAYS',
            _id: [ '52b213b38594d8a2be17c786' ] },
-         { match: 'impagency.INDUSTRY',
+         { gte: 'impagency.INDUSTRY',
+           lte: 'impagency.INDUSTRY',
            _id: [ '52b213b38594d8a2be17c784' ] },
-         { match: 'impagency.INTENSIVE',
+         { gte: 'impagency.INTENSIVE',
+           lte: 'impagency.INTENSIVE',
            _id: [ '52b213b38594d8a2be17c783' ] },
-         { match: 'impagency.LABOR',
+         { gte: 'impagency.LABOR',
+           lte: 'impagency.LABOR',
            _id: [ '52b213b38594d8a2be17c783' ] },
-         { match: 'impagency.MINISTRY',
+         { gte: 'impagency.MINISTRY',
+           lte: 'impagency.MINISTRY',
            _id:
             [ '52b213b38594d8a2be17c780',
               '52b213b38594d8a2be17c781',
@@ -131,9 +252,11 @@ test('can aggregate totalamt', t => {
               '52b213b38594d8a2be17c784',
               '52b213b38594d8a2be17c786',
               '52b213b38594d8a2be17c789' ] },
-         { match: 'impagency.NATIONAL',
+         { gte: 'impagency.NATIONAL',
+           lte: 'impagency.NATIONAL',
            _id: [ '52b213b38594d8a2be17c787' ] },
-         { match: 'impagency.OF',
+         { gte: 'impagency.OF',
+           lte: 'impagency.OF',
            _id:
             [ '52b213b38594d8a2be17c780',
               '52b213b38594d8a2be17c781',
@@ -141,19 +264,29 @@ test('can aggregate totalamt', t => {
               '52b213b38594d8a2be17c784',
               '52b213b38594d8a2be17c786',
               '52b213b38594d8a2be17c789' ] },
-         { match: 'impagency.PMU', _id: [ '52b213b38594d8a2be17c783' ] },
-         { match: 'impagency.PROJECT',
+         { gte: 'impagency.PMU',
+           lte: 'impagency.PMU',
            _id: [ '52b213b38594d8a2be17c783' ] },
-         { match: 'impagency.PUBLIC',
+         { gte: 'impagency.PROJECT',
+           lte: 'impagency.PROJECT',
+           _id: [ '52b213b38594d8a2be17c783' ] },
+         { gte: 'impagency.PUBLIC',
+           lte: 'impagency.PUBLIC',
            _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] },
-         { match: 'impagency.RAJASTHAN',
+         { gte: 'impagency.RAJASTHAN',
+           lte: 'impagency.RAJASTHAN',
            _id: [ '52b213b38594d8a2be17c788' ] },
-         { match: 'impagency.ROAD', _id: [ '52b213b38594d8a2be17c786' ] },
-         { match: 'impagency.TRADE',
+         { gte: 'impagency.ROAD',
+           lte: 'impagency.ROAD',
+           _id: [ '52b213b38594d8a2be17c786' ] },
+         { gte: 'impagency.TRADE',
+           lte: 'impagency.TRADE',
            _id: [ '52b213b38594d8a2be17c784' ] },
-         { match: 'impagency.TRANSPORT',
+         { gte: 'impagency.TRANSPORT',
+           lte: 'impagency.TRANSPORT',
            _id: [ '52b213b38594d8a2be17c782', '52b213b38594d8a2be17c786' ] },
-         { match: 'impagency.WORKS',
+         { gte: 'impagency.WORKS',
+           lte: 'impagency.WORKS',
            _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] }
        ]
      )
@@ -168,50 +301,108 @@ test('can aggregate totalamt using underlying index', t => {
   ).then(result => {
     t.looseEqual(
       result,
-      [ { match: 'impagency.ADMINISTRATION',
-          _id: [ '52b213b38594d8a2be17c787' ] },
-        { match: 'impagency.AND',
-          _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786' ] },
-        { match: 'impagency.DEPARTMANT,',
+      [ { gte: 'impagency.ADMINISTRATION', lte:
+  'impagency.ADMINISTRATION', _id: [ '52b213b38594d8a2be17c787' ] },
+        { gte: 'impagency.AND', lte: 'impagency.AND', _id: [
+          '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786' ] },
+        { gte: 'impagency.DEPARTMANT,', lte: 'impagency.DEPARTMANT,',
           _id: [ '52b213b38594d8a2be17c788' ] },
-        { match: 'impagency.ENERGY',
-          _id: [ '52b213b38594d8a2be17c787' ] },
-        { match: 'impagency.FINANCE',
-          _id: [ '52b213b38594d8a2be17c789' ] },
-        { match: 'impagency.HIGHWAYS',
-          _id: [ '52b213b38594d8a2be17c786' ] },
-        { match: 'impagency.INDUSTRY',
-          _id: [ '52b213b38594d8a2be17c784' ] },
-        { match: 'impagency.INTENSIVE',
-          _id: [ '52b213b38594d8a2be17c783' ] },
-        { match: 'impagency.LABOR',
-          _id: [ '52b213b38594d8a2be17c783' ] },
-        { match: 'impagency.MINISTRY',
-          _id:
-          [ '52b213b38594d8a2be17c784',
-            '52b213b38594d8a2be17c786',
-            '52b213b38594d8a2be17c789' ] },
-        { match: 'impagency.NATIONAL',
-          _id: [ '52b213b38594d8a2be17c787' ] },
-        { match: 'impagency.OF',
-          _id:
-          [ '52b213b38594d8a2be17c784',
-            '52b213b38594d8a2be17c786',
-            '52b213b38594d8a2be17c789' ] },
-        { match: 'impagency.PMU', _id: [ '52b213b38594d8a2be17c783' ] },
-        { match: 'impagency.PROJECT',
-          _id: [ '52b213b38594d8a2be17c783' ] },
-        { match: 'impagency.PUBLIC',
-          _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] },
-        { match: 'impagency.RAJASTHAN',
-          _id: [ '52b213b38594d8a2be17c788' ] },
-        { match: 'impagency.ROAD', _id: [ '52b213b38594d8a2be17c786' ] },
-        { match: 'impagency.TRADE',
-          _id: [ '52b213b38594d8a2be17c784' ] },
-        { match: 'impagency.TRANSPORT',
-          _id: [ '52b213b38594d8a2be17c786' ] },
-        { match: 'impagency.WORKS',
-          _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] } ]
+        { gte: 'impagency.ENERGY', lte: 'impagency.ENERGY', _id: [
+          '52b213b38594d8a2be17c787' ] },
+        { gte: 'impagency.FINANCE', lte: 'impagency.FINANCE', _id: [
+          '52b213b38594d8a2be17c789' ] },
+        { gte: 'impagency.HIGHWAYS', lte: 'impagency.HIGHWAYS', _id: [
+          '52b213b38594d8a2be17c786' ] },
+        { gte: 'impagency.INDUSTRY', lte: 'impagency.INDUSTRY', _id: [
+          '52b213b38594d8a2be17c784' ] },
+        { gte: 'impagency.INTENSIVE', lte: 'impagency.INTENSIVE', _id:
+  [ '52b213b38594d8a2be17c783' ] },
+        { gte: 'impagency.LABOR', lte: 'impagency.LABOR', _id: [
+          '52b213b38594d8a2be17c783' ] },
+        { gte: 'impagency.MINISTRY', lte: 'impagency.MINISTRY', _id: [
+          '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786',
+          '52b213b38594d8a2be17c789' ] },
+        { gte: 'impagency.NATIONAL', lte: 'impagency.NATIONAL', _id: [
+          '52b213b38594d8a2be17c787' ] },
+        { gte: 'impagency.OF', lte: 'impagency.OF', _id: [
+          '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786',
+          '52b213b38594d8a2be17c789' ] },
+        { gte: 'impagency.PMU', lte: 'impagency.PMU', _id: [
+          '52b213b38594d8a2be17c783' ] },
+        { gte: 'impagency.PROJECT', lte: 'impagency.PROJECT', _id: [
+          '52b213b38594d8a2be17c783' ] },
+        { gte: 'impagency.PUBLIC', lte: 'impagency.PUBLIC', _id: [
+          '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] },
+        { gte: 'impagency.RAJASTHAN', lte: 'impagency.RAJASTHAN', _id:
+  [ '52b213b38594d8a2be17c788' ] },
+        { gte: 'impagency.ROAD', lte: 'impagency.ROAD', _id: [
+          '52b213b38594d8a2be17c786' ] },
+        { gte: 'impagency.TRADE', lte: 'impagency.TRADE', _id: [
+          '52b213b38594d8a2be17c784' ] },
+        { gte: 'impagency.TRANSPORT', lte: 'impagency.TRANSPORT', _id:
+  [ '52b213b38594d8a2be17c786' ] },
+        { gte: 'impagency.WORKS', lte: 'impagency.WORKS', _id: [
+          '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] }
+      ]
+    )
+  })
+})
+
+
+test('can aggregate totalamt using underlying index', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    'impagency.PMU'
+  ).then(result => {
+    t.looseEqual(
+      result,
+      {
+        gte: 'impagency.PMU', lte: 'impagency.PMU',
+        _id: ['52b213b38594d8a2be17c783']
+      }
+    )
+  })
+})
+
+
+test('can aggregate totalamt using underlying index', t => {
+  t.plan(1)
+  global[indexName].BUCKET(
+    { gte: 'impagency.P', lte: 'impagency.TXX' }
+  ).then(result => {
+    t.looseEqual(
+      result,
+      { gte: 'impagency.P',
+        lte: 'impagency.TXX',
+        _id: [ '52b213b38594d8a2be17c782',
+               '52b213b38594d8a2be17c783',
+               '52b213b38594d8a2be17c784',
+               '52b213b38594d8a2be17c786',
+               '52b213b38594d8a2be17c788' ] }
+    )
+  })
+})
+
+
+test('can aggregate totalamt using underlying index', t => {
+  t.plan(1)
+  Promise.all([
+    global[indexName].BUCKET({ gte: 'totalamt.0', lte: 'totalamt.4999999999999' }),
+    global[indexName].BUCKET({ gte: 'totalamt.5', lte: 'totalamt.9' })
+  ]).then(result => {
+    t.looseEqual(
+      result,
+      [ { gte: 'totalamt.0', lte: 'totalamt.4999999999999', _id: [
+        '52b213b38594d8a2be17c780',
+        '52b213b38594d8a2be17c781',
+        '52b213b38594d8a2be17c783',
+        '52b213b38594d8a2be17c784',
+        '52b213b38594d8a2be17c785',
+        '52b213b38594d8a2be17c787',
+        '52b213b38594d8a2be17c788',
+        '52b213b38594d8a2be17c789' ] },
+        { gte: 'totalamt.5', lte: 'totalamt.9', _id: [
+          '52b213b38594d8a2be17c782', '52b213b38594d8a2be17c786' ] } ]
     )
   })
 })
