@@ -411,5 +411,5 @@ idx.DICTIONARY({
 }).then( /* array of tokens */ )
 ```
 
-Alternatively you can use ´DICTIONARY´ to extract all terms from the
+Alternatively you can use `DICTIONARY` to extract all terms from the
 index and then feed them into some third-party matcher logic.
