@@ -10,9 +10,10 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
-## Documentation, API and browser example
+## Documentation
 
-* [API - search-index ](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
+* [API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
+* [FAQ](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md#faq)
 * [Example code](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
 * [Browser demo](https://fergiemcdowall.github.io/search-index/demo/) and [short explanation](https://github.com/fergiemcdowall/search-index/tree/master/demo/)
 
