@@ -303,9 +303,9 @@ db.DISTINCT('agency')
  .then(console.log)
 /*
 [
-  { match: 'agency.POLICE', _id: [ 2,3,4,7 ] },
-  { match: 'agency.DOJ', _id: [ 1, 6 ]
-  { match: 'agency.SUPREMECOURT', _id: [ 5, 7 ]
+  { gte: 'agency.POLICE', lte: 'agency.POLICE', _id: [ 2,3,4,7 ] },
+  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ]
+  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ]
 ]
 */
 
@@ -320,9 +320,9 @@ db.DISTINCT('agency')
  .then(console.log)
 /*
 [
-  { match: 'agency.POLICE', _id: [ 2,3,4,7 ], count: 4 },
-  { match: 'agency.DOJ', _id: [ 1, 6 ], count: 2 },
-  { match: 'agency.SUPREMECOURT', _id: [ 5, 7 ], count: 2 }
+  { gte: 'agency.POLICE' lte: 'agency.POLICE', _id: [ 2,3,4,7 ], count: 4 },
+  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ], count: 2 },
+  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ], count: 2 }
 ]
 */
 
@@ -331,7 +331,46 @@ db.DISTINCT('agency')
 
 ### Define custom "buckets"
 
-TODO
+```javascript
+Promise.all([
+  'totalamt.0',
+  'totalamt.10000000',
+  'totalamt.200000000'
+].map(db.BUCKET))
+ .then(console.log)
+/*
+[
+  { gte: 'totalamt.0',
+    lte: 'totalamt.0',
+    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+  { gte: 'totalamt.10000000',
+    lte: 'totalamt.10000000',
+    _id: [ '52b213b38594d8a2be17c785' ] },
+  { gte: 'totalamt.200000000',
+    lte: 'totalamt.200000000',
+    _id: [ '52b213b38594d8a2be17c789' ] }
+]
+*/
+```
+
+```javascript
+Promise.all([
+  { gte: 'totalamt.0', lte: 'totalamt.10000000'},
+  { gte: 'totalamt.10000001', lte: 'totalamt.99999999'}
+].map(db.BUCKET))
+ .then(console.log)
+/*
+[
+  { gte: 'totalamt.0',
+    lte: 'totalamt.10000000',
+    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c785', '52b213b38594d8a2be17c787' ] },
+  { gte: 'totalamt.10000001',
+    lte: 'totalamt.99999999',
+    _id: [ '52b213b38594d8a2be17c789' ] }
+]
+*/
+
+```
 
 ### Combine an aggregation with a search
 
