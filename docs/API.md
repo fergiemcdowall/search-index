@@ -32,7 +32,13 @@
   - [How do I get out entire documents and not just document IDs?](#how-do-i-get-out-entire-documents-and-not-just-document-ids)
   - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
   - [How do I compose queries?](#how-do-i-compose-queries)
-  - [How do I perform a simple aggregation on a field value?](#how-do-i-perform-a-simple-aggregation-on-a-field-value)
+  - [How do I perform a simple aggregation on a field?](#how-do-i-perform-a-simple-aggregation-on-a-field)
+    - [Get a list of unique values for a field](#get-a-list-of-unique-values-for-a-field)
+    - [Get a set of document ids per unique field value](#get-a-set-of-document-ids-per-unique-field-value)
+    - [Get counts per unique field value](#get-counts-per-unique-field-value)
+    - [Define custom "buckets"](#define-custom-buckets)
+    - [Combine an aggregation with a search](#combine-an-aggregation-with-a-search)
+  - [How do I make a simple typeahead / autosuggest / matcher](#how-do-i-make-a-simple-typeahead--autosuggest--matcher)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -382,3 +388,28 @@ const search = db.SEARCH('board_approval_month:October')
 // satisfy the search criteria ('board_approval_month:October')
 db.BUCKETFILTER(bucketStructure, search).then(/* result */)
 ```
+## How do I make a simple typeahead / autosuggest / matcher
+
+There are of course many ways to do this, but if you just want a
+simple "begins with" autosuggest, then you can simply use the
+`DICTIONARY` function:
+
+```javascript
+// get all tokens in the index
+idx.DICTIONARY().then( /* array of tokens */ )
+
+// get all tokens in the body.text field
+idx.DICTIONARY('body.text').then( /* array of tokens */ )
+
+// get tokens in the body.text field that starts with 'cool'
+idx.DICTIONARY('body.text.cool').then( /* array of tokens */ )
+
+// you can also use gte/lte ("greater/less than or equal")
+idx.DICTIONARY({
+  gte: 'body.text.a',
+  lte: 'body.text.g'
+}).then( /* array of tokens */ )
+```
+
+Alternatively you can use ´DICTIONARY´ to extract all terms from the
+index and then feed them into some third-party matcher logic.
