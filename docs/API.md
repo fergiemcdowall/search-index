@@ -46,6 +46,7 @@
 # API
 
 ## Initialisation
+
 ### Make an index
 
 `si([options[, callback]])`
@@ -89,6 +90,9 @@ GET('searchterm')
 
 
 ## Altering the index
+
+***Add, update or delete data from the index***
+
 ### DELETE
 
 `DELETE([ ...Promise ]).then(result)`
@@ -103,6 +107,9 @@ Add objects to database
 
 
 ## Composable querying
+
+***These query functions can be mixed together in any combination to make powerful and expressive queries***
+
 ### AND
 
 `AND([ ...Promise ]).then(result)`
@@ -130,6 +137,9 @@ Return ids of objects that are in one or more of the query clauses
 
 
 ## Searching
+
+***These functions allow you to search in your corpus for keywords***
+
 ### GET
 
 `GET(property).then(result)`
@@ -163,6 +173,9 @@ Search the database and get documents back.
 ```
 
 ## Tokenisation
+
+***Tokenisation allows you to create functionality based on the set of tokens that is in the index such as autosuggest or word clouds***
+
 ### DICTIONARY
 
 `DICTIONARY(options).then(result)`
@@ -194,6 +207,9 @@ DICTIONARY({
 ```
 
 ## Aggregation
+
+***You can use the aggregation functions to categorise the index data, normally for the purposes of website navigation or dividing data up into segments***
+
 ### BUCKET
 
 `BUCKET([ ...Promise ]).then(result)`
