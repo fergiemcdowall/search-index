@@ -12,10 +12,10 @@
   - [Composable querying](#composable-querying)
     - [AND](#and)
     - [DOCUMENTS](#documents)
+    - [GET](#get)
     - [NOT](#not)
     - [OR](#or)
   - [Searching](#searching)
-    - [GET](#get)
     - [SEARCH](#search)
   - [Tokenisation](#tokenisation)
     - [DICTIONARY](#dictionary)
@@ -108,7 +108,7 @@ Add objects to database
 
 ## Composable querying
 
-***These query functions can be mixed together in any combination to make powerful and expressive queries***
+***These query functions can be mixed together in any combination to make powerful and expressive queries that are returned in a set sorted by document id***
 
 ### AND
 
@@ -121,24 +121,6 @@ Boolean AND. Return IDs of objects that have prop.A AND prop.B
 `DOCUMENTS([ ...id ]).then(result)`
 
 Get documents by ID
-
-### NOT
-
-`NOT([ ...Promise ]).then(result)`
-
-Where A and B are sets, `NOT` Returns the ids of objects that are
-present in A, but not in B.
-
-### OR
-
-`OR([ ...Promise ]).then(result)`
-
-Return ids of objects that are in one or more of the query clauses
-
-
-## Searching
-
-***These functions allow you to search in your corpus for keywords***
 
 ### GET
 
@@ -158,6 +140,24 @@ Or to get all objects that have a `name` property that begins with 'h'
 ```javascript
 GET('h').then(result)
 ```
+
+### NOT
+
+`NOT([ ...Promise ]).then(result)`
+
+Where A and B are sets, `NOT` Returns the ids of objects that are
+present in A, but not in B.
+
+### OR
+
+`OR([ ...Promise ]).then(result)`
+
+Return ids of objects that are in one or more of the query clauses
+
+
+## Searching
+
+***Search in your corpus for keywords and return a set of documents that is sorted with the most relevant first***
 
 ### SEARCH
 
