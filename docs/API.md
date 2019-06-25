@@ -108,7 +108,7 @@ Add objects to database
 
 ## Composable querying
 
-***These query functions can be mixed together in any combination to make powerful and expressive queries that are returned in a set sorted by document id***
+***These query functions can be [mixed together in any combination](#how-do-i-compose-queries) to make powerful and expressive queries that are returned in a set sorted by document id***
 
 ### AND
 
