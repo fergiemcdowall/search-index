@@ -60,14 +60,14 @@ called `searchIndex`:
 
 ```javascript
 // db exists in a leveldb instance if run on a server
-db.PUT([ /* my array of objects */ ]).then(doStuff)
+PUT([ /* my array of objects */ ]).then(doStuff)
 ```
 
 ### Search the index
 
 ```javascript
 // search for terms without specifing any fields
-db.SEARCH('SCOTLAND', 'GREEN').then(result)
+SEARCH('SCOTLAND', 'GREEN').then(result)
 
 ```
 

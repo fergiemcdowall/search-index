@@ -509,3 +509,31 @@ test('DICTIONARY without specified field', t => {
     ])
   })
 })
+
+test('DICTIONARY without specified field', t => {
+  t.plan(1)
+
+  const { DICTIONARY } = idx
+  
+  DICTIONARY().then(res => {
+    //    console.log(JSON.stringify(res, null, 2))
+    t.looseEqual(res, [
+      '200',
+      '500',
+      '5000',
+      'a',
+      'bananas',
+      'cool',
+      'coolness',
+      'different',
+      'document',
+      'documentness',
+      'is',
+      'quite',
+      'really',
+      'something',
+      'this',
+      'totally'
+    ])
+  })
+})
