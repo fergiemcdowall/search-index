@@ -74,18 +74,22 @@ si({ name: 'myDB' }, (err, db) => {
 
 Using one of the methods above you should now have an index called
 `db` (or another name of your choosing). If you want to call, say
-`GET` you could do either
+`GET` or `SEARCH` you could do either
 
 ```javascript
 db.SEARCH('searchterm')
+// ...
+db.GET('getterm')
 ```
 
 or
 
 ```javascript
-const { SEARCH, GET } = idx
+const { GET, SEARCH } = db
+
 SEARCH('searchterm')
-GET('searchterm')
+// ...
+GET('getterm')
 ```
 
 
