@@ -392,6 +392,44 @@ test('AND with embedded OR', t => {
   })
 })
 
+test('AND with embedded OR (JSON API)', t => {
+  t.plan(1)
+  idx.read({
+    AND:['bananas']
+  }).then(res => {
+    t.looseEqual(res, [
+      { _id: 'b', match: [ 'body.text.bananas:0.17' ] }
+    ])
+  })
+})
+
+test('AND with embedded OR (JSON API)', t => {
+  t.plan(1)
+  idx.read({
+    AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
+  }).then(res => {
+    t.looseEqual(res, [
+      { _id: 'b', match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
+    ])
+  })
+})
+
+
+test('AND with embedded OR (THENable JSON API)', t => {
+  t.plan(1)
+  idx.read('bananas', { DOCUMENTS: true }).then(res => {
+    t.looseEqual(res, [
+      { _id: 'b', match: [ 'body.text.bananas:0.17' ], obj: {
+        _id: 'b', title: 'quite a cool document', body: {
+          text: 'this document is really cool bananas', metadata: 'coolness documentness'
+        }, importantNumber: 500 }
+      }
+    ])
+  })
+})
+
+
+
 test('AND with embedded OR', t => {
   t.plan(1)
   idx.AND(
