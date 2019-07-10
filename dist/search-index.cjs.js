@@ -253,31 +253,32 @@ global.searchableFields = []; // fields that are available for searching
 
 const makeASearchIndex = idx => {
 
-  // const parseJsonQuery = q => {
-  //   if (typeof q == 'string') return r.GET(q)
-  //   return Object.entries(q).map(([key, value]) => {
-  //     // TODO: allow only valid functions, throw a nice error
-  //     return r[key](...value.map(parseJsonQuery))
-  //   })[0] // only evaluate one (first) key-value pair in object
-  // }
-
+  // takes an array of queries in JSON format and turns them into a
+  // then-ed chain of Promises.
   const parseJsonQuery = (...q) => {
-    console.log(q);
+    // Separate the first promise in the chain to be used as the start point in .reduce
     var start = q.shift();
 
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
-      console.log(command);
       if (typeof command == 'string') return r.GET(command)
-      if (command.DOCUMENTS) return r.DOCUMENTS(resultFromPreceding)
       if (command.OR) return r.OR(...command.OR.map(promisifyQuery))
       if (command.AND) return r.AND(...command.AND.map(promisifyQuery))
+      if (command.DICTIONARY) return r.DICTIONARY(command.DICTIONARY)
+      if (command.DISTINCT) return r.DISTINCT(command.DISTINCT)
+      if (command.SEARCH) return r.SEARCH(...command.SEARCH.map(promisifyQuery))
+
+      // feed in preceding results if present (ie if not first promise)
+      if (command.DOCUMENTS) return r.DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
+      // feed in preceding results if present (ie if not first promise)
+      if (command.BUCKET) return r.BUCKET(resultFromPreceding || command.BUCKET)
+      
     };
-    
-    return q.reduce((acc, cur) => {
-      console.log(cur);
-      return acc.then(result => promisifyQuery(cur, result))
-    }, promisifyQuery(start))
+
+    // Turn the array of commands into a chain of promises
+    return q.reduce((acc, cur) => acc.then(
+      result => promisifyQuery(cur, result)
+    ), promisifyQuery(start))
   };
 
 

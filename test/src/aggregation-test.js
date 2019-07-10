@@ -199,6 +199,39 @@ test('can aggregate totalamt', t => {
   ))
 })
 
+test('can aggregate totalamt JSON DISTINCT', t => {
+  t.plan(1)
+  global[indexName].read({DISTINCT:'impagency'}).then(result => t.looseEqual(
+    result,
+    [
+      'impagency.ADMINISTRATION',
+      'impagency.AND',
+      'impagency.COMMUNICATIONS',
+      'impagency.DEPARTMANT,',
+      'impagency.EDUCATION',
+      'impagency.ENERGY',
+      'impagency.FINANCE',
+      'impagency.HIGHWAYS',
+      'impagency.INDUSTRY',
+      'impagency.INTENSIVE',
+      'impagency.LABOR',
+      'impagency.MINISTRY',
+      'impagency.NATIONAL',
+      'impagency.OF',
+      'impagency.PMU',
+      'impagency.PROJECT',
+      'impagency.PUBLIC',
+      'impagency.RAJASTHAN',
+      'impagency.ROAD',
+      'impagency.TRADE',
+      'impagency.TRANSPORT',
+      'impagency.WORKS'
+    ]
+  ))
+})
+
+
+
 test('can aggregate totalamt', t => {
   t.plan(1)
   global[indexName].DISTINCT('impagency')
@@ -363,6 +396,21 @@ test('can aggregate totalamt using underlying index', t => {
     )
   })
 })
+
+
+test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
+  t.plan(1)
+  global[indexName].read({BUCKET:'impagency.PMU'}).then(result => {
+    t.looseEqual(
+      result,
+      {
+        gte: 'impagency.PMU', lte: 'impagency.PMU',
+        _id: ['52b213b38594d8a2be17c783']
+      }
+    )
+  })
+})
+
 
 
 test('can aggregate totalamt using underlying index', t => {

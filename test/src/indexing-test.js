@@ -55,14 +55,13 @@ test('can add some worldbank data', t => {
 test('can search', t => {
   t.plan(1)
   idx.SEARCH(
-    'body.text:cool', // use colon? eg "body.text:cool"
+    'body.text:cool',
     'body.text:really',
     'body.text:bananas'
   ).then(res => {
     t.looseEqual(res, [
       {
         '_id': 'b',
-        // how about "match"
         'match': [
           'body.text.cool:0.17',
           'body.text.really:0.17',
@@ -74,6 +73,30 @@ test('can search', t => {
     ])
   })
 })
+
+// should be able to get non-tokenised (readable) version of object out of index
+test('can search', t => {
+  t.plan(1)
+  idx.read({SEARCH:[
+    'body.text:cool',
+    'body.text:really',
+    'body.text:bananas'
+  ]}).then(res => {
+    t.looseEqual(res, [
+      {
+        '_id': 'b',
+        'match': [
+          'body.text.cool:0.17',
+          'body.text.really:0.17',
+          'body.text.bananas:0.17'
+        ],
+        'score': 0.71,
+        'obj': data[1]
+      }
+    ])
+  })
+})
+
 
 test('can search in any field', t => {
   t.plan(1)
@@ -415,6 +438,23 @@ test('AND with embedded OR (JSON API)', t => {
 })
 
 
+test('DOCUMENT (JSON API)', t => {
+  t.plan(1)
+  idx.read({
+    DOCUMENTS:[{_id:'b'}, {_id:'a'}]
+  }).then(res => {
+    t.looseEqual(res, [
+      { _id: 'b', obj: { _id: 'b', title: 'quite a cool document', body: {
+        text: 'this document is really cool bananas', metadata: 'coolness documentness'
+      }, importantNumber: 500 } },
+      { _id: 'a', obj: { _id: 'a', title: 'quite a cool document', body: {
+        text: 'this document is really cool cool cool', metadata: 'coolness documentness'
+      }, importantNumber: 5000 } }
+    ])
+  })
+})
+
+
 test('AND with embedded OR (THENable JSON API)', t => {
   t.plan(1)
   idx.read('bananas', { DOCUMENTS: true }).then(res => {
@@ -453,12 +493,6 @@ test('AND with embedded OR', t => {
 })
 
 
-// test('debug', t => {
-//   t.plan(1)
-//   idx.INDEX.STORE.createReadStream()
-//     .on('data', console.log)
-//     .on('close', () => { t.pass('close') })
-// })
 
 test('SEARCH with embedded OR', t => {
   t.plan(1)
@@ -506,6 +540,24 @@ test('DICTIONARY with specified field', t => {
     ])
   })
 })
+
+test('DICTIONARY with specified field (JSON API)', t => {
+  t.plan(1)
+  idx.DICTIONARY('body.text').then(res => {
+    t.looseEqual(res, [
+      'bananas',
+      'cool',
+      'different',
+      'document',
+      'is',
+      'really',
+      'something',
+      'this',
+      'totally'
+    ])
+  })
+})
+
 
 test('DICTIONARY with gte lte', t => {
   t.plan(1)
