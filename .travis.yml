@@ -7,7 +7,6 @@ notifications:
   slack: norch:wLsHiXjnAH5BdtTq3qtAqGp7
   email: true
 node_js:
-  - '12'
   - '10'
   - '8'
 before_script:
