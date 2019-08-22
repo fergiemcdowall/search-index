@@ -30,7 +30,7 @@ test('can add some worldbank data', t => {
       totalamt: item.totalamt
     }
   })
-  console.log(JSON.stringify(data, null, 2))
+//  console.log(JSON.stringify(data, null, 2))
   t.plan(1)
   global[indexName].PUT(data).then(t.pass)
 })
@@ -38,7 +38,6 @@ test('can add some worldbank data', t => {
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
   global[indexName].BUCKETFILTER(
-    // global[indexName].INDEX.DISTINCT('totalamt').then(global[indexName].INDEX.EACH),
     global[indexName].INDEX.DISTINCT('totalamt')
                      .then(result => Promise.all(result.map(global[indexName].BUCKET))),
     global[indexName].SEARCH('board_approval_month:October')
@@ -382,6 +381,47 @@ test('can aggregate totalamt using underlying index', t => {
 })
 
 
+test('JSON BUCKET', t => {
+  t.plan(1)
+  global[indexName].read({BUCKET:'impagency.OF'}).then(result => {
+    t.looseEqual(
+      result,
+      {
+        gte: 'impagency.OF', lte: 'impagency.OF',
+        _id: [
+          '52b213b38594d8a2be17c780',
+          '52b213b38594d8a2be17c781',
+          '52b213b38594d8a2be17c782',
+          '52b213b38594d8a2be17c784',
+          '52b213b38594d8a2be17c786',
+          '52b213b38594d8a2be17c789'
+        ]
+      }
+    )
+  })
+})
+
+
+test('JSON BUCKETFILTER', t => {
+  t.plan(1)
+  global[indexName].read({
+    BUCKETFILTER: [
+      [ { BUCKET: 'impagency.OF' }],
+      { SEARCH: [ 'board_approval_month:October' ] }
+    ]
+  }).then(result => {
+    t.looseEqual(
+      result,
+      [
+        { gte: 'impagency.OF', lte: 'impagency.OF', _id: [
+          '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786',
+          '52b213b38594d8a2be17c789' ] }
+      ]
+    )
+  })
+})
+
+
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
   global[indexName].BUCKET(
@@ -410,7 +450,6 @@ test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
     )
   })
 })
-
 
 
 test('can aggregate totalamt using underlying index', t => {
