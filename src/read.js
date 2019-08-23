@@ -32,7 +32,8 @@ export default function (fii) {
       )
   )
 
-  const AND = function (...keys) {
+  const AND = (...keys) => {
+    console.log(keys)
     return fii.AND(
       ...keys.map(GET)
     ).then(flattenMatch)
@@ -80,6 +81,7 @@ export default function (fii) {
   })
 
   // TODO: Tests for JSON nesting and JSON .then-ing
+  // TODO: JSON NOT
   const parseJsonQuery = (...q) => {
     // Separate the first promise in the chain to be used as the start point in .reduce
     var start = q.shift()
