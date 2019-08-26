@@ -44,7 +44,7 @@ test('create a search index', t => {
   })
 })
 
-test('can add some worldbank data', t => {
+test('can add some data', t => {
   t.plan(1)
   idx.PUT(data).then(() => {
     t.pass('ok')

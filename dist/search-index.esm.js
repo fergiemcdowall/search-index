@@ -46,16 +46,24 @@ function writer (fii) {
     trav(obj).forEach(function (node) {
       if (typeof node === 'undefined') return
       const self = this;
+      // by default all fields are searchable
       let searchable = true;
       this.path.forEach(item => {
-        // denotes that a field is indexable
+        // make these fields unsearchable (exclude from inverted index)
         if (item === '_id') searchable = false;
         if (item.substring(0, 1) === '!') searchable = false;
       });
       if (searchable && this.isLeaf) {
-        invertedDoc[self.path.filter(item => {  // eslint-disable-line
+        let fieldName = self.path.filter(item => {  // eslint-disable-line
           return isNaN(item)
-        }).join('.')] = (self.node + '').split(' ');
+        }).join('.');
+        // create inverted field as empty array, or existing array
+        invertedDoc[fieldName] = invertedDoc[fieldName] || [];
+        // push this leaf value to array
+        invertedDoc[fieldName].push((self.node + '').split(' '));
+        // Since this code generates a nested array, flatten
+        // (means that we can index both arrays and strings with the same code)
+        invertedDoc[fieldName].flat();
       }
     });
     return invertedDoc

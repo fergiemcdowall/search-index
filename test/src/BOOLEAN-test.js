@@ -21,9 +21,8 @@ test('can add some worldbank data', t => {
   const data = wbd.slice(0, dataSize).map(item => {
     return {
       _id: item._id.$oid,
-
       // TODO: only first element in array is indexed- why?
-      sectorcode: item.sectorcode.split(',').join(' '),
+      sectorcode: item.sectorcode.split(',').join(' ').split(' '),
       board_approval_month: item.board_approval_month,
       impagency: item.impagency,
       majorsector_percent: item.majorsector_percent,
