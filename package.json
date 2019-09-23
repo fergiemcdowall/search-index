@@ -36,6 +36,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
     "doctoc": "^1.4.0",
+    "encoding-down": "^6.2.0",
     "level-out": "^1.0.0",
     "memdown": "^5.0.0",
     "rollup": "^1.12.3",
