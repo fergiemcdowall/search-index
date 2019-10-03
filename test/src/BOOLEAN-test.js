@@ -70,47 +70,95 @@ test('AND', t => {
   })
 })
 
+test('OR', t => {
+  t.plan(1)
+  global[indexName].read({
+    OR:[
+      'sectorcode:TI',
+      'sectorcode:BZ'
+    ]}
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c782', match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c781', match: [ 'sectorcode.BZ:0.50' ] }
+    ])
+  })
+})
 
-// test('SEARCH', t => {
-//   t.plan(1)
-//   global[indexName].SEARCH(
-//     'sectorcode:BZ'
-//   ).then(res => {
-//     t.looseEqual(res, [
-//       {
-//         '_id': 'a',
-//         'match': [
-//           'title.quite:0.25',
-//           'body.metadata.coolness:0.50'
-//         ]
-//       },
-//       {
-//         '_id': 'b',
-//         'match': [
-//           'title.quite:0.25',
-//           'body.metadata.coolness:0.50'
-//         ]
-//       }
-//     ])
-//   })
-// })
+test('OR', t => {
+  t.plan(1)
+  global[indexName].read({
+    OR:[
+      'sectorcode:YZ',
+      'sectorcode:BC'
+    ]}
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.YZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BC:0.33' ] }
+    ])
+  })
+})
 
+test('OR', t => {
+  t.plan(1)
+  global[indexName].read({
+    OR:[
+      'sectorcode:YZ',
+      'sectorcode:BC'
+    ]}
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.YZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BC:0.33' ] }
+    ])
+  })
+})
 
-// test('JSON AND', t => {
-//   t.plan(1)
-//   global[indexName].read({
-//     AND: [
-//       'impagency.BM',
-//       'impagency.BC'
-//     ]
-//   }).then(result => {
-//     t.looseEqual(
-//       result,
-//       [
-//         { gte: 'impagency.OF', lte: 'impagency.OF', _id: [
-//           '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786',
-//           '52b213b38594d8a2be17c789' ] }
-//       ]
-//     )
-//   })
-// })
+test('OR', t => {
+  t.plan(1)
+  global[indexName].read({
+    OR:[
+      'sectorcode:FH',
+      'sectorcode:YW',
+      'sectorcode:YZ'
+    ]}
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.FH:0.33', 'sectorcode.YW:0.33', 'sectorcode.YZ:0.33' ] }
+    ])
+  })
+})
+
+test('can NOT', t => {
+  t.plan(1)
+  global[indexName].NOT(
+    'sectorcode:TI',
+    'board_approval_month:November'
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] }
+    ])
+  })
+})
+
+test('can NOT', t => {
+  t.plan(1)
+  global[indexName].read(
+    {
+      NOT: {
+        include: 'sectorcode:TI',
+        exclude: 'board_approval_month:November'
+      }
+    }
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] }
+    ])
+  })
+})

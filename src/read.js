@@ -58,7 +58,7 @@ export default function (fii) {
     return Promise.all([a, b]).then(result => {
       let [ a, b ] = result
       b = b.map(item => item._id)
-      return a.filter(item => b.indexOf(item._id))
+      return a.filter(item => b.indexOf(item._id) === -1)
     })
   }
 
@@ -88,12 +88,7 @@ export default function (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return GET(command)
-      if (command.OR) return OR(...command.OR.map(promisifyQuery))
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
-      if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
-      if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
-      if (command.DISTINCT) return DISTINCT(command.DISTINCT)
-      if (command.GET) return GET(command.GET)
       if (command.BUCKETFILTER) {
         return fii.BUCKETFILTER(
           Promise.all(command.BUCKETFILTER[0].map(promisifyQuery)),
@@ -101,9 +96,15 @@ export default function (fii) {
         )
       }
       // feed in preceding results if present (ie if not first promise)
-      if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
-      // feed in preceding results if present (ie if not first promise)
       if (command.BUCKET) return fii.BUCKET(resultFromPreceding || command.BUCKET)
+      if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
+      if (command.DISTINCT) return DISTINCT(command.DISTINCT)
+      // feed in preceding results if present (ie if not first promise)
+      if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
+      if (command.GET) return GET(command.GET)
+      if (command.OR) return OR(...command.OR.map(promisifyQuery))
+      if (command.NOT) return SET_DIFFERENCE(command.NOT.include, command.NOT.exclude)
+      if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     }
     // Turn the array of commands into a chain of promises
     return q.reduce((acc, cur) => acc.then(

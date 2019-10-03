@@ -26,7 +26,8 @@ export default function (fii) {
         invertedDoc[fieldName].push((self.node + '').split(' '))
         // Since this code generates a nested array, flatten
         // (means that we can index both arrays and strings with the same code)
-        invertedDoc[fieldName].flat()
+        //        invertedDoc[fieldName].flat()
+        invertedDoc[fieldName] = [].concat.apply([], invertedDoc[fieldName])
       }
     })
     return invertedDoc
