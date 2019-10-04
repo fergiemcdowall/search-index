@@ -99,16 +99,36 @@ GET('getterm')
 
 ### DELETE
 
-`DELETE([ ...Promise ]).then(result)`
+`DELETE([ ...ids ]).then(result)`
 
 Deletes all objects by ID
 
 ### PUT
 
-`PUT([ ...Promise ]).then(result)`
+A promise that adds an array of documents to database. Each document can indexed with or without an `_id`. If no `_id` is specified then one will be assigned automatically.
 
-Add objects to database
+<details>
+<summary>Click for example:</summary>
 
+  ```javascript
+  await db.PUT([
+    {
+      _id: 1,
+      bandName: 'The Beatles',
+      description: 'The nice boys of pop'
+    }, {
+      _id: 'two',
+      bandName: 'The Rolling Stones',
+      description: 'The bad boys of rock'
+    }, {
+      _id: 3,
+      bandName: 'The Who',
+      description: 'Nearly as good as Led Zeppelin'
+    }
+  ])
+  ```
+
+</details>
 
 ## Composable querying
 

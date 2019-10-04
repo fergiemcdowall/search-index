@@ -33,7 +33,11 @@ test('can add some worldbank data', t => {
   })
   console.log(JSON.stringify(data, null, 2))
   t.plan(1)
-  global[indexName].PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(result => {
+    console.log('result is ->')
+    console.log(result)
+    t.pass('ok')
+  })
 })
 
 

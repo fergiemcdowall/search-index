@@ -29,17 +29,14 @@ const makeASearchIndex = idx => {
   }
 }
 
-export default function (ops, callback) {
-  // if no callback then return lazy load
-  if (!callback) {
-    const idx = ops.fii || fii(ops)
-    // lazy calibration
-    util(idx).calibrate()
-    return makeASearchIndex(idx)
-  } else {
+export default function (ops) {
+  return new Promise((resolve, reject) => {
     fii(ops, (err, idx) => {
-      util(idx).calibrate()
-        .then(() => callback(err, makeASearchIndex(idx)))
+      if (err) return reject(err)
+      resolve(util(idx).calibrate()
+        .then(() => {
+          return makeASearchIndex(idx)          
+        }))
     })
-  }
+  })
 }
