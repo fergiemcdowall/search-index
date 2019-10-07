@@ -47,7 +47,7 @@ test('AND', t => {
     t.looseEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',
-        match: [ 'sectorcode.BZ:0.33', 'sectorcode.BC:0.33' ]
+        _match: [ 'sectorcode.BZ:0.33', 'sectorcode.BC:0.33' ]
       }
     ])
   })
@@ -65,7 +65,7 @@ test('AND', t => {
     t.looseEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',
-        match: [ 'sectorcode.BZ:0.33', 'sectorcode.BC:0.33' ]
+        _match: [ 'sectorcode.BZ:0.33', 'sectorcode.BC:0.33' ]
       }
     ])
   })
@@ -80,11 +80,11 @@ test('OR', t => {
     ]}
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c782', match: [ 'sectorcode.TI:1.00' ] },
-      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
-      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] },
-      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BZ:0.33' ] },
-      { _id: '52b213b38594d8a2be17c781', match: [ 'sectorcode.BZ:0.50' ] }
+      { _id: '52b213b38594d8a2be17c782', _match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c789', _match: [ 'sectorcode.BZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c781', _match: [ 'sectorcode.BZ:0.50' ] }
     ])
   })
 })
@@ -98,8 +98,8 @@ test('OR', t => {
     ]}
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.YZ:0.33' ] },
-      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BC:0.33' ] }
+      { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode.YZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c789', _match: [ 'sectorcode.BC:0.33' ] }
     ])
   })
 })
@@ -113,8 +113,8 @@ test('OR', t => {
     ]}
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.YZ:0.33' ] },
-      { _id: '52b213b38594d8a2be17c789', match: [ 'sectorcode.BC:0.33' ] }
+      { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode.YZ:0.33' ] },
+      { _id: '52b213b38594d8a2be17c789', _match: [ 'sectorcode.BC:0.33' ] }
     ])
   })
 })
@@ -129,7 +129,7 @@ test('OR', t => {
     ]}
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', match: [ 'sectorcode.FH:0.33', 'sectorcode.YW:0.33', 'sectorcode.YZ:0.33' ] }
+      { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode.FH:0.33', 'sectorcode.YW:0.33', 'sectorcode.YZ:0.33' ] }
     ])
   })
 })
@@ -141,8 +141,8 @@ test('can NOT', t => {
     'board_approval_month:November'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
-      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] }
+      { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode.TI:1.00' ] }
     ])
   })
 })
@@ -158,8 +158,8 @@ test('can NOT', t => {
     }
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '52b213b38594d8a2be17c786', match: [ 'sectorcode.TI:1.00' ] },
-      { _id: '52b213b38594d8a2be17c788', match: [ 'sectorcode.TI:1.00' ] }
+      { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode.TI:1.00' ] },
+      { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode.TI:1.00' ] }
     ])
   })
 })

@@ -61,12 +61,12 @@ test('can search', t => {
     t.looseEqual(res, [
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'body.text.cool:0.17',
           'body.text.really:0.17',
           'body.text.bananas:0.17'
         ],
-        'score': 0.71,
+        _score: 0.71,
         _doc: data[1]
       }
     ])
@@ -84,12 +84,12 @@ test('can search', t => {
     t.looseEqual(res, [
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'body.text.cool:0.17',
           'body.text.really:0.17',
           'body.text.bananas:0.17'
         ],
-        'score': 0.71,
+        _score: 0.71,
         _doc: data[1]
       }
     ])
@@ -106,13 +106,13 @@ test('can search in any field', t => {
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b',
-        match: [
+        _match: [
           'body.text.cool:0.17',
           'title.cool:0.25',
           'body.text.really:0.17',
           'body.text.bananas:0.17'
         ],
-        score: 1.05,
+        _score: 1.05,
         _doc: data[1]
       }
     ])
@@ -140,20 +140,20 @@ test('can do a mixture of fielded search and any-field search', t => {
     t.looseEqual(res, [
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'title.cool:0.25',
           'body.metadata.documentness:0.50'
         ],
-        'score': 0.52,
+        _score: 0.52,
         _doc: data[0]
       },
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'title.cool:0.25',
           'body.metadata.documentness:0.50'
         ],
-        'score': 0.52,
+        _score: 0.52,
         _doc: data[1]
       }
     ])
@@ -168,30 +168,30 @@ test('can search by numeric value', t => {
     resultSet => global[indexName].SCORENUMERIC({
       resultSet: resultSet,
       fieldName: 'importantNumber',
-      sort: (a, b) => b.score - a.score,
+      sort: (a, b) => b._score - a._score,
       offset: 0,
       limit: 10
     })
   ).then(global[indexName].DOCUMENTS)
-   .then(res => {
-     t.looseEqual(res, [
-       { _id: 'a',
-         match: [ 'importantNumber.5000:5000' ],
-         score: 5000,
-         _doc: data[0]
-       },
-       { _id: 'b',
-         match: [ 'importantNumber.500:500' ],
-         score: 500,
-         _doc: data[1]
-       },
-       { _id: 'c',
-         match: [ 'importantNumber.200:200' ],
-         score: 200,
-         _doc: data[2]
-       }
-     ])
-   })
+    .then(res => {
+      t.looseEqual(res, [
+        { _id: 'a',
+          _match: [ 'importantNumber.5000:5000' ],
+          _score: 5000,
+          _doc: data[0]
+        },
+        { _id: 'b',
+          _match: [ 'importantNumber.500:500' ],
+          _score: 500,
+          _doc: data[1]
+        },
+        { _id: 'c',
+          _match: [ 'importantNumber.200:200' ],
+          _score: 200,
+          _doc: data[2]
+        }
+      ])
+    })
 })
 
 // OR-ing
@@ -203,11 +203,11 @@ test('can search by numeric value and OR', t => {
   ).then(res => t.looseEqual(res, [
     {
       _id: 'c',
-      match: [ 'importantNumber.200:200' ]
+      _match: [ 'importantNumber.200:200' ]
     },
     {
       _id: 'a',
-      match: [ 'importantNumber.5000:5000' ]
+      _match: [ 'importantNumber.5000:5000' ]
     }
   ]))
 })
@@ -221,11 +221,11 @@ test('can search by numeric value and OR with one term on any field', t => {
   ).then(res => t.looseEqual(res, [
     {
       _id: 'c',
-      match: [ 'importantNumber.200:200' ]
+      _match: [ 'importantNumber.200:200' ]
     },
     {
       _id: 'a',
-      match: [ 'importantNumber.5000:5000' ]
+      _match: [ 'importantNumber.5000:5000' ]
     }
   ]))
 })
@@ -236,10 +236,10 @@ test('can GET', t => {
     'body.text:cool'
   ).then(res => t.looseEqual(res, [
     {
-      _id: 'b', match: [ 'body.text.cool:0.17' ]
+      _id: 'b',_match: [ 'body.text.cool:0.17' ]
     },
     {
-      _id: 'a', match: [ 'body.text.cool:0.60' ]
+      _id: 'a',_match: [ 'body.text.cool:0.60' ]
     }
   ]))
 })
@@ -252,14 +252,14 @@ test('can GET with no field specified', t => {
     t.looseEqual(res, [
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'body.text.cool:0.17',
           'title.cool:0.25'
         ]
       },
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'body.text.cool:0.60',
           'title.cool:0.25'
         ]
@@ -277,14 +277,14 @@ test('can AND', t => {
     t.looseEqual(res, [
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
       },
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
@@ -302,21 +302,21 @@ test('can AND with embedded OR', t => {
     t.looseEqual(res, [
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
       },
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
       },
       {
         '_id': 'c',
-        'match': [
+        _match: [
           'body.text.different:0.33',
           'body.metadata.coolness:0.50'
         ]
@@ -340,21 +340,21 @@ test('can AND with embedded OR and embedded AND', t => {
     t.looseEqual(res, [
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
       },
       {
         '_id': 'b',
-        'match': [
+        _match: [
           'title.quite:0.25',
           'body.metadata.coolness:0.50'
         ]
       },
       {
         '_id': 'c',
-        'match': [
+        _match: [
           'body.text.totally:0.33',
           'body.text.different:0.33',
           'body.metadata.coolness:0.50'
@@ -373,7 +373,7 @@ test('can NOT', t => {
     t.looseEqual(res, [
       {
         '_id': 'a',
-        'match': [
+        _match: [
           'body.text.cool:0.60',
           'title.cool:0.25'
         ]
@@ -385,21 +385,21 @@ test('can NOT', t => {
 test('can OR', t => {
   t.plan(1)
   global[indexName].OR('body.text:bananas', 'body.text:different')
-   .then(res => {
-     t.looseEqual(res, [
-       {
-         _id: 'b',
-         match: [
-           'body.text.bananas:0.17'
-         ]
-       }, {
-         _id: 'c',
-         match: [
-           'body.text.different:0.33'
-         ]
-       }
-     ])
-   })
+    .then(res => {
+      t.looseEqual(res, [
+        {
+          _id: 'b',
+          _match: [
+            'body.text.bananas:0.17'
+          ]
+        }, {
+          _id: 'c',
+          _match: [
+            'body.text.different:0.33'
+          ]
+        }
+      ])
+    })
 })
 
 test('AND with embedded OR', t => {
@@ -409,7 +409,7 @@ test('AND with embedded OR', t => {
     global[indexName].OR('body.text:cool', 'body.text:coolness')
   ).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
+      { _id: 'b',_match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
     ])
   })
 })
@@ -420,7 +420,7 @@ test('AND with embedded OR (JSON API)', t => {
     AND:['bananas']
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', match: [ 'body.text.bananas:0.17' ] }
+      { _id: 'b',_match: [ 'body.text.bananas:0.17' ] }
     ])
   })
 })
@@ -431,7 +431,7 @@ test('AND with embedded OR (JSON API)', t => {
     AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
+      { _id: 'b',_match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
     ])
   })
 })
@@ -458,7 +458,7 @@ test('AND with embedded OR (THENable JSON API)', t => {
   t.plan(1)
   global[indexName].read('bananas', { DOCUMENTS: true }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', match: [ 'body.text.bananas:0.17' ], _doc: {
+      { _id: 'b',_match: [ 'body.text.bananas:0.17' ], _doc: {
         _id: 'b', title: 'quite a cool document', body: {
           text: 'this document is really cool bananas', metadata: 'coolness documentness'
         }, importantNumber: 500 }
@@ -477,13 +477,13 @@ test('AND with embedded OR', t => {
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b',
-        match: [
+        _match: [
           'body.text.bananas:0.17',
           'body.text.cool:0.17',
           'title.cool:0.25',
           'body.metadata.coolness:0.50' ] },
       { _id: 'c',
-        match: [
+        _match: [
           'body.text.different:0.33',
           'title.different:0.50',
           'body.metadata.coolness:0.50' ] }
@@ -502,21 +502,21 @@ test('AND with embedded OR', t => {
 //     t.looseEqual(res, [
 //       {
 //         '_id': 'c',
-//         'match': [
+//         _match: [
 //           'body.text.different:0.33',
 //           'title.different:0.50',
 //           'body.metadata.coolness:0.50'
 //         ],
-//         'score': 0.92,
+//         _score: 0.92,
 //         'obj': data[2]
 //       },
 //       {
 //         '_id': 'b',
-//         'match': [
+//         _match: [
 //           'body.text.bananas:0.17',
 //           'body.metadata.coolness:0.50'
 //         ],
-//         'score': 0.46,
+//         _score: 0.46,
 //         'obj': data[1]
 //       }
 //     ])

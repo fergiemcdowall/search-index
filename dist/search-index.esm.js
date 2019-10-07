@@ -127,7 +127,7 @@ function writer (fii) {
 function TFIDF (ops) {
   const calculateScore = (x, _, resultSet) => {
     const idf = Math.log((global.D + 1) / resultSet.length);
-    x.score = +x.match.reduce(
+    x._score = +x._match.reduce(
       (acc, cur) => acc + idf * +cur.split(':')[1], 0
     ).toFixed(2); // TODO: make precision an option
     return x
@@ -136,7 +136,7 @@ function TFIDF (ops) {
     .resultSet
     .map(calculateScore)
   // sort by score descending
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b._score - a._score)
   // limit to n hits
     .slice(ops.offset, ops.limit)
 }
@@ -144,7 +144,7 @@ function TFIDF (ops) {
 // TODO: put in some defaults
 function numericField (ops) {
   const calculateScore = (x) => {
-    x.score = +x.match.filter(
+    x._score = +x._match.filter(
       item => item.startsWith(ops.fieldName)
     )[0].split(':')[1];
     return x
@@ -162,8 +162,8 @@ function reader (fii) {
   const flatten = arr => [].concat.apply([], arr);
 
   const flattenMatch = result => result.map(x => {
-    x.match = flatten(x.match); // flatten
-    x.match = flatten(x.match); // flatten again
+    x._match = flatten(x._match); // flatten
+    x._match = flatten(x._match); // flatten again
     return x
   });
 
@@ -187,12 +187,9 @@ function reader (fii) {
       }, requestedDocs[i]))))
     ));
 
-  const AND = (...keys) => {
-    console.log(keys);
-    return fii.AND(
-      ...keys.map(GET)
-    ).then(flattenMatch)
-  };
+  const AND = (...keys) => fii.AND(
+    ...keys.map(GET)
+  ).then(flattenMatch);
 
   const SEARCH = (...q) => AND(...q)
     .then(resultSet => TFIDF({

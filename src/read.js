@@ -4,8 +4,8 @@ export default function (fii) {
   const flatten = arr => [].concat.apply([], arr)
 
   const flattenMatch = result => result.map(x => {
-    x.match = flatten(x.match) // flatten
-    x.match = flatten(x.match) // flatten again
+    x._match = flatten(x._match) // flatten
+    x._match = flatten(x._match) // flatten again
     return x
   })
 
@@ -29,12 +29,9 @@ export default function (fii) {
       }, requestedDocs[i]))))
     ))
 
-  const AND = (...keys) => {
-    console.log(keys)
-    return fii.AND(
-      ...keys.map(GET)
-    ).then(flattenMatch)
-  }
+  const AND = (...keys) => fii.AND(
+    ...keys.map(GET)
+  ).then(flattenMatch)
 
   const SEARCH = (...q) => AND(...q)
     .then(resultSet => TFIDF({
