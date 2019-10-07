@@ -46,11 +46,9 @@ test('create a fii with memdown', t => {
     valueEncoding: 'json'
   }), (err, store) => {
     t.error(err)
-    db = si({
+    si({
       fii: fii({ store: store })
-    })
-//    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
-    db.PUT(data).then(() => {
+    }).then(db => db.PUT(data).then(() => {
       t.pass('ok')
     }).then(() => {
       db.SEARCH(
@@ -60,7 +58,7 @@ test('create a fii with memdown', t => {
       ).then(res => {
         t.looseEqual(res, [
           {
-            '_id': 'b',
+            _id: 'b',
             // how about "match"
             'match': [
               'body.text.cool:0.17',
@@ -68,10 +66,11 @@ test('create a fii with memdown', t => {
               'body.text.bananas:0.17'
             ],
             'score': 0.71,
-            'obj': data[1]
+            _doc: data[1]
           }
         ])
       })
-    })
+    }))
+    
   })
 })

@@ -180,15 +180,12 @@ function reader (fii) {
     ks.on('end', () => resolve(Array.from(dict).sort()));
   });
 
-  const DOCUMENTS = hits => new Promise(
-    (resolve) =>
-      fii.OBJECT(hits).then(
-        documents => resolve(hits.map((hit, i) => {
-          hit.obj = documents[i]['!doc'];
-          return hit
-        }))
-      )
-  );
+  const DOCUMENTS = requestedDocs => new Promise(
+    resolve => fii.OBJECT(requestedDocs).then(
+      retrievedDocs => resolve(requestedDocs.map((hit, i) => (Object.assign({
+        _doc: retrievedDocs[i] ? retrievedDocs[i]['!doc'] : null
+      }, requestedDocs[i]))))
+    ));
 
   const AND = (...keys) => {
     console.log(keys);
@@ -313,29 +310,13 @@ const makeASearchIndex = idx => {
   }
 };
 
-// export default function (ops, callback) {
-//   // if no callback then return lazy load
-//   if (!callback) {
-//     const idx = ops.fii || fii(ops)
-//     // lazy calibration
-//     util(idx).calibrate()
-//     return makeASearchIndex(idx)
-//   } else {
-//     fii(ops, (err, idx) => {
-//       util(idx).calibrate()
-//         .then(() => callback(err, makeASearchIndex(idx)))
-//     })
-//   }
-// }
-
-
 function main (ops) {
   return new Promise((resolve, reject) => {
     fii(ops, (err, idx) => {
       if (err) return reject(err)
       resolve(util(idx).calibrate()
         .then(() => {
-          return makeASearchIndex(idx)          
+          return makeASearchIndex(idx)
         }));
     });
   })

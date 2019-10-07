@@ -2,6 +2,7 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
+const indexName = 'indexing-test-2'
 const sandbox = 'test/sandbox/'
 
 const data = [
@@ -37,19 +38,18 @@ const data = [
   }
 ]
 
+
 test('create a search index', t => {
   t.plan(1)
-  si({
-    name: sandbox + 'indexing-test'
-  }, (err, idx) => {
-    global.idx = idx
-    t.error(err)
+  si({ name: indexName }).then(db => {
+    global[indexName] = db    
+    t.pass('ok')
   })
 })
 
 test('can add some data', t => {
   t.plan(1)
-  idx.PUT(data).then(() => {
+  global[indexName].PUT(data).then(() => {
     t.pass('ok')
   })
 })
@@ -62,7 +62,7 @@ test('check that arrays were properly indexed', t => {
     { key: 'band.paul:0.25', value: [ 'a', 'b', 'c' ] },
     { key: 'band.ringo:0.25', value: [ 'a', 'b', 'c' ] }
   ]
-  idx.INDEX.STORE.createReadStream({
+  global[indexName].INDEX.STORE.createReadStream({
     gte: 'band!',
     lte: 'band~'
   }).on('data', data => t.looseEqual(data, band.shift()))

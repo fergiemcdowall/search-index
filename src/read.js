@@ -22,15 +22,12 @@ export default function (fii) {
     ks.on('end', () => resolve(Array.from(dict).sort()))
   })
 
-  const DOCUMENTS = hits => new Promise(
-    (resolve) =>
-      fii.OBJECT(hits).then(
-        documents => resolve(hits.map((hit, i) => {
-          hit.obj = documents[i]['!doc']
-          return hit
-        }))
-      )
-  )
+  const DOCUMENTS = requestedDocs => new Promise(
+    resolve => fii.OBJECT(requestedDocs).then(
+      retrievedDocs => resolve(requestedDocs.map((hit, i) => (Object.assign({
+        _doc: retrievedDocs[i] ? retrievedDocs[i]['!doc'] : null
+      }, requestedDocs[i]))))
+    ))
 
   const AND = (...keys) => {
     console.log(keys)

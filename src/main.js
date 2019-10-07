@@ -35,7 +35,7 @@ export default function (ops) {
       if (err) return reject(err)
       resolve(util(idx).calibrate()
         .then(() => {
-          return makeASearchIndex(idx)          
+          return makeASearchIndex(idx)
         }))
     })
   })

@@ -36,13 +36,10 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  global[indexName] = si({ name: indexName })
-  t.pass('ok')
-})
-
-test('give lazy loading some time to complete', t => {
-  t.plan(1)
-  setTimeout(t.pass, 500)
+  si({ name: indexName }).then(db => {
+    global[indexName] = db    
+    t.pass('ok')
+  })
 })
 
 test('can add some worldbank data', t => {
@@ -123,4 +120,45 @@ test('verify DELETE', t => {
   global[indexName].INDEX.STORE.createReadStream()
     .on('data', d => indexStructure.push(d))
     .on('end', () => t.looseEquals(indexStructure, expectedIndexStructure))
+})
+
+
+test('verify DELETE using DOCUMENTS', t => {
+  t.plan(1)
+  global[indexName].DOCUMENTS([
+    {_id:'a'},
+    {_id:'b'},
+    {_id:'c'}
+  ]).then(docs => {
+    t.looseEqual(docs, [
+      {
+        "_id": "a",
+        "_doc": {
+          "_id": "a",
+          "title": "quite a cool document",
+          "body": {
+            "text": "this document is really cool cool cool",
+            "metadata": "coolness documentness"
+          },
+          "importantNumber": 5000
+        }
+      },
+      {
+        "_id": "b",
+        "_doc": null
+      },
+      {
+        "_id": "c",
+        "_doc": {
+          "_id": "c",
+          "title": "something different",
+          "body": {
+            "text": "something totally different",
+            "metadata": "coolness documentness"
+          },
+          "importantNumber": 200
+        }
+      }
+    ])
+  })
 })

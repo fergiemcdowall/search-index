@@ -2,6 +2,7 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
+const indexName = 'indexing-test'
 const sandbox = 'test/sandbox/'
 
 const data = [
@@ -36,17 +37,15 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si({
-    name: sandbox + 'simple-test'
-  }, (err, idx) => {
-    global.idx = idx
-    t.error(err)
+  si({ name: indexName }).then(db => {
+    global[indexName] = db    
+    t.pass('ok')
   })
 })
 
 test('can add some data', t => {
   t.plan(1)
-  idx.PUT(data).then(() => {
+  global[indexName].PUT(data).then(() => {
     t.pass('ok')
   })
 })
@@ -54,7 +53,7 @@ test('can add some data', t => {
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
-  idx.SEARCH(
+  global[indexName].SEARCH(
     'body.text:cool',
     'body.text:really',
     'body.text:bananas'
@@ -68,7 +67,7 @@ test('can search', t => {
           'body.text.bananas:0.17'
         ],
         'score': 0.71,
-        'obj': data[1]
+        _doc: data[1]
       }
     ])
   })
@@ -77,7 +76,7 @@ test('can search', t => {
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
-  idx.read({SEARCH:[
+  global[indexName].read({SEARCH:[
     'body.text:cool',
     'body.text:really',
     'body.text:bananas'
@@ -91,7 +90,7 @@ test('can search', t => {
           'body.text.bananas:0.17'
         ],
         'score': 0.71,
-        'obj': data[1]
+        _doc: data[1]
       }
     ])
   })
@@ -100,7 +99,7 @@ test('can search', t => {
 
 test('can search in any field', t => {
   t.plan(1)
-  idx.SEARCH(
+  global[indexName].SEARCH(
     'cool',
     'really',
     'bananas'
@@ -114,7 +113,7 @@ test('can search in any field', t => {
           'body.text.bananas:0.17'
         ],
         score: 1.05,
-        obj: data[1]
+        _doc: data[1]
       }
     ])
   })
@@ -122,7 +121,7 @@ test('can search in any field', t => {
 
 test('can do 0-hit', t => {
   t.plan(1)
-  idx.SEARCH(
+  global[indexName].SEARCH(
     'cool',
     'really',
     'sdasdadsasd',
@@ -134,7 +133,7 @@ test('can do 0-hit', t => {
 
 test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
-  idx.SEARCH(
+  global[indexName].SEARCH(
     'title:cool',
     'body.metadata:documentness'
   ).then(res => {
@@ -146,7 +145,7 @@ test('can do a mixture of fielded search and any-field search', t => {
           'body.metadata.documentness:0.50'
         ],
         'score': 0.52,
-        'obj': data[0]
+        _doc: data[0]
       },
       {
         '_id': 'b',
@@ -155,7 +154,7 @@ test('can do a mixture of fielded search and any-field search', t => {
           'body.metadata.documentness:0.50'
         ],
         'score': 0.52,
-        'obj': data[1]
+        _doc: data[1]
       }
     ])
   })
@@ -163,33 +162,33 @@ test('can do a mixture of fielded search and any-field search', t => {
 
 test('can search by numeric value', t => {
   t.plan(1)
-  idx.AND(
+  global[indexName].AND(
     'importantNumber:*'
   ).then(
-    resultSet => idx.SCORENUMERIC({
+    resultSet => global[indexName].SCORENUMERIC({
       resultSet: resultSet,
       fieldName: 'importantNumber',
       sort: (a, b) => b.score - a.score,
       offset: 0,
       limit: 10
     })
-  ).then(idx.DOCUMENTS)
+  ).then(global[indexName].DOCUMENTS)
    .then(res => {
      t.looseEqual(res, [
        { _id: 'a',
          match: [ 'importantNumber.5000:5000' ],
          score: 5000,
-         obj: data[0]
+         _doc: data[0]
        },
        { _id: 'b',
          match: [ 'importantNumber.500:500' ],
          score: 500,
-         obj: data[1]
+         _doc: data[1]
        },
        { _id: 'c',
          match: [ 'importantNumber.200:200' ],
          score: 200,
-         obj: data[2]
+         _doc: data[2]
        }
      ])
    })
@@ -198,7 +197,7 @@ test('can search by numeric value', t => {
 // OR-ing
 test('can search by numeric value and OR', t => {
   t.plan(1)
-  idx.OR(
+  global[indexName].OR(
     'importantNumber:200',
     'importantNumber:5000'
   ).then(res => t.looseEqual(res, [
@@ -216,7 +215,7 @@ test('can search by numeric value and OR', t => {
 // OR-ing
 test('can search by numeric value and OR with one term on any field', t => {
   t.plan(1)
-  idx.OR(
+  global[indexName].OR(
     '200',
     'importantNumber:5000'
   ).then(res => t.looseEqual(res, [
@@ -233,7 +232,7 @@ test('can search by numeric value and OR with one term on any field', t => {
 
 test('can GET', t => {
   t.plan(1)
-  idx.GET(
+  global[indexName].GET(
     'body.text:cool'
   ).then(res => t.looseEqual(res, [
     {
@@ -247,7 +246,7 @@ test('can GET', t => {
 
 test('can GET with no field specified', t => {
   t.plan(1)
-  idx.GET(
+  global[indexName].GET(
     'cool'
   ).then(res => {
     t.looseEqual(res, [
@@ -271,7 +270,7 @@ test('can GET with no field specified', t => {
 
 test('can AND', t => {
   t.plan(1)
-  idx.AND(
+  global[indexName].AND(
     'title:quite',
     'body.metadata:coolness'
   ).then(res => {
@@ -296,8 +295,8 @@ test('can AND', t => {
 
 test('can AND with embedded OR', t => {
   t.plan(1)
-  idx.AND(
-    idx.OR('title:quite', 'body.text:different'),
+  global[indexName].AND(
+    global[indexName].OR('title:quite', 'body.text:different'),
     'body.metadata:coolness'
   ).then(res => {
     t.looseEqual(res, [
@@ -328,10 +327,10 @@ test('can AND with embedded OR', t => {
 
 test('can AND with embedded OR and embedded AND', t => {
   t.plan(1)
-  idx.AND(
-    idx.OR(
+  global[indexName].AND(
+    global[indexName].OR(
       'title:quite',
-      idx.AND(
+      global[indexName].AND(
         'body.text:totally',
         'body.text:different'
       )
@@ -367,7 +366,7 @@ test('can AND with embedded OR and embedded AND', t => {
 
 test('can NOT', t => {
   t.plan(1)
-  idx.NOT(
+  global[indexName].NOT(
     'cool',
     'bananas'
   ).then(res => {
@@ -385,7 +384,7 @@ test('can NOT', t => {
 
 test('can OR', t => {
   t.plan(1)
-  idx.OR('body.text:bananas', 'body.text:different')
+  global[indexName].OR('body.text:bananas', 'body.text:different')
    .then(res => {
      t.looseEqual(res, [
        {
@@ -405,9 +404,9 @@ test('can OR', t => {
 
 test('AND with embedded OR', t => {
   t.plan(1)
-  idx.AND(
+  global[indexName].AND(
     'bananas',
-    idx.OR('body.text:cool', 'body.text:coolness')
+    global[indexName].OR('body.text:cool', 'body.text:coolness')
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b', match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
@@ -417,7 +416,7 @@ test('AND with embedded OR', t => {
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  idx.read({
+  global[indexName].read({
     AND:['bananas']
   }).then(res => {
     t.looseEqual(res, [
@@ -428,7 +427,7 @@ test('AND with embedded OR (JSON API)', t => {
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  idx.read({
+  global[indexName].read({
     AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
   }).then(res => {
     t.looseEqual(res, [
@@ -440,14 +439,14 @@ test('AND with embedded OR (JSON API)', t => {
 
 test('DOCUMENT (JSON API)', t => {
   t.plan(1)
-  idx.read({
+  global[indexName].read({
     DOCUMENTS:[{_id:'b'}, {_id:'a'}]
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', obj: { _id: 'b', title: 'quite a cool document', body: {
+      { _id: 'b', _doc: { _id: 'b', title: 'quite a cool document', body: {
         text: 'this document is really cool bananas', metadata: 'coolness documentness'
       }, importantNumber: 500 } },
-      { _id: 'a', obj: { _id: 'a', title: 'quite a cool document', body: {
+      { _id: 'a', _doc: { _id: 'a', title: 'quite a cool document', body: {
         text: 'this document is really cool cool cool', metadata: 'coolness documentness'
       }, importantNumber: 5000 } }
     ])
@@ -457,9 +456,9 @@ test('DOCUMENT (JSON API)', t => {
 
 test('AND with embedded OR (THENable JSON API)', t => {
   t.plan(1)
-  idx.read('bananas', { DOCUMENTS: true }).then(res => {
+  global[indexName].read('bananas', { DOCUMENTS: true }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', match: [ 'body.text.bananas:0.17' ], obj: {
+      { _id: 'b', match: [ 'body.text.bananas:0.17' ], _doc: {
         _id: 'b', title: 'quite a cool document', body: {
           text: 'this document is really cool bananas', metadata: 'coolness documentness'
         }, importantNumber: 500 }
@@ -472,9 +471,9 @@ test('AND with embedded OR (THENable JSON API)', t => {
 
 test('AND with embedded OR', t => {
   t.plan(1)
-  idx.AND(
-    idx.OR('bananas', 'different'),
-    idx.OR('cool', 'coolness')
+  global[indexName].AND(
+    global[indexName].OR('bananas', 'different'),
+    global[indexName].OR('cool', 'coolness')
   ).then(res => {
     t.looseEqual(res, [
       { _id: 'b',
@@ -496,8 +495,8 @@ test('AND with embedded OR', t => {
 
 // test('SEARCH with embedded OR', t => {
 //   t.plan(1)
-//   idx.SEARCH(
-//     idx.OR('bananas', 'different'),
+//   global[indexName].SEARCH(
+//     global[indexName].OR('bananas', 'different'),
 //     'coolness'
 //   ).then(res => {
 //     t.looseEqual(res, [
@@ -526,7 +525,7 @@ test('AND with embedded OR', t => {
 
 test('DICTIONARY with specified field', t => {
   t.plan(1)
-  idx.DICTIONARY('body.text').then(res => {
+  global[indexName].DICTIONARY('body.text').then(res => {
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -543,7 +542,7 @@ test('DICTIONARY with specified field', t => {
 
 test('DICTIONARY with specified field (JSON API)', t => {
   t.plan(1)
-  idx.DICTIONARY('body.text').then(res => {
+  global[indexName].DICTIONARY('body.text').then(res => {
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -561,7 +560,7 @@ test('DICTIONARY with specified field (JSON API)', t => {
 
 test('DICTIONARY with gte lte', t => {
   t.plan(1)
-  idx.DICTIONARY({
+  global[indexName].DICTIONARY({
     gte: 'body.text.d',
     lte: 'body.text.r'
   }).then(res => {
@@ -577,7 +576,7 @@ test('DICTIONARY with gte lte', t => {
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
-  idx.DICTIONARY().then(res => {
+  global[indexName].DICTIONARY().then(res => {
     //    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       '200',
@@ -603,7 +602,7 @@ test('DICTIONARY without specified field', t => {
 test('DICTIONARY without specified field', t => {
   t.plan(1)
 
-  const { DICTIONARY } = idx
+  const { DICTIONARY } = global[indexName]
   
   DICTIONARY().then(res => {
     //    console.log(JSON.stringify(res, null, 2))

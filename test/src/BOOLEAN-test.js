@@ -5,15 +5,12 @@ import wbd from 'world-bank-dataset'
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'BOOLEAN'
 
-test('create a little world bank index', t => {
+test('create a search index', t => {
   t.plan(1)
-  global[indexName] = si({ name: indexName })
-  t.ok('loaded')
-})
-
-test('give lazy loading some time to complete', t => {
-  t.plan(1)
-  setTimeout(t.pass, 500)
+  si({ name: indexName }).then(db => {
+    global[indexName] = db    
+    t.pass('ok')
+  })
 })
 
 test('can add some worldbank data', t => {
