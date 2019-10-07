@@ -19,10 +19,13 @@
     }
   ])
 
-  await db.DOCUMENTS([{_id: '3'}]).then(console.log)
+  console.log('\nADDING ->')
+  await db.read({ DOCUMENTS: [{ _id: '3' }]}).then(console.log)
   
+  console.log('\nDELETING ->')
   await db.DELETE(['3']).then(console.log)
 
-  await db.DOCUMENTS([{_id: '3'}]).then(console.log)
+  console.log('\nCONFIRM DELETE ->')
+  await db.read({ DOCUMENTS: [{ _id: '3' }]}).then(console.log)
   
 })()
