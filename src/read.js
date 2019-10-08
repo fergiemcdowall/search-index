@@ -46,15 +46,12 @@ export default function (fii) {
   ).then(flattenMatch)
 
   // NOT
-  const SET_DIFFERENCE = (a, b) => {
-    if (typeof a === 'string') a = GET(a)
-    if (typeof b === 'string') b = GET(b)
-    return Promise.all([a, b]).then(result => {
-      let [ a, b ] = result
-      b = b.map(item => item._id)
-      return a.filter(item => b.indexOf(item._id) === -1)
-    })
-  }
+  const SET_DIFFERENCE = (a, b) => Promise.all([
+    (typeof a === 'string') ? GET(a) : a,
+    (typeof b === 'string') ? GET(b) : b
+  ]).then(([a, b]) => a.filter(
+    aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
+  )
 
   const GET = clause => {
     // could be a nested AND/OR/something else
@@ -75,10 +72,9 @@ export default function (fii) {
   })
 
   // TODO: Tests for JSON nesting and JSON .then-ing
-  // TODO: JSON NOT
+  // This function reads queries in a JSON format and then translates them to
+  // Promises
   const parseJsonQuery = (...q) => {
-    // Separate the first promise in the chain to be used as the start point in .reduce
-    var start = q.shift()
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return GET(command)
@@ -97,13 +93,19 @@ export default function (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) return SET_DIFFERENCE(command.NOT.include, command.NOT.exclude)
+      if (command.NOT) {
+        return SET_DIFFERENCE(
+          promisifyQuery(command.NOT.include),
+          promisifyQuery(command.NOT.exclude)
+        )
+      }
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     }
     // Turn the array of commands into a chain of promises
     return q.reduce((acc, cur) => acc.then(
       result => promisifyQuery(cur, result)
-    ), promisifyQuery(start))
+    ), promisifyQuery(q.shift())) // <- Separate the first promise in the chain
+    //    to be used as the start point in .reduce
   }
 
   return {

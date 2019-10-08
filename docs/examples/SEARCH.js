@@ -35,17 +35,15 @@
   ).then(console.log)
 
 
-  
-  console.log('\nSEARCH-ing with negation->')
+  console.log('\nSEARCH-ing with negation ->')
   await db.read(
     {
       NOT: {
-        include: {SEARCH: 'The'},
-        exclude: {SEARCH: 'Beatles'}
+        include: {SEARCH: ['The']},
+        exclude: {SEARCH: ['Beatles']}
       }
     }
   ).then(console.log)
-
 
   
 })()
