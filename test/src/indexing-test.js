@@ -525,7 +525,8 @@ test('AND with embedded OR', t => {
 
 test('DICTIONARY with specified field', t => {
   t.plan(1)
-  global[indexName].DICTIONARY('body.text').then(res => {
+  //  global[indexName].DICTIONARY('body.text').then(res => {
+  global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -542,7 +543,7 @@ test('DICTIONARY with specified field', t => {
 
 test('DICTIONARY with specified field (JSON API)', t => {
   t.plan(1)
-  global[indexName].DICTIONARY('body.text').then(res => {
+  global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
     t.looseEqual(res, [
       'bananas',
       'cool',
@@ -561,8 +562,9 @@ test('DICTIONARY with specified field (JSON API)', t => {
 test('DICTIONARY with gte lte', t => {
   t.plan(1)
   global[indexName].DICTIONARY({
-    gte: 'body.text.d',
-    lte: 'body.text.r'
+    gte: 'd',
+    lte: 'r',
+    fields: ['body.text']
   }).then(res => {
     t.looseEqual(res, [
       'different',

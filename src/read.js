@@ -1,4 +1,5 @@
 import { TFIDF, numericField } from './scorers.js'
+import { getAvailableFields, getRange } from './indexUtils.js'
 
 export default function (fii) {
   const flatten = arr => [].concat.apply([], arr)
@@ -10,16 +11,29 @@ export default function (fii) {
   })
 
   const DICTIONARY = q => new Promise((resolve) => {
-    const dict = new Set()
     // if query is string convert to object
-    if (typeof q === 'string') q = { gte: q, lte: q + '￮' }
     // if no query, make empty query
-    else q = Object.assign({ gte: '', lte: '￮' }, q)
+    q = Object.assign(
+      { gte: '', lte: '￮' },
+      (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
+    )
+
     // append separator if not there already
     q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮'
-    const ks = fii.STORE.createKeyStream(q)
-    ks.on('data', d => dict.add(d.split(':')[0].split('.').pop()))
-    ks.on('end', () => resolve(Array.from(dict).sort()))
+
+    return resolve(
+      new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
+        .then(fields => Promise.all(
+          fields.map(field => getRange(fii, {
+            gte: field + '.' + q.gte,
+            lte: field + '.' + q.lte + '￮'
+          }))
+        ))
+        .then(flatten)
+        .then(tokens => tokens.map(t => t.split(':')[0].split('.').pop()))
+        .then(tokens => tokens.sort())
+        .then(tokens => [...new Set(tokens)])
+    )
   })
 
   const DOCUMENTS = requestedDocs => new Promise(
