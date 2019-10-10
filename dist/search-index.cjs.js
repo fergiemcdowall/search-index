@@ -188,18 +188,13 @@ function reader (fii) {
   });
 
   const DICTIONARY = q => new Promise((resolve) => {
-    // // if query is string convert to object
-    // if (typeof q === 'string') q = { gte: q, lte: q + '￮' }
-    // // if no query, make empty query
-    // else q = Object.assign({ gte: '', lte: '￮' }, q)
-
+    // if query is string convert to object
+    // if no query, make empty query
     q = Object.assign(
       { gte: '', lte: '￮' },
       (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
     );
 
-    // append separator if not there already
-    q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮';
     return resolve(
       new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
         .then(fields => Promise.all(

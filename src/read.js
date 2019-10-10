@@ -18,9 +18,6 @@ export default function (fii) {
       (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
     )
 
-    // append separator if not there already
-    q.lte = (q.lte.substr(-1) === '￮') ? q.lte : q.lte + '￮'
-
     return resolve(
       new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
         .then(fields => Promise.all(
