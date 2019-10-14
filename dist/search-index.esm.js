@@ -262,6 +262,10 @@ function reader (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return GET(command)
+      if (command.ALL) return Promise.all(
+        // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
+        command.ALL.map(item => promisifyQuery(item))
+      )
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         return fii.BUCKETFILTER(
