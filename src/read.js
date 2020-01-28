@@ -64,16 +64,17 @@ export default function (fii) {
     aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
   )
 
-  const GET = clause => {
-    // could be a nested AND/OR/something else
-    if (clause instanceof Promise) return clause
-    // ELSE wildcard (*) search
-    if (clause.slice(-2) === ':*') return fii.GET(clause.replace(':*', '.'))
-    // ELSE a clause with a specified field ("<fieldpath>:clause")
-    if (clause.indexOf(':') > -1) return fii.GET(clause.replace(':', '.') + ':')
-    // ELSE a clause without specified field ("clause")
-    return OR(...global.searchableFields.map(f => f + ':' + clause))
-  }
+  // const GET = clause => {
+  //   return fii.GET(clause)
+  //   // could be a nested AND/OR/something else
+  //   if (clause instanceof Promise) return clause
+  //   // ELSE wildcard (*) search
+  //   if (clause.slice(-2) === ':*') return fii.GET(clause.replace(':*', '.'))
+  //   // ELSE a clause with a specified field ("<fieldpath>:clause")
+  //   if (clause.indexOf(':') > -1) return fii.GET(clause.replace(':', '.') + ':')
+  //   // ELSE a clause without specified field ("clause")
+  //   return OR(...global.searchableFields.map(f => f + ':' + clause))
+  // }
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => {
     return [...result.reduce((acc, cur) => {
@@ -130,7 +131,7 @@ export default function (fii) {
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
-    GET: GET,
+    GET: fii.GET,
     OR: OR,
     SCORENUMERIC: numericField,
     SCORETFIDF: TFIDF,

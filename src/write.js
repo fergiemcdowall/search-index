@@ -15,7 +15,9 @@ export default function (fii) {
   // traverse object, tokenising all leaves (strings to array) and then
   // scoring them
   const traverseObject = obj => Object.entries(obj).reduce((acc, cur) => {  
-    if (Array.isArray(cur[1])) {
+    if (cur[0] == '_id') {
+      acc[cur[0]] = cur[1]  // return _id "as is"
+    } else if (Array.isArray(cur[1])) {
       // split up cur[1] into an array or strings and an array of
       // other things. Then term-vectorize strings and recursively
       // process other things.
