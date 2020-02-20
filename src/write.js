@@ -4,6 +4,15 @@ import tv from 'term-vector'
 
 export default function (fii) {
 
+  const incrementDocCount = increment => fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).then(
+    count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count + increment)
+  ).catch(
+    // if not found assume value to be 0
+    e => fii.STORE.put('￮DOCUMENT_COUNT￮', increment)
+  )
+  
   const scoreArrayTFIDF = arr => {
     const v = tv(arr)
     const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)
@@ -40,7 +49,12 @@ export default function (fii) {
     return acc
   }, {})
 
-  const PUT = docs => fii.PUT(docs.map(traverseObject))
+  const PUT = docs => fii.PUT(
+    docs.map(traverseObject)).then(documentVector => {
+      // globally set docVec length
+      D = documentVector.length + D
+      return incrementDocCount(documentVector.length).then(() => documentVector)
+    })
 
   return {
     // TODO: surely this can be DELETE: fii.DELETE?

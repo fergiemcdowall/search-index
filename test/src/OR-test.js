@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'AND'
+const indexName = sandbox + 'OR'
 
 test('create a search index', t => {
   t.plan(1)
@@ -136,7 +136,7 @@ test('simple OR with 2 clauses (embedded AND)', t => {
   t.plan(1)
   OR(
     AND('brand:Volvo', 'manufacturer:Tesla'),
-    OR('make:BMW')
+    'make:BMW'
   ).then(res => {
     t.looseEqual(res, [
       { _id: '1', _match: [ 'make:BMW#1.00' ] },

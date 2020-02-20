@@ -1,5 +1,9 @@
 import { TFIDF, numericField } from './scorers.js'
-import { getAvailableFields, getRange } from './indexUtils.js'
+import {
+  getAvailableFields,
+  getRange,
+  getDocCount
+} from './indexUtils.js'
 
 export default function (fii) {
   const flatten = arr => [].concat.apply([], arr)
@@ -45,12 +49,13 @@ export default function (fii) {
   ).then(flattenMatch)
 
   const SEARCH = (...q) => AND(...q)
-    .then(resultSet => TFIDF({
+    .then(resultSet => getDocCount(fii).then(count => TFIDF({
+      D: count,
       resultSet: resultSet,
       offset: 0,
       limit: 10
-    }))
-    .then(resultSet => DOCUMENTS(resultSet))
+    })))
+// ?    .then(resultSet => DOCUMENTS(resultSet))
 
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))
@@ -63,18 +68,6 @@ export default function (fii) {
   ]).then(([a, b]) => a.filter(
     aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
   )
-
-  // const GET = clause => {
-  //   return fii.GET(clause)
-  //   // could be a nested AND/OR/something else
-  //   if (clause instanceof Promise) return clause
-  //   // ELSE wildcard (*) search
-  //   if (clause.slice(-2) === ':*') return fii.GET(clause.replace(':*', '.'))
-  //   // ELSE a clause with a specified field ("<fieldpath>:clause")
-  //   if (clause.indexOf(':') > -1) return fii.GET(clause.replace(':', '.') + ':')
-  //   // ELSE a clause without specified field ("clause")
-  //   return OR(...global.searchableFields.map(f => f + ':' + clause))
-  // }
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => {
     return [...result.reduce((acc, cur) => {

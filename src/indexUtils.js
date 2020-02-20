@@ -13,3 +13,12 @@ export function getRange (fii, q) {
       .on('end', () => resolve(data))
   })
 }
+
+export function getDocCount (fii) {
+  return fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).catch(
+    // if not found assume value to be 0
+    e => 0
+  )
+}

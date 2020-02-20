@@ -40,6 +40,15 @@ function util (fii) {
 
 function writer (fii) {
 
+  const incrementDocCount = increment => fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).then(
+    count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count + increment)
+  ).catch(
+    // if not found assume value to be 0
+    e => fii.STORE.put('￮DOCUMENT_COUNT￮', increment)
+  );
+  
   const scoreArrayTFIDF = arr => {
     const v = tv(arr);
     const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0);
@@ -76,7 +85,12 @@ function writer (fii) {
     return acc
   }, {});
 
-  const PUT = docs => fii.PUT(docs.map(traverseObject));
+  const PUT = docs => fii.PUT(
+    docs.map(traverseObject)).then(documentVector => {
+      // globally set docVec length
+      D = documentVector.length + D;
+      return incrementDocCount(documentVector.length).then(() => documentVector)
+    });
 
   return {
     // TODO: surely this can be DELETE: fii.DELETE?
@@ -88,9 +102,9 @@ function writer (fii) {
 // TODO: put in some defaults
 function TFIDF (ops) {
   const calculateScore = (x, _, resultSet) => {
-    const idf = Math.log((global.D + 1) / resultSet.length);
+    const idf = Math.log((ops.D + 1) / resultSet.length);
     x._score = +x._match.reduce(
-      (acc, cur) => acc + idf * +cur.split(':')[1], 0
+      (acc, cur) => acc + idf * +cur.split('#')[1], 0
     ).toFixed(2); // TODO: make precision an option
     return x
   };
@@ -134,6 +148,15 @@ function getRange (fii, q) {
       .on('data', d => data.push(d))
       .on('end', () => resolve(data));
   })
+}
+
+function getDocCount (fii) {
+  return fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).catch(
+    // if not found assume value to be 0
+    e => 0
+  )
 }
 
 function reader (fii) {
@@ -180,12 +203,13 @@ function reader (fii) {
   ).then(flattenMatch);
 
   const SEARCH = (...q) => AND(...q)
-    .then(resultSet => TFIDF({
+    .then(resultSet => getDocCount(fii).then(count => TFIDF({
+      D: count,
       resultSet: resultSet,
       offset: 0,
       limit: 10
-    }))
-    .then(resultSet => DOCUMENTS(resultSet));
+    })));
+// ?    .then(resultSet => DOCUMENTS(resultSet))
 
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))
@@ -198,18 +222,6 @@ function reader (fii) {
   ]).then(([a, b]) => a.filter(
     aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
   );
-
-  // const GET = clause => {
-  //   return fii.GET(clause)
-  //   // could be a nested AND/OR/something else
-  //   if (clause instanceof Promise) return clause
-  //   // ELSE wildcard (*) search
-  //   if (clause.slice(-2) === ':*') return fii.GET(clause.replace(':*', '.'))
-  //   // ELSE a clause with a specified field ("<fieldpath>:clause")
-  //   if (clause.indexOf(':') > -1) return fii.GET(clause.replace(':', '.') + ':')
-  //   // ELSE a clause without specified field ("clause")
-  //   return OR(...global.searchableFields.map(f => f + ':' + clause))
-  // }
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => {
     return [...result.reduce((acc, cur) => {

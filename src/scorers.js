@@ -1,9 +1,9 @@
 // TODO: put in some defaults
 export function TFIDF (ops) {
   const calculateScore = (x, _, resultSet) => {
-    const idf = Math.log((global.D + 1) / resultSet.length)
+    const idf = Math.log((ops.D + 1) / resultSet.length)
     x._score = +x._match.reduce(
-      (acc, cur) => acc + idf * +cur.split(':')[1], 0
+      (acc, cur) => acc + idf * +cur.split('#')[1], 0
     ).toFixed(2) // TODO: make precision an option
     return x
   }
