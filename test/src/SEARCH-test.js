@@ -62,7 +62,7 @@ test('can add data', t => {
 })
 
 
-test('simple OR with 1 clause', t => {
+test('simple SEARCH with 1 clause', t => {
   t.plan(1)
   global[indexName].SEARCH(
     'paul'
@@ -76,3 +76,29 @@ test('simple OR with 1 clause', t => {
     ])
   })
 })
+
+test('simple SEARCH with 2 clauses', t => {
+  t.plan(1)
+  global[indexName].SEARCH(
+    'paul', 'musical'
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '9', _match: [ 'text:paul#0.50', 'text:musical#0.50' ], _score: 2.4 }
+    ])
+  })
+})
+
+test('simple SEARCH with 2 clauses', t => {
+  t.plan(1)
+  global[indexName].SEARCH(
+    'paul', 'and'
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3 },
+      { _id: '3', _match: [ 'text:paul#0.33', 'text:and#0.67' ], _score: 1.3 },
+      { _id: '8', _match: [ 'text:paul#0.25', 'text:and#0.50' ], _score: 0.97 } 
+    ])
+  })
+})
+
+// TODO: work with gluing documents to search results

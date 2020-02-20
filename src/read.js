@@ -1,9 +1,5 @@
 import { TFIDF, numericField } from './scorers.js'
-import {
-  getAvailableFields,
-  getRange,
-  getDocCount
-} from './indexUtils.js'
+import { getAvailableFields, getRange } from './indexUtils.js'
 
 export default function (fii) {
   const flatten = arr => [].concat.apply([], arr)
@@ -49,12 +45,12 @@ export default function (fii) {
   ).then(flattenMatch)
 
   const SEARCH = (...q) => AND(...q)
-    .then(resultSet => getDocCount(fii).then(count => TFIDF({
-      D: count,
+    .then(resultSet => TFIDF({
+      fii: fii,
       resultSet: resultSet,
       offset: 0,
       limit: 10
-    })))
+    }))
 // ?    .then(resultSet => DOCUMENTS(resultSet))
 
   const OR = (...q) => fii.OR(
