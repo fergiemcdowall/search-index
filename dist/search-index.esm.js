@@ -176,7 +176,7 @@ function reader (fii) {
     ));
 
   const AND = (...keys) => fii.AND(
-    ...keys.map(GET)
+    ...keys.map(fii.GET)
   ).then(flattenMatch);
 
   const SEARCH = (...q) => AND(...q)
@@ -188,7 +188,7 @@ function reader (fii) {
     .then(resultSet => DOCUMENTS(resultSet));
 
   const OR = (...q) => fii.OR(
-    ...flatten(q.map(GET))
+    ...flatten(q.map(fii.GET))
   ).then(flattenMatch);
 
   // NOT
