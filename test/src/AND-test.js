@@ -84,12 +84,12 @@ test('can add data', t => {
 test('simple AND with 1 clause', t => {
   t.plan(1)
   global[indexName].AND(
-    'make:Volvo'
+    'make:volvo'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '4', _match: [ 'make:Volvo#1.00' ] },
-      { _id: '5', _match: [ 'make:Volvo#1.00' ] },
-      { _id: '8', _match: [ 'make:Volvo#1.00' ] } 
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] } 
     ])
   })
 })
@@ -97,10 +97,10 @@ test('simple AND with 1 clause', t => {
 test('simple AND with 1 clause', t => {
   t.plan(1)
   global[indexName].AND(
-    'manufacturer:BMW'
+    'manufacturer:bmw'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '8', _match: [ 'manufacturer:BMW#1.00' ] }
+      { _id: '8', _match: [ 'manufacturer:bmw#1.00' ] }
     ])
   })
 })
@@ -108,10 +108,10 @@ test('simple AND with 1 clause', t => {
 test('simple AND with 2 clauses', t => {
   t.plan(1)
   global[indexName].AND(
-    'make:Volvo', 'manufacturer:BMW'
+    'make:volvo', 'manufacturer:bmw'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '8', _match: [ 'make:Volvo#1.00', 'manufacturer:BMW#1.00' ] }
+      { _id: '8', _match: [ 'make:volvo#1.00', 'manufacturer:bmw#1.00' ] }
     ])
   })
 })

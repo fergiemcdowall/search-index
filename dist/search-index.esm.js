@@ -223,8 +223,8 @@ function reader (fii) {
 
   // NOT
   const SET_DIFFERENCE = (a, b) => Promise.all([
-    (typeof a === 'string') ? GET(a) : a,
-    (typeof b === 'string') ? GET(b) : b
+    (typeof a === 'string') ? fii.GET(a) : a,
+    (typeof b === 'string') ? fii.GET(b) : b
   ]).then(([a, b]) => a.filter(
     aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
   );
@@ -260,7 +260,7 @@ function reader (fii) {
       if (command.DISTINCT) return DISTINCT(command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
-      if (command.GET) return GET(command.GET)
+      if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
       if (command.NOT) {
         return SET_DIFFERENCE(
@@ -316,7 +316,8 @@ const makeASearchIndex = idx => {
     SCORENUMERIC: r.SCORENUMERIC,
     SCORETFIDF: r.SCORETFIDF,
     SEARCH: r.SEARCH,
-    read: r.parseJsonQuery
+    //    read: r.parseJsonQuery
+    QUERY: r.parseJsonQuery
   }
 };
 
