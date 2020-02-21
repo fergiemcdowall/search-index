@@ -33,13 +33,10 @@ export default function (fii) {
     )
   })
 
-  const DOCUMENTS = requestedDocs => new Promise(
-    resolve => fii.OBJECT(requestedDocs).then(
-      retrievedDocs => resolve(requestedDocs.map((hit, i) => (Object.assign({
-        _doc: retrievedDocs[i] ? retrievedDocs[i]['!doc'] : null
-      }, requestedDocs[i]))))
-    ))
-
+  const DOCUMENTS = requestedDocs => Promise.all(
+    requestedDocs.map(doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮'))
+  )
+  
   const AND = (...keys) => fii.AND(
     ...keys.map(fii.GET)
   ).then(flattenMatch)
