@@ -2,8 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'SEARCH'
-//const sanitise = str => str.replace(/[^0-9a-z ]/gi, '').toLowerCase()
+const indexName = sandbox + 'DOCUMENTS'
 
 test('create a search index', t => {
   t.plan(1)
@@ -59,46 +58,6 @@ test('can add data', t => {
 
   t.plan(1)
   global[indexName].PUT(data).then(t.pass)
-})
-
-
-test('simple SEARCH with 1 clause', t => {
-  t.plan(1)
-  global[indexName].SEARCH(
-    'paul'
-  ).then(res => {
-    t.looseEqual(res, [
-      { _id: '0', _match: [ 'text:paul#0.50' ], _score: 0.39 },
-      { _id: '4', _match: [ 'text:paul#0.50' ], _score: 0.39 },
-      { _id: '9', _match: [ 'text:paul#0.50' ], _score: 0.39 },
-      { _id: '3', _match: [ 'text:paul#0.33' ], _score: 0.26 },
-      { _id: '8', _match: [ 'text:paul#0.25' ], _score: 0.2 } 
-    ])
-  })
-})
-
-test('simple SEARCH with 2 clauses', t => {
-  t.plan(1)
-  global[indexName].SEARCH(
-    'paul', 'musical'
-  ).then(res => {
-    t.looseEqual(res, [
-      { _id: '9', _match: [ 'text:paul#0.50', 'text:musical#0.50' ], _score: 2.4 }
-    ])
-  })
-})
-
-test('simple SEARCH with 2 clauses', t => {
-  t.plan(1)
-  global[indexName].SEARCH(
-    'paul', 'and'
-  ).then(res => {
-    t.looseEqual(res, [
-      { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3 },
-      { _id: '3', _match: [ 'text:paul#0.33', 'text:and#0.67' ], _score: 1.3 },
-      { _id: '8', _match: [ 'text:paul#0.25', 'text:and#0.50' ], _score: 0.97 } 
-    ])
-  })
 })
 
 test('simple SEARCH with 2 clauses and documents', t => {

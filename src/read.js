@@ -48,7 +48,6 @@ export default function (fii) {
       offset: 0,
       limit: 10
     }))
-// ?    .then(resultSet => DOCUMENTS(resultSet))
 
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))

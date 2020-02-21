@@ -205,14 +205,6 @@ function reader (fii) {
     )
   });
 
-  /* const DOCUMENTS = requestedDocs => new Promise(
-   *   resolve => fii.OBJECT(requestedDocs).then(
-   *     retrievedDocs => resolve(requestedDocs.map((hit, i) => (Object.assign({
-   *       _doc: retrievedDocs[i] ? retrievedDocs[i]['!doc'] : null
-   *     }, requestedDocs[i]))))
-   *   ))
-   */
-
   const DOCUMENTS = requestedDocs => Promise.all(
     requestedDocs.map(doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮'))
   );
@@ -228,7 +220,6 @@ function reader (fii) {
       offset: 0,
       limit: 10
     }));
-// ?    .then(resultSet => DOCUMENTS(resultSet))
 
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))
