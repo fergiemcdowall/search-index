@@ -242,18 +242,16 @@ function reader (fii) {
   const parseJsonQuery = (...q) => {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
-      if (typeof command === 'string') return GET(command)
+      if (typeof command === 'string') return fii.GET(command)
       if (command.ALL) return Promise.all(
         // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
         command.ALL.map(item => promisifyQuery(item))
       )
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
-      if (command.BUCKETFILTER) {
-        return fii.BUCKETFILTER(
-          Promise.all(command.BUCKETFILTER[0].map(promisifyQuery)),
-          parseJsonQuery(command.BUCKETFILTER[1])
-        )
-      }
+      if (command.BUCKETFILTER) return fii.BUCKETFILTER(
+        command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
+        promisifyQuery(command.BUCKETFILTER.FILTER)
+      )
       // feed in preceding results if present (ie if not first promise)
       if (command.BUCKET) return fii.BUCKET(resultFromPreceding || command.BUCKET)
       if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
@@ -274,7 +272,7 @@ function reader (fii) {
     return q.reduce((acc, cur) => acc.then(
       result => promisifyQuery(cur, result)
     ), promisifyQuery(q.shift())) // <- Separate the first promise in the chain
-    //    to be used as the start point in .reduce
+    //                                  to be used as the start point in .reduce
   };
 
   return {
