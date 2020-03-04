@@ -190,12 +190,13 @@ function reader (fii) {
       new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
         .then(fields => Promise.all(
           fields.map(field => getRange(fii, {
-            gte: field + '.' + q.gte,
-            lte: field + '.' + q.lte + '￮'
+            gte: field + ':' + q.gte,
+            lte: field + ':' + q.lte + '￮'
           }))
         ))
         .then(flatten)
-        .then(tokens => tokens.map(t => t.split(':')[0].split('.').pop()))
+//        .then(res => {console.log(res); return res})
+        .then(tokens => tokens.map(t => t.split(':').pop().split('#').shift()))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
     )
@@ -260,12 +261,10 @@ function reader (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) {
-        return SET_DIFFERENCE(
-          promisifyQuery(command.NOT.include),
-          promisifyQuery(command.NOT.exclude)
-        )
-      }
+      if (command.NOT) return SET_DIFFERENCE(
+        promisifyQuery(command.NOT.include),
+        promisifyQuery(command.NOT.exclude)
+      )
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     };
     // Turn the array of commands into a chain of promises

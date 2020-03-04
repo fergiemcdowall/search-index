@@ -22,12 +22,13 @@ export default function (fii) {
       new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
         .then(fields => Promise.all(
           fields.map(field => getRange(fii, {
-            gte: field + '.' + q.gte,
-            lte: field + '.' + q.lte + '￮'
+            gte: field + ':' + q.gte,
+            lte: field + ':' + q.lte + '￮'
           }))
         ))
         .then(flatten)
-        .then(tokens => tokens.map(t => t.split(':')[0].split('.').pop()))
+//        .then(res => {console.log(res); return res})
+        .then(tokens => tokens.map(t => t.split(':').pop().split('#').shift()))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
     )
