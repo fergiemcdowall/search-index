@@ -103,6 +103,23 @@ test('simple BUCKETFILTER', t => {
   })
 })
 
+test('simple BUCKETFILTER, using DICTIONARY', t => {
+  const { BUCKET, GET, DICTIONARY, BUCKETFILTER } = global[indexName]
+  t.plan(1)
+  BUCKETFILTER(
+    [
+      'make:bmw',
+      'make:tesla'
+    ].map(BUCKET),
+    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+  ).then(res => {
+    t.looseEqual(res, [
+      { field: [ 'make' ], value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: [ 'make' ], value: { gte: 'tesla', lte: 'tesla' }, _id: [] }
+    ])
+  })
+})
+
 
 test('simple BUCKETFILTER (JSON)', t => {
   const { QUERY } = global[indexName]
@@ -172,3 +189,5 @@ test('simple BUCKETFILTER (JSON)', t => {
     ])
   })
 })
+
+

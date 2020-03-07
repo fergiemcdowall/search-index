@@ -157,5 +157,33 @@ test('simple DICTIONARY (JSON), multiple fields, gte + lte', t => {
   })
 })
 
+test('simple DICTIONARY (JSON)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DICTIONARY: { fields: ['colour'] }
+  }).then(res => {
+    t.looseEqual(res, [
+      'blue',
+      'red',
+      'yellow'
+    ])
+  })
+})
 
-
+test('simple DICTIONARY (JSON, with fields)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DICTIONARY: {
+      fields: ['colour'],
+      options: { withFieldName: true }
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      'colour:blue',
+      'colour:red',
+      'colour:yellow'
+    ])
+  })
+})

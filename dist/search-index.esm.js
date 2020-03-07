@@ -185,6 +185,11 @@ function reader (fii) {
       { gte: '', lte: '￮' },
       (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
     );
+    
+    // options, defaults
+    q.options = Object.assign({
+      withFieldName:false
+    }, q.options || {});
 
     return resolve(
       new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
@@ -196,7 +201,11 @@ function reader (fii) {
         ))
         .then(flatten)
 //        .then(res => {console.log(res); return res})
-        .then(tokens => tokens.map(t => t.split(':').pop().split('#').shift()))
+        .then(tokens => tokens.map(t => (
+          q.options.withFieldName ?
+          t.split('#').shift() :
+          t.split(':').pop().split('#').shift()
+        )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
     )
