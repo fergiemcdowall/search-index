@@ -71,12 +71,13 @@ export default function (fii) {
     aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
   )
 
-  const DISTINCT = term => fii.DISTINCT(term).then(result => {
-    return [...result.reduce((acc, cur) => {
-      acc.add(cur.split(':')[0])
+  const DISTINCT = term => fii.DISTINCT(term).then(result => [
+    ...result.reduce((acc, cur) => {
+      cur.value = cur.value.split('#')[0]
+      acc.add(JSON.stringify(cur))
       return acc
-    }, new Set())]
-  })
+    }, new Set())
+  ].map(JSON.parse))
 
   // TODO: Tests for JSON nesting and JSON .then-ing
   // This function reads queries in a JSON format and then translates them to
@@ -90,10 +91,21 @@ export default function (fii) {
         command.ALL.map(item => promisifyQuery(item))
       )
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
-      if (command.BUCKETFILTER) return fii.BUCKETFILTER(
-        command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
-        promisifyQuery(command.BUCKETFILTER.FILTER)
-      )
+      if (command.BUCKETFILTER) {
+        if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
+          return fii.BUCKETFILTER(
+            DISTINCT(command.BUCKETFILTER.BUCKETS.DISTINCT)
+              .then(bkts => bkts.map(fii.BUCKET)),
+            promisifyQuery(command.BUCKETFILTER.FILTER)
+          )
+        }
+        else {
+          return fii.BUCKETFILTER(
+            command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
+            promisifyQuery(command.BUCKETFILTER.FILTER)
+          )
+        }
+      }
       // feed in preceding results if present (ie if not first promise)
       if (command.BUCKET) return fii.BUCKET(resultFromPreceding || command.BUCKET)
       if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)

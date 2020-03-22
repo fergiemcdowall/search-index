@@ -91,13 +91,64 @@ test('can add data', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { DICTIONARY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({ fields: ['colour'] }).then(res => {
+  DISTINCT({
+    field: 'colour'
+  }).then(res => {
     t.looseEqual(res, [
-      'blue',
-      'red',
-      'yellow'
+      { field: 'colour', value: 'blue' },
+      { field: 'colour', value: 'red' },
+      { field: 'colour', value: 'yellow' }
+    ])
+  })
+})
+
+
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
+  t.plan(1)
+  DISTINCT({
+    field: 'colour',
+    value: {
+      gte: 'a',
+      lte: 'c'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'colour', value: 'blue' }
+    ])
+  })
+})
+
+
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
+  t.plan(1)
+  DISTINCT({
+    field: 'colour',
+    value: {
+      gte: 'c'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'colour', value: 'red' }, { field: 'colour', value: 'yellow' }
+    ])
+  })
+})
+
+
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
+  t.plan(1)
+  DISTINCT({
+    field: 'colour',
+    value: {
+      lte: 'c'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'colour', value: 'blue' }
     ])
   })
 })

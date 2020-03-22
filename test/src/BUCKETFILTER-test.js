@@ -80,6 +80,29 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
+test('simple BUCKETFILTER (Promise.all)', t => {
+  const { GET, BUCKET, BUCKETFILTER } = global[indexName]
+  t.plan(1)
+  BUCKETFILTER(
+    Promise.all([
+      BUCKET({
+        field: 'make',
+        value: {
+          gte: 'a',
+          lte: 'u'
+        }
+      })
+    ]),
+    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+  ).then(res => {
+    t.looseEqual(res, [
+      {
+        field: 'make', value: { gte: 'a', lte: 'u' }, _id: [ '1', '7', '9' ] 
+      }
+    ])
+  })
+})
+
 test('simple BUCKETFILTER', t => {
   const { GET, BUCKET, BUCKETFILTER } = global[indexName]
   t.plan(1)
@@ -102,24 +125,6 @@ test('simple BUCKETFILTER', t => {
     ])
   })
 })
-
-test('simple BUCKETFILTER, using DICTIONARY', t => {
-  const { BUCKET, GET, DICTIONARY, BUCKETFILTER } = global[indexName]
-  t.plan(1)
-  BUCKETFILTER(
-    [
-      'make:bmw',
-      'make:tesla'
-    ].map(BUCKET),
-    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
-  ).then(res => {
-    t.looseEqual(res, [
-      { field: [ 'make' ], value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
-      { field: [ 'make' ], value: { gte: 'tesla', lte: 'tesla' }, _id: [] }
-    ])
-  })
-})
-
 
 test('simple BUCKETFILTER (JSON)', t => {
   const { QUERY } = global[indexName]
@@ -190,4 +195,130 @@ test('simple BUCKETFILTER (JSON)', t => {
   })
 })
 
+test('simple BUCKETFILTER, using DICTIONARY', t => {
+  const { BUCKET, GET, DICTIONARY, BUCKETFILTER } = global[indexName]
+  t.plan(1)
+  BUCKETFILTER(
+    DICTIONARY({
+      fields: ['make'],
+      gte: 'a',
+      lte: 'u'
+    }).then(dict => dict.map(item => 'make:' + item))
+      .then(dict => dict.map(BUCKET)),
+    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+  ).then(res => {
+    t.looseEqual(res, [
+      { field: [ 'make' ], value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: [ 'make' ], value: { gte: 'tesla', lte: 'tesla' }, _id: [] }
+    ])
+  })
+})
+
+test('simple BUCKETFILTER, using DISTINCT', t => {
+  const { BUCKET, GET, DISTINCT, BUCKETFILTER } = global[indexName]
+  t.plan(1)
+  BUCKETFILTER(
+    DISTINCT({
+      field: 'make',
+      value: {
+        gte: 'a',
+        lte: 'u'
+      }
+    }).then(dict => dict.map(BUCKET)),
+    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+  ).then(res => {
+    t.looseEqual(res, [
+      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] }
+    ])
+  })
+})
+
+test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    BUCKETFILTER: {
+      BUCKETS: {
+        DISTINCT: {
+          field: 'make',
+          value: {
+            gte: 'a',
+            lte: 'u'
+          }
+        }
+      },
+      FILTER: {
+        GET: {
+          field: 'make',
+          value: {
+            gte: 'a',
+            lte: 'c'
+          }
+        }
+      }
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] }      
+    ])
+  })
+})
+
+
+test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    BUCKETFILTER: {
+      BUCKETS: {
+        DISTINCT: {
+          field: 'make',
+          value: {
+            gte: 'a',
+            lte: 'u'
+          }
+        }
+      },
+      FILTER: {
+        GET: {
+          field: 'make',
+          value: 'bmw'
+        }
+      }
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] }      
+    ])
+  })
+})
+
+test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    BUCKETFILTER: {
+      BUCKETS: {
+        DISTINCT: {
+          field: 'make',
+          value: {
+            gte: 'a',
+            lte: 'u'
+          }
+        }
+      },
+      FILTER: {
+        GET: 'make:bmw'
+      }
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] }      
+    ])
+  })
+})
 
