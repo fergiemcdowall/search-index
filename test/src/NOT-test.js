@@ -95,6 +95,22 @@ test('simple NOT', t => {
   })
 })
 
+test('simple NOT', t => {
+  const {AND, NOT} = global[indexName]
+  t.plan(1)
+  NOT(
+    'brand:volvo',
+    'make:bmw'
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '0', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '4', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00' ] }
+    ])
+  })
+})
+
 test('simple NOT with OR clause', t => {
   const {AND, OR, NOT} = global[indexName]
   t.plan(1)
@@ -111,3 +127,18 @@ test('simple NOT with OR clause', t => {
   })
 })
 
+test('simple NOT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    NOT: {
+      INCLUDE: 'make:volvo',
+      EXCLUDE: 'brand:tesla'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] } 
+    ])
+  })
+})

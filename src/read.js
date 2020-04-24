@@ -44,7 +44,11 @@ export default function (fii) {
   })
 
   const DOCUMENTS = requestedDocs => Promise.all(
-    requestedDocs.map(doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮'))
+    requestedDocs.map(
+      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(
+        e => ({ _id: doc._id })
+      )
+    )
   )
   
   const AND = (...keys) => fii.AND(
@@ -62,14 +66,6 @@ export default function (fii) {
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))
   ).then(flattenMatch)
-
-  // NOT
-  const SET_DIFFERENCE = (a, b) => Promise.all([
-    (typeof a === 'string') ? fii.GET(a) : a,
-    (typeof b === 'string') ? fii.GET(b) : b
-  ]).then(([a, b]) => a.filter(
-    aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
-  )
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
@@ -114,9 +110,9 @@ export default function (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) return SET_DIFFERENCE(
-        promisifyQuery(command.NOT.include),
-        promisifyQuery(command.NOT.exclude)
+      if (command.NOT) return fii.SET_SUBTRACTION(
+        promisifyQuery(command.NOT.INCLUDE),
+        promisifyQuery(command.NOT.EXCLUDE)
       )
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     }
@@ -139,7 +135,7 @@ export default function (fii) {
     SCORENUMERIC: numericField,
     SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
-    SET_DIFFERENCE: SET_DIFFERENCE,
+    SET_SUBTRACTION: fii.SET_SUBTRACTION,
     parseJsonQuery: parseJsonQuery
   }
 }

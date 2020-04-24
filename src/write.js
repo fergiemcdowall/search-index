@@ -13,31 +13,37 @@ const scoreArrayTFIDF = arr => {
 // traverse object, tokenising all leaves (strings to array) and then
 // scoring them
 // `ops` is a collection of indexing pipeline options
-const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, cur) => {
+const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
+  fieldName, fieldValue
+]) => {
+  // if fieldname is undefined, ignore and procede to next
+  if (fieldValue === undefined) return acc  
   ops = Object.assign({
     caseSensitive: false
   }, ops || {})
-  if (cur[0] == '_id') {
-    acc[cur[0]] = cur[1]  // return _id "as is"
-  } else if (Array.isArray(cur[1])) {
-    // split up cur[1] into an array or strings and an array of
+  if (fieldName == '_id') {
+    acc[fieldName] = fieldValue  // return _id "as is"
+  } else if (Array.isArray(fieldValue)) {
+    // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively
     // process other things.
     const strings = scoreArrayTFIDF(
-      cur[1].filter(item => typeof item === 'string')
+      fieldValue
+        .filter(item => typeof item === 'string')
+        .map(str => str.toLowerCase())
     )
-    const notStrings = cur[1].filter(
+    const notStrings = fieldValue.filter(
       item => typeof item != 'string'
-    ).map(traverseObject)
-    acc[cur[0]] = strings.concat(notStrings)
+    ).map(createDocumentVector)
+    acc[fieldName] = strings.concat(notStrings)
   }
-  else if (typeof cur[1] === 'object') {
-    acc[cur[0]] = traverseObject(cur[1])
+  else if (typeof fieldValue === 'object') {
+    acc[fieldName] = createDocumentVector(fieldValue)
   }
   else {
-    let str = cur[1].toString().replace(/[^0-9a-z ]/gi, '')
+    let str = fieldValue.toString().replace(/[^0-9a-z ]/gi, '')
     if (!ops.caseSensitive) str = str.toLowerCase()
-    acc[cur[0]] = scoreArrayTFIDF(str.split(' '))
+    acc[fieldName] = scoreArrayTFIDF(str.split(' '))
   }
   return acc
 }, {})
@@ -64,10 +70,31 @@ export default function (fii) {
     )
   )
 
+  const DELETE = _ids => fii.DELETE(_ids).then(
+    result => Promise.all(
+      result.map(
+        r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮')
+      )
+    ).then(
+      result => _ids.map(
+        _id => ({
+          _id: _id,
+          operation: 'DELETE',
+          status: 'OK'
+        })
+      )
+    )
+  )
+
+  const parseJsonUpdate = update => {
+    if (update.DELETE) return DELETE(update.DELETE)
+  }
+  
   return {
-    // TODO: surely this can be DELETE: fii.DELETE?
-    DELETE: (..._ids) => fii.DELETE(..._ids),
-    PUT: PUT
+    // TODO: DELETE should be able to handle errors (_id not found etc.)
+    DELETE: DELETE,
+    PUT: PUT,
+    parseJsonUpdate: parseJsonUpdate
   }
 }
 

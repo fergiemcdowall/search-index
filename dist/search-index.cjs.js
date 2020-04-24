@@ -53,31 +53,37 @@ const scoreArrayTFIDF = arr => {
 // traverse object, tokenising all leaves (strings to array) and then
 // scoring them
 // `ops` is a collection of indexing pipeline options
-const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, cur) => {
+const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
+  fieldName, fieldValue
+]) => {
+  // if fieldname is undefined, ignore and procede to next
+  if (fieldValue === undefined) return acc  
   ops = Object.assign({
     caseSensitive: false
   }, ops || {});
-  if (cur[0] == '_id') {
-    acc[cur[0]] = cur[1];  // return _id "as is"
-  } else if (Array.isArray(cur[1])) {
-    // split up cur[1] into an array or strings and an array of
+  if (fieldName == '_id') {
+    acc[fieldName] = fieldValue;  // return _id "as is"
+  } else if (Array.isArray(fieldValue)) {
+    // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively
     // process other things.
     const strings = scoreArrayTFIDF(
-      cur[1].filter(item => typeof item === 'string')
+      fieldValue
+        .filter(item => typeof item === 'string')
+        .map(str => str.toLowerCase())
     );
-    const notStrings = cur[1].filter(
+    const notStrings = fieldValue.filter(
       item => typeof item != 'string'
-    ).map(traverseObject);
-    acc[cur[0]] = strings.concat(notStrings);
+    ).map(createDocumentVector);
+    acc[fieldName] = strings.concat(notStrings);
   }
-  else if (typeof cur[1] === 'object') {
-    acc[cur[0]] = traverseObject(cur[1]);
+  else if (typeof fieldValue === 'object') {
+    acc[fieldName] = createDocumentVector(fieldValue);
   }
   else {
-    let str = cur[1].toString().replace(/[^0-9a-z ]/gi, '');
+    let str = fieldValue.toString().replace(/[^0-9a-z ]/gi, '');
     if (!ops.caseSensitive) str = str.toLowerCase();
-    acc[cur[0]] = scoreArrayTFIDF(str.split(' '));
+    acc[fieldName] = scoreArrayTFIDF(str.split(' '));
   }
   return acc
 }, {});
@@ -104,10 +110,31 @@ function writer (fii) {
     )
   );
 
+  const DELETE = _ids => fii.DELETE(_ids).then(
+    result => Promise.all(
+      result.map(
+        r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮')
+      )
+    ).then(
+      result => _ids.map(
+        _id => ({
+          _id: _id,
+          operation: 'DELETE',
+          status: 'OK'
+        })
+      )
+    )
+  );
+
+  const parseJsonUpdate = update => {
+    if (update.DELETE) return DELETE(update.DELETE)
+  };
+  
   return {
-    // TODO: surely this can be DELETE: fii.DELETE?
-    DELETE: (..._ids) => fii.DELETE(..._ids),
-    PUT: PUT
+    // TODO: DELETE should be able to handle errors (_id not found etc.)
+    DELETE: DELETE,
+    PUT: PUT,
+    parseJsonUpdate: parseJsonUpdate
   }
 }
 
@@ -216,7 +243,11 @@ function reader (fii) {
   });
 
   const DOCUMENTS = requestedDocs => Promise.all(
-    requestedDocs.map(doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮'))
+    requestedDocs.map(
+      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(
+        e => ({ _id: doc._id })
+      )
+    )
   );
   
   const AND = (...keys) => fii.AND(
@@ -234,14 +265,6 @@ function reader (fii) {
   const OR = (...q) => fii.OR(
     ...flatten(q.map(fii.GET))
   ).then(flattenMatch);
-
-  // NOT
-  const SET_DIFFERENCE = (a, b) => Promise.all([
-    (typeof a === 'string') ? fii.GET(a) : a,
-    (typeof b === 'string') ? fii.GET(b) : b
-  ]).then(([a, b]) => a.filter(
-    aItem => b.map(bItem => bItem._id).indexOf(aItem._id) === -1)
-  );
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
@@ -286,9 +309,9 @@ function reader (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) return SET_DIFFERENCE(
-        promisifyQuery(command.NOT.include),
-        promisifyQuery(command.NOT.exclude)
+      if (command.NOT) return fii.SET_SUBTRACTION(
+        promisifyQuery(command.NOT.INCLUDE),
+        promisifyQuery(command.NOT.EXCLUDE)
       )
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     };
@@ -311,7 +334,7 @@ function reader (fii) {
     SCORENUMERIC: numericField,
     SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
-    SET_DIFFERENCE: SET_DIFFERENCE,
+    SET_SUBTRACTION: fii.SET_SUBTRACTION,
     parseJsonQuery: parseJsonQuery
   }
 }
@@ -332,14 +355,15 @@ const makeASearchIndex = idx => {
     DOCUMENTS: r.DOCUMENTS,
     GET: r.GET,
     INDEX: idx,
-    NOT: r.SET_DIFFERENCE,
+    NOT: r.SET_SUBTRACTION,
     OR: r.OR,
     PUT: w.PUT,
     SCORENUMERIC: r.SCORENUMERIC,
     SCORETFIDF: r.SCORETFIDF,
     SEARCH: r.SEARCH,
     //    read: r.parseJsonQuery
-    QUERY: r.parseJsonQuery
+    QUERY: r.parseJsonQuery,
+    UPDATE: w.parseJsonUpdate
   }
 };
 
