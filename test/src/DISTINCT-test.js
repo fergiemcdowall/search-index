@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'DICTIONARY'
+const indexName = sandbox + 'DISTINCT'
 
 test('create a search index', t => {
   t.plan(1)

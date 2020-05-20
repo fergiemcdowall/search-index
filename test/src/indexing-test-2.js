@@ -57,10 +57,10 @@ test('can add some data', t => {
 test('check that arrays were properly indexed', t => {
   t.plan(4)
   var band = [
-    { key: 'band.george:0.25', value: [ 'a', 'b', 'c' ] },
-    { key: 'band.john:0.25', value: [ 'a', 'b', 'c' ] },
-    { key: 'band.paul:0.25', value: [ 'a', 'b', 'c' ] },
-    { key: 'band.ringo:0.25', value: [ 'a', 'b', 'c' ] }
+    { key: 'band:george#1.00', value: [ 'a', 'b', 'c' ] },
+    { key: 'band:john#1.00', value: [ 'a', 'b', 'c' ] },
+    { key: 'band:paul#1.00', value: [ 'a', 'b', 'c' ] },
+    { key: 'band:ringo#1.00', value: [ 'a', 'b', 'c' ] }
   ]
   global[indexName].INDEX.STORE.createReadStream({
     gte: 'band!',

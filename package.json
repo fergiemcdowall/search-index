@@ -36,6 +36,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
     "doctoc": "^1.4.0",
+    "http-serve": "^1.0.1",
     "level-out": "^1.0.1",
     "memdown": "^4.0.0",
     "rollup": "^1.12.3",
@@ -47,8 +48,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "2.2.0",
-    "http-serve": "^1.0.1",
+    "fergies-inverted-index": "3.0.0",
     "term-vector": "^1.0.0",
     "traverse": "^0.6.6"
   }

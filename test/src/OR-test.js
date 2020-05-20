@@ -84,12 +84,12 @@ test('can add data', t => {
 test('simple OR with 1 clause', t => {
   t.plan(1)
   global[indexName].OR(
-    'make:Volvo'
+    'make:volvo'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '4', _match: [ 'make:Volvo#1.00' ] },
-      { _id: '5', _match: [ 'make:Volvo#1.00' ] },
-      { _id: '8', _match: [ 'make:Volvo#1.00' ] } 
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] } 
     ])
   })
 })
@@ -97,17 +97,17 @@ test('simple OR with 1 clause', t => {
 test('simple OR with 2 clauses', t => {
   t.plan(1)
   global[indexName].OR(
-    'brand:Volvo', 'brand:Tesla'
+    'brand:volvo', 'brand:tesla'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '0', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '1', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '2', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '4', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '5', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '7', _match: [ 'brand:Tesla#1.00' ] },
-      { _id: '8', _match: [ 'brand:Tesla#1.00' ] },
-      { _id: '9', _match: [ 'brand:Volvo#1.00' ] } 
+      { _id: '0', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '1', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '4', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '7', _match: [ 'brand:tesla#1.00' ] },
+      { _id: '8', _match: [ 'brand:tesla#1.00' ] },
+      { _id: '9', _match: [ 'brand:volvo#1.00' ] } 
     ])
   })
 })
@@ -115,17 +115,17 @@ test('simple OR with 2 clauses', t => {
 test('simple OR with 2 clauses', t => {
   t.plan(1)
   global[indexName].OR(
-    'brand:Volvo', 'manufacturer:Tesla'
+    'brand:volvo', 'manufacturer:tesla'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '0', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '1', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '2', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00' ] },
-      { _id: '4', _match: [ 'brand:Volvo#1.00' ] },
-      { _id: '5', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00' ] },
-      { _id: '6', _match: [ 'manufacturer:Tesla#1.00' ] },
-      { _id: '7', _match: [ 'manufacturer:Tesla#1.00' ] },
-      { _id: '9', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00' ] } 
+      { _id: '0', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '1', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
+      { _id: '4', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
+      { _id: '6', _match: [ 'manufacturer:tesla#1.00' ] },
+      { _id: '7', _match: [ 'manufacturer:tesla#1.00' ] },
+      { _id: '9', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] } 
     ])
   })
 })
@@ -135,15 +135,15 @@ test('simple OR with 2 clauses (embedded AND)', t => {
   const { OR, AND } = global[indexName]
   t.plan(1)
   OR(
-    AND('brand:Volvo', 'manufacturer:Tesla'),
-    'make:BMW'
+    AND('brand:volvo', 'manufacturer:tesla'),
+    'make:bmw'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: '1', _match: [ 'make:BMW#1.00' ] },
-      { _id: '2', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00' ] },
-      { _id: '5', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00' ] },
-      { _id: '7', _match: [ 'make:BMW#1.00' ] },
-      { _id: '9', _match: [ 'brand:Volvo#1.00', 'manufacturer:Tesla#1.00', 'make:BMW#1.00' ] } 
+      { _id: '1', _match: [ 'make:bmw#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
+      { _id: '7', _match: [ 'make:bmw#1.00' ] },
+      { _id: '9', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00', 'make:bmw#1.00' ] } 
     ])
   })
 })
