@@ -365,6 +365,11 @@ const makeASearchIndex = idx => {
 
 function main (ops) {
   return new Promise((resolve, reject) => {
+    // the magic that allows values to be put into token fields
+    ops.tokenAppend = '#';
+    // if a fergies-inverted-index is passed as an option
+    if (ops.fii) return resolve(makeASearchIndex(ops.fii))
+    // else make a new fergies-inverted-index
     fii(ops, (err, idx) => {
       if (err) return reject(err)
       resolve(util(idx).calibrate()

@@ -2,8 +2,8 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
-const indexName = 'indexing-test'
 const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'indexing-test'
 
 const data = [
   {
@@ -60,37 +60,37 @@ test('can search', t => {
   ).then(res => {
     t.looseEqual(res, [
       {
-        '_id': 'b',
+        _id: 'b',
         _match: [
-          'body.text.cool:0.17',
-          'body.text.really:0.17',
-          'body.text.bananas:0.17'
+          'body.text:cool#1.00',
+          'body.text:really#1.00',
+          'body.text:bananas#1.00'
         ],
-        _score: 0.71,
-        _doc: data[1]
+        _score: 4.16
       }
     ])
   })
 })
 
 // should be able to get non-tokenised (readable) version of object out of index
-test('can search', t => {
+test('can search with QUERY', t => {
   t.plan(1)
-  global[indexName].read({SEARCH:[
-    'body.text:cool',
-    'body.text:really',
-    'body.text:bananas'
-  ]}).then(res => {
+  global[indexName].QUERY({
+    SEARCH: [
+      'body.text:cool',
+      'body.text:really',
+      'body.text:bananas'
+    ]
+  }).then(res => {
     t.looseEqual(res, [
       {
-        '_id': 'b',
+        _id: 'b',
         _match: [
-          'body.text.cool:0.17',
-          'body.text.really:0.17',
-          'body.text.bananas:0.17'
+          'body.text:cool#1.00',
+          'body.text:really#1.00',
+          'body.text:bananas#1.00'
         ],
-        _score: 0.71,
-        _doc: data[1]
+        _score: 4.16
       }
     ])
   })
@@ -105,16 +105,15 @@ test('can search in any field', t => {
     'bananas'
   ).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',
+      {
+        _id: 'b',
         _match: [
-          'body.text.cool:0.17',
-          'title.cool:0.25',
-          'body.text.really:0.17',
-          'body.text.bananas:0.17'
-        ],
-        _score: 1.05,
-        _doc: data[1]
-      }
+          'body.text:cool#1.00',
+          'title:cool#1.00',
+          'body.text:really#1.00',
+          'body.text:bananas#1.00' ],
+        _score: 5.55
+      } 
     ])
   })
 })
@@ -135,35 +134,27 @@ test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
   global[indexName].SEARCH(
     'title:cool',
-    'body.metadata:documentness'
+    'documentness'
   ).then(res => {
     t.looseEqual(res, [
       {
-        '_id': 'a',
-        _match: [
-          'title.cool:0.25',
-          'body.metadata.documentness:0.50'
-        ],
-        _score: 0.52,
-        _doc: data[0]
+        _id: 'a',
+        _match: [ 'title:cool#1.00', 'body.metadata:documentness#1.00' ],
+        _score: 1.39
       },
       {
-        '_id': 'b',
-        _match: [
-          'title.cool:0.25',
-          'body.metadata.documentness:0.50'
-        ],
-        _score: 0.52,
-        _doc: data[1]
-      }
+        _id: 'b',
+        _match: [ 'title:cool#1.00', 'body.metadata:documentness#1.00' ],
+        _score: 1.39
+      } 
     ])
   })
 })
 
-test('can search by numeric value', t => {
+test('can SEARCH by numeric value (and return DOCUMENT)', t => {
   t.plan(1)
-  global[indexName].AND(
-    'importantNumber:*'
+  global[indexName].SEARCH(
+    '500'
   ).then(
     resultSet => global[indexName].SCORENUMERIC({
       resultSet: resultSet,
@@ -173,44 +164,43 @@ test('can search by numeric value', t => {
       limit: 10
     })
   ).then(global[indexName].DOCUMENTS)
-    .then(res => {
-      t.looseEqual(res, [
-        { _id: 'a',
-          _match: [ 'importantNumber.5000:5000' ],
-          _score: 5000,
-          _doc: data[0]
-        },
-        { _id: 'b',
-          _match: [ 'importantNumber.500:500' ],
-          _score: 500,
-          _doc: data[1]
-        },
-        { _id: 'c',
-          _match: [ 'importantNumber.200:200' ],
-          _score: 200,
-          _doc: data[2]
-        }
-      ])
-    })
+   .then(res => {
+     t.looseEqual(res, [
+       {
+         _id: 'b',
+         title: 'quite a cool document',
+         body: {
+           text: 'this document is really cool bananas',
+           metadata: 'coolness documentness'
+         },
+         importantNumber: 500
+       }
+     ])
+   })
 })
 
-// OR-ing
-test('can search by numeric value and OR', t => {
+test('can OR by numeric value', t => {
   t.plan(1)
   global[indexName].OR(
-    'importantNumber:200',
-    'importantNumber:5000'
-  ).then(res => t.looseEqual(res, [
-    {
-      _id: 'c',
-      _match: [ 'importantNumber.200:200' ]
-    },
-    {
-      _id: 'a',
-      _match: [ 'importantNumber.5000:5000' ]
-    }
-  ]))
+    '500',
+    '200'
+  ).then(
+    resultSet => global[indexName].SCORENUMERIC({
+      resultSet: resultSet,
+      fieldName: 'importantNumber',
+      sort: (a, b) => b._score - a._score,
+      offset: 0,
+      limit: 10
+    })
+  ).then(global[indexName].DOCUMENTS)
+   .then(res => {
+     t.looseEqual(res, [
+       { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' },
+         importantNumber: 500 }, { _id: 'c', title: 'something different', body: { text: 'something totally different', metadata: 'coolness documentness' }, importantNumber: 200 } 
+     ])
+   })
 })
+
 
 // OR-ing
 test('can search by numeric value and OR with one term on any field', t => {
@@ -221,11 +211,11 @@ test('can search by numeric value and OR with one term on any field', t => {
   ).then(res => t.looseEqual(res, [
     {
       _id: 'c',
-      _match: [ 'importantNumber.200:200' ]
+      _match: [ 'importantNumber:200#1.00' ]
     },
     {
       _id: 'a',
-      _match: [ 'importantNumber.5000:5000' ]
+      _match: [ 'importantNumber:5000#1.00' ]
     }
   ]))
 })
@@ -236,10 +226,10 @@ test('can GET', t => {
     'body.text:cool'
   ).then(res => t.looseEqual(res, [
     {
-      _id: 'b',_match: [ 'body.text.cool:0.17' ]
+      _id: 'a',_match: [ 'body.text:cool#1.00' ]
     },
     {
-      _id: 'a',_match: [ 'body.text.cool:0.60' ]
+      _id: 'b',_match: [ 'body.text:cool#1.00' ]
     }
   ]))
 })
@@ -251,17 +241,17 @@ test('can GET with no field specified', t => {
   ).then(res => {
     t.looseEqual(res, [
       {
-        '_id': 'b',
+        '_id': 'a',
         _match: [
-          'body.text.cool:0.17',
-          'title.cool:0.25'
+          'body.text:cool#1.00',
+          'title:cool#1.00'
         ]
       },
       {
-        '_id': 'a',
+        '_id': 'b',
         _match: [
-          'body.text.cool:0.60',
-          'title.cool:0.25'
+          'body.text:cool#1.00',
+          'title:cool#1.00'
         ]
       }
     ])
@@ -271,22 +261,22 @@ test('can GET with no field specified', t => {
 test('can AND', t => {
   t.plan(1)
   global[indexName].AND(
-    'title:quite',
+    'body.text:really',
     'body.metadata:coolness'
   ).then(res => {
     t.looseEqual(res, [
       {
         '_id': 'a',
         _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
+          'body.text:really#0.33',
+          'body.metadata:coolness#1.00'
         ]
       },
       {
         '_id': 'b',
         _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
+          'body.text:really#1.00',
+          'body.metadata:coolness#1.00'
         ]
       }
     ])
@@ -303,22 +293,22 @@ test('can AND with embedded OR', t => {
       {
         '_id': 'a',
         _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
+          'title:quite#1.00',
+          'body.metadata:coolness#1.00'
         ]
       },
       {
         '_id': 'b',
         _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
+          'title:quite#1.00',
+          'body.metadata:coolness#1.00'
         ]
       },
       {
         '_id': 'c',
         _match: [
-          'body.text.different:0.33',
-          'body.metadata.coolness:0.50'
+          'body.text:different#1.00',
+          'body.metadata:coolness#1.00'
         ]
       }
     ])
@@ -338,28 +328,15 @@ test('can AND with embedded OR and embedded AND', t => {
     'body.metadata:coolness'
   ).then(res => {
     t.looseEqual(res, [
-      {
-        '_id': 'a',
+      { _id: 'a',
+        _match: [ 'title:quite#1.00', 'body.metadata:coolness#1.00' ] },
+      { _id: 'b',
+        _match: [ 'title:quite#1.00', 'body.metadata:coolness#1.00' ] },
+      { _id: 'c',
         _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
-        ]
-      },
-      {
-        '_id': 'b',
-        _match: [
-          'title.quite:0.25',
-          'body.metadata.coolness:0.50'
-        ]
-      },
-      {
-        '_id': 'c',
-        _match: [
-          'body.text.totally:0.33',
-          'body.text.different:0.33',
-          'body.metadata.coolness:0.50'
-        ]
-      }
+          'body.text:totally#1.00',
+          'body.text:different#1.00',
+          'body.metadata:coolness#1.00' ] }
     ])
   })
 })
@@ -374,8 +351,8 @@ test('can NOT', t => {
       {
         '_id': 'a',
         _match: [
-          'body.text.cool:0.60',
-          'title.cool:0.25'
+          'body.text:cool#1.00',
+          'title:cool#1.00'
         ]
       }
     ])
@@ -385,21 +362,21 @@ test('can NOT', t => {
 test('can OR', t => {
   t.plan(1)
   global[indexName].OR('body.text:bananas', 'body.text:different')
-    .then(res => {
-      t.looseEqual(res, [
-        {
-          _id: 'b',
-          _match: [
-            'body.text.bananas:0.17'
-          ]
-        }, {
-          _id: 'c',
-          _match: [
-            'body.text.different:0.33'
-          ]
-        }
-      ])
-    })
+   .then(res => {
+     t.looseEqual(res, [
+       {
+         _id: 'b',
+         _match: [
+           'body.text:bananas#1.00'
+         ]
+       }, {
+         _id: 'c',
+         _match: [
+           'body.text:different#1.00'
+         ]
+       }
+     ])
+   })
 })
 
 test('AND with embedded OR', t => {
@@ -409,29 +386,29 @@ test('AND with embedded OR', t => {
     global[indexName].OR('body.text:cool', 'body.text:coolness')
   ).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',_match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
+      { _id: 'b',_match: [ 'body.text:bananas#1.00', 'body.text:cool#1.00' ] }
     ])
   })
 })
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  global[indexName].read({
+  global[indexName].QUERY({
     AND:['bananas']
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',_match: [ 'body.text.bananas:0.17' ] }
+      { _id: 'b',_match: [ 'body.text:bananas#1.00' ] }
     ])
   })
 })
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  global[indexName].read({
+  global[indexName].QUERY({
     AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',_match: [ 'body.text.bananas:0.17', 'body.text.cool:0.17' ] }
+      { _id: 'b',_match: [ 'body.text:bananas#1.00', 'body.text:cool#1.00' ] }
     ])
   })
 })
@@ -439,34 +416,42 @@ test('AND with embedded OR (JSON API)', t => {
 
 test('DOCUMENT (JSON API)', t => {
   t.plan(1)
-  global[indexName].read({
+  global[indexName].QUERY({
     DOCUMENTS:[{_id:'b'}, {_id:'a'}]
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', _doc: { _id: 'b', title: 'quite a cool document', body: {
-        text: 'this document is really cool bananas', metadata: 'coolness documentness'
-      }, importantNumber: 500 } },
-      { _id: 'a', _doc: { _id: 'a', title: 'quite a cool document', body: {
-        text: 'this document is really cool cool cool', metadata: 'coolness documentness'
-      }, importantNumber: 5000 } }
+      { _id: 'b', title: 'quite a cool document',
+        body: {
+          text: 'this document is really cool bananas',
+          metadata: 'coolness documentness' },
+        importantNumber: 500
+      }, {
+        _id: 'a', title: 'quite a cool document',
+        body: {
+          text: 'this document is really cool cool cool',
+          metadata: 'coolness documentness'
+        }, importantNumber: 5000 } 
     ])
   })
 })
 
-
-test('AND with embedded OR (THENable JSON API)', t => {
+// TODO: I think DOCUMENT should behave differently here
+// this should be a SEARCH should it not?
+test('QUERY with a string and then connect documents', t => {
   t.plan(1)
-  global[indexName].read('bananas', { DOCUMENTS: true }).then(res => {
+  global[indexName].QUERY('bananas', { DOCUMENTS: true }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',_match: [ 'body.text.bananas:0.17' ], _doc: {
-        _id: 'b', title: 'quite a cool document', body: {
-          text: 'this document is really cool bananas', metadata: 'coolness documentness'
-        }, importantNumber: 500 }
+      {
+        _id: 'b',
+        title: 'quite a cool document',
+        body: {
+          text: 'this document is really cool bananas',
+          metadata: 'coolness documentness'
+        }, importantNumber: 500
       }
     ])
   })
 })
-
 
 
 test('AND with embedded OR', t => {
@@ -476,68 +461,85 @@ test('AND with embedded OR', t => {
     global[indexName].OR('cool', 'coolness')
   ).then(res => {
     t.looseEqual(res, [
-      { _id: 'b',
-        _match: [
-          'body.text.bananas:0.17',
-          'body.text.cool:0.17',
-          'title.cool:0.25',
-          'body.metadata.coolness:0.50' ] },
-      { _id: 'c',
-        _match: [
-          'body.text.different:0.33',
-          'title.different:0.50',
-          'body.metadata.coolness:0.50' ] }
+      { _id: 'b', _match: [
+        'body.text:bananas#1.00',
+        'body.text:cool#1.00',
+        'title:cool#1.00',
+        'body.metadata:coolness#1.00' ] },
+      { _id: 'c', _match: [
+        'body.text:different#1.00',
+        'title:different#1.00',
+        'body.metadata:coolness#1.00' ] }      
     ])
   })
 })
 
-// TODO: FIX. This test seems to be giving inconsistent results between browser and node
 
-// test('SEARCH with embedded OR', t => {
-//   t.plan(1)
-//   global[indexName].SEARCH(
-//     global[indexName].OR('bananas', 'different'),
-//     'coolness'
-//   ).then(res => {
-//     t.looseEqual(res, [
-//       {
-//         '_id': 'c',
-//         _match: [
-//           'body.text.different:0.33',
-//           'title.different:0.50',
-//           'body.metadata.coolness:0.50'
-//         ],
-//         _score: 0.92,
-//         'obj': data[2]
-//       },
-//       {
-//         '_id': 'b',
-//         _match: [
-//           'body.text.bananas:0.17',
-//           'body.metadata.coolness:0.50'
-//         ],
-//         _score: 0.46,
-//         'obj': data[1]
-//       }
-//     ])
-//   })
-// })
+test('can GET range with one value', t => {
+  t.plan(1)
+  global[indexName].GET({
+    value: {
+      gte: 'cool',
+      lte: 'cool'
+    }
+  }).then(res => t.looseEqual(res, [
+    {
+      _id: 'a', _match: [ 'body.text:cool#1.00', 'title:cool#1.00' ]
+    },
+    {
+      _id: 'b', _match: [ 'body.text:cool#1.00', 'title:cool#1.00' ]
+    }
+  ]))
+})
+
+test('can GET range with a range of values', t => {
+  t.plan(1)
+  global[indexName].GET({
+    value: {
+      gte: 'cool',
+      lte: 'coolness'
+    }
+  }).then(res => t.looseEqual(res, [
+    { _id: 'a', _match: [ 'body.metadata:coolness#1.00',
+                          'body.text:cool#1.00', 'title:cool#1.00' ] },
+    { _id: 'b', _match: [ 'body.metadata:coolness#1.00',
+                          'body.text:cool#1.00', 'title:cool#1.00' ]
+    },
+    { _id: 'c', _match: [ 'body.metadata:coolness#1.00' ] }    
+  ]))
+})
+
+
+// TODO: FIX. This test seems to be giving inconsistent results between browser and node
+test('SEARCH with embedded OR', t => {
+  t.plan(1)
+  global[indexName].SEARCH(
+    global[indexName].OR('bananas', 'different'),
+    'coolness'
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: 'c', _match: [ 'body.text:different#1.00', 'title:different#1.00', 'body.metadata:coolness#1.00' ], _score: 2.08 },
+      { _id: 'b', _match: [ 'body.text:bananas#1.00', 'body.metadata:coolness#1.00' ], _score: 1.39 }
+    ])
+  })
+})
 
 test('DICTIONARY with specified field', t => {
   t.plan(1)
-  //  global[indexName].DICTIONARY('body.text').then(res => {
-  global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
-    t.looseEqual(res, [
-      'bananas',
-      'cool',
-      'different',
-      'document',
-      'is',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
+  global[indexName].DICTIONARY('body.text').then(res => {
+    global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
+      t.looseEqual(res, [
+        'bananas',
+        'cool',
+        'different',
+        'document',
+        'is',
+        'really',
+        'something',
+        'this',
+        'totally'
+      ])
+    })
   })
 })
 
@@ -579,7 +581,6 @@ test('DICTIONARY with gte lte', t => {
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    //    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       '200',
       '500',
@@ -603,11 +604,8 @@ test('DICTIONARY without specified field', t => {
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
-
   const { DICTIONARY } = global[indexName]
-  
   DICTIONARY().then(res => {
-    //    console.log(JSON.stringify(res, null, 2))
     t.looseEqual(res, [
       '200',
       '500',

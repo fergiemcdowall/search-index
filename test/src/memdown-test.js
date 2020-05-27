@@ -61,12 +61,11 @@ test('create a fii with memdown', t => {
             _id: 'b',
             // how about "match"
             _match: [
-              'body.text.cool:0.17',
-              'body.text.really:0.17',
-              'body.text.bananas:0.17'
+              'body.text:cool#1.00',
+              'body.text:really#1.00',
+              'body.text:bananas#1.00'
             ],
-            _score: 0.71,
-            _doc: data[1]
+            _score: 4.16
           }
         ])
       })

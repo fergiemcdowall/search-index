@@ -2,8 +2,8 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
-const indexName = 'indexing-test-2'
 const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'indexing-test-2'
 
 const data = [
   {
