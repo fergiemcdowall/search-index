@@ -57,8 +57,6 @@ test('can DELETE', t => {
 })
 
 test('verify DELETE', t => {
-  t.plan(1)
-  const indexStructure = []
   const expectedIndexStructure = [
     { key: 'body.metadata:coolness#1.00', value: [ 'a', 'c' ] },
     { key: 'body.metadata:documentness#1.00', value: [ 'a', 'c' ] },
@@ -88,9 +86,11 @@ test('verify DELETE', t => {
     { key: '￮FIELD￮importantNumber￮', value: 'importantNumber' },
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
+  t.plan(expectedIndexStructure.length)
   global[indexName].INDEX.STORE.createReadStream()
-    .on('data', d => indexStructure.push(d))
-    .on('end', () => t.looseEquals(indexStructure, expectedIndexStructure))
+   .on('data', d => t.looseEquals(
+     d, expectedIndexStructure.shift())
+   )
 })
 
 
@@ -135,8 +135,6 @@ test('can DELETE with json', t => {
 })
 
 test('verify DELETE', t => {
-  t.plan(1)
-  const indexStructure = []
   const expectedIndexStructure = [
     { key: 'body.metadata:coolness#1.00', value: [ 'a' ] },
     { key: 'body.metadata:documentness#1.00', value: [ 'a' ] },
@@ -158,9 +156,12 @@ test('verify DELETE', t => {
     { key: '￮FIELD￮importantNumber￮', value: 'importantNumber' },
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
+  t.plan(expectedIndexStructure.length)
   global[indexName].INDEX.STORE.createReadStream()
-                   .on('data', d => indexStructure.push(d))
-                   .on('end', () => t.looseEquals(indexStructure, expectedIndexStructure))
+   .on('data', d => t.looseEquals(
+     d, expectedIndexStructure.shift())
+   )
+
 })
 
 

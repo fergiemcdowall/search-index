@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "main": "dist/search-index.cjs.js",
   "module": "dist/search-index.esm.js",
@@ -48,8 +48,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "3.0.0",
-    "term-vector": "^1.0.0",
-    "traverse": "^0.6.6"
+    "fergies-inverted-index": "3.0.1",
+    "term-vector": "^1.0.0"
   }
 }

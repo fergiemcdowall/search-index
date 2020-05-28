@@ -1,13 +1,11 @@
-import util from './util.js'
-//import trav from 'traverse'
 import tv from 'term-vector'
 
 const scoreArrayTFIDF = arr => {
   const v = tv(arr)
   const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)
   return v
-    .map(item => item.term[0] + '#'
-             + (((item.positions.length / mostTokenOccurances)).toFixed(2)))
+    .map(item => item.term[0] + '#' +
+             (((item.positions.length / mostTokenOccurances)).toFixed(2)))
 }
 
 // traverse object, tokenising all leaves (strings to array) and then
@@ -17,12 +15,12 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
   fieldName, fieldValue
 ]) => {
   // if fieldname is undefined, ignore and procede to next
-  if (fieldValue === undefined) return acc  
+  if (fieldValue === undefined) return acc
   ops = Object.assign({
     caseSensitive: false
   }, ops || {})
-  if (fieldName == '_id') {
-    acc[fieldName] = fieldValue  // return _id "as is"
+  if (fieldName === '_id') {
+    acc[fieldName] = fieldValue // return _id "as is"
   } else if (Array.isArray(fieldValue)) {
     // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively
@@ -33,24 +31,20 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
         .map(str => str.toLowerCase())
     )
     const notStrings = fieldValue.filter(
-      item => typeof item != 'string'
+      item => typeof item !== 'string'
     ).map(createDocumentVector)
-    acc[fieldName] = strings.concat(notStrings)
-  }
-  else if (typeof fieldValue === 'object') {
+    acc[fieldName] = strings.concat(notStrings).sort()
+  } else if (typeof fieldValue === 'object') {
     acc[fieldName] = createDocumentVector(fieldValue)
-  }
-  else {
+  } else {
     let str = fieldValue.toString().replace(/[^0-9a-z ]/gi, '')
     if (!ops.caseSensitive) str = str.toLowerCase()
-    acc[fieldName] = scoreArrayTFIDF(str.split(' '))
+    acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort()
   }
   return acc
 }, {})
 
-
 export default function (fii) {
-
   const incrementDocCount = increment => fii.STORE.get(
     '￮DOCUMENT_COUNT￮'
   ).then(
@@ -66,8 +60,8 @@ export default function (fii) {
     docs.map(doc =>
       fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
     )).then(
-      result => incrementDocCount(documentVector.length)
-    )
+    result => incrementDocCount(documentVector.length)
+  )
   )
 
   const DELETE = _ids => fii.DELETE(_ids).then(
@@ -89,7 +83,7 @@ export default function (fii) {
   const parseJsonUpdate = update => {
     if (update.DELETE) return DELETE(update.DELETE)
   }
-  
+
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: DELETE,
@@ -97,5 +91,3 @@ export default function (fii) {
     parseJsonUpdate: parseJsonUpdate
   }
 }
-
-

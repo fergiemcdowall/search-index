@@ -9,7 +9,7 @@ export function TFIDF (ops) {
         (acc, cur) => acc + idf * +cur.split('#')[1], 0
       ).toFixed(2) // TODO: make precision an option
       return x
-    }    
+    }
     return ops
       .resultSet
       .map(calculateScore)

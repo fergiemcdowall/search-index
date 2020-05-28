@@ -1,49 +1,12 @@
 import fii from 'fergies-inverted-index';
 import tv from 'term-vector';
 
-function util (fii) {
-  const prefetchSearchableFields = () => {
-    const tmp = [];
-    return new Promise((resolve) => {
-      fii.STORE.createKeyStream({
-        gte: '￮FIELD!',
-        lte: '￮FIELD￮￮'
-      }).on('data', d => tmp.push(d.split('￮')[2]))
-        .on('end', () => resolve(global.searchableFields = tmp));
-    })
-  };
-
-  const countDocs = () => {
-    let i = 0;
-    return new Promise((resolve) => {
-      fii.STORE.createKeyStream({
-        gte: '￮DOC￮!',
-        lte: '￮DOC￮￮'
-      }).on('data', () => i++)
-        .on('end', () => resolve(global.D = i));
-    })
-  };
-
-  const calibrate = () => {
-    // can handle lazy opening
-    if (fii.STORE.isOpen()) {
-      return prefetchSearchableFields().then(countDocs)
-    } else setTimeout(calibrate, 1000); // will rerun function every 1000ms until fii.STORE.isOpen()
-  };
-
-  return {
-    countDocs: countDocs,
-    prefetchSearchableFields: prefetchSearchableFields,
-    calibrate: calibrate
-  }
-}
-
 const scoreArrayTFIDF = arr => {
   const v = tv(arr);
   const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0);
   return v
-    .map(item => item.term[0] + '#'
-             + (((item.positions.length / mostTokenOccurances)).toFixed(2)))
+    .map(item => item.term[0] + '#' +
+             (((item.positions.length / mostTokenOccurances)).toFixed(2)))
 };
 
 // traverse object, tokenising all leaves (strings to array) and then
@@ -53,12 +16,12 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
   fieldName, fieldValue
 ]) => {
   // if fieldname is undefined, ignore and procede to next
-  if (fieldValue === undefined) return acc  
+  if (fieldValue === undefined) return acc
   ops = Object.assign({
     caseSensitive: false
   }, ops || {});
-  if (fieldName == '_id') {
-    acc[fieldName] = fieldValue;  // return _id "as is"
+  if (fieldName === '_id') {
+    acc[fieldName] = fieldValue; // return _id "as is"
   } else if (Array.isArray(fieldValue)) {
     // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively
@@ -69,24 +32,20 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
         .map(str => str.toLowerCase())
     );
     const notStrings = fieldValue.filter(
-      item => typeof item != 'string'
+      item => typeof item !== 'string'
     ).map(createDocumentVector);
-    acc[fieldName] = strings.concat(notStrings);
-  }
-  else if (typeof fieldValue === 'object') {
+    acc[fieldName] = strings.concat(notStrings).sort();
+  } else if (typeof fieldValue === 'object') {
     acc[fieldName] = createDocumentVector(fieldValue);
-  }
-  else {
+  } else {
     let str = fieldValue.toString().replace(/[^0-9a-z ]/gi, '');
     if (!ops.caseSensitive) str = str.toLowerCase();
-    acc[fieldName] = scoreArrayTFIDF(str.split(' '));
+    acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort();
   }
   return acc
 }, {});
 
-
 function writer (fii) {
-
   const incrementDocCount = increment => fii.STORE.get(
     '￮DOCUMENT_COUNT￮'
   ).then(
@@ -102,8 +61,8 @@ function writer (fii) {
     docs.map(doc =>
       fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
     )).then(
-      result => incrementDocCount(documentVector.length)
-    )
+    result => incrementDocCount(documentVector.length)
+  )
   );
 
   const DELETE = _ids => fii.DELETE(_ids).then(
@@ -125,7 +84,7 @@ function writer (fii) {
   const parseJsonUpdate = update => {
     if (update.DELETE) return DELETE(update.DELETE)
   };
-  
+
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: DELETE,
@@ -168,7 +127,7 @@ function TFIDF (ops) {
         (acc, cur) => acc + idf * +cur.split('#')[1], 0
       ).toFixed(2); // TODO: make precision an option
       return x
-    };    
+    };
     return ops
       .resultSet
       .map(calculateScore)
@@ -212,10 +171,10 @@ function reader (fii) {
       { gte: '', lte: '￮' },
       (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
     );
-    
+
     // options, defaults
     q.options = Object.assign({
-      withFieldName:false
+      withFieldName: false
     }, q.options || {});
 
     return resolve(
@@ -227,11 +186,11 @@ function reader (fii) {
           }))
         ))
         .then(flatten)
-//        .then(res => {console.log(res); return res})
+      //        .then(res => {console.log(res); return res})
         .then(tokens => tokens.map(t => (
-          q.options.withFieldName ?
-          t.split('#').shift() :
-          t.split(':').pop().split('#').shift()
+          q.options.withFieldName
+            ? t.split('#').shift()
+            : t.split(':').pop().split('#').shift()
         )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
@@ -245,7 +204,7 @@ function reader (fii) {
       )
     )
   );
-  
+
   const AND = (...keys) => fii.AND(
     ...keys.map(fii.GET)
   ).then(flattenMatch);
@@ -277,10 +236,12 @@ function reader (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      if (command.ALL) return Promise.all(
+      if (command.ALL) {
+        return Promise.all(
         // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
-        command.ALL.map(item => promisifyQuery(item))
-      )
+          command.ALL.map(item => promisifyQuery(item))
+        )
+      }
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -289,8 +250,7 @@ function reader (fii) {
               .then(bkts => bkts.map(fii.BUCKET)),
             promisifyQuery(command.BUCKETFILTER.FILTER)
           )
-        }
-        else {
+        } else {
           return fii.BUCKETFILTER(
             command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
             promisifyQuery(command.BUCKETFILTER.FILTER)
@@ -305,10 +265,12 @@ function reader (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) return fii.SET_SUBTRACTION(
-        promisifyQuery(command.NOT.INCLUDE),
-        promisifyQuery(command.NOT.EXCLUDE)
-      )
+      if (command.NOT) {
+        return fii.SET_SUBTRACTION(
+          promisifyQuery(command.NOT.INCLUDE),
+          promisifyQuery(command.NOT.EXCLUDE)
+        )
+      }
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     };
     // Turn the array of commands into a chain of promises
@@ -332,6 +294,43 @@ function reader (fii) {
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
     parseJsonQuery: parseJsonQuery
+  }
+}
+
+function util (fii) {
+  const prefetchSearchableFields = () => {
+    const tmp = [];
+    return new Promise((resolve) => {
+      fii.STORE.createKeyStream({
+        gte: '￮FIELD!',
+        lte: '￮FIELD￮￮'
+      }).on('data', d => tmp.push(d.split('￮')[2]))
+        .on('end', () => resolve(global.searchableFields = tmp));
+    })
+  };
+
+  const countDocs = () => {
+    let i = 0;
+    return new Promise((resolve) => {
+      fii.STORE.createKeyStream({
+        gte: '￮DOC￮!',
+        lte: '￮DOC￮￮'
+      }).on('data', () => i++)
+        .on('end', () => resolve(global.D = i));
+    })
+  };
+
+  const calibrate = () => {
+    // can handle lazy opening
+    if (fii.STORE.isOpen()) {
+      return prefetchSearchableFields().then(countDocs)
+    } else setTimeout(calibrate, 1000); // will rerun function every 1000ms until fii.STORE.isOpen()
+  };
+
+  return {
+    countDocs: countDocs,
+    prefetchSearchableFields: prefetchSearchableFields,
+    calibrate: calibrate
   }
 }
 

@@ -17,10 +17,10 @@ export default function (fii) {
       { gte: '', lte: '￮' },
       (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
     )
-    
+
     // options, defaults
     q.options = Object.assign({
-      withFieldName:false
+      withFieldName: false
     }, q.options || {})
 
     return resolve(
@@ -32,11 +32,11 @@ export default function (fii) {
           }))
         ))
         .then(flatten)
-//        .then(res => {console.log(res); return res})
+      //        .then(res => {console.log(res); return res})
         .then(tokens => tokens.map(t => (
-          q.options.withFieldName ?
-          t.split('#').shift() :
-          t.split(':').pop().split('#').shift()
+          q.options.withFieldName
+            ? t.split('#').shift()
+            : t.split(':').pop().split('#').shift()
         )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
@@ -50,7 +50,7 @@ export default function (fii) {
       )
     )
   )
-  
+
   const AND = (...keys) => fii.AND(
     ...keys.map(fii.GET)
   ).then(flattenMatch)
@@ -82,10 +82,12 @@ export default function (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      if (command.ALL) return Promise.all(
+      if (command.ALL) {
+        return Promise.all(
         // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
-        command.ALL.map(item => promisifyQuery(item))
-      )
+          command.ALL.map(item => promisifyQuery(item))
+        )
+      }
       if (command.AND) return AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -94,8 +96,7 @@ export default function (fii) {
               .then(bkts => bkts.map(fii.BUCKET)),
             promisifyQuery(command.BUCKETFILTER.FILTER)
           )
-        }
-        else {
+        } else {
           return fii.BUCKETFILTER(
             command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
             promisifyQuery(command.BUCKETFILTER.FILTER)
@@ -110,10 +111,12 @@ export default function (fii) {
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
       if (command.OR) return OR(...command.OR.map(promisifyQuery))
-      if (command.NOT) return fii.SET_SUBTRACTION(
-        promisifyQuery(command.NOT.INCLUDE),
-        promisifyQuery(command.NOT.EXCLUDE)
-      )
+      if (command.NOT) {
+        return fii.SET_SUBTRACTION(
+          promisifyQuery(command.NOT.INCLUDE),
+          promisifyQuery(command.NOT.EXCLUDE)
+        )
+      }
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
     }
     // Turn the array of commands into a chain of promises
