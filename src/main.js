@@ -33,10 +33,9 @@ const makeASearchIndex = idx => {
 
 export default function (ops) {
   return new Promise((resolve, reject) => {
-    ops = Object.assign(ops, {
-      tokenAppend: '#' // the magic that allows values to be
-      // put into token fields
-    }, {})
+    ops = Object.assign(ops || {}, {
+      tokenAppend: '#'
+    })
     // if a fergies-inverted-index is passed as an option
     if (ops.fii) return resolve(makeASearchIndex(ops.fii))
     // else make a new fergies-inverted-index
