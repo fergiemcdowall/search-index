@@ -2,15 +2,8 @@ import { TFIDF, numericField } from './scorers.js'
 import { getAvailableFields, getRange } from './indexUtils.js'
 
 export default function (fii) {
-  const flatten = arr => [].concat.apply([], arr)
-
-  const flattenMatch = result => result.map(x => {
-    x._match = flatten(x._match) // flatten
-    x._match = flatten(x._match) // flatten again
-    return x
-  })
-
   const DICTIONARY = q => new Promise((resolve) => {
+    const flatten = arr => [].concat.apply([], arr)
     // if query is string convert to object
     // if no query, make empty query
     q = Object.assign(
@@ -51,21 +44,13 @@ export default function (fii) {
     )
   )
 
-  const AND = (...keys) => fii.AND(
-    ...keys.map(fii.GET)
-  ).then(flattenMatch)
-
-  const SEARCH = (...q) => AND(...q)
+  const SEARCH = (...q) => fii.AND(...q)
     .then(resultSet => TFIDF({
       fii: fii,
       resultSet: resultSet,
       offset: 0,
       limit: 10
     }))
-
-  const OR = (...q) => fii.OR(
-    ...flatten(q.map(fii.GET))
-  ).then(flattenMatch)
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
@@ -75,11 +60,11 @@ export default function (fii) {
     }, new Set())
   ].map(JSON.parse))
 
-  // TODO: Tests for JSON nesting and JSON .then-ing
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (...q) => {
     // needs to be called with "command" and result from previous "thenable"
+    console.log(q)
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
       if (command.ALL) {
@@ -88,7 +73,7 @@ export default function (fii) {
           command.ALL.map(item => promisifyQuery(item))
         )
       }
-      if (command.AND) return AND(...command.AND.map(promisifyQuery))
+      if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
           return fii.BUCKETFILTER(
@@ -110,7 +95,7 @@ export default function (fii) {
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
-      if (command.OR) return OR(...command.OR.map(promisifyQuery))
+      if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
@@ -127,14 +112,14 @@ export default function (fii) {
   }
 
   return {
-    AND: AND,
+    AND: fii.AND,
     BUCKET: fii.BUCKET,
     BUCKETFILTER: fii.BUCKETFILTER,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
     GET: fii.GET,
-    OR: OR,
+    OR: fii.OR,
     SCORENUMERIC: numericField,
     SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
