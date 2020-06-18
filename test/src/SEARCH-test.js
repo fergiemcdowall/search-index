@@ -108,10 +108,35 @@ test('simple SEARCH with 2 clauses and documents', t => {
   )
     .then(global[indexName].DOCUMENTS)
     .then(res => {
-    t.looseEqual(res, [
-      { _id: 0, text: 'The Beatles were an English rock band formed in Liverpool in 1960. With a line-up comprising John Lennon, Paul McCartney, George Harrison and Ringo Starr, they are regarded as the most influential band of all time.' },
-      { _id: 3, text: 'I was relieved to discover the reality is very different to the myth,” continues Jackson, “it’s simply an amazing historical treasure-trove. Sure, there’s moments of drama - but none of the discord this project has long been associated with. Watching John, Paul, George, and Ringo work together, creating now-classic songs from scratch, is not only fascinating - it’s funny, uplifting and surprisingly intimate' },
-      { _id: 8, text: 'Paul has confirmed his first live dates of 2018 headlining the Austin City Limits Music Festival. The festival will take place across the weekends of 5-7th and 12-14th October. Other artists set to appear include Metallica, Childish Gambino, Arctic Monkeys, Travis Scott, Odesza, The National and more.' } 
+      t.looseEqual(res, [
+
+
+        {
+          _id: '0',
+          _match: [ 'text:paul#0.50', 'text:and#0.50' ],
+          _score: 1.3,
+          _doc: {
+            _id: 0,
+            text: 'The Beatles were an English rock band formed in Liverpool in 1960. With a line-up comprising John Lennon, Paul McCartney, George Harrison and Ringo Starr, they are regarded as the most influential band of all time.'
+          }
+        }, {
+          _id: '3',
+          _match: [ 'text:paul#0.33', 'text:and#0.67' ],
+          _score: 1.3,
+          _doc: {
+            _id: 3,
+            text: 'I was relieved to discover the reality is very different to the myth,” continues Jackson, “it’s simply an amazing historical treasure-trove. Sure, there’s moments of drama - but none of the discord this project has long been associated with. Watching John, Paul, George, and Ringo work together, creating now-classic songs from scratch, is not only fascinating - it’s funny, uplifting and surprisingly intimate'
+          }
+        }, {
+          _id: '8',
+          _match: [ 'text:paul#0.25', 'text:and#0.50' ],
+          _score: 0.97,
+          _doc: {
+            _id: 8,
+            text: 'Paul has confirmed his first live dates of 2018 headlining the Austin City Limits Music Festival. The festival will take place across the weekends of 5-7th and 12-14th October. Other artists set to appear include Metallica, Childish Gambino, Arctic Monkeys, Travis Scott, Odesza, The National and more.'
+          }
+        }
+
     ])
   })
 })

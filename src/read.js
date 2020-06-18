@@ -38,12 +38,18 @@ export default function (fii) {
 
   const DOCUMENTS = requestedDocs => Promise.all(
     requestedDocs.map(
-      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(
-        e => ({ _id: doc._id })
-      )
+      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
+                .catch(e => null)
     )
-  )
+  ).then(returnedDocs => requestedDocs.map((rd, i) => {
+    rd._doc = returnedDocs[i]
+    return rd
+  }))
 
+
+  // Should be:
+  // AND(..q).then(SCORE).then(SORT).then(PAGE)
+  
   const SEARCH = (...q) => fii.AND(...q)
     .then(resultSet => TFIDF({
       fii: fii,
@@ -52,6 +58,19 @@ export default function (fii) {
       limit: 10
     }))
 
+
+  const PAGE = (results, options) => {
+    options = Object.assign(options || {}, {
+      number: 0,
+      size: 20
+    })
+    const start = number*size
+    // handle end index correctly when (start + size) == 0
+    // (when paging from the end with a negative page number)
+    const end = (start + size) || undefined 
+    return results.slice(start, end)
+  }
+  
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
       cur.value = cur.value.split('#')[0]

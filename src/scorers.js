@@ -1,5 +1,6 @@
 import { getDocCount } from './indexUtils.js'
 
+// TODO: maybe call it sortTFIDF instead?
 // TODO: put in some defaults
 export function TFIDF (ops) {
   return getDocCount(ops.fii).then(docCount => {
@@ -21,8 +22,9 @@ export function TFIDF (ops) {
 }
 
 // TODO: put in some defaults
+// TODO: maybe should be called sortnumerical
 export function numericField (ops) {
-  const calculateScore = (x) => {
+  const calculateScore = x => {
     x._score = +x._match.filter(
       item => item.startsWith(ops.fieldName)
     )[0].split(':')[1]
@@ -32,7 +34,12 @@ export function numericField (ops) {
     .resultSet
     .map(calculateScore)
   // sort by score descending
+  // TODO: sort needs to be represented by JSON
     .sort(ops.sort)
   // limit to n hits
+  // TODO: this probably be in its "own function"
     .slice(ops.offset, ops.limit)
 }
+
+
+// TODO: needs a sortalphabetical

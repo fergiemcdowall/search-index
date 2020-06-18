@@ -122,6 +122,7 @@ function getDocCount (fii) {
   )
 }
 
+// TODO: maybe call it sortTFIDF instead?
 // TODO: put in some defaults
 function TFIDF (ops) {
   return getDocCount(ops.fii).then(docCount => {
@@ -143,8 +144,9 @@ function TFIDF (ops) {
 }
 
 // TODO: put in some defaults
+// TODO: maybe should be called sortnumerical
 function numericField (ops) {
-  const calculateScore = (x) => {
+  const calculateScore = x => {
     x._score = +x._match.filter(
       item => item.startsWith(ops.fieldName)
     )[0].split(':')[1];
@@ -154,10 +156,15 @@ function numericField (ops) {
     .resultSet
     .map(calculateScore)
   // sort by score descending
+  // TODO: sort needs to be represented by JSON
     .sort(ops.sort)
   // limit to n hits
+  // TODO: this probably be in its "own function"
     .slice(ops.offset, ops.limit)
 }
+
+
+// TODO: needs a sortalphabetical
 
 function reader (fii) {
   const DICTIONARY = q => new Promise((resolve) => {
@@ -196,12 +203,18 @@ function reader (fii) {
 
   const DOCUMENTS = requestedDocs => Promise.all(
     requestedDocs.map(
-      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(
-        e => ({ _id: doc._id })
-      )
+      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
+                .catch(e => null)
     )
-  );
+  ).then(returnedDocs => requestedDocs.map((rd, i) => {
+    rd._doc = returnedDocs[i];
+    return rd
+  }));
 
+
+  // Should be:
+  // AND(..q).then(SCORE).then(SORT).then(PAGE)
+  
   const SEARCH = (...q) => fii.AND(...q)
     .then(resultSet => TFIDF({
       fii: fii,
@@ -209,7 +222,7 @@ function reader (fii) {
       offset: 0,
       limit: 10
     }));
-
+  
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
       cur.value = cur.value.split('#')[0];

@@ -185,6 +185,23 @@ test('can OR by numeric value', t => {
     '500',
     '200'
   ).then(
+
+    /* SCORE({
+     *   scheme: TFIDF
+     * })*/
+    
+    /* SORT({
+     *   field: 'importantNumber',
+     *   type: 'NUMERIC',
+     *   direction: 'ASCENDING'
+     * })
+     */
+
+    /* PAGE({
+     *   pageSize: 20,
+     *   pageNumber: 1   // maybe -1 could be last?
+     * })*/
+    
     resultSet => global[indexName].SCORENUMERIC({
       resultSet: resultSet,
       fieldName: 'importantNumber',
@@ -420,17 +437,29 @@ test('DOCUMENT (JSON API)', t => {
     DOCUMENTS:[{_id:'b'}, {_id:'a'}]
   }).then(res => {
     t.looseEqual(res, [
-      { _id: 'b', title: 'quite a cool document',
-        body: {
-          text: 'this document is really cool bananas',
-          metadata: 'coolness documentness' },
-        importantNumber: 500
+      {
+        _id: 'b',
+        _doc: {
+          _id: 'b',
+          title: 'quite a cool document',
+          body: {
+            text: 'this document is really cool bananas',
+            metadata: 'coolness documentness'
+          },
+          importantNumber: 500
+        }
       }, {
-        _id: 'a', title: 'quite a cool document',
-        body: {
-          text: 'this document is really cool cool cool',
-          metadata: 'coolness documentness'
-        }, importantNumber: 5000 } 
+        _id: 'a',
+        _doc: {
+          _id: 'a',
+          title: 'quite a cool document',
+          body: {
+            text: 'this document is really cool cool cool',
+            metadata: 'coolness documentness'
+          },
+          importantNumber: 5000
+        }
+      }
     ])
   })
 })
@@ -443,12 +472,17 @@ test('QUERY with a string and then connect documents', t => {
     t.looseEqual(res, [
       {
         _id: 'b',
-        title: 'quite a cool document',
-        body: {
-          text: 'this document is really cool bananas',
-          metadata: 'coolness documentness'
-        }, importantNumber: 500
-      }
+        _match: [ 'body.text:bananas#1.00' ],
+        _doc: {
+          _id: 'b',
+          title: 'quite a cool document',
+          body: {
+            text: 'this document is really cool bananas',
+            metadata: 'coolness documentness'
+          },
+          importantNumber: 500
+        }
+      } 
     ])
   })
 })

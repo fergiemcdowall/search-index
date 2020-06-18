@@ -223,6 +223,22 @@ test('simple NOT', t => {
   })
 })
 
+test('simple NOT with DOCUMENTS', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    NOT: {
+      INCLUDE: 'manufacturer:tesla',
+      EXCLUDE: 'brand:volvo'
+    }
+  }, { DOCUMENTS: true }).then(res => {
+    t.looseEqual(res, [
+      { _id: '6', _match: [ 'manufacturer:tesla#1.00' ] },
+      { _id: '7', _match: [ 'manufacturer:tesla#1.00' ] },
+    ])
+  })
+})
+
 
 // OR
 test('simple OR with 2 clauses', t => {
