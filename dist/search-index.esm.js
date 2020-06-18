@@ -189,35 +189,51 @@ function reader (fii) {
       //        .then(res => {console.log(res); return res})
         .then(tokens => tokens.map(t => (
           q.options.withFieldName
-            ? t.split('#').shift()
-            : t.split(':').pop().split('#').shift()
+          ? t.split('#').shift()
+          : t.split(':').pop().split('#').shift()
         )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
     )
   });
 
-  const DOCUMENTS = requestedDocs => Promise.all(
-    requestedDocs.map(
-      doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
-                .catch(e => null)
-    )
-  ).then(returnedDocs => requestedDocs.map((rd, i) => {
-    rd._doc = returnedDocs[i];
-    return rd
-  }));
+  const DOCUMENTS = requestedDocs => {
+    // Either return document per id
+    if (requestedDocs)
+      return Promise.all(
+        requestedDocs.map(
+          doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
+                  .catch(e => null)
+        )
+      ).then(returnedDocs => requestedDocs.map((rd, i) => {
+        rd._doc = returnedDocs[i];
+        return rd
+      }))
+    // or just dump out all docs
+    return new Promise ((resolve, reject) => {
+      var result = [];
+      fii.STORE.createReadStream({
+        gte: '￮DOC_RAW￮',
+        lte: '￮DOC_RAW￮￮',
+      }).on('data', d => result.push({
+        _id: d.value._id,
+        _doc: d.value
+      }))
+      .on('end', () => resolve(result));
+    })
+  };
 
 
   // Should be:
   // AND(..q).then(SCORE).then(SORT).then(PAGE)
   
   const SEARCH = (...q) => fii.AND(...q)
-    .then(resultSet => TFIDF({
-      fii: fii,
-      resultSet: resultSet,
-      offset: 0,
-      limit: 10
-    }));
+                              .then(resultSet => TFIDF({
+                                fii: fii,
+                                resultSet: resultSet,
+                                offset: 0,
+                                limit: 10
+                              }));
   
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
