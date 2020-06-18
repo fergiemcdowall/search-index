@@ -155,26 +155,10 @@ test('can SEARCH by numeric value (and return DOCUMENT)', t => {
   t.plan(1)
   global[indexName].SEARCH(
     '500'
-  ).then(
-    resultSet => global[indexName].SCORENUMERIC({
-      resultSet: resultSet,
-      fieldName: 'importantNumber',
-      sort: (a, b) => b._score - a._score,
-      offset: 0,
-      limit: 10
-    })
   ).then(global[indexName].DOCUMENTS)
    .then(res => {
      t.looseEqual(res, [
-       {
-         _id: 'b',
-         title: 'quite a cool document',
-         body: {
-           text: 'this document is really cool bananas',
-           metadata: 'coolness documentness'
-         },
-         importantNumber: 500
-       }
+       { _id: 'b', _match: [ 'importantNumber:500#1.00' ], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } } 
      ])
    })
 })
@@ -185,37 +169,17 @@ test('can OR by numeric value', t => {
     '500',
     '200'
   ).then(
-
-    /* SCORE({
-     *   scheme: TFIDF
-     * })*/
-    
-    /* SORT({
-     *   field: 'importantNumber',
-     *   type: 'NUMERIC',
-     *   direction: 'ASCENDING'
-     * })
-     */
-
-    /* PAGE({
-     *   pageSize: 20,
-     *   pageNumber: 1   // maybe -1 could be last?
-     * })*/
-    
-    resultSet => global[indexName].SCORENUMERIC({
-      resultSet: resultSet,
-      fieldName: 'importantNumber',
-      sort: (a, b) => b._score - a._score,
-      offset: 0,
-      limit: 10
+    resultSet => global[indexName].SORT(resultSet, {
+      field: '_match.importantNumber',
+      type: 'NUMERIC',
+      direction: 'ASCENDING'
     })
-  ).then(global[indexName].DOCUMENTS)
-   .then(res => {
-     t.looseEqual(res, [
-       { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' },
-         importantNumber: 500 }, { _id: 'c', title: 'something different', body: { text: 'something totally different', metadata: 'coolness documentness' }, importantNumber: 200 } 
-     ])
-   })
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] },
+      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] }
+    ])
+  })
 })
 
 

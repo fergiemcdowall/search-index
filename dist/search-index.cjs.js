@@ -122,52 +122,6 @@ function getDocCount (fii) {
   )
 }
 
-// TODO: maybe call it sortTFIDF instead?
-// TODO: put in some defaults
-function TFIDF (ops) {
-  return getDocCount(ops.fii).then(docCount => {
-    const calculateScore = (x, _, resultSet) => {
-      const idf = Math.log((docCount + 1) / resultSet.length);
-      x._score = +x._match.reduce(
-        (acc, cur) => acc + idf * +cur.split('#')[1], 0
-      ).toFixed(2); // TODO: make precision an option
-      return x
-    };
-    return ops
-      .resultSet
-      .map(calculateScore)
-    // sort by score descending
-      .sort((a, b) => b._score - a._score)
-    // limit to n hits
-      .slice(ops.offset, ops.limit)
-  })
-}
-
-// TODO: put in some defaults
-// TODO: maybe should be called sortnumerical
-function numericField (ops) {
-  const calculateScore = x => {
-    x._score = +x._match.filter(
-      item => item.startsWith(ops.fieldName)
-    )[0].split(':')[1];
-    return x
-  };
-  return ops
-    .resultSet
-    .map(calculateScore)
-  // sort by score descending
-  // TODO: sort needs to be represented by JSON
-    .sort(ops.sort)
-  // limit to n hits
-  // TODO: this probably be in its "own function"
-    .slice(ops.offset, ops.limit)
-}
-
-
-// TODO: needs a sortalphabetical
-
-// TODO: can these be removed?
-
 function reader (fii) {
   const DICTIONARY = q => new Promise((resolve) => {
     const flatten = arr => [].concat.apply([], arr);
@@ -195,8 +149,8 @@ function reader (fii) {
       //        .then(res => {console.log(res); return res})
         .then(tokens => tokens.map(t => (
           q.options.withFieldName
-          ? t.split('#').shift()
-          : t.split(':').pop().split('#').shift()
+            ? t.split('#').shift()
+            : t.split(':').pop().split('#').shift()
         )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
@@ -205,35 +159,31 @@ function reader (fii) {
 
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
-    if (Array.isArray(requestedDocs))
+    if (Array.isArray(requestedDocs)) {
       return Promise.all(
         requestedDocs.map(
           doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
-                    .catch(e => null)
+            .catch(e => null)
         )
       ).then(returnedDocs => requestedDocs.map((rd, i) => {
         rd._doc = returnedDocs[i];
         return rd
       }))
+    }
     // or just dump out all docs
     // TODO should share getRange in indexUtils.js?
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       var result = [];
       fii.STORE.createReadStream({
         gte: '￮DOC_RAW￮',
-        lte: '￮DOC_RAW￮￮',
+        lte: '￮DOC_RAW￮￮'
       }).on('data', d => result.push({
         _id: d.value._id,
         _doc: d.value
       })).on('end', () => resolve(result));
     })
-   
   };
-  
 
-  // Should be:
-  // AND(..q).then(SCORE).then(SORT).then(PAGE)
-  
   const SEARCH = (...q) => fii
     .AND(...q)
     .then(SCORE)
@@ -247,7 +197,7 @@ function reader (fii) {
     const start = options.number * options.size;
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.size) || undefined; 
+    const end = (start + options.size) || undefined;
     return results.slice(start, end)
   };
 
@@ -261,23 +211,28 @@ function reader (fii) {
       return x
     })
   );
-  
-  // TODO: handle deep refs for field
-  // a la https://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
+
   const SORT = (results, options) => {
     options = Object.assign({
       direction: 'DESCENDING',
       field: '_score',
-      type: 'NUMERIC'  
+      type: 'NUMERIC'
     }, options || {});
-    const deepRef = obj => options
-      .field.split('.')
-      .reduce((o,i)=>o[i], obj);
-
+    const deepRef = obj => {
+      const path = options.field.split('.');
+      // special case: sorting on _match so that you dont have to
+      // fetch all the documents before doing a sort
+      if (path[0] === '_match') {
+        return obj._match.find(
+          _match => (path.slice(1).join('.') === _match.split(':')[0])
+        ).split(':')[1].split('#')[0]
+      }
+      return path.reduce((o, i) => o[i], obj)
+    };
     const sortFunction = {
       'NUMERIC': {
-        'DESCENDING': (a, b) => deepRef(b) - deepRef(a),
-        'ASCENDING': (a, b) => deepRef(a) - deepRef(b)
+        'DESCENDING': (a, b) => +deepRef(b) - +deepRef(a),
+        'ASCENDING': (a, b) => +deepRef(a) - +deepRef(b)
       },
       'ALPHABETIC': {
         'DESCENDING': (a, b) => {
@@ -295,7 +250,6 @@ function reader (fii) {
     return results.sort(sortFunction[options.type][options.direction])
   };
 
-  
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
       cur.value = cur.value.split('#')[0];
@@ -310,12 +264,6 @@ function reader (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      // TODO: is command.ALL in use?
-      if (command.ALL) return Promise.all(
-        // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
-        command.ALL.map(item => promisifyQuery(item))
-      )
-      
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -366,8 +314,6 @@ function reader (fii) {
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
-    SCORENUMERIC: numericField,
-    SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,

@@ -233,8 +233,16 @@ test('simple NOT with DOCUMENTS', t => {
     }
   }, { DOCUMENTS: true }).then(res => {
     t.looseEqual(res, [
-      { _id: '6', _match: [ 'manufacturer:tesla#1.00' ] },
-      { _id: '7', _match: [ 'manufacturer:tesla#1.00' ] },
+      {
+        _id: '6', _match: [ 'manufacturer:tesla#1.00' ], _doc: {
+          _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW'
+        }
+      },
+      {
+        _id: '7', _match: [ 'manufacturer:tesla#1.00' ], _doc: {
+          _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla'
+        }
+      }
     ])
   })
 })

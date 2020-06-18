@@ -1,5 +1,3 @@
-// TODO: can these be removed?
-import { TFIDF, numericField } from './scorers.js'
 import { getAvailableFields, getRange, getDocCount } from './indexUtils.js'
 
 export default function (fii) {
@@ -29,8 +27,8 @@ export default function (fii) {
       //        .then(res => {console.log(res); return res})
         .then(tokens => tokens.map(t => (
           q.options.withFieldName
-          ? t.split('#').shift()
-          : t.split(':').pop().split('#').shift()
+            ? t.split('#').shift()
+            : t.split(':').pop().split('#').shift()
         )))
         .then(tokens => tokens.sort())
         .then(tokens => [...new Set(tokens)])
@@ -39,35 +37,31 @@ export default function (fii) {
 
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
-    if (Array.isArray(requestedDocs))
+    if (Array.isArray(requestedDocs)) {
       return Promise.all(
         requestedDocs.map(
           doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
-                    .catch(e => null)
+            .catch(e => null)
         )
       ).then(returnedDocs => requestedDocs.map((rd, i) => {
         rd._doc = returnedDocs[i]
         return rd
       }))
+    }
     // or just dump out all docs
     // TODO should share getRange in indexUtils.js?
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       var result = []
       fii.STORE.createReadStream({
         gte: '￮DOC_RAW￮',
-        lte: '￮DOC_RAW￮￮',
+        lte: '￮DOC_RAW￮￮'
       }).on('data', d => result.push({
         _id: d.value._id,
         _doc: d.value
       })).on('end', () => resolve(result))
     })
-   
   }
-  
 
-  // Should be:
-  // AND(..q).then(SCORE).then(SORT).then(PAGE)
-  
   const SEARCH = (...q) => fii
     .AND(...q)
     .then(SCORE)
@@ -81,7 +75,7 @@ export default function (fii) {
     const start = options.number * options.size
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.size) || undefined 
+    const end = (start + options.size) || undefined
     return results.slice(start, end)
   }
 
@@ -95,23 +89,28 @@ export default function (fii) {
       return x
     })
   )
-  
-  // TODO: handle deep refs for field
-  // a la https://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
+
   const SORT = (results, options) => {
     options = Object.assign({
       direction: 'DESCENDING',
       field: '_score',
-      type: 'NUMERIC'  
+      type: 'NUMERIC'
     }, options || {})
-    const deepRef = obj => options
-      .field.split('.')
-      .reduce((o,i)=>o[i], obj)
-
+    const deepRef = obj => {
+      const path = options.field.split('.')
+      // special case: sorting on _match so that you dont have to
+      // fetch all the documents before doing a sort
+      if (path[0] === '_match') {
+        return obj._match.find(
+          _match => (path.slice(1).join('.') === _match.split(':')[0])
+        ).split(':')[1].split('#')[0]
+      }
+      return path.reduce((o, i) => o[i], obj)
+    }
     const sortFunction = {
       'NUMERIC': {
-        'DESCENDING': (a, b) => deepRef(b) - deepRef(a),
-        'ASCENDING': (a, b) => deepRef(a) - deepRef(b)
+        'DESCENDING': (a, b) => +deepRef(b) - +deepRef(a),
+        'ASCENDING': (a, b) => +deepRef(a) - +deepRef(b)
       },
       'ALPHABETIC': {
         'DESCENDING': (a, b) => {
@@ -129,7 +128,6 @@ export default function (fii) {
     return results.sort(sortFunction[options.type][options.direction])
   }
 
-  
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
       cur.value = cur.value.split('#')[0]
@@ -144,12 +142,6 @@ export default function (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      // TODO: is command.ALL in use?
-      if (command.ALL) return Promise.all(
-        // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
-        command.ALL.map(item => promisifyQuery(item))
-      )
-      
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -200,8 +192,6 @@ export default function (fii) {
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
-    SCORENUMERIC: numericField,
-    SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,
