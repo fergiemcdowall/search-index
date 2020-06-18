@@ -1,5 +1,6 @@
+// TODO: can these be removed?
 import { TFIDF, numericField } from './scorers.js'
-import { getAvailableFields, getRange } from './indexUtils.js'
+import { getAvailableFields, getRange, getDocCount } from './indexUtils.js'
 
 export default function (fii) {
   const DICTIONARY = q => new Promise((resolve) => {
@@ -38,17 +39,18 @@ export default function (fii) {
 
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
-    if (requestedDocs)
+    if (Array.isArray(requestedDocs))
       return Promise.all(
         requestedDocs.map(
           doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
-                  .catch(e => null)
+                    .catch(e => null)
         )
       ).then(returnedDocs => requestedDocs.map((rd, i) => {
         rd._doc = returnedDocs[i]
         return rd
       }))
     // or just dump out all docs
+    // TODO should share getRange in indexUtils.js?
     return new Promise ((resolve, reject) => {
       var result = []
       fii.STORE.createReadStream({
@@ -57,35 +59,76 @@ export default function (fii) {
       }).on('data', d => result.push({
         _id: d.value._id,
         _doc: d.value
-      }))
-      .on('end', () => resolve(result))
+      })).on('end', () => resolve(result))
     })
+   
   }
-
+  
 
   // Should be:
   // AND(..q).then(SCORE).then(SORT).then(PAGE)
   
-  const SEARCH = (...q) => fii.AND(...q)
-                              .then(resultSet => TFIDF({
-                                fii: fii,
-                                resultSet: resultSet,
-                                offset: 0,
-                                limit: 10
-                              }))
-
+  const SEARCH = (...q) => fii
+    .AND(...q)
+    .then(SCORE)
+    .then(SORT)
 
   const PAGE = (results, options) => {
-    options = Object.assign(options || {}, {
+    options = Object.assign({
       number: 0,
       size: 20
-    })
-    const start = number*size
+    }, options || {})
+    const start = options.number * options.size
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + size) || undefined 
+    const end = (start + options.size) || undefined 
     return results.slice(start, end)
   }
+
+  // score by tfidf by default
+  const SCORE = (results) => getDocCount(fii).then(
+    docCount => results.map((x, _, resultSet) => {
+      const idf = Math.log((docCount + 1) / resultSet.length)
+      x._score = +x._match.reduce(
+        (acc, cur) => acc + idf * +cur.split('#')[1], 0
+      ).toFixed(2) // TODO: make precision an option
+      return x
+    })
+  )
+  
+  // TODO: handle deep refs for field
+  // a la https://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
+  const SORT = (results, options) => {
+    options = Object.assign({
+      direction: 'DESCENDING',
+      field: '_score',
+      type: 'NUMERIC'  
+    }, options || {})
+    const deepRef = obj => options
+      .field.split('.')
+      .reduce((o,i)=>o[i], obj)
+
+    const sortFunction = {
+      'NUMERIC': {
+        'DESCENDING': (a, b) => deepRef(b) - deepRef(a),
+        'ASCENDING': (a, b) => deepRef(a) - deepRef(b)
+      },
+      'ALPHABETIC': {
+        'DESCENDING': (a, b) => {
+          if (deepRef(a) < deepRef(b)) return 1
+          if (deepRef(a) > deepRef(b)) return -1
+          return 0
+        },
+        'ASCENDING': (a, b) => {
+          if (deepRef(a) < deepRef(b)) return -1
+          if (deepRef(a) > deepRef(b)) return 1
+          return 0
+        }
+      }
+    }
+    return results.sort(sortFunction[options.type][options.direction])
+  }
+
   
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
@@ -99,15 +142,14 @@ export default function (fii) {
   // Promises
   const parseJsonQuery = (...q) => {
     // needs to be called with "command" and result from previous "thenable"
-    console.log(q)
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      if (command.ALL) {
-        return Promise.all(
+      // TODO: is command.ALL in use?
+      if (command.ALL) return Promise.all(
         // TODO: why cant this be "command.ALL.map(promisifyQuery)"?
-          command.ALL.map(item => promisifyQuery(item))
-        )
-      }
+        command.ALL.map(item => promisifyQuery(item))
+      )
+      
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -130,14 +172,16 @@ export default function (fii) {
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.GET) return fii.GET(command.GET)
-      if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
           promisifyQuery(command.NOT.EXCLUDE)
         )
       }
+      if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
+      if (command.PAGE) return PAGE(resultFromPreceding, command.PAGE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
+      if (command.SORT) return SORT(resultFromPreceding, command.SORT)
     }
     // Turn the array of commands into a chain of promises
     return q.reduce((acc, cur) => acc.then(
@@ -155,10 +199,12 @@ export default function (fii) {
     DOCUMENTS: DOCUMENTS,
     GET: fii.GET,
     OR: fii.OR,
+    PAGE: PAGE,
     SCORENUMERIC: numericField,
     SCORETFIDF: TFIDF,
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
+    SORT: SORT,
     parseJsonQuery: parseJsonQuery
   }
 }

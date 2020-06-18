@@ -21,11 +21,12 @@ const makeASearchIndex = idx => {
     INDEX: idx,
     NOT: r.SET_SUBTRACTION,
     OR: r.OR,
+    PAGE: r.PAGE,
     PUT: w.PUT,
     SCORENUMERIC: r.SCORENUMERIC,
     SCORETFIDF: r.SCORETFIDF,
     SEARCH: r.SEARCH,
-    //    read: r.parseJsonQuery
+    SORT: r.SORT,
     QUERY: r.parseJsonQuery,
     UPDATE: w.parseJsonUpdate
   }
