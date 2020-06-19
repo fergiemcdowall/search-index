@@ -29,8 +29,6 @@ export default function (fii) {
   }
 
   return {
-    countDocs: countDocs,
-    prefetchSearchableFields: prefetchSearchableFields,
     calibrate: calibrate
   }
 }
