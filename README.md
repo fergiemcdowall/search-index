@@ -35,7 +35,7 @@ See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test)
 ## Documentation
 
 * [API](docs/API.md)
-* [FAQ](docs/API.md#faq)
+* [FAQ](docs/FAQ.md)
 * [Example code](docs/README.md)
 * [Browser demo](demo/) and [short explanation](demo/)
 
