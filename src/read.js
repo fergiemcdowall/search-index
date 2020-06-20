@@ -80,7 +80,7 @@ export default function (fii) {
   }
 
   // score by tfidf by default
-  const SCORE = (results) => getDocCount(fii).then(
+  const SCORE = results => getDocCount(fii).then(
     docCount => results.map((x, _, resultSet) => {
       const idf = Math.log((docCount + 1) / resultSet.length)
       x._score = +x._match.reduce(
@@ -98,6 +98,13 @@ export default function (fii) {
     }, options || {})
     const deepRef = obj => {
       const path = options.field.split('.')
+      // TODO: dont like doing it this way- there should probably be a
+      // way to dump the literal field value into _score, and always
+      // sort on _score
+      //
+      // That said, it should be possible to score without fetching
+      // the whole document for each _id
+      //
       // special case: sorting on _match so that you dont have to
       // fetch all the documents before doing a sort
       if (path[0] === '_match') {
