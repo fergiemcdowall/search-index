@@ -23,11 +23,14 @@
 using either lazy loading or a callback:
 
 ```javascript
-// Make a new index, or open an existing one with this name
+// call the library
 import si from 'search-index'
 
-// "lazy load"- db may not be immediately initialized
-db = si({ name: 'mySearchIndex' })
+// Make a new index, or open an existing one with this name
+// (note that si() returns a promise so if calling from a non-async
+// environment where you cant do "await" you may have to do
+// si().then(db => { /* stuff... */ })
+const db = await si({ name: 'mySearchIndex' })
 
 // db exists in a leveldb instance if run on a server, and an
 // indexedDB instance if run in a browser
