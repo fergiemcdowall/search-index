@@ -106,6 +106,8 @@ const results = await QUERY(queryObject)`
 
 #### Combining query verbs
 
+TODO
+
 #### Sorting, Scoring and paging
 
 TODO
@@ -137,22 +139,33 @@ Example:
 
 ```javascript
 'fruit:banana'
+
+// (can also be expressed as ->)
+{
+  field: 'fruit',
+  value: 'banana'
+}
 ```
 
 #### Find token a range
 ```javascript
 {
-  field: <field name>,
-  gte: <greater than or equal to>,
-  lte: <less than or equal to>
+  field: fieldName,
+  value: {
+    gte: gte,        // greater than or equal to
+    lte: lte         // less than or equal to
+  }
 }
 ```
 Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```javascript
+// this token range would capture 'banana'
 {
   field: 'fruit',
-  gte: 'a',
-  lte: 'c'
+  value: {
+    gte: 'a',
+    lte: 'c'
+  }
 }
 ```
 
@@ -201,18 +214,24 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 #### DOCUMENTS
 
 ```javascript
-// Returns full documents instead of just metadata. Must be preceded
-// by a query that returns document metadata such as AND, OR, NOT,
-// or SEARCH
+// Returns full documents instead of just metadata. If preceded by a
+// query that returns document metadata such as AND, OR, NOT, or
+// SEARCH, { DOCUMENTS: true } will return documents associated with
+// that result set. { DOCUMENTS: true } without a preceding query will
+// return all documents in index 
 PrecendingQuery, {
   DOCUMENTS: true
 }
 
 // For example:
-
 {
   SEARCH: [ token1, token2 ]
 }, {
+  DOCUMENTS: true  // returns only documents associated with preceding result set
+}
+
+// returns every single document in index:
+{
   DOCUMENTS: true
 }
 ```
@@ -304,14 +323,14 @@ PrecendingQuery, {
 {
   SORT: {
     TYPE: type,              // can be 'NUMERIC' or 'ALPHABETIC'
-    DIRECTION: 'DESCENDING', // can be 'ASCENDING' or 'DESCENDING'
+    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING'
     FIELD: field             // field to sort on
   }
 }
 
 // SORTing can only be invoked once a result set has been generated
 {
-  DOCUMENT: true
+  DOCUMENTS: true
 }, {
   SORT: {
     TYPE: 'NUMERIC',
@@ -324,12 +343,31 @@ PrecendingQuery, {
 
 ## UPDATE
 
-`UPDATE` is a function that allows you to write to the search index
+`UPDATE` is a function that allows you to make changes to the search
+index. It returns a Promise.
+
+```javascript
+const result = await UPDATE(updateInstruction)`
+```
+
 
 ### DELETE
 
-TODO
+```javascript
+// Delete documents from index
+{
+  DELETE: documentIds // an array of document IDs
+}
+```
 
 ### PUT
 
-TODO
+```javascript
+// Add documents to index
+{
+  PUT: documents // an array of documents (plain old javascript objects)
+}
+
+// if any document does not contain an _id field, then one will be
+// generated and assigned
+```

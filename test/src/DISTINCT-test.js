@@ -153,4 +153,32 @@ test('simple DISTINCT with range', t => {
   })
 })
 
-// TODO: JSON representation of DISTINCT
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      field: 'colour'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'colour', value: 'blue' },
+      { field: 'colour', value: 'red' },
+      { field: 'colour', value: 'yellow' }
+    ])
+  })
+})
+
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      value: 'red'
+    }
+  }).then(res => {
+    t.looseEqual(res, [
+      { field: 'colour', value: 'red' },
+    ])
+  })
+})

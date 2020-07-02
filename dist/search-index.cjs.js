@@ -123,6 +123,17 @@ function getDocCount (fii) {
 }
 
 function reader (fii) {
+
+  // TODO: rewrite this to read in an array of DISTINCT queries
+  // DICTIONARY: [{
+  //   field: 'bla1'
+  // }, {
+  //   field: 'bla2'
+  // }]
+
+  // DICTIONARY: true // <- should return all tokens
+                      // or maybe it should be possible to do a fieldless DISTINCT
+  
   const DICTIONARY = q => new Promise((resolve) => {
     const flatten = arr => [].concat.apply([], arr);
     // if query is string convert to object
