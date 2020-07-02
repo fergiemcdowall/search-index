@@ -187,35 +187,71 @@ function reader (fii) {
 
   const PAGE = (results, options) => {
     options = Object.assign({
-      number: 0,
-      size: 20
+      NUMBER: 0,
+      SIZE: 20
     }, options || {});
-    const start = options.number * options.size;
+    const start = options.NUMBER * options.SIZE;
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.size) || undefined;
+    const end = (start + options.SIZE) || undefined;
     return results.slice(start, end)
   };
 
   // score by tfidf by default
-  const SCORE = results => getDocCount(fii).then(
-    docCount => results.map((x, _, resultSet) => {
-      const idf = Math.log((docCount + 1) / resultSet.length);
-      x._score = +x._match.reduce(
-        (acc, cur) => acc + idf * +cur.split('#')[1], 0
-      ).toFixed(2); // TODO: make precision an option
-      return x
-    })
-  );
+  // TODO: should also be an option to score by field
+  const SCORE = (results, type) => {
+    type = type || 'TFIDF'; // default
+    if (type === 'TFIDF') {
+      return getDocCount(fii).then(
+        docCount => results.map((x, _, resultSet) => {
+          const idf = Math.log((docCount + 1) / resultSet.length);
+          x._score = +x._match.reduce(
+            (acc, cur) => acc + idf * +cur.split('#')[1], 0
+          ).toFixed(2); // TODO: make precision an option
+          return x
+        })
+      )
+    }
+    if (type === 'PRODUCT') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = +r._match.reduce(
+            (acc, cur) => acc * +cur.split('#')[1], 1
+          ).toFixed(2); // TODO: make precision an option
+          return r
+        })
+      ))
+    }
+    if (type === 'CONCAT') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = r._match.reduce(
+            (acc, cur) => acc + cur.split('#')[1], ''
+          );
+          return r
+        })
+      ))
+    }
+    if (type === 'SUM') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = +r._match.reduce(
+            (acc, cur) => acc + +cur.split('#')[1], 0
+          ).toFixed(2); // TODO: make precision an option
+          return r
+        })
+      ))
+    }
+  };
 
   const SORT = (results, options) => {
     options = Object.assign({
-      direction: 'DESCENDING',
-      field: '_score',
-      type: 'NUMERIC'
+      DIRECTION: 'DESCENDING',
+      FIELD: '_score',
+      TYPE: 'NUMERIC'
     }, options || {});
     const deepRef = obj => {
-      const path = options.field.split('.');
+      const path = options.FIELD.split('.');
       // TODO: dont like doing it this way- there should probably be a
       // way to dump the literal field value into _score, and always
       // sort on _score
@@ -250,7 +286,7 @@ function reader (fii) {
         }
       }
     };
-    return results.sort(sortFunction[options.type][options.direction])
+    return results.sort(sortFunction[options.TYPE][options.DIRECTION])
   };
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
@@ -297,6 +333,7 @@ function reader (fii) {
       }
       if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
       if (command.PAGE) return PAGE(resultFromPreceding, command.PAGE)
+      if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
       if (command.SORT) return SORT(resultFromPreceding, command.SORT)
     };
@@ -317,6 +354,7 @@ function reader (fii) {
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
+    SCORE: SCORE,
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,
@@ -379,8 +417,7 @@ const makeASearchIndex = idx => {
     OR: r.OR,
     PAGE: r.PAGE,
     PUT: w.PUT,
-    SCORENUMERIC: r.SCORENUMERIC,
-    SCORETFIDF: r.SCORETFIDF,
+    SCORE: r.SCORE,
     SEARCH: r.SEARCH,
     SORT: r.SORT,
     QUERY: r.parseJsonQuery,

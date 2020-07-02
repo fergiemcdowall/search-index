@@ -153,3 +153,4 @@ test('simple DISTINCT with range', t => {
   })
 })
 
+// TODO: JSON representation of DISTINCT

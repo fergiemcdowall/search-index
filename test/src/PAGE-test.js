@@ -86,8 +86,8 @@ test('get page 2 (called "1": count from "0") with page size of 3', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].PAGE(docs, {
-      number: 1,
-      size: 3
+      NUMBER: 1,
+      SIZE: 3
     })
   ).then(res => {
     t.looseEqual(res, [
@@ -105,8 +105,8 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
     DOCUMENTS: true
   }, {
     PAGE: {
-      number: 1,
-      size: 3
+      NUMBER: 1,
+      SIZE: 3
     }
   }).then(res => {
     t.looseEqual(res, [
@@ -122,8 +122,8 @@ test('get last page with page size of 4', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].PAGE(docs, {
-      number: -1,
-      size: 4
+      NUMBER: -1,
+      SIZE: 4
     })
   ).then(res => {
     t.looseEqual(res, [

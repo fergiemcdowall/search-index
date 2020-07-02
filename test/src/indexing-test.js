@@ -170,9 +170,9 @@ test('can OR by numeric value', t => {
     '200'
   ).then(
     resultSet => global[indexName].SORT(resultSet, {
-      field: '_match.importantNumber',
-      type: 'NUMERIC',
-      direction: 'ASCENDING'
+      FIELD: '_match.importantNumber',
+      TYPE: 'NUMERIC',
+      DIRECTION: 'ASCENDING'
     })
   ).then(res => {
     t.looseEqual(res, [

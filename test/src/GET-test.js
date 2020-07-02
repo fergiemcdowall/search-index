@@ -147,3 +147,5 @@ test('simple GET using json with QUERY', t => {
     ])
   })
 })
+
+//TODO: an example of GET that shows more than one hit in _match
