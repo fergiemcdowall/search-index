@@ -302,7 +302,7 @@ function reader (fii) {
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
-      cur.value = cur.value.split('#')[0];
+      cur.VALUE = cur.VALUE.split('#')[0];
       acc.add(JSON.stringify(cur));
       return acc
     }, new Set())

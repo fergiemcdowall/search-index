@@ -88,7 +88,7 @@ test('simple BUCKET', t => {
     'make:volvo',
   ).then(res => {
     t.looseEqual(res, {
-      field: [ 'make' ], value: { gte: 'volvo', lte: 'volvo' }, _id: [ '4', '5', '8' ]
+      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
     })
   })
 })
@@ -97,14 +97,14 @@ test('simple BUCKET with a range', t => {
   const { BUCKET } = global[indexName]
   t.plan(1)
   BUCKET({
-    field: 'make',
-    value: {
-      gte: 'a',
-      lte: 'u'
+    FIELD: 'make',
+    VALUE: {
+      GTE: 'a',
+      LTE: 'u'
     }
   }).then(res => {
     t.looseEqual(res, {
-      field: 'make', value: { gte: 'a', lte: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
+      FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
     })
   })
 })
@@ -116,7 +116,7 @@ test('simple BUCKET (JSON)', t => {
     BUCKET: 'make:volvo'
   }).then(res => {
     t.looseEqual(res, {
-      field: [ 'make' ], value: { gte: 'volvo', lte: 'volvo' }, _id: [ '4', '5', '8' ]
+      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
     })
   })
 })
@@ -127,15 +127,15 @@ test('simple BUCKET with a range (JSON)', t => {
   t.plan(1)
   QUERY({
     BUCKET: {
-      field: 'make',
-      value: {
-        gte: 'a',
-        lte: 'u'
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
       }
     }
   }).then(res => {
     t.looseEqual(res, {
-      field: 'make', value: { gte: 'a', lte: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
+      FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
     })
   })
 })

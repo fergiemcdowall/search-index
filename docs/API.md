@@ -142,18 +142,18 @@ Example:
 
 // (can also be expressed as ->)
 {
-  field: 'fruit',
-  value: 'banana'
+  FIELD: 'fruit',
+  VALUE: 'banana'
 }
 ```
 
 #### Find token a range
 ```javascript
 {
-  field: fieldName,
-  value: {
-    gte: gte,        // greater than or equal to
-    lte: lte         // less than or equal to
+  FIELD: fieldName,
+  VALUE: {
+    GTE: gte,        // greater than or equal to
+    LTE: lte         // less than or equal to
   }
 }
 ```
@@ -161,10 +161,10 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```javascript
 // this token range would capture 'banana'
 {
-  field: 'fruit',
-  value: {
-    gte: 'a',
-    lte: 'c'
+  FIELD: 'fruit',
+  VALUE: {
+    GTE: 'a',
+    LTE: 'c'
   }
 }
 ```

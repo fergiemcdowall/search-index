@@ -476,9 +476,9 @@ test('AND with embedded OR', t => {
 test('can GET range with one value', t => {
   t.plan(1)
   global[indexName].GET({
-    value: {
-      gte: 'cool',
-      lte: 'cool'
+    VALUE: {
+      GTE: 'cool',
+      LTE: 'cool'
     }
   }).then(res => t.looseEqual(res, [
     {
@@ -493,9 +493,9 @@ test('can GET range with one value', t => {
 test('can GET range with a range of values', t => {
   t.plan(1)
   global[indexName].GET({
-    value: {
-      gte: 'cool',
-      lte: 'coolness'
+    VALUE: {
+      GTE: 'cool',
+      LTE: 'coolness'
     }
   }).then(res => t.looseEqual(res, [
     { _id: 'a', _match: [ 'body.metadata:coolness#1.00',

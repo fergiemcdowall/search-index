@@ -98,8 +98,8 @@ test('simple GET', t => {
   t.plan(1)
   global[indexName].GET(
     {
-      field: 'make',
-      value: 'volvo'
+      FIELD: 'make',
+      VALUE: 'volvo'
     }
   ).then(res => {
     t.looseEqual(res, [
@@ -114,10 +114,10 @@ test('simple GET', t => {
   t.plan(1)
   global[indexName].GET(
     {
-      field: 'make',
-      value: {
-        gte: 'a',
-        lte: 'c'
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
       }
     }
   ).then(res => {
@@ -133,10 +133,10 @@ test('simple GET using json with QUERY', t => {
   t.plan(1)
   global[indexName].QUERY({
     GET: {
-      field: 'make',
-      value: {
-        gte: 'a',
-        lte: 'c'
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
       }
     }
   }).then(res => {

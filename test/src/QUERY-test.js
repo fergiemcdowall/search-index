@@ -99,12 +99,12 @@ test('simple BUCKET', t => {
   t.plan(1)
   QUERY({
     BUCKET: {
-      field: 'make',
-      value: 'volvo'
+      FIELD: 'make',
+      VALUE: 'volvo'
     }
   }).then(res => {
     t.looseEqual(res, {
-      field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '4', '5', '8' ]
+      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
     })
   })
 })
@@ -117,8 +117,8 @@ test('simple BUCKETFILTER', t => {
     BUCKETFILTER: {
       BUCKETS: [
         {
-          field: 'make',
-          value: 'volvo'        
+          FIELD: 'make',
+          VALUE: 'volvo'        
         }
       ],
       FILTER: {
@@ -127,7 +127,7 @@ test('simple BUCKETFILTER', t => {
     }
   }).then(res => {
     t.looseEqual(res, [{
-      field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '8' ]
+      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ]
     }])
   })
 })
@@ -151,13 +151,13 @@ test('DISTINCT', t => {
   t.plan(1)
   QUERY({
     DISTINCT: {
-      field: 'make'
+      FIELD: 'make'
     }
   }).then(res => {
     t.looseEqual(res, [
-      { field: 'make', value: 'bmw' },
-      { field: 'make', value: 'tesla' },
-      { field: 'make', value: 'volvo' }
+      { FIELD: 'make', VALUE: 'bmw' },
+      { FIELD: 'make', VALUE: 'tesla' },
+      { FIELD: 'make', VALUE: 'volvo' }
     ])
   })
 })
@@ -170,21 +170,21 @@ test('DISTINCT and BUCKETFILTER', t => {
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
-          field: 'make'
+          FIELD: 'make'
         }
       },
       FILTER: {
         GET: {
-          field: 'brand',
-          value: 'tesla'
+          FIELD: 'brand',
+          VALUE: 'tesla'
         }
       }
     }
   }).then(res => {
     t.looseEqual(res, [
-      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '7' ] },
-      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] },
-      { field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '8' ] }
+      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '7' ] },
+      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] },
+      { FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] }
     ])
   })
 })
