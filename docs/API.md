@@ -205,11 +205,11 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 #### DICTIONARY
 
-// TODO: possibly rewrite DICTIONARY so that is uses standard tokens?
+// TODO: rewrite DICTIONARY so that it takes a DISTINCT as input
 
 #### DISTINCT
 
-// TODO: JSON version of DISTINCT
+// TODO: DISTINCT on many or all fields
 
 #### DOCUMENTS
 

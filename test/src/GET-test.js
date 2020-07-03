@@ -110,6 +110,47 @@ test('simple GET', t => {
   })
 })
 
+test('GET over 2 fields', t => {
+  t.plan(1)
+  global[indexName].GET(
+    {
+      FIELD: [ 'make', 'brand' ],
+      VALUE: 'volvo'
+    }
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '0', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '1', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '4', _match: [ 'brand:volvo#1.00', 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00', 'make:volvo#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] },
+      { _id: '9', _match: [ 'brand:volvo#1.00' ] }
+    ])
+  })
+})
+
+test('GET over all fields', t => {
+  t.plan(1)
+  global[indexName].GET(
+    {
+      VALUE: 'volvo'
+    }
+  ).then(res => {
+    t.looseEqual(res, [
+      { _id: '0', _match: [ 'brand:volvo#1.00', 'manufacturer:volvo#1.00' ] },
+      { _id: '1', _match: [ 'brand:volvo#1.00', 'manufacturer:volvo#1.00' ] },
+      { _id: '2', _match: [ 'brand:volvo#1.00' ] },
+      { _id: '3', _match: [ 'manufacturer:volvo#1.00' ] },
+      { _id: '4', _match: [ 'brand:volvo#1.00', 'make:volvo#1.00', 'manufacturer:volvo#1.00' ] },
+      { _id: '5', _match: [ 'brand:volvo#1.00', 'make:volvo#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] },
+      { _id: '9', _match: [ 'brand:volvo#1.00' ] }
+    ])
+  })
+})
+
+
 test('simple GET', t => {
   t.plan(1)
   global[indexName].GET(

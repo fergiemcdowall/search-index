@@ -92,6 +92,7 @@ export default function (fii) {
 
   // score by tfidf by default
   // TODO: should also be an option to score by field
+  // TODO: Total hits (length of _match)
   const SCORE = (results, type) => {
     type = type || 'TFIDF' // default
     if (type === 'TFIDF') {
