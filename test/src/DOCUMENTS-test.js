@@ -68,7 +68,7 @@ test('simple SEARCH with 2 clauses and documents', t => {
   )
     .then(global[indexName].DOCUMENTS)
     .then(res => {
-      t.looseEqual(res, [
+      t.deepEqual(res, [
         { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3, _doc: data[0] },
         { _id: '3', _match: [ 'text:paul#0.33', 'text:and#0.67' ], _score: 1.3, _doc: data[3] },
         { _id: '8', _match: [ 'text:paul#0.25', 'text:and#0.50' ], _score: 0.97, _doc: data[8] } 
@@ -86,7 +86,7 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
     }
   )
    .then(res => {
-     t.looseEqual(res, [
+     t.deepEqual(res, [
        { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3, _doc: data[0] },
        { _id: '3', _match: [ 'text:paul#0.33', 'text:and#0.67' ], _score: 1.3, _doc: data[3] },
        { _id: '8', _match: [ 'text:paul#0.25', 'text:and#0.50' ], _score: 0.97, _doc: data[8] } 
@@ -97,7 +97,7 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
 test('DOCUMENTS() returns all documents', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(documents => {
-    t.looseEqual(documents, data.map(d => ({
+    t.deepEqual(documents, data.map(d => ({
       _id: d._id,
       _doc: d
     })))
@@ -109,7 +109,7 @@ test('DOCUMENTS() returns all documents (JSON)', t => {
   global[indexName].QUERY({
     DOCUMENTS: true
   }).then(documents => {
-    t.looseEqual(documents, data.map(d => ({
+    t.deepEqual(documents, data.map(d => ({
       _id: d._id,
       _doc: d
     })))

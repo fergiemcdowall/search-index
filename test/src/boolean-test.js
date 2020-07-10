@@ -42,7 +42,7 @@ test('AND', t => {
     'sectorcode:bz',
     'sectorcode:bc'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',
         _match: [ 'sectorcode:bz#1.00', 'sectorcode:bc#1.00' ]
@@ -60,7 +60,7 @@ test('AND', t => {
       'sectorcode:bc'
     ]}
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',
         _match: [ 'sectorcode:bz#1.00', 'sectorcode:bc#1.00' ]
@@ -77,7 +77,7 @@ test('OR', t => {
       'sectorcode:bz'
     ]}
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c782', _match: [ 'sectorcode:ti#1.00' ] },
       { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode:ti#1.00' ] },
       { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode:ti#1.00' ] },
@@ -95,7 +95,7 @@ test('OR', t => {
       'sectorcode:bc'
     ]}
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode:yz#1.00' ] },
       { _id: '52b213b38594d8a2be17c789', _match: [ 'sectorcode:bc#1.00' ] }
     ])
@@ -110,7 +110,7 @@ test('OR', t => {
       'sectorcode:bc'
     ]}
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode:yz#1.00' ] },
       { _id: '52b213b38594d8a2be17c789', _match: [ 'sectorcode:bc#1.00' ] }
     ])
@@ -126,7 +126,7 @@ test('OR', t => {
       'sectorcode:yz'
     ]}
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c784', _match: [ 'sectorcode:fh#1.00', 'sectorcode:yw#1.00', 'sectorcode:yz#1.00' ] }
     ])
   })
@@ -138,7 +138,7 @@ test('can NOT', t => {
     'sectorcode:ti',
     'board_approval_month:november'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode:ti#1.00' ] },
       { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode:ti#1.00' ] }
     ])
@@ -155,7 +155,7 @@ test('can NOT', t => {
       }
     }
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '52b213b38594d8a2be17c786', _match: [ 'sectorcode:ti#1.00' ] },
       { _id: '52b213b38594d8a2be17c788', _match: [ 'sectorcode:ti#1.00' ] }
     ])

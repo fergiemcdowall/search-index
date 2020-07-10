@@ -86,7 +86,7 @@ test('simple OR with 1 clause', t => {
   global[indexName].OR(
     'make:volvo'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '8', _match: [ 'make:volvo#1.00' ] } 
@@ -99,7 +99,7 @@ test('simple OR with 2 clauses', t => {
   global[indexName].OR(
     'brand:volvo', 'brand:tesla'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '0', _match: [ 'brand:volvo#1.00' ] },
       { _id: '1', _match: [ 'brand:volvo#1.00' ] },
       { _id: '2', _match: [ 'brand:volvo#1.00' ] },
@@ -117,7 +117,7 @@ test('simple OR with 2 clauses', t => {
   global[indexName].OR(
     'brand:volvo', 'manufacturer:tesla'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '0', _match: [ 'brand:volvo#1.00' ] },
       { _id: '1', _match: [ 'brand:volvo#1.00' ] },
       { _id: '2', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
@@ -138,7 +138,7 @@ test('simple OR with 2 clauses (embedded AND)', t => {
     AND('brand:volvo', 'manufacturer:tesla'),
     'make:bmw'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '1', _match: [ 'make:bmw#1.00' ] },
       { _id: '2', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },
       { _id: '5', _match: [ 'brand:volvo#1.00', 'manufacturer:tesla#1.00' ] },

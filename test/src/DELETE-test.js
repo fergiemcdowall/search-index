@@ -51,7 +51,7 @@ test('can add some worldbank data', t => {
 
 test('can DELETE', t => {
   t.plan(1)
-  global[indexName].DELETE([ 'b' ]).then((res) => t.looseEqual(res, [    
+  global[indexName].DELETE([ 'b' ]).then((res) => t.deepEqual(res, [    
     { _id: 'b', operation: 'DELETE', status: 'OK' } 
   ]))
 })
@@ -88,7 +88,7 @@ test('verify DELETE', t => {
   ]
   t.plan(expectedIndexStructure.length)
   global[indexName].INDEX.STORE.createReadStream()
-   .on('data', d => t.looseEquals(
+   .on('data', d => t.deepEquals(
      d, expectedIndexStructure.shift())
    )
 })
@@ -101,7 +101,7 @@ test('verify DELETE using DOCUMENTS', t => {
     {_id:'b'},
     {_id:'c'}
   ]).then(docs => {
-    t.looseEqual(docs, [
+    t.deepEqual(docs, [
       {
         _id: 'a', _doc: {
           _id: 'a', title: 'quite a cool document', body: {
@@ -126,7 +126,7 @@ test('can DELETE with json', t => {
   t.plan(1)
   global[indexName].UPDATE({
     DELETE: [ 'c' ]
-  }).then((res) => t.looseEqual(res, [    
+  }).then((res) => t.deepEqual(res, [    
     { _id: 'c', operation: 'DELETE', status: 'OK' } 
   ]))
 })
@@ -155,7 +155,7 @@ test('verify DELETE', t => {
   ]
   t.plan(expectedIndexStructure.length)
   global[indexName].INDEX.STORE.createReadStream()
-   .on('data', d => t.looseEquals(
+   .on('data', d => t.deepEquals(
      d, expectedIndexStructure.shift())
    )
 
@@ -166,7 +166,7 @@ test('DELETE with non-existent id', t => {
   t.plan(1)
   global[indexName].UPDATE({
     DELETE: [ 'd' ]
-  }).then((res) => t.looseEqual(res, [    
+  }).then((res) => t.deepEqual(res, [    
     { _id: 'd', operation: 'DELETE', status: 'OK' } 
   ]))
 })

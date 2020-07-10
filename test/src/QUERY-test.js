@@ -87,7 +87,7 @@ test('simple AND with 2 clauses', t => {
   QUERY({
     AND: [ 'make:volvo', 'manufacturer:bmw' ]
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '8', _match: [ 'make:volvo#1.00', 'manufacturer:bmw#1.00' ] }
     ])
   })
@@ -99,12 +99,12 @@ test('simple BUCKET', t => {
   t.plan(1)
   QUERY({
     BUCKET: {
-      field: 'make',
-      value: 'volvo'
+      FIELD: 'make',
+      VALUE: 'volvo'
     }
   }).then(res => {
-    t.looseEqual(res, {
-      field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '4', '5', '8' ]
+    t.deepEqual(res, {
+      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
     })
   })
 })
@@ -117,8 +117,8 @@ test('simple BUCKETFILTER', t => {
     BUCKETFILTER: {
       BUCKETS: [
         {
-          field: 'make',
-          value: 'volvo'        
+          FIELD: 'make',
+          VALUE: 'volvo'        
         }
       ],
       FILTER: {
@@ -126,8 +126,8 @@ test('simple BUCKETFILTER', t => {
       }
     }
   }).then(res => {
-    t.looseEqual(res, [{
-      field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '8' ]
+    t.deepEqual(res, [{
+      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ]
     }])
   })
 })
@@ -141,7 +141,7 @@ test('DICTIONARY', t => {
       fields:['make']
     }
   }).then(res => {
-    t.looseEqual(res, [ 'bmw', 'tesla', 'volvo' ])
+    t.deepEqual(res, [ 'bmw', 'tesla', 'volvo' ])
   })
 })
 
@@ -151,13 +151,13 @@ test('DISTINCT', t => {
   t.plan(1)
   QUERY({
     DISTINCT: {
-      field: 'make'
+      FIELD: 'make'
     }
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'make', value: 'bmw' },
-      { field: 'make', value: 'tesla' },
-      { field: 'make', value: 'volvo' }
+    t.deepEqual(res, [
+      { FIELD: 'make', VALUE: 'bmw' },
+      { FIELD: 'make', VALUE: 'tesla' },
+      { FIELD: 'make', VALUE: 'volvo' }
     ])
   })
 })
@@ -170,21 +170,21 @@ test('DISTINCT and BUCKETFILTER', t => {
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
-          field: 'make'
+          FIELD: 'make'
         }
       },
       FILTER: {
         GET: {
-          field: 'brand',
-          value: 'tesla'
+          FIELD: 'brand',
+          VALUE: 'tesla'
         }
       }
     }
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'make', value: { gte: 'bmw', lte: 'bmw' }, _id: [ '7' ] },
-      { field: 'make', value: { gte: 'tesla', lte: 'tesla' }, _id: [] },
-      { field: 'make', value: { gte: 'volvo', lte: 'volvo' }, _id: [ '8' ] }
+    t.deepEqual(res, [
+      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '7' ] },
+      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] },
+      { FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] }
     ])
   })
 })
@@ -198,7 +198,7 @@ test('simple GET', t => {
   QUERY({
     GET: 'make:volvo'
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '8', _match: [ 'make:volvo#1.00' ] } 
@@ -216,7 +216,7 @@ test('simple NOT', t => {
       EXCLUDE: 'brand:volvo'
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '6', _match: [ 'manufacturer:tesla#1.00' ] },
       { _id: '7', _match: [ 'manufacturer:tesla#1.00' ] },
     ])
@@ -232,7 +232,7 @@ test('simple NOT with DOCUMENTS', t => {
       EXCLUDE: 'brand:volvo'
     }
   }, { DOCUMENTS: true }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: '6', _match: [ 'manufacturer:tesla#1.00' ], _doc: {
           _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW'
@@ -255,7 +255,7 @@ test('simple OR with 2 clauses', t => {
   QUERY({
     OR: [ 'make:volvo', 'brand:tesla' ]
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '7', _match: [ 'brand:tesla#1.00' ] },
@@ -271,7 +271,7 @@ test('simple SEARCH', t => {
   QUERY({
     SEARCH: [ 'tesla' ]    // TODO: should be able to search without a normal string?
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '2', _match: [ 'make:tesla#1.00', 'manufacturer:tesla#1.00' ], _score: 0.64 },
       { _id: '6', _match: [ 'make:tesla#1.00', 'manufacturer:tesla#1.00' ], _score: 0.64 },
       { _id: '7', _match: [ 'brand:tesla#1.00', 'manufacturer:tesla#1.00' ], _score: 0.64 },

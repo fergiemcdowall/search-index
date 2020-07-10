@@ -20,7 +20,7 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
     caseSensitive: false
   }, ops || {})
   if (fieldName === '_id') {
-    acc[fieldName] = fieldValue // return _id "as is"
+    acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
   } else if (Array.isArray(fieldValue)) {
     // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively

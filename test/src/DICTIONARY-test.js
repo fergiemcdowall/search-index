@@ -94,7 +94,7 @@ test('simple DICTIONARY', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY({ fields: ['colour'] }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'blue',
       'red',
       'yellow'
@@ -106,7 +106,7 @@ test('simple DICTIONARY, multiple fields', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY({ fields: ['colour', 'brand'] }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
     ])
   })
@@ -120,7 +120,7 @@ test('simple DICTIONARY, multiple fields, gte', t => {
     fields: ['colour', 'brand'],
     gte: 'c'
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'red', 'tesla', 'volvo', 'yellow' 
     ])
   })
@@ -134,7 +134,7 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
     gte: 'c',
     lte: 'u'
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'red', 'tesla'
     ])
   })
@@ -151,7 +151,7 @@ test('simple DICTIONARY (JSON), multiple fields, gte + lte', t => {
       lte: 'u'
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'red', 'tesla'
     ])
   })
@@ -163,7 +163,7 @@ test('simple DICTIONARY (JSON)', t => {
   QUERY({
     DICTIONARY: { fields: ['colour'] }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'blue',
       'red',
       'yellow'
@@ -180,7 +180,7 @@ test('simple DICTIONARY (JSON, with fields)', t => {
       options: { withFieldName: true }
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'colour:blue',
       'colour:red',
       'colour:yellow'

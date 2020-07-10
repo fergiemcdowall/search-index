@@ -101,7 +101,7 @@ test('SORT ALPHABETIC DESCENDING', t => {
       field: '_doc.make'
     })
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
 
       { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo', price: 1000 } },
       { _id: 5, _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo', price: 2000 } },
@@ -127,7 +127,7 @@ test('SORT ALPHABETIC ASCENDING', t => {
       field: '_doc.make'
     })
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 1, _doc: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo', price: 12000 } },
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
       { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } },
@@ -151,7 +151,7 @@ test('SORT NUMERIC ASCENDING', t => {
       field: '_doc.price'
     })
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 8, _doc: { _id: 8, make: 'Volvo', manufacturer: 'BMW', brand: 'Tesla', price: 100 } },
       { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW', price: 500 } },
       { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo', price: 1000 } },
@@ -176,7 +176,7 @@ test('SORT NUMERIC DESCENDING', t => {
       field: '_doc.price'
     })
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 3, _doc: { _id: 3, make: 'Tesla', manufacturer: 'Volvo', brand: 'BMW', price: 140000 } },
       { _id: 2, _doc: { _id: 2, make: 'Tesla', manufacturer: 'Tesla', brand: 'Volvo', price: 14000 } },
       { _id: 1, _doc: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo', price: 12000 } },
@@ -203,7 +203,7 @@ test('SORT NUMERIC DESCENDING (JSON)', t => {
       field: '_doc.price'
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 3, _doc: { _id: 3, make: 'Tesla', manufacturer: 'Volvo', brand: 'BMW', price: 140000 } },
       { _id: 2, _doc: { _id: 2, make: 'Tesla', manufacturer: 'Tesla', brand: 'Volvo', price: 14000 } },
       { _id: 1, _doc: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo', price: 12000 } },

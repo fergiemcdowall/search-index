@@ -58,7 +58,7 @@ test('can search', t => {
     'body.text:really',
     'body.text:bananas'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'b',
         _match: [
@@ -82,7 +82,7 @@ test('can search with QUERY', t => {
       'body.text:bananas'
     ]
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'b',
         _match: [
@@ -104,7 +104,7 @@ test('can search in any field', t => {
     'really',
     'bananas'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'b',
         _match: [
@@ -126,7 +126,7 @@ test('can do 0-hit', t => {
     'sdasdadsasd',
     'bananas'
   ).then(res => {
-    t.looseEqual(res, [])
+    t.deepEqual(res, [])
   })
 })
 
@@ -136,7 +136,7 @@ test('can do a mixture of fielded search and any-field search', t => {
     'title:cool',
     'documentness'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'a',
         _match: [ 'title:cool#1.00', 'body.metadata:documentness#1.00' ],
@@ -157,7 +157,7 @@ test('can SEARCH by numeric value (and return DOCUMENT)', t => {
     '500'
   ).then(global[indexName].DOCUMENTS)
    .then(res => {
-     t.looseEqual(res, [
+     t.deepEqual(res, [
        { _id: 'b', _match: [ 'importantNumber:500#1.00' ], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } } 
      ])
    })
@@ -170,14 +170,14 @@ test('can OR by numeric value', t => {
     '200'
   ).then(
     resultSet => global[indexName].SORT(resultSet, {
-      field: '_match.importantNumber',
+      FIELD: '_match.importantNumber',
       type: 'NUMERIC',
       direction: 'ASCENDING'
     })
   ).then(res => {
-    t.looseEqual(res, [
-      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] },
-      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] }
+    t.deepEqual(res, [
+      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] },
+      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] }
     ])
   })
 })
@@ -189,7 +189,7 @@ test('can search by numeric value and OR with one term on any field', t => {
   global[indexName].OR(
     '200',
     'importantNumber:5000'
-  ).then(res => t.looseEqual(res, [
+  ).then(res => t.deepEqual(res, [
     {
       _id: 'c',
       _match: [ 'importantNumber:200#1.00' ]
@@ -205,7 +205,7 @@ test('can GET', t => {
   t.plan(1)
   global[indexName].GET(
     'body.text:cool'
-  ).then(res => t.looseEqual(res, [
+  ).then(res => t.deepEqual(res, [
     {
       _id: 'a',_match: [ 'body.text:cool#1.00' ]
     },
@@ -220,7 +220,7 @@ test('can GET with no field specified', t => {
   global[indexName].GET(
     'cool'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         '_id': 'a',
         _match: [
@@ -245,7 +245,7 @@ test('can AND', t => {
     'body.text:really',
     'body.metadata:coolness'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         '_id': 'a',
         _match: [
@@ -270,7 +270,7 @@ test('can AND with embedded OR', t => {
     global[indexName].OR('title:quite', 'body.text:different'),
     'body.metadata:coolness'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         '_id': 'a',
         _match: [
@@ -308,7 +308,7 @@ test('can AND with embedded OR and embedded AND', t => {
     ),
     'body.metadata:coolness'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'a',
         _match: [ 'title:quite#1.00', 'body.metadata:coolness#1.00' ] },
       { _id: 'b',
@@ -328,7 +328,7 @@ test('can NOT', t => {
     'cool',
     'bananas'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         '_id': 'a',
         _match: [
@@ -344,7 +344,7 @@ test('can OR', t => {
   t.plan(1)
   global[indexName].OR('body.text:bananas', 'body.text:different')
    .then(res => {
-     t.looseEqual(res, [
+     t.deepEqual(res, [
        {
          _id: 'b',
          _match: [
@@ -366,7 +366,7 @@ test('AND with embedded OR', t => {
     'bananas',
     global[indexName].OR('body.text:cool', 'body.text:coolness')
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'b',_match: [ 'body.text:bananas#1.00', 'body.text:cool#1.00' ] }
     ])
   })
@@ -377,7 +377,7 @@ test('AND with embedded OR (JSON API)', t => {
   global[indexName].QUERY({
     AND:['bananas']
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'b',_match: [ 'body.text:bananas#1.00' ] }
     ])
   })
@@ -388,7 +388,7 @@ test('AND with embedded OR (JSON API)', t => {
   global[indexName].QUERY({
     AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'b',_match: [ 'body.text:bananas#1.00', 'body.text:cool#1.00' ] }
     ])
   })
@@ -400,7 +400,7 @@ test('DOCUMENT (JSON API)', t => {
   global[indexName].QUERY({
     DOCUMENTS:[{_id:'b'}, {_id:'a'}]
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'b',
         _doc: {
@@ -433,7 +433,7 @@ test('DOCUMENT (JSON API)', t => {
 test('QUERY with a string and then connect documents', t => {
   t.plan(1)
   global[indexName].QUERY('bananas', { DOCUMENTS: true }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       {
         _id: 'b',
         _match: [ 'body.text:bananas#1.00' ],
@@ -458,7 +458,7 @@ test('AND with embedded OR', t => {
     global[indexName].OR('bananas', 'different'),
     global[indexName].OR('cool', 'coolness')
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'b', _match: [
         'body.text:bananas#1.00',
         'body.text:cool#1.00',
@@ -476,11 +476,11 @@ test('AND with embedded OR', t => {
 test('can GET range with one value', t => {
   t.plan(1)
   global[indexName].GET({
-    value: {
-      gte: 'cool',
-      lte: 'cool'
+    VALUE: {
+      GTE: 'cool',
+      LTE: 'cool'
     }
-  }).then(res => t.looseEqual(res, [
+  }).then(res => t.deepEqual(res, [
     {
       _id: 'a', _match: [ 'body.text:cool#1.00', 'title:cool#1.00' ]
     },
@@ -493,11 +493,11 @@ test('can GET range with one value', t => {
 test('can GET range with a range of values', t => {
   t.plan(1)
   global[indexName].GET({
-    value: {
-      gte: 'cool',
-      lte: 'coolness'
+    VALUE: {
+      GTE: 'cool',
+      LTE: 'coolness'
     }
-  }).then(res => t.looseEqual(res, [
+  }).then(res => t.deepEqual(res, [
     { _id: 'a', _match: [ 'body.metadata:coolness#1.00',
                           'body.text:cool#1.00', 'title:cool#1.00' ] },
     { _id: 'b', _match: [ 'body.metadata:coolness#1.00',
@@ -515,7 +515,7 @@ test('SEARCH with embedded OR', t => {
     global[indexName].OR('bananas', 'different'),
     'coolness'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: 'c', _match: [ 'body.text:different#1.00', 'title:different#1.00', 'body.metadata:coolness#1.00' ], _score: 2.08 },
       { _id: 'b', _match: [ 'body.text:bananas#1.00', 'body.metadata:coolness#1.00' ], _score: 1.39 }
     ])
@@ -526,7 +526,7 @@ test('DICTIONARY with specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY('body.text').then(res => {
     global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
-      t.looseEqual(res, [
+      t.deepEqual(res, [
         'bananas',
         'cool',
         'different',
@@ -544,7 +544,7 @@ test('DICTIONARY with specified field', t => {
 test('DICTIONARY with specified field (JSON API)', t => {
   t.plan(1)
   global[indexName].DICTIONARY({ fields: ['body.text'] }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'bananas',
       'cool',
       'different',
@@ -566,7 +566,7 @@ test('DICTIONARY with gte lte', t => {
     lte: 'r',
     fields: ['body.text']
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       'different',
       'document',
       'is',
@@ -579,7 +579,7 @@ test('DICTIONARY with gte lte', t => {
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       '200',
       '500',
       '5000',
@@ -604,7 +604,7 @@ test('DICTIONARY without specified field', t => {
   t.plan(1)
   const { DICTIONARY } = global[indexName]
   DICTIONARY().then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       '200',
       '500',
       '5000',

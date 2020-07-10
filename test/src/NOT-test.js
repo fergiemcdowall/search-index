@@ -88,7 +88,7 @@ test('simple NOT', t => {
     'make:volvo',
     'brand:tesla'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] } 
     ])
@@ -102,7 +102,7 @@ test('simple NOT', t => {
     'brand:volvo',
     'make:bmw'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '0', _match: [ 'brand:volvo#1.00' ] },
       { _id: '2', _match: [ 'brand:volvo#1.00' ] },
       { _id: '4', _match: [ 'brand:volvo#1.00' ] },
@@ -118,7 +118,7 @@ test('simple NOT with OR clause', t => {
     OR('make:bmw', 'make:volvo'),
     'brand:tesla'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '1', _match: [ 'make:bmw#1.00' ] },
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
@@ -136,7 +136,7 @@ test('simple NOT', t => {
       EXCLUDE: 'brand:tesla'
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] } 
     ])

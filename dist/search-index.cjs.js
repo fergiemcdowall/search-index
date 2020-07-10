@@ -25,7 +25,7 @@ const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
     caseSensitive: false
   }, ops || {});
   if (fieldName === '_id') {
-    acc[fieldName] = fieldValue; // return _id "as is"
+    acc[fieldName] = fieldValue + ''; // return _id "as is" and stringify
   } else if (Array.isArray(fieldValue)) {
     // split up fieldValue into an array or strings and an array of
     // other things. Then term-vectorize strings and recursively
@@ -259,7 +259,7 @@ function reader (fii) {
 
   const DISTINCT = term => fii.DISTINCT(term).then(result => [
     ...result.reduce((acc, cur) => {
-      cur.value = cur.value.split('#')[0];
+      cur.VALUE = cur.VALUE.split('#')[0];
       acc.add(JSON.stringify(cur));
       return acc
     }, new Set())
@@ -383,8 +383,9 @@ const makeASearchIndex = idx => {
     OR: r.OR,
     PAGE: r.PAGE,
     PUT: w.PUT,
-    SCORENUMERIC: r.SCORENUMERIC,
-    SCORETFIDF: r.SCORETFIDF,
+    SCORE: r.SCORE,
+    /* SCORENUMERIC: r.SCORENUMERIC,
+     * SCORETFIDF: r.SCORETFIDF,*/
     SEARCH: r.SEARCH,
     SORT: r.SORT,
     QUERY: r.parseJsonQuery,

@@ -86,7 +86,7 @@ test('simple GET', t => {
   global[indexName].GET(
     'make:volvo'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '8', _match: [ 'make:volvo#1.00' ] } 
@@ -98,11 +98,11 @@ test('simple GET', t => {
   t.plan(1)
   global[indexName].GET(
     {
-      field: 'make',
-      value: 'volvo'
+      FIELD: 'make',
+      VALUE: 'volvo'
     }
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '8', _match: [ 'make:volvo#1.00' ] } 
@@ -114,14 +114,14 @@ test('simple GET', t => {
   t.plan(1)
   global[indexName].GET(
     {
-      field: 'make',
-      value: {
-        gte: 'a',
-        lte: 'c'
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
       }
     }
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '1', _match: [ 'make:bmw#1.00' ] },
       { _id: '7', _match: [ 'make:bmw#1.00' ] },
       { _id: '9', _match: [ 'make:bmw#1.00' ] }
@@ -133,14 +133,14 @@ test('simple GET using json with QUERY', t => {
   t.plan(1)
   global[indexName].QUERY({
     GET: {
-      field: 'make',
-      value: {
-        gte: 'a',
-        lte: 'c'
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
       }
     }
   }).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '1', _match: [ 'make:bmw#1.00' ] },
       { _id: '7', _match: [ 'make:bmw#1.00' ] },
       { _id: '9', _match: [ 'make:bmw#1.00' ] }

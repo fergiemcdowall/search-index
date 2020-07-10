@@ -67,7 +67,7 @@ test('simple SEARCH with 1 clause', t => {
   global[indexName].SEARCH(
     'paul'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '0', _match: [ 'text:paul#0.50' ], _score: 0.39 },
       { _id: '4', _match: [ 'text:paul#0.50' ], _score: 0.39 },
       { _id: '9', _match: [ 'text:paul#0.50' ], _score: 0.39 },
@@ -82,7 +82,7 @@ test('simple SEARCH with 2 clauses', t => {
   global[indexName].SEARCH(
     'paul', 'musical'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '9', _match: [ 'text:paul#0.50', 'text:musical#0.50' ], _score: 2.4 }
     ])
   })
@@ -93,7 +93,7 @@ test('simple SEARCH with 2 clauses', t => {
   global[indexName].SEARCH(
     'paul', 'and'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3 },
       { _id: '3', _match: [ 'text:paul#0.33', 'text:and#0.67' ], _score: 1.3 },
       { _id: '8', _match: [ 'text:paul#0.25', 'text:and#0.50' ], _score: 0.97 } 
@@ -108,7 +108,7 @@ test('simple SEARCH with 2 clauses and documents', t => {
   )
     .then(global[indexName].DOCUMENTS)
     .then(res => {
-      t.looseEqual(res, [
+      t.deepEqual(res, [
 
 
         {

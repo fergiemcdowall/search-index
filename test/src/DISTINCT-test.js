@@ -94,12 +94,12 @@ test('simple DISTINCT', t => {
   const { DISTINCT } = global[indexName]
   t.plan(1)
   DISTINCT({
-    field: 'colour'
+    FIELD: 'colour'
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'colour', value: 'blue' },
-      { field: 'colour', value: 'red' },
-      { field: 'colour', value: 'yellow' }
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'blue' },
+      { FIELD: 'colour', VALUE: 'red' },
+      { FIELD: 'colour', VALUE: 'yellow' }
     ])
   })
 })
@@ -109,14 +109,14 @@ test('simple DISTINCT with range', t => {
   const { DISTINCT } = global[indexName]
   t.plan(1)
   DISTINCT({
-    field: 'colour',
-    value: {
-      gte: 'a',
-      lte: 'c'
+    FIELD: 'colour',
+    VALUE: {
+      GTE: 'a',
+      LTE: 'c'
     }
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'colour', value: 'blue' }
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'blue' }
     ])
   })
 })
@@ -126,13 +126,13 @@ test('simple DISTINCT with range', t => {
   const { DISTINCT } = global[indexName]
   t.plan(1)
   DISTINCT({
-    field: 'colour',
-    value: {
-      gte: 'c'
+    FIELD: 'colour',
+    VALUE: {
+      GTE: 'c'
     }
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'colour', value: 'red' }, { field: 'colour', value: 'yellow' }
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'red' }, { FIELD: 'colour', VALUE: 'yellow' }
     ])
   })
 })
@@ -142,13 +142,13 @@ test('simple DISTINCT with range', t => {
   const { DISTINCT } = global[indexName]
   t.plan(1)
   DISTINCT({
-    field: 'colour',
-    value: {
-      lte: 'c'
+    FIELD: 'colour',
+    VALUE: {
+      LTE: 'c'
     }
   }).then(res => {
-    t.looseEqual(res, [
-      { field: 'colour', value: 'blue' }
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'blue' }
     ])
   })
 })

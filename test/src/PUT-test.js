@@ -58,7 +58,7 @@ test('Verify that PUT has created an appropriate index', t => {
   ]
   t.plan(indexEntries.length)
   global[indexName].INDEX.STORE.createReadStream().on('data', d => {
-    t.looseEquals(d, indexEntries.shift())
+    t.deepEquals(d, indexEntries.shift())
   })
 })
 

@@ -56,7 +56,7 @@ test('create a fii with memdown', t => {
         'body.text:really',
         'body.text:bananas'
       ).then(res => {
-        t.looseEqual(res, [
+        t.deepEqual(res, [
           {
             _id: 'b',
             // how about "match"

@@ -65,5 +65,5 @@ test('check that arrays were properly indexed', t => {
   global[indexName].INDEX.STORE.createReadStream({
     gte: 'band!',
     lte: 'band~'
-  }).on('data', data => t.looseEqual(data, band.shift()))
+  }).on('data', data => t.deepEqual(data, band.shift()))
 })

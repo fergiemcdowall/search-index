@@ -86,7 +86,7 @@ test('simple AND with 1 clause', t => {
   global[indexName].AND(
     'make:volvo'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '4', _match: [ 'make:volvo#1.00' ] },
       { _id: '5', _match: [ 'make:volvo#1.00' ] },
       { _id: '8', _match: [ 'make:volvo#1.00' ] } 
@@ -99,7 +99,7 @@ test('simple AND with 1 clause', t => {
   global[indexName].AND(
     'manufacturer:bmw'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '8', _match: [ 'manufacturer:bmw#1.00' ] }
     ])
   })
@@ -110,7 +110,7 @@ test('simple AND with 2 clauses', t => {
   global[indexName].AND(
     'make:volvo', 'manufacturer:bmw'
   ).then(res => {
-    t.looseEqual(res, [
+    t.deepEqual(res, [
       { _id: '8', _match: [ 'make:volvo#1.00', 'manufacturer:bmw#1.00' ] }
     ])
   })
