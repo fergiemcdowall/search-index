@@ -104,29 +104,24 @@ function writer (fii) {
 function reader (fii) {
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
-    if (Array.isArray(requestedDocs)) {
-      return Promise.all(
+    return (Array.isArray(requestedDocs))
+      ? Promise.all(
         requestedDocs.map(
-          doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮')
-            .catch(e => null)
+          doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(e => null)
         )
-      ).then(returnedDocs => requestedDocs.map((rd, i) => {
-        rd._doc = returnedDocs[i];
-        return rd
-      }))
-    }
-    // or just dump out all docs
-    // TODO should share getRange in indexUtils.js?
-    return new Promise((resolve, reject) => {
-      var result = [];
-      fii.STORE.createReadStream({
-        gte: '￮DOC_RAW￮',
-        lte: '￮DOC_RAW￮￮'
-      }).on('data', d => result.push({
-        _id: d.value._id,
-        _doc: d.value
-      })).on('end', () => resolve(result));
-    })
+      ).then(returnedDocs => requestedDocs.map(
+        (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
+      ))
+      : new Promise((resolve, reject) => {
+        var result = [];
+        fii.STORE.createReadStream({
+          gte: '￮DOC_RAW￮',
+          lte: '￮DOC_RAW￮￮'
+        }).on('data', d => result.push({
+          _id: d.value._id,
+          _doc: d.value
+        })).on('end', () => resolve(result));
+      })
   };
 
   const DICTIONARY = token => DISTINCT(token).then(results =>
