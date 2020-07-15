@@ -1,39 +1,6 @@
 import { getAvailableFields, getRange, getDocCount } from './indexUtils.js'
 
 export default function (fii) {
-  const DICTIONARY = q => new Promise((resolve) => {
-    const flatten = arr => [].concat.apply([], arr)
-    // if query is string convert to object
-    // if no query, make empty query
-    q = Object.assign(
-      { gte: '', lte: '￮' },
-      (typeof q === 'string') ? { gte: q, lte: q + '￮' } : q
-    )
-
-    // options, defaults
-    q.options = Object.assign({
-      withFieldName: false
-    }, q.options || {})
-
-    return resolve(
-      new Promise(resolve => resolve(q.fields || getAvailableFields(fii)))
-        .then(fields => Promise.all(
-          fields.map(field => getRange(fii, {
-            gte: field + ':' + q.gte,
-            lte: field + ':' + q.lte + '￮'
-          }))
-        ))
-        .then(flatten)
-      //        .then(res => {console.log(res); return res})
-        .then(tokens => tokens.map(t => (
-          q.options.withFieldName
-            ? t.split('#').shift()
-            : t.split(':').pop().split('#').shift()
-        )))
-        .then(tokens => tokens.sort())
-        .then(tokens => [...new Set(tokens)])
-    )
-  })
 
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
@@ -62,42 +29,94 @@ export default function (fii) {
     })
   }
 
-  const SEARCH = (...q) => fii
-    .AND(...q)
-    .then(SCORE)
-    .then(SORT)
+  const DICTIONARY = token => DISTINCT(token).then(results =>
+    Array.from(results.reduce(
+      (acc, cur) => acc.add(cur.VALUE), new Set())
+    ).sort()
+  )
 
+  const DISTINCT = token => fii.DISTINCT(token).then(result => [
+    // Stringify Set entries so that Set can determine duplicates
+    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
+      Object.assign(cur, {
+        VALUE: cur.VALUE.split('#')[0]
+      })
+    )), new Set())
+  ].map(JSON.parse)) // un-stringify
+  
   const PAGE = (results, options) => {
     options = Object.assign({
-      number: 0,
-      size: 20
+      NUMBER: 0,
+      SIZE: 20
     }, options || {})
-    const start = options.number * options.size
+    const start = options.NUMBER * options.SIZE
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.size) || undefined
+    const end = (start + options.SIZE) || undefined
     return results.slice(start, end)
   }
 
   // score by tfidf by default
-  const SCORE = results => getDocCount(fii).then(
-    docCount => results.map((x, _, resultSet) => {
-      const idf = Math.log((docCount + 1) / resultSet.length)
-      x._score = +x._match.reduce(
-        (acc, cur) => acc + idf * +cur.split('#')[1], 0
-      ).toFixed(2) // TODO: make precision an option
-      return x
-    })
-  )
+  // TODO: should also be an option to score by field
+  // TODO: Total hits (length of _match)
+  const SCORE = (results, type) => {
+    type = type || 'TFIDF' // default
+    if (type === 'TFIDF') {
+      return getDocCount(fii).then(
+        docCount => results.map((x, _, resultSet) => {
+          const idf = Math.log((docCount + 1) / resultSet.length)
+          x._score = +x._match.reduce(
+            (acc, cur) => acc + idf * +cur.split('#')[1], 0
+          ).toFixed(2) // TODO: make precision an option
+          return x
+        })
+      )
+    }
+    if (type === 'PRODUCT') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = +r._match.reduce(
+            (acc, cur) => acc * +cur.split('#')[1], 1
+          ).toFixed(2) // TODO: make precision an option
+          return r
+        })
+      ))
+    }
+    if (type === 'CONCAT') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = r._match.reduce(
+            (acc, cur) => acc + cur.split('#')[1], ''
+          )
+          return r
+        })
+      ))
+    }
+    if (type === 'SUM') {
+      return new Promise(resolve => resolve(
+        results.map(r => {
+          r._score = +r._match.reduce(
+            (acc, cur) => acc + +cur.split('#')[1], 0
+          ).toFixed(2) // TODO: make precision an option
+          return r
+        })
+      ))
+    }
+  }
 
+  const SEARCH = (...q) => fii
+    .AND(...q)
+    .then(SCORE)
+    .then(SORT)
+  
   const SORT = (results, options) => {
     options = Object.assign({
-      direction: 'DESCENDING',
-      field: '_score',
-      type: 'NUMERIC'
+      DIRECTION: 'DESCENDING',
+      FIELD: '_score',
+      TYPE: 'NUMERIC'
     }, options || {})
     const deepRef = obj => {
-      const path = options.field.split('.')
+      const path = options.FIELD.split('.')
       // TODO: dont like doing it this way- there should probably be a
       // way to dump the literal field value into _score, and always
       // sort on _score
@@ -132,16 +151,8 @@ export default function (fii) {
         }
       }
     }
-    return results.sort(sortFunction[options.type][options.direction])
+    return results.sort(sortFunction[options.TYPE][options.DIRECTION])
   }
-
-  const DISTINCT = term => fii.DISTINCT(term).then(result => [
-    ...result.reduce((acc, cur) => {
-      cur.VALUE = cur.VALUE.split('#')[0]
-      acc.add(JSON.stringify(cur))
-      return acc
-    }, new Set())
-  ].map(JSON.parse))
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
@@ -179,6 +190,7 @@ export default function (fii) {
       }
       if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
       if (command.PAGE) return PAGE(resultFromPreceding, command.PAGE)
+      if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
       if (command.SORT) return SORT(resultFromPreceding, command.SORT)
     }
@@ -199,6 +211,7 @@ export default function (fii) {
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
+    SCORE: SCORE,
     SEARCH: SEARCH,
     SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,

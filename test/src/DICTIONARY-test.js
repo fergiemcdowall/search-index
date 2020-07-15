@@ -93,7 +93,9 @@ test('can add data', t => {
 test('simple DICTIONARY', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({ fields: ['colour'] }).then(res => {
+  DICTIONARY({
+    FIELD: ['colour']
+  }).then(res => {
     t.deepEqual(res, [
       'blue',
       'red',
@@ -102,10 +104,33 @@ test('simple DICTIONARY', t => {
   })
 })
 
+test('simple DICTIONARY- all entries', t => {
+  const { DICTIONARY } = global[indexName]
+  t.plan(1)
+  DICTIONARY().then(res => {
+    t.deepEqual(res, [
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+    ])
+  })
+})
+
+test('simple DICTIONARY- all entries (JSON)', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({ DICTIONARY: {} }).then(res => {
+    t.deepEqual(res, [
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+    ])
+  })
+})
+
+
 test('simple DICTIONARY, multiple fields', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({ fields: ['colour', 'brand'] }).then(res => {
+  DICTIONARY({
+    FIELD: ['colour', 'brand']
+  }).then(res => {
     t.deepEqual(res, [
       'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
     ])
@@ -117,8 +142,10 @@ test('simple DICTIONARY, multiple fields, gte', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY({
-    fields: ['colour', 'brand'],
-    gte: 'c'
+    FIELD: ['colour', 'brand'],
+    VALUE: {
+      GTE: 'c'
+    }
   }).then(res => {
     t.deepEqual(res, [
       'red', 'tesla', 'volvo', 'yellow' 
@@ -130,9 +157,11 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY({
-    fields: ['colour', 'brand'],
-    gte: 'c',
-    lte: 'u'
+    FIELD: ['colour', 'brand'],
+    VALUE: {
+      GTE: 'c',
+      LTE: 'u'
+    }
   }).then(res => {
     t.deepEqual(res, [
       'red', 'tesla'
@@ -140,15 +169,16 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
   })
 })
 
-
 test('simple DICTIONARY (JSON), multiple fields, gte + lte', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
     DICTIONARY: {
-      fields: ['colour', 'brand'],
-      gte: 'c',
-      lte: 'u'
+      FIELD: ['colour', 'brand'],
+      VALUE: {
+        GTE: 'c',
+        LTE: 'u'
+      }
     }
   }).then(res => {
     t.deepEqual(res, [
@@ -161,29 +191,14 @@ test('simple DICTIONARY (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DICTIONARY: { fields: ['colour'] }
+    DICTIONARY: {
+      FIELD: ['colour']
+    }
   }).then(res => {
     t.deepEqual(res, [
       'blue',
       'red',
       'yellow'
-    ])
-  })
-})
-
-test('simple DICTIONARY (JSON, with fields)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    DICTIONARY: {
-      fields: ['colour'],
-      options: { withFieldName: true }
-    }
-  }).then(res => {
-    t.deepEqual(res, [
-      'colour:blue',
-      'colour:red',
-      'colour:yellow'
     ])
   })
 })

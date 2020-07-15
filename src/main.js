@@ -24,8 +24,6 @@ const makeASearchIndex = idx => {
     PAGE: r.PAGE,
     PUT: w.PUT,
     SCORE: r.SCORE,
-    /* SCORENUMERIC: r.SCORENUMERIC,
-     * SCORETFIDF: r.SCORETFIDF, */
     SEARCH: r.SEARCH,
     SORT: r.SORT,
     QUERY: r.parseJsonQuery,

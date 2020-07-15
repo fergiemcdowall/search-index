@@ -104,7 +104,7 @@ test('simple BUCKET', t => {
     }
   }).then(res => {
     t.deepEqual(res, {
-      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
+      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
     })
   })
 })
@@ -127,7 +127,7 @@ test('simple BUCKETFILTER', t => {
     }
   }).then(res => {
     t.deepEqual(res, [{
-      FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ]
+      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ]
     }])
   })
 })
@@ -182,9 +182,9 @@ test('DISTINCT and BUCKETFILTER', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '7' ] },
-      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] },
-      { FIELD: 'make', VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] }
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '7' ] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] }
     ])
   })
 })

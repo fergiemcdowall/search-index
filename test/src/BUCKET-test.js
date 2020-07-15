@@ -104,7 +104,7 @@ test('simple BUCKET with a range', t => {
     }
   }).then(res => {
     t.deepEqual(res, {
-      FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
+      FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
     })
   })
 })
@@ -135,7 +135,7 @@ test('simple BUCKET with a range (JSON)', t => {
     }
   }).then(res => {
     t.deepEqual(res, {
-      FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
+      FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
     })
   })
 })

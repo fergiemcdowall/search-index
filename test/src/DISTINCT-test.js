@@ -132,7 +132,8 @@ test('simple DISTINCT with range', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red' }, { FIELD: 'colour', VALUE: 'yellow' }
+      { FIELD: 'colour', VALUE: 'red' },
+      { FIELD: 'colour', VALUE: 'yellow' }
     ])
   })
 })
@@ -153,3 +154,65 @@ test('simple DISTINCT with range', t => {
   })
 })
 
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      FIELD: 'colour'
+    }
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'blue' },
+      { FIELD: 'colour', VALUE: 'red' },
+      { FIELD: 'colour', VALUE: 'yellow' }
+    ])
+  })
+})
+
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      VALUE: 'red'
+    }
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'colour', VALUE: 'red' }
+    ])
+  })
+})
+
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      VALUE: 'volvo'
+    }
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'brand', VALUE: 'volvo' },
+      { FIELD: 'make', VALUE: 'volvo' },
+      { FIELD: 'manufacturer', VALUE: 'volvo' } 
+    ])
+  })
+})
+
+
+test('simple DISTINCT', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: {
+      FIELD: 'brand'
+    }
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'brand', VALUE: 'bmw' },
+      { FIELD: 'brand', VALUE: 'tesla' },
+      { FIELD: 'brand', VALUE: 'volvo' } 
+    ])
+  })
+})

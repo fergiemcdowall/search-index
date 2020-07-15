@@ -50,7 +50,7 @@ test('can add some data', t => {
   })
 })
 
-// should be able to get non-tokenised (readable) version of object out of index
+//should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
   global[indexName].SEARCH(
@@ -95,6 +95,7 @@ test('can search with QUERY', t => {
     ])
   })
 })
+
 
 
 test('can search in any field', t => {
@@ -163,7 +164,7 @@ test('can SEARCH by numeric value (and return DOCUMENT)', t => {
    })
 })
 
-test('can OR by numeric value', t => {
+test('can OR by numeric value and SORT by numeric value', t => {
   t.plan(1)
   global[indexName].OR(
     '500',
@@ -171,13 +172,13 @@ test('can OR by numeric value', t => {
   ).then(
     resultSet => global[indexName].SORT(resultSet, {
       FIELD: '_match.importantNumber',
-      type: 'NUMERIC',
-      direction: 'ASCENDING'
+      TYPE: 'NUMERIC',
+      DIRECTION: 'ASCENDING'
     })
   ).then(res => {
     t.deepEqual(res, [
-      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] },
-      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] }
+      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] },
+      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] }
     ])
   })
 })

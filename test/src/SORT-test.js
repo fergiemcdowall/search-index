@@ -96,9 +96,9 @@ test('SORT ALPHABETIC DESCENDING', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].SORT(docs, {
-      type: 'ALPHABETIC',
-      direction: 'DESCENDING',
-      field: '_doc.make'
+      TYPE: 'ALPHABETIC',
+      DIRECTION: 'DESCENDING',
+      FIELD: '_doc.make'
     })
   ).then(res => {
     t.deepEqual(res, [
@@ -122,9 +122,9 @@ test('SORT ALPHABETIC ASCENDING', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].SORT(docs, {
-      type: 'ALPHABETIC',
-      direction: 'ASCENDING',
-      field: '_doc.make'
+      TYPE: 'ALPHABETIC',
+      DIRECTION: 'ASCENDING',
+      FIELD: '_doc.make'
     })
   ).then(res => {
     t.deepEqual(res, [
@@ -146,9 +146,9 @@ test('SORT NUMERIC ASCENDING', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].SORT(docs, {
-      type: 'NUMERIC',
-      direction: 'ASCENDING',
-      field: '_doc.price'
+      TYPE: 'NUMERIC',
+      DIRECTION: 'ASCENDING',
+      FIELD: '_doc.price'
     })
   ).then(res => {
     t.deepEqual(res, [
@@ -171,9 +171,9 @@ test('SORT NUMERIC DESCENDING', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(
     docs => global[indexName].SORT(docs, {
-      type: 'NUMERIC',
-      direction: 'DESCENDING',
-      field: '_doc.price'
+      TYPE: 'NUMERIC',
+      DIRECTION: 'DESCENDING',
+      FIELD: '_doc.price'
     })
   ).then(res => {
     t.deepEqual(res, [
@@ -198,9 +198,9 @@ test('SORT NUMERIC DESCENDING (JSON)', t => {
     DOCUMENTS: true
   }, {
     SORT: {
-      type: 'NUMERIC',
-      direction: 'DESCENDING',
-      field: '_doc.price'
+      TYPE: 'NUMERIC',
+      DIRECTION: 'DESCENDING',
+      FIELD: '_doc.price'
     }
   }).then(res => {
     t.deepEqual(res, [

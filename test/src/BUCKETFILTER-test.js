@@ -97,7 +97,7 @@ test('simple BUCKETFILTER (Promise.all)', t => {
   ).then(res => {
     t.deepEqual(res, [
       {
-        FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
+        FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
       }
     ])
   })
@@ -120,7 +120,7 @@ test('simple BUCKETFILTER', t => {
   ).then(res => {
     t.deepEqual(res, [
       {
-        FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
+        FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
       }
     ])
   })
@@ -143,7 +143,7 @@ test('simple BUCKETFILTER (JSON)', t => {
   }).then(res => {
     t.deepEqual(res, [
       {
-        FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
+        FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '1', '7', '9' ] 
       }
     ])
   })
@@ -166,7 +166,7 @@ test('simple BUCKETFILTER (JSON)', t => {
   }).then(res => {
     t.deepEqual(res, [
       {
-        FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '7', '9' ] 
+        FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '7', '9' ] 
       }
     ])
   })
@@ -189,7 +189,7 @@ test('simple BUCKETFILTER (JSON)', t => {
   }).then(res => {
     t.deepEqual(res, [
       {
-        FIELD: 'make', VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '2', '6', '7', '9' ] 
+        FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '2', '6', '7', '9' ] 
       }
     ])
   })
@@ -228,8 +228,8 @@ test('simple BUCKETFILTER, using DISTINCT', t => {
     GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
   ).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
-      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }
     ])
   })
 })
@@ -250,7 +250,7 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
       },
       FILTER: {
         GET: {
-          FIELD: 'make',
+          FIELD: [ 'make' ],
           VALUE: {
             GTE: 'a',
             LTE: 'c'
@@ -260,8 +260,8 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
-      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
     ])
   })
 })
@@ -290,8 +290,8 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
-      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
     ])
   })
 })
@@ -316,8 +316,8 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'make', VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
-      { FIELD: 'make', VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] }      
     ])
   })
 })
