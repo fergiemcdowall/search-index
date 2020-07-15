@@ -59,6 +59,12 @@ function writer (fii) {
     e => fii.STORE.put('￮DOCUMENT_COUNT￮', increment)
   );
 
+  const decrementDocCount = increment => fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).then(
+    count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count - increment)
+  );
+
   const PUT = (docs, ops) => fii.PUT(
     docs.map(doc => createDocumentVector(doc, ops))
   ).then(documentVector => Promise.all(
@@ -71,17 +77,15 @@ function writer (fii) {
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
-      result.map(
-        r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮')
-      )
+      result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
     ).then(
-      result => _ids.map(
+      result => decrementDocCount(_ids.length).then(() => _ids.map(
         _id => ({
           _id: _id,
           operation: 'DELETE',
           status: 'OK'
         })
-      )
+      ))
     )
   );
 
@@ -97,17 +101,7 @@ function writer (fii) {
   }
 }
 
-function getDocCount (fii) {
-  return fii.STORE.get(
-    '￮DOCUMENT_COUNT￮'
-  ).catch(
-    // if not found assume value to be 0
-    e => 0
-  )
-}
-
 function reader (fii) {
-
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
     if (Array.isArray(requestedDocs)) {
@@ -149,7 +143,7 @@ function reader (fii) {
       })
     )), new Set())
   ].map(JSON.parse)); // un-stringify
-  
+
   const PAGE = (results, options) => {
     options = Object.assign({
       NUMBER: 0,
@@ -168,7 +162,7 @@ function reader (fii) {
   const SCORE = (results, type) => {
     type = type || 'TFIDF'; // default
     if (type === 'TFIDF') {
-      return getDocCount(fii).then(
+      return DOCUMENT_COUNT().then(
         docCount => results.map((x, _, resultSet) => {
           const idf = Math.log((docCount + 1) / resultSet.length);
           x._score = +x._match.reduce(
@@ -214,7 +208,7 @@ function reader (fii) {
     .AND(...q)
     .then(SCORE)
     .then(SORT);
-  
+
   const SORT = (results, options) => {
     options = Object.assign({
       DIRECTION: 'DESCENDING',
@@ -259,6 +253,8 @@ function reader (fii) {
     };
     return results.sort(sortFunction[options.TYPE][options.DIRECTION])
   };
+
+  const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮');
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
@@ -314,6 +310,7 @@ function reader (fii) {
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
+    DOCUMENT_COUNT: DOCUMENT_COUNT,
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
@@ -324,44 +321,6 @@ function reader (fii) {
     parseJsonQuery: parseJsonQuery
   }
 }
-
-function util (fii) {
-  const prefetchSearchableFields = () => {
-    const tmp = [];
-    return new Promise((resolve) => {
-      fii.STORE.createKeyStream({
-        gte: '￮FIELD!',
-        lte: '￮FIELD￮￮'
-      }).on('data', d => tmp.push(d.split('￮')[2]))
-        .on('end', () => resolve(global.searchableFields = tmp));
-    })
-  };
-
-  const countDocs = () => {
-    let i = 0;
-    return new Promise((resolve) => {
-      fii.STORE.createKeyStream({
-        gte: '￮DOC￮!',
-        lte: '￮DOC￮￮'
-      }).on('data', () => i++)
-        .on('end', () => resolve(global.D = i));
-    })
-  };
-
-  const calibrate = () => {
-    // can handle lazy opening
-    if (fii.STORE.isOpen()) {
-      return prefetchSearchableFields().then(countDocs)
-    } else setTimeout(calibrate, 1000); // will rerun function every 1000ms until fii.STORE.isOpen()
-  };
-
-  return {
-    calibrate: calibrate
-  }
-}
-
-global.D = 0; // total docs in index
-global.searchableFields = []; // fields that are available for searching
 
 const makeASearchIndex = idx => {
   const w = writer(idx);
@@ -374,6 +333,7 @@ const makeASearchIndex = idx => {
     DICTIONARY: r.DICTIONARY,
     DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
+    DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     GET: r.GET,
     INDEX: idx,
     NOT: r.SET_SUBTRACTION,
@@ -398,10 +358,7 @@ function main (ops) {
     // else make a new fergies-inverted-index
     fii(ops, (err, idx) => {
       if (err) return reject(err)
-      resolve(util(idx).calibrate()
-        .then(() => {
-          return makeASearchIndex(idx)
-        }));
+      resolve(makeASearchIndex(idx));
     });
   })
 }

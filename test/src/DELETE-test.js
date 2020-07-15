@@ -42,10 +42,18 @@ test('create a search index', t => {
   })
 })
 
-test('can add some worldbank data', t => {
+test('can add some data', t => {
   t.plan(1)
   global[indexName].PUT(data).then(() => {
     t.pass('ok')
+  })
+})
+
+test('DOCUMENT_COUNT is 3', t => {
+  t.plan(1)
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
+    t.equal(res, 3)
   })
 })
 
@@ -54,6 +62,14 @@ test('can DELETE', t => {
   global[indexName].DELETE([ 'b' ]).then((res) => t.deepEqual(res, [    
     { _id: 'b', operation: 'DELETE', status: 'OK' } 
   ]))
+})
+
+test('DOCUMENT_COUNT is 2', t => {
+  t.plan(1)
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
+    t.equal(res, 2)
+  })
 })
 
 test('verify DELETE', t => {
@@ -76,7 +92,7 @@ test('verify DELETE', t => {
     { key: 'title:document#1.00', value: [ 'a' ] },
     { key: 'title:quite#1.00', value: [ 'a' ] },
     { key: 'title:something#1.00', value: [ 'c' ] },
-    { key: '￮DOCUMENT_COUNT￮', value: 3 },
+    { key: '￮DOCUMENT_COUNT￮', value: 2 },
     { key: '￮DOC_RAW￮a￮', value: { _id: 'a', title: 'quite a cool document', body: { text: 'this document is really cool cool cool', metadata: 'coolness documentness' }, importantNumber: 5000 } },
     { key: '￮DOC_RAW￮c￮', value: { _id: 'c', title: 'something different', body: { text: 'something totally different', metadata: 'coolness documentness' }, importantNumber: 200 } },
     { key: '￮DOC￮a￮', value: { _id: 'a', title: [ 'a#1.00', 'cool#1.00', 'document#1.00', 'quite#1.00' ], body: { text: [ 'cool#1.00', 'document#0.33', 'is#0.33', 'really#0.33', 'this#0.33' ], metadata: [ 'coolness#1.00', 'documentness#1.00' ] }, importantNumber: [ '5000#1.00' ] } },
@@ -131,6 +147,15 @@ test('can DELETE with json', t => {
   ]))
 })
 
+test('DOCUMENT_COUNT is 1', t => {
+  t.plan(1)
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
+    t.equal(res, 1)
+  })
+})
+
+
 test('verify DELETE', t => {
   const expectedIndexStructure = [
     { key: 'body.metadata:coolness#1.00', value: [ 'a' ] },
@@ -145,7 +170,7 @@ test('verify DELETE', t => {
     { key: 'title:cool#1.00', value: [ 'a' ] },
     { key: 'title:document#1.00', value: [ 'a' ] },
     { key: 'title:quite#1.00', value: [ 'a' ] },
-    { key: '￮DOCUMENT_COUNT￮', value: 3 },
+    { key: '￮DOCUMENT_COUNT￮', value: 1 },
     { key: '￮DOC_RAW￮a￮', value: { _id: 'a', title: 'quite a cool document', body: { text: 'this document is really cool cool cool', metadata: 'coolness documentness' }, importantNumber: 5000 } },
     { key: '￮DOC￮a￮', value: { _id: 'a', title: [ 'a#1.00', 'cool#1.00', 'document#1.00', 'quite#1.00' ], body: { text: [ 'cool#1.00', 'document#0.33', 'is#0.33', 'really#0.33', 'this#0.33' ], metadata: [ 'coolness#1.00', 'documentness#1.00' ] }, importantNumber: [ '5000#1.00' ] } },
     { key: '￮FIELD￮body.metadata￮', value: 'body.metadata' },

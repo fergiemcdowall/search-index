@@ -1,7 +1,4 @@
-import { getAvailableFields, getRange, getDocCount } from './indexUtils.js'
-
 export default function (fii) {
-
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
     if (Array.isArray(requestedDocs)) {
@@ -43,7 +40,7 @@ export default function (fii) {
       })
     )), new Set())
   ].map(JSON.parse)) // un-stringify
-  
+
   const PAGE = (results, options) => {
     options = Object.assign({
       NUMBER: 0,
@@ -62,7 +59,7 @@ export default function (fii) {
   const SCORE = (results, type) => {
     type = type || 'TFIDF' // default
     if (type === 'TFIDF') {
-      return getDocCount(fii).then(
+      return DOCUMENT_COUNT().then(
         docCount => results.map((x, _, resultSet) => {
           const idf = Math.log((docCount + 1) / resultSet.length)
           x._score = +x._match.reduce(
@@ -108,7 +105,7 @@ export default function (fii) {
     .AND(...q)
     .then(SCORE)
     .then(SORT)
-  
+
   const SORT = (results, options) => {
     options = Object.assign({
       DIRECTION: 'DESCENDING',
@@ -153,6 +150,8 @@ export default function (fii) {
     }
     return results.sort(sortFunction[options.TYPE][options.DIRECTION])
   }
+
+  const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮')
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
@@ -208,6 +207,7 @@ export default function (fii) {
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
+    DOCUMENT_COUNT: DOCUMENT_COUNT,
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,

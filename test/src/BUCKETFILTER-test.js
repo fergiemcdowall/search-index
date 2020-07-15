@@ -200,9 +200,11 @@ test('simple BUCKETFILTER, using DICTIONARY', t => {
   t.plan(1)
   BUCKETFILTER(
     DICTIONARY({
-      fields: ['make'],
-      gte: 'a',
-      lte: 'u'
+      FIELD: ['make'],
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
     }).then(dict => dict.map(item => 'make:' + item))
       .then(dict => dict.map(BUCKET)),
     GET('make:bmw') // TODO: this should be able to be just 'make:bmw'

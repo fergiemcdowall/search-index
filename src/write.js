@@ -54,6 +54,12 @@ export default function (fii) {
     e => fii.STORE.put('￮DOCUMENT_COUNT￮', increment)
   )
 
+  const decrementDocCount = increment => fii.STORE.get(
+    '￮DOCUMENT_COUNT￮'
+  ).then(
+    count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count - increment)
+  )
+
   const PUT = (docs, ops) => fii.PUT(
     docs.map(doc => createDocumentVector(doc, ops))
   ).then(documentVector => Promise.all(
@@ -66,17 +72,15 @@ export default function (fii) {
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
-      result.map(
-        r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮')
-      )
+      result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
     ).then(
-      result => _ids.map(
+      result => decrementDocCount(_ids.length).then(() => _ids.map(
         _id => ({
           _id: _id,
           operation: 'DELETE',
           status: 'OK'
         })
-      )
+      ))
     )
   )
 
