@@ -116,3 +116,59 @@ test('simple AND with 2 clauses', t => {
   })
 })
 
+test('simple AND with 2 clauses (JSON)', t => {
+  t.plan(1)
+  global[indexName].QUERY({
+    AND: [ 'make:volvo', 'manufacturer:bmw' ]
+  }).then(res => {
+    t.deepEqual(res, [
+      { _id: '8', _match: [ 'make:volvo#1.00', 'manufacturer:bmw#1.00' ] }
+    ])
+  })
+})
+
+test('AND with no VALUE', t => {
+  t.plan(1)
+  global[indexName].AND({
+    FIELD: [ 'make' ]
+  }).then(res => {
+    t.deepEqual(res, [
+      { _id: '0', _match: [ 'make:tesla#1.00' ] },
+      { _id: '1', _match: [ 'make:bmw#1.00' ] },
+      { _id: '2', _match: [ 'make:tesla#1.00' ] },
+      { _id: '3', _match: [ 'make:tesla#1.00' ] },
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] },
+      { _id: '6', _match: [ 'make:tesla#1.00' ] },
+      { _id: '7', _match: [ 'make:bmw#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] },
+      { _id: '9', _match: [ 'make:bmw#1.00' ] }
+    ])
+  })
+})
+
+
+test('AND with no VALUE (JSON)', t => {
+  t.plan(1)
+  global[indexName].QUERY({
+    AND: [
+      {
+        FIELD: [ 'make' ]
+      }
+    ]
+  }).then(res => {
+    t.deepEqual(res, [
+      { _id: '0', _match: [ 'make:tesla#1.00' ] },
+      { _id: '1', _match: [ 'make:bmw#1.00' ] },
+      { _id: '2', _match: [ 'make:tesla#1.00' ] },
+      { _id: '3', _match: [ 'make:tesla#1.00' ] },
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] },
+      { _id: '6', _match: [ 'make:tesla#1.00' ] },
+      { _id: '7', _match: [ 'make:bmw#1.00' ] },
+      { _id: '8', _match: [ 'make:volvo#1.00' ] },
+      { _id: '9', _match: [ 'make:bmw#1.00' ] }
+    ])
+  })
+})
+

@@ -18,7 +18,8 @@ test('can add data', t => {
       "_id": 0,
       "make": "Tesla",
       "manufacturer": "Volvo",
-      "brand": "Volvo"
+      "brand": "Volvo",
+      "extraField": 'EXTRA FIELD- w00t!'
     },
     {
       "_id": 1,
@@ -36,7 +37,8 @@ test('can add data', t => {
       "_id": 3,
       "make": "Tesla",
       "manufacturer": "Volvo",
-      "brand": "BMW"
+      "brand": "BMW",
+      "extraField": 'EXTRA FIELD- w00t!'
     },
     {
       "_id": 4,
@@ -54,7 +56,8 @@ test('can add data', t => {
       "_id": 6,
       "make": "Tesla",
       "manufacturer": "Tesla",
-      "brand": "BMW"
+      "brand": "BMW",
+      "extraField": 'EXTRA FIELD- w00t!'
     },
     {
       "_id": 7,
@@ -188,5 +191,27 @@ test('simple GET using json with QUERY', t => {
     ])
   })
 })
+
+test('GET by specifying a FIELD but no VALUE', t => {
+  t.plan(1)
+  global[indexName].QUERY({
+    GET: {
+      FIELD: 'extraField'
+    }
+  }).then(res => {
+    t.deepEqual(res, [
+      { _id: '0', _match: [
+        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+      ] },
+      { _id: '3', _match: [
+        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+      ] },
+      { _id: '6', _match: [
+        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+      ] }
+    ])
+  })
+})
+
 
 //TODO: an example of GET that shows more than one hit in _match

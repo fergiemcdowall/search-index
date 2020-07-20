@@ -14,6 +14,7 @@ const makeASearchIndex = idx => {
     DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    FIELDS: r.FIELDS,
     GET: r.GET,
     INDEX: idx,
     NOT: r.SET_SUBTRACTION,

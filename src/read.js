@@ -154,6 +154,9 @@ export default function (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
+      if (command.FIELD) return fii.GET(command)
+      if (command.VALUE) return fii.GET(command)
+
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -203,6 +206,7 @@ export default function (fii) {
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
     DOCUMENT_COUNT: DOCUMENT_COUNT,
+    FIELDS: fii.FIELDS,
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,

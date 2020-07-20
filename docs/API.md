@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **API Documentation for search-index**
 
-- [Initialisation](#initialisation)
+- [Module API](#module-api)
   - [Importing and requiring](#importing-and-requiring)
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
@@ -10,11 +10,14 @@
   - [INDEX](#index)
   - [QUERY](#query)
     - [Running queries](#running-queries)
+      - [Returning references or documents](#returning-references-or-documents)
       - [Combining query verbs](#combining-query-verbs)
-      - [Sorting, Scoring and paging](#sorting-scoring-and-paging)
+      - [Sorting](#sorting)
+      - [Scoring](#scoring)
+      - [Paging](#paging)
     - [Query tokens](#query-tokens)
       - [Find anywhere](#find-anywhere)
-      - [Find in named field](#find-in-named-field)
+      - [Find in named field or fields](#find-in-named-field-or-fields)
       - [Find token a range](#find-token-a-range)
     - [Query verbs](#query-verbs)
       - [AND](#and)
@@ -38,7 +41,7 @@
 
 ***(Convention: it is assumed here that the search-index module is always assigned to the variable `si`, but you can of course assign it to whatever you want)***
 
-# Initialisation
+# Module API
 
 ## Importing and requiring
 
@@ -101,16 +104,43 @@ const { INDEX, QUERY, UPDATE } = await si()
 index. It is called with a query object and returns a Promise:
 
 ```javascript
-const results = await QUERY(queryObject)`
+const results = await QUERY(query)`
+```
+
+#### Returning references or documents
+
+`QUERY` can return both refences to documents and the documents
+themselves.
+
+References are returned by default. To return documents, append the
+DOCUMENT command to the query:
+
+```javascript
+const results = await QUERY(query, { DOCUMENTS: true })`
 ```
 
 #### Combining query verbs
 
-TODO
+Query verbs can be combined and nested to create powerful expressions:
 
-#### Sorting, Scoring and paging
+```javascript
+// Example: AND with a nested OR with a nested AND
+{
+  AND: [ token1, token2, {
+    OR: [ token3, {
+      AND: [ token4, token5 ]
+    }]
+  }]
+}
+```
 
-TODO
+#### Scoring
+
+#### Paging
+
+#### Sorting
+
+TODO: Sort on score, and sort on doc
 
 ### Query tokens
 
@@ -130,7 +160,7 @@ Example:
 'banana'
 ```
 
-#### Find in named field
+#### Find in named field or fields
 
 ```javascript
 '<field name>:<token value>'
@@ -143,6 +173,14 @@ Example:
 // (can also be expressed as ->)
 {
   FIELD: 'fruit',
+  VALUE: 'banana'
+}
+```
+
+```javascript
+// Find in two or more specified fields:
+{
+  FIELD: [ 'fruit', 'description' ], // array of field names
   VALUE: 'banana'
 }
 ```
@@ -205,11 +243,22 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 #### DICTIONARY
 
-// TODO: rewrite DICTIONARY so that it takes a DISTINCT as input
+```javascript
+// Return each available field value for the given token. (to see
+// fields use DISTINCT)
+{
+  DICTIONARY: token
+}
+```
 
 #### DISTINCT
 
-// TODO: DISTINCT on many or all fields
+```javascript
+// Return each available field and value for the given token.
+{
+  DISTINCT: token
+}
+```
 
 #### DOCUMENTS
 

@@ -218,4 +218,31 @@ test('SORT NUMERIC DESCENDING (JSON)', t => {
   })
 })
 
-
+test('SORT on _match.price without fetching documents', t => {
+  t.plan(1)
+  global[indexName].QUERY({
+    SEARCH: [{
+      FIELD: 'price'
+    }]
+  }, {
+    SORT: {
+      TYPE: 'NUMERIC',
+      DIRECTION: 'DESCENDING',
+      FIELD: '_match.price'
+    }
+  }
+  ).then(res => {
+    t.deepEqual(res, [
+      { _id: '3', _match: [ 'price:140000#1.00' ], _score: 0.1 },
+      { _id: '2', _match: [ 'price:14000#1.00' ], _score: 0.1 },
+      { _id: '1', _match: [ 'price:12000#1.00' ], _score: 0.1 },
+      { _id: '7', _match: [ 'price:5000#1.00' ], _score: 0.1 },
+      { _id: '0', _match: [ 'price:3000#1.00' ], _score: 0.1 },
+      { _id: '5', _match: [ 'price:2000#1.00' ], _score: 0.1 },
+      { _id: '4', _match: [ 'price:1000#1.00' ], _score: 0.1 },
+      { _id: '9', _match: [ 'price:1000#1.00' ], _score: 0.1 },
+      { _id: '6', _match: [ 'price:500#1.00' ], _score: 0.1 },
+      { _id: '8', _match: [ 'price:100#1.00' ], _score: 0.1 }
+    ])
+  })
+})

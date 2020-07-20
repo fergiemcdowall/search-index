@@ -252,7 +252,11 @@ function reader (fii) {
   const parseJsonQuery = (...q) => {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
+
       if (typeof command === 'string') return fii.GET(command)
+      if (command.FIELD) return fii.GET(command)
+      if (command.VALUE) return fii.GET(command)
+      
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
         if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
@@ -302,6 +306,7 @@ function reader (fii) {
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
     DOCUMENT_COUNT: DOCUMENT_COUNT,
+    FIELDS: fii.FIELDS,
     GET: fii.GET,
     OR: fii.OR,
     PAGE: PAGE,
@@ -325,6 +330,7 @@ const makeASearchIndex = idx => {
     DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    FIELDS: r.FIELDS,
     GET: r.GET,
     INDEX: idx,
     NOT: r.SET_SUBTRACTION,
