@@ -246,3 +246,6 @@ test('SORT on _match.price without fetching documents', t => {
     ])
   })
 })
+
+
+// TODO: SORT should default to sort on _score (make test)

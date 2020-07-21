@@ -11,14 +11,13 @@
   - [QUERY](#query)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
-      - [Combining query verbs](#combining-query-verbs)
-      - [Sorting](#sorting)
-      - [Scoring](#scoring)
-      - [Paging](#paging)
+      - [Nesting query verbs](#nesting-query-verbs)
+      - [Manipulating result sets](#manipulating-result-sets)
     - [Query tokens](#query-tokens)
       - [Find anywhere](#find-anywhere)
       - [Find in named field or fields](#find-in-named-field-or-fields)
-      - [Find token a range](#find-token-a-range)
+      - [Find within a range](#find-within-a-range)
+      - [Find where a field exists](#find-where-a-field-exists)
     - [Query verbs](#query-verbs)
       - [AND](#and)
       - [BUCKET](#bucket)
@@ -119,9 +118,9 @@ DOCUMENT command to the query:
 const results = await QUERY(query, { DOCUMENTS: true })`
 ```
 
-#### Combining query verbs
+#### Nesting query verbs
 
-Query verbs can be combined and nested to create powerful expressions:
+Query verbs can be nested to create powerful expressions:
 
 ```javascript
 // Example: AND with a nested OR with a nested AND
@@ -134,13 +133,29 @@ Query verbs can be combined and nested to create powerful expressions:
 }
 ```
 
-#### Scoring
+#### Manipulating result sets
 
-#### Paging
+[SCORE](#score), [SORT](#sort) and [PAGE](#page) can be invoked after
+results have been returned:
 
-#### Sorting
-
-TODO: Sort on score, and sort on doc
+```javascript
+// Example: get the second page of documents ordered by price
+QUERY({
+  FIELD: 'price'  // Select all documents that have a 'price'
+}, {
+  SCORE: 'SUM'    // Score on the sum of the price field
+}, {
+  SORT: {
+    TYPE: 'NUMERIC',       // sort numerically, not alphabetically
+    DIRECTION: 'ASCENDING' // cheapest first
+  }
+}, {
+  PAGE: {
+    NUMBER: 1,    // '1' is the second page (pages counted from '0')
+    SIZE: 20      // 20 results per page
+  }
+})
+```
 
 ### Query tokens
 
@@ -185,7 +200,7 @@ Example:
 }
 ```
 
-#### Find token a range
+#### Find within a range
 ```javascript
 {
   FIELD: fieldName,
@@ -204,6 +219,14 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
     GTE: 'a',
     LTE: 'c'
   }
+}
+```
+
+#### Find where a field exists
+```javascript
+// Find all documents that contain a 'price' field
+{
+  FIELD: 'price'
 }
 ```
 
