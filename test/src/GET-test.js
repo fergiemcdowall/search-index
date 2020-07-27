@@ -196,18 +196,18 @@ test('GET by specifying a FIELD but no VALUE', t => {
   t.plan(1)
   global[indexName].QUERY({
     GET: {
-      FIELD: 'extraField'
+      FIELD: 'extrafield'
     }
   }).then(res => {
     t.deepEqual(res, [
       { _id: '0', _match: [
-        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+        'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
       ] },
       { _id: '3', _match: [
-        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+        'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
       ] },
       { _id: '6', _match: [
-        'extraField:extra#1.00', 'extraField:field#1.00', 'extraField:w00t#1.00'
+        'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
       ] }
     ])
   })

@@ -11,43 +11,43 @@ const scoreArrayTFIDF = arr => {
               (((item.positions.length / mostTokenOccurances)).toFixed(2)))
 }
 
-// traverse object, tokenising all leaves (strings to array) and then
-// scoring them
-// `ops` is a collection of indexing pipeline options
-const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
-  fieldName, fieldValue
-]) => {
-  // if fieldname is undefined, ignore and procede to next
-  if (fieldValue === undefined) return acc
-  ops = Object.assign({
-    caseSensitive: false
-  }, ops || {})
-  if (fieldName === '_id') {
-    acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
-  } else if (Array.isArray(fieldValue)) {
-    // split up fieldValue into an array or strings and an array of
-    // other things. Then term-vectorize strings and recursively
-    // process other things.
-    const strings = scoreArrayTFIDF(
-      fieldValue
-        .filter(item => typeof item === 'string')
-        .map(str => str.toLowerCase())
-    )
-    const notStrings = fieldValue.filter(
-      item => typeof item !== 'string'
-    ).map(createDocumentVector)
-    acc[fieldName] = strings.concat(notStrings).sort()
-  } else if (typeof fieldValue === 'object') {
-    acc[fieldName] = createDocumentVector(fieldValue)
-  } else {
-    let str = fieldValue.toString().replace(matchLettersInAllLanguages, '')
-    if (!ops.caseSensitive) str = str.toLowerCase()
-    acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort()
-  }
-  return acc
-}, {})
+export default function (fii, ops) {
+  // traverse object, tokenising all leaves (strings to array) and then
+  // scoring them
+  // `ops` is a collection of indexing pipeline options
+  const createDocumentVector = obj => Object.entries(obj).reduce((acc, [
+    fieldName, fieldValue
+  ]) => {
+    // if fieldname is undefined, ignore and procede to next
+    if (fieldValue === undefined) return acc
+    /* ops = Object.assign({
+     *   caseSensitive: false
+     * }, ops || {}) */
+    if (fieldName === '_id') {
+      acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
+    } else if (Array.isArray(fieldValue)) {
+      // split up fieldValue into an array or strings and an array of
+      // other things. Then term-vectorize strings and recursively
+      // process other things.
+      const strings = scoreArrayTFIDF(
+        fieldValue
+          .filter(item => typeof item === 'string')
+          .map(str => ops.caseSensitive ? str : str.toLowerCase())
+      )
+      const notStrings = fieldValue.filter(
+        item => typeof item !== 'string'
+      ).map(createDocumentVector)
+      acc[fieldName] = strings.concat(notStrings).sort()
+    } else if (typeof fieldValue === 'object') {
+      acc[fieldName] = createDocumentVector(fieldValue)
+    } else {
+      let str = fieldValue.toString().replace(matchLettersInAllLanguages, '')
+      if (!ops.caseSensitive) str = str.toLowerCase()
+      acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort()
+    }
+    return acc
+  }, {})
 
-export default function (fii) {
   const incrementDocCount = increment => fii.STORE.get(
     '￮DOCUMENT_COUNT￮'
   ).then(
@@ -63,8 +63,8 @@ export default function (fii) {
     count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count - increment)
   )
 
-  const PUT = (docs, ops) => fii.PUT(
-    docs.map(doc => createDocumentVector(doc, ops))
+  const PUT = (docs) => fii.PUT(
+    docs.map(doc => createDocumentVector(doc))
   ).then(documentVector => Promise.all(
     docs.map(doc =>
       fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)

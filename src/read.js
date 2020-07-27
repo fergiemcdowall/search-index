@@ -118,12 +118,12 @@ export default function (fii) {
       //
       // special case: sorting on _match so that you dont have to
       // fetch all the documents before doing a sort
-      if (path[0] === '_match') {
-        return obj._match.find(
+      return (path[0] === '_match')
+        ? (obj._match.find(
           _match => (path.slice(1).join('.') === _match.split(':')[0])
-        ).split(':')[1].split('#')[0]
-      }
-      return path.reduce((o, i) => o[i], obj)
+          // gracefully fail if field name not found
+        ) || ':#').split(':')[1].split('#')[0]
+        : path.reduce((o, i) => o[i], obj)
     }
     const sortFunction = {
       'NUMERIC': {

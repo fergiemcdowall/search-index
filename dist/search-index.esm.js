@@ -12,43 +12,43 @@ const scoreArrayTFIDF = arr => {
               (((item.positions.length / mostTokenOccurances)).toFixed(2)))
 };
 
-// traverse object, tokenising all leaves (strings to array) and then
-// scoring them
-// `ops` is a collection of indexing pipeline options
-const createDocumentVector = (obj, ops) => Object.entries(obj).reduce((acc, [
-  fieldName, fieldValue
-]) => {
-  // if fieldname is undefined, ignore and procede to next
-  if (fieldValue === undefined) return acc
-  ops = Object.assign({
-    caseSensitive: false
-  }, ops || {});
-  if (fieldName === '_id') {
-    acc[fieldName] = fieldValue + ''; // return _id "as is" and stringify
-  } else if (Array.isArray(fieldValue)) {
-    // split up fieldValue into an array or strings and an array of
-    // other things. Then term-vectorize strings and recursively
-    // process other things.
-    const strings = scoreArrayTFIDF(
-      fieldValue
-        .filter(item => typeof item === 'string')
-        .map(str => str.toLowerCase())
-    );
-    const notStrings = fieldValue.filter(
-      item => typeof item !== 'string'
-    ).map(createDocumentVector);
-    acc[fieldName] = strings.concat(notStrings).sort();
-  } else if (typeof fieldValue === 'object') {
-    acc[fieldName] = createDocumentVector(fieldValue);
-  } else {
-    let str = fieldValue.toString().replace(matchLettersInAllLanguages, '');
-    if (!ops.caseSensitive) str = str.toLowerCase();
-    acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort();
-  }
-  return acc
-}, {});
+function writer (fii, ops) {
+  // traverse object, tokenising all leaves (strings to array) and then
+  // scoring them
+  // `ops` is a collection of indexing pipeline options
+  const createDocumentVector = obj => Object.entries(obj).reduce((acc, [
+    fieldName, fieldValue
+  ]) => {
+    // if fieldname is undefined, ignore and procede to next
+    if (fieldValue === undefined) return acc
+    /* ops = Object.assign({
+     *   caseSensitive: false
+     * }, ops || {}) */
+    if (fieldName === '_id') {
+      acc[fieldName] = fieldValue + ''; // return _id "as is" and stringify
+    } else if (Array.isArray(fieldValue)) {
+      // split up fieldValue into an array or strings and an array of
+      // other things. Then term-vectorize strings and recursively
+      // process other things.
+      const strings = scoreArrayTFIDF(
+        fieldValue
+          .filter(item => typeof item === 'string')
+          .map(str => ops.caseSensitive ? str : str.toLowerCase())
+      );
+      const notStrings = fieldValue.filter(
+        item => typeof item !== 'string'
+      ).map(createDocumentVector);
+      acc[fieldName] = strings.concat(notStrings).sort();
+    } else if (typeof fieldValue === 'object') {
+      acc[fieldName] = createDocumentVector(fieldValue);
+    } else {
+      let str = fieldValue.toString().replace(matchLettersInAllLanguages, '');
+      if (!ops.caseSensitive) str = str.toLowerCase();
+      acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort();
+    }
+    return acc
+  }, {});
 
-function writer (fii) {
   const incrementDocCount = increment => fii.STORE.get(
     '￮DOCUMENT_COUNT￮'
   ).then(
@@ -64,8 +64,8 @@ function writer (fii) {
     count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count - increment)
   );
 
-  const PUT = (docs, ops) => fii.PUT(
-    docs.map(doc => createDocumentVector(doc, ops))
+  const PUT = (docs) => fii.PUT(
+    docs.map(doc => createDocumentVector(doc))
   ).then(documentVector => Promise.all(
     docs.map(doc =>
       fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
@@ -220,12 +220,12 @@ function reader (fii) {
       //
       // special case: sorting on _match so that you dont have to
       // fetch all the documents before doing a sort
-      if (path[0] === '_match') {
-        return obj._match.find(
+      return (path[0] === '_match')
+        ? (obj._match.find(
           _match => (path.slice(1).join('.') === _match.split(':')[0])
-        ).split(':')[1].split('#')[0]
-      }
-      return path.reduce((o, i) => o[i], obj)
+          // gracefully fail if field name not found
+        ) || ':#').split(':')[1].split('#')[0]
+        : path.reduce((o, i) => o[i], obj)
     };
     const sortFunction = {
       'NUMERIC': {
@@ -320,8 +320,8 @@ function reader (fii) {
   }
 }
 
-const makeASearchIndex = idx => {
-  const w = writer(idx);
+const makeASearchIndex = (idx, ops) => {
+  const w = writer(idx, ops);
   const r = reader(idx);
   return {
     AND: r.AND,
@@ -339,25 +339,26 @@ const makeASearchIndex = idx => {
     OR: r.OR,
     PAGE: r.PAGE,
     PUT: w.PUT,
+    QUERY: r.parseJsonQuery,
     SCORE: r.SCORE,
     SEARCH: r.SEARCH,
     SORT: r.SORT,
-    QUERY: r.parseJsonQuery,
     UPDATE: w.parseJsonUpdate
   }
 };
 
 function main (ops) {
   return new Promise((resolve, reject) => {
-    ops = Object.assign(ops || {}, {
-      tokenAppend: '#'
-    });
+    ops = Object.assign({
+      tokenAppend: '#',
+      caseSensitive: false
+    }, ops || {});
     // if a fergies-inverted-index is passed as an option
-    if (ops.fii) return resolve(makeASearchIndex(ops.fii))
+    if (ops.fii) return resolve(makeASearchIndex(ops.fii, ops))
     // else make a new fergies-inverted-index
     fii(ops, (err, idx) => {
       if (err) return reject(err)
-      resolve(makeASearchIndex(idx));
+      resolve(makeASearchIndex(idx, ops));
     });
   })
 }

@@ -84,8 +84,8 @@ test('verify DELETE', t => {
     { key: 'body.text:something#1.00', value: [ 'c' ] },
     { key: 'body.text:this#0.33', value: [ 'a' ] },
     { key: 'body.text:totally#1.00', value: [ 'c' ] },
-    { key: 'importantNumber:200#1.00', value: [ 'c' ] },
-    { key: 'importantNumber:5000#1.00', value: [ 'a' ] },
+    { key: 'importantnumber:200#1.00', value: [ 'c' ] },
+    { key: 'importantnumber:5000#1.00', value: [ 'a' ] },
     { key: 'title:a#1.00', value: [ 'a' ] },
     { key: 'title:cool#1.00', value: [ 'a' ] },
     { key: 'title:different#1.00', value: [ 'c' ] },
@@ -99,7 +99,7 @@ test('verify DELETE', t => {
     { key: '￮DOC￮c￮', value: { _id: 'c', title: [ 'different#1.00', 'something#1.00' ], body: { text: [ 'different#1.00', 'something#1.00', 'totally#1.00' ], metadata: [ 'coolness#1.00', 'documentness#1.00' ] }, importantNumber: [ '200#1.00' ] } },
     { key: '￮FIELD￮body.metadata￮', value: 'body.metadata' },
     { key: '￮FIELD￮body.text￮', value: 'body.text' },
-    { key: '￮FIELD￮importantNumber￮', value: 'importantNumber' },
+    { key: '￮FIELD￮importantnumber￮', value: 'importantnumber' },
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
   t.plan(expectedIndexStructure.length)
@@ -165,7 +165,7 @@ test('verify DELETE', t => {
     { key: 'body.text:is#0.33', value: [ 'a' ] },
     { key: 'body.text:really#0.33', value: [ 'a' ] },
     { key: 'body.text:this#0.33', value: [ 'a' ] },
-    { key: 'importantNumber:5000#1.00', value: [ 'a' ] },
+    { key: 'importantnumber:5000#1.00', value: [ 'a' ] },
     { key: 'title:a#1.00', value: [ 'a' ] },
     { key: 'title:cool#1.00', value: [ 'a' ] },
     { key: 'title:document#1.00', value: [ 'a' ] },
@@ -175,7 +175,7 @@ test('verify DELETE', t => {
     { key: '￮DOC￮a￮', value: { _id: 'a', title: [ 'a#1.00', 'cool#1.00', 'document#1.00', 'quite#1.00' ], body: { text: [ 'cool#1.00', 'document#0.33', 'is#0.33', 'really#0.33', 'this#0.33' ], metadata: [ 'coolness#1.00', 'documentness#1.00' ] }, importantNumber: [ '5000#1.00' ] } },
     { key: '￮FIELD￮body.metadata￮', value: 'body.metadata' },
     { key: '￮FIELD￮body.text￮', value: 'body.text' },
-    { key: '￮FIELD￮importantNumber￮', value: 'importantNumber' },
+    { key: '￮FIELD￮importantnumber￮', value: 'importantnumber' },
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
   t.plan(expectedIndexStructure.length)

@@ -159,7 +159,7 @@ test('can SEARCH by numeric value (and return DOCUMENT)', t => {
   ).then(global[indexName].DOCUMENTS)
    .then(res => {
      t.deepEqual(res, [
-       { _id: 'b', _match: [ 'importantNumber:500#1.00' ], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } } 
+       { _id: 'b', _match: [ 'importantnumber:500#1.00' ], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } } 
      ])
    })
 })
@@ -171,14 +171,14 @@ test('can OR by numeric value and SORT by numeric value', t => {
     '200'
   ).then(
     resultSet => global[indexName].SORT(resultSet, {
-      FIELD: '_match.importantNumber',
+      FIELD: '_match.importantnumber',
       TYPE: 'NUMERIC',
       DIRECTION: 'ASCENDING'
     })
   ).then(res => {
     t.deepEqual(res, [
-      { _id: 'c', _match: [ 'importantNumber:200#1.00' ] },
-      { _id: 'b', _match: [ 'importantNumber:500#1.00' ] }
+      { _id: 'c', _match: [ 'importantnumber:200#1.00' ] },
+      { _id: 'b', _match: [ 'importantnumber:500#1.00' ] }
     ])
   })
 })
@@ -189,15 +189,15 @@ test('can search by numeric value and OR with one term on any field', t => {
   t.plan(1)
   global[indexName].OR(
     '200',
-    'importantNumber:5000'
+    'importantnumber:5000'
   ).then(res => t.deepEqual(res, [
     {
       _id: 'c',
-      _match: [ 'importantNumber:200#1.00' ]
+      _match: [ 'importantnumber:200#1.00' ]
     },
     {
       _id: 'a',
-      _match: [ 'importantNumber:5000#1.00' ]
+      _match: [ 'importantnumber:5000#1.00' ]
     }
   ]))
 })

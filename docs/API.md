@@ -25,7 +25,6 @@
       - [DICTIONARY](#dictionary)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
-      - [GET](#get)
       - [NOT](#not)
       - [OR](#or)
       - [PAGE](#page)
@@ -74,9 +73,11 @@ si().then(idx => { /* idx is a new search index */ })
 
 | Name | Type | Default | Description |
 |---|---|---|---|
+| caseSensitive | boolean | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 | name | String | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | tokenAppend | String | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
-| fii | `fergies-inverted-index` | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
+| fii | fergies-inverted-index | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
+
 
 # Index API
 
@@ -92,7 +93,7 @@ const { INDEX, QUERY, UPDATE } = await si()
 ## INDEX
 
 `INDEX` is a variable that points to the underlying instance of
-`fergies-inverted-index`.
+[`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
 
 
 ## QUERY
@@ -112,11 +113,15 @@ const results = await QUERY(query)`
 themselves.
 
 References are returned by default. To return documents, append the
-DOCUMENT command to the query:
+[`DOCUMENTS`](#DOCUMENTS) command to the query:
 
 ```javascript
 const results = await QUERY(query, { DOCUMENTS: true })`
 ```
+
+(**Performance tip:** When dealing with large result sets, use
+[`SCORE`](#SCORE), [`SORT`](#SORT) and [`PAGE`](#PAGE) before [`DOCUMENTS`](#DOCUMENTS) in order to minimize the
+amount of documents that need to be fetched from the index)
 
 #### Nesting query verbs
 
@@ -307,17 +312,6 @@ PrecendingQuery, {
   DOCUMENTS: true
 }
 ```
-
-#### GET
-
-```javascript
-// Returns a list of documents that contain the provided token
-{
-  GET: token
-}
-```
-
-// TODO: does this need to be public? Is it different from AND/OR with one term or BUCKET?
 
 #### NOT
 
