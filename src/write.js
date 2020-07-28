@@ -71,12 +71,11 @@ export default function (fii, ops) {
   // should be some sort of timer here that makes sure that this
   // function uses at least 1 millisecond in order to avoid id collisions
   const generateId = (doc, i) => (typeof doc._id === 'undefined')
-                             ? Object.assign(doc, {
-                               _id: Date.now() + '-' + i 
-                             })
-                             : doc
+    ? Object.assign(doc, {
+      _id: Date.now() + '-' + i
+    })
+    : doc
 
-  
   const PUT = (docs) => fii.PUT(
     docs
       .map(parseStringAsDoc)
@@ -91,7 +90,6 @@ export default function (fii, ops) {
       result => incrementDocCount(result.length).then(() => result)
     )
   )
-  
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
@@ -115,6 +113,6 @@ export default function (fii, ops) {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: DELETE,
     PUT: PUT,
-    parseJsonUpdate: parseJsonUpdate
+    UPDATE: parseJsonUpdate
   }
 }

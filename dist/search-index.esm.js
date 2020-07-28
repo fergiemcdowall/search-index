@@ -72,12 +72,11 @@ function writer (fii, ops) {
   // should be some sort of timer here that makes sure that this
   // function uses at least 1 millisecond in order to avoid id collisions
   const generateId = (doc, i) => (typeof doc._id === 'undefined')
-                             ? Object.assign(doc, {
-                               _id: Date.now() + '-' + i 
-                             })
-                             : doc;
+    ? Object.assign(doc, {
+      _id: Date.now() + '-' + i
+    })
+    : doc;
 
-  
   const PUT = (docs) => fii.PUT(
     docs
       .map(parseStringAsDoc)
@@ -92,7 +91,6 @@ function writer (fii, ops) {
       result => incrementDocCount(result.length).then(() => result)
     )
   );
-  
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
@@ -116,7 +114,7 @@ function writer (fii, ops) {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: DELETE,
     PUT: PUT,
-    parseJsonUpdate: parseJsonUpdate
+    UPDATE: parseJsonUpdate
   }
 }
 
@@ -300,6 +298,7 @@ function reader (fii) {
       if (command.DISTINCT) return DISTINCT(command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
+      if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()
       if (command.GET) return fii.GET(command.GET)
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
@@ -321,22 +320,15 @@ function reader (fii) {
   };
 
   return {
-    AND: fii.AND,
-    BUCKET: fii.BUCKET,
-    BUCKETFILTER: fii.BUCKETFILTER,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
-    DOCUMENT_COUNT: DOCUMENT_COUNT,
-    FIELDS: fii.FIELDS,
-    GET: fii.GET,
-    OR: fii.OR,
+    DOCUMENT_COUNT: DOCUMENT_COUNT, // TODO: test
     PAGE: PAGE,
     SCORE: SCORE,
     SEARCH: SEARCH,
-    SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,
-    parseJsonQuery: parseJsonQuery
+    QUERY: parseJsonQuery
   }
 }
 
@@ -344,26 +336,29 @@ const makeASearchIndex = (idx, ops) => {
   const w = writer(idx, ops);
   const r = reader(idx);
   return {
-    AND: r.AND,
-    BUCKET: r.BUCKET,
-    BUCKETFILTER: r.BUCKETFILTER,
-    DELETE: w.DELETE,
+    // inherited from fergies-inverted-index
+    AND: idx.AND,
+    BUCKET: idx.BUCKET,
+    BUCKETFILTER: idx.BUCKETFILTER,
+    FIELDS: idx.FIELDS,
+    GET: idx.GET,
+    INDEX: idx,
+    NOT: idx.SET_SUBTRACTION,
+    OR: idx.OR,
+    // search-index read
     DICTIONARY: r.DICTIONARY,
     DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
-    FIELDS: r.FIELDS,
-    GET: r.GET,
-    INDEX: idx,
-    NOT: r.SET_SUBTRACTION,
-    OR: r.OR,
     PAGE: r.PAGE,
-    PUT: w.PUT,
-    QUERY: r.parseJsonQuery,
+    QUERY: r.QUERY,
     SCORE: r.SCORE,
     SEARCH: r.SEARCH,
     SORT: r.SORT,
-    UPDATE: w.parseJsonUpdate
+    // search-index write
+    DELETE: w.DELETE,
+    PUT: w.PUT,
+    UPDATE: w.UPDATE
   }
 };
 

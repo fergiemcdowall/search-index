@@ -6,26 +6,29 @@ const makeASearchIndex = (idx, ops) => {
   const w = writer(idx, ops)
   const r = reader(idx)
   return {
-    AND: r.AND,
-    BUCKET: r.BUCKET,
-    BUCKETFILTER: r.BUCKETFILTER,
-    DELETE: w.DELETE,
+    // inherited from fergies-inverted-index
+    AND: idx.AND,
+    BUCKET: idx.BUCKET,
+    BUCKETFILTER: idx.BUCKETFILTER,
+    FIELDS: idx.FIELDS,
+    GET: idx.GET,
+    INDEX: idx,
+    NOT: idx.SET_SUBTRACTION,
+    OR: idx.OR,
+    // search-index read
     DICTIONARY: r.DICTIONARY,
     DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
-    FIELDS: r.FIELDS,
-    GET: r.GET,
-    INDEX: idx,
-    NOT: r.SET_SUBTRACTION,
-    OR: r.OR,
     PAGE: r.PAGE,
-    PUT: w.PUT,
-    QUERY: r.parseJsonQuery,
+    QUERY: r.QUERY,
     SCORE: r.SCORE,
     SEARCH: r.SEARCH,
     SORT: r.SORT,
-    UPDATE: w.parseJsonUpdate
+    // search-index write
+    DELETE: w.DELETE,
+    PUT: w.PUT,
+    UPDATE: w.UPDATE
   }
 }
 

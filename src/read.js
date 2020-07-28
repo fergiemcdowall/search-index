@@ -178,6 +178,7 @@ export default function (fii) {
       if (command.DISTINCT) return DISTINCT(command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
+      if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()
       if (command.GET) return fii.GET(command.GET)
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
@@ -199,21 +200,14 @@ export default function (fii) {
   }
 
   return {
-    AND: fii.AND,
-    BUCKET: fii.BUCKET,
-    BUCKETFILTER: fii.BUCKETFILTER,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
-    DOCUMENT_COUNT: DOCUMENT_COUNT,
-    FIELDS: fii.FIELDS,
-    GET: fii.GET,
-    OR: fii.OR,
+    DOCUMENT_COUNT: DOCUMENT_COUNT, // TODO: test
     PAGE: PAGE,
     SCORE: SCORE,
     SEARCH: SEARCH,
-    SET_SUBTRACTION: fii.SET_SUBTRACTION,
     SORT: SORT,
-    parseJsonQuery: parseJsonQuery
+    QUERY: parseJsonQuery
   }
 }

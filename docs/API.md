@@ -25,6 +25,10 @@
       - [DICTIONARY](#dictionary)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
+      - [DOCUMENT_COUNT](#document_count)
+      - [FIELDS](#fields)
+      - [MAX](#max)
+      - [MIN](#min)
       - [NOT](#not)
       - [OR](#or)
       - [PAGE](#page)
@@ -313,6 +317,26 @@ PrecendingQuery, {
 }
 ```
 
+#### DOCUMENT_COUNT
+
+// TODO: and tests
+
+
+#### FIELDS
+
+// TODO
+
+
+#### MAX
+
+// TODO
+
+
+#### MIN
+
+// TODO
+
+
 #### NOT
 
 ```javascript
@@ -331,6 +355,7 @@ PrecendingQuery, {
   OR: [ token1, token2, ... ]
 }
 ```
+
 
 #### PAGE
 
