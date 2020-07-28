@@ -63,15 +63,35 @@ export default function (fii, ops) {
     count => fii.STORE.put('￮DOCUMENT_COUNT￮', +count - increment)
   )
 
+  const parseStringAsDoc = doc => (typeof doc === 'string') ? (
+    { body: doc }
+  ) : doc
+
+  // TODO: generated IDs are derived from timestamps. Possibly there
+  // should be some sort of timer here that makes sure that this
+  // function uses at least 1 millisecond in order to avoid id collisions
+  const generateId = (doc, i) => (typeof doc._id === 'undefined')
+                             ? Object.assign(doc, {
+                               _id: Date.now() + '-' + i 
+                             })
+                             : doc
+
+  
   const PUT = (docs) => fii.PUT(
-    docs.map(doc => createDocumentVector(doc))
-  ).then(documentVector => Promise.all(
-    docs.map(doc =>
-      fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-    )).then(
-    result => incrementDocCount(documentVector.length)
+    docs
+      .map(parseStringAsDoc)
+      .map(generateId)
+      .map(createDocumentVector)
+  ).then(
+    result => Promise.all(
+      docs.map(doc =>
+        fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+      )
+    ).then(() => result).then(
+      result => incrementDocCount(result.length).then(() => result)
+    )
   )
-  )
+  
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
