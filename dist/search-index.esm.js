@@ -299,7 +299,10 @@ function reader (fii) {
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()
+      if (command.FIELDS) return fii.FIELDS()
       if (command.GET) return fii.GET(command.GET)
+      if (command.MAX) return fii.MAX(command.MAX)
+      if (command.MIN) return fii.MIN(command.MIN)
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
@@ -343,6 +346,8 @@ const makeASearchIndex = (idx, ops) => {
     FIELDS: idx.FIELDS,
     GET: idx.GET,
     INDEX: idx,
+    MAX: idx.MAX,
+    MIN: idx.MIN,
     NOT: idx.SET_SUBTRACTION,
     OR: idx.OR,
     // search-index read

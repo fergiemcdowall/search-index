@@ -13,6 +13,8 @@ const makeASearchIndex = (idx, ops) => {
     FIELDS: idx.FIELDS,
     GET: idx.GET,
     INDEX: idx,
+    MAX: idx.MAX,
+    MIN: idx.MIN,
     NOT: idx.SET_SUBTRACTION,
     OR: idx.OR,
     // search-index read

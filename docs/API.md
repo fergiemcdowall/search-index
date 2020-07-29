@@ -319,22 +319,42 @@ PrecendingQuery, {
 
 #### DOCUMENT_COUNT
 
-// TODO: and tests
+```javascript
+// returns the total amount of documents in the index
+{
+  DOCUMENT_COUNT: true
+}
+```
 
 
 #### FIELDS
 
-// TODO
+```javascript
+// see every document field name that has been indexed:
+{
+  FIELDS: true
+}
+```
 
 
 #### MAX
 
-// TODO
+```javascript
+// get the _alphabetically_ maxiumum value of the given field
+{
+  MAX: fieldName
+}
+```
 
 
 #### MIN
 
-// TODO
+```javascript
+// get the _alphabetically_ miniumum value of the given field
+{
+  MIN: fieldName
+}
+```
 
 
 #### NOT
