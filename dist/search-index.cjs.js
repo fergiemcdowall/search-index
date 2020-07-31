@@ -99,7 +99,7 @@ function writer (fii, ops) {
       )
     )
   };
-  
+
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
@@ -116,9 +116,11 @@ function writer (fii, ops) {
 
   const parseJsonUpdate = update => {
     if (update.DELETE) return DELETE(update.DELETE)
-    if (update.DOCUMENTS) return PUT(update.DOCUMENTS, {
-      doNotIndexField: update.DO_NOT_INDEX_FIELD || []
-    })
+    if (update.DOCUMENTS) {
+      return PUT(update.DOCUMENTS, {
+        doNotIndexField: update.DO_NOT_INDEX_FIELD || []
+      })
+    }
   };
 
   return {
