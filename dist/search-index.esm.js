@@ -77,21 +77,25 @@ function writer (fii, ops) {
     })
     : doc;
 
-  const PUT = (docs) => fii.PUT(
-    docs
-      .map(parseStringAsDoc)
-      .map(generateId)
-      .map(createDocumentVector)
-  ).then(
-    result => Promise.all(
-      docs.map(doc =>
-        fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+  const PUT = (docs, putOptions) => {
+    console.log(putOptions);
+    return fii.PUT(
+      docs
+        .map(parseStringAsDoc)
+        .map(generateId)
+        .map(createDocumentVector),
+      putOptions
+    ).then(
+      result => Promise.all(
+        docs.map(doc =>
+          fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+        )
+      ).then(() => result).then(
+        result => incrementDocCount(result.length).then(() => result)
       )
-    ).then(() => result).then(
-      result => incrementDocCount(result.length).then(() => result)
     )
-  );
-
+  };
+  
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
@@ -108,6 +112,9 @@ function writer (fii, ops) {
 
   const parseJsonUpdate = update => {
     if (update.DELETE) return DELETE(update.DELETE)
+    if (update.DOCUMENTS) return PUT(update.DOCUMENTS, {
+      doNotIndexField: update.DO_NOT_INDEX_FIELD || []
+    })
   };
 
   return {

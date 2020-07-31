@@ -1,16 +1,36 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # FAQ
 
-## How do I get my data into search-index?
+- [How do I get my data into search-index?](#how-do-i-get-my-data-into-search-index)
+  - [Replicate an index](#replicate-an-index)
+  - [Create a new index](#create-a-new-index)
+- [What is the difference between AND, GET and SEARCH?](#what-is-the-difference-between-and-get-and-search)
+- [How do I get out entire documents and not just document IDs?](#how-do-i-get-out-entire-documents-and-not-just-document-ids)
+- [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
+- [How do I compose queries?](#how-do-i-compose-queries)
+- [How do I perform a simple aggregation on a field?](#how-do-i-perform-a-simple-aggregation-on-a-field)
+  - [Get a list of unique values for a field](#get-a-list-of-unique-values-for-a-field)
+  - [Get a set of document ids per unique field value](#get-a-set-of-document-ids-per-unique-field-value)
+  - [Get counts per unique field value](#get-counts-per-unique-field-value)
+  - [Define custom "buckets"](#define-custom-buckets)
+  - [Combine an aggregation with a search](#combine-an-aggregation-with-a-search)
+- [How do I make a simple typeahead / autosuggest / matcher](#how-do-i-make-a-simple-typeahead--autosuggest--matcher)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+# How do I get my data into search-index?
 
 You can either replicate an index from an existing index, or create a
 completely new index.
 
-### Replicate an index
+## Replicate an index
 
 Get the underlying index by using INDEX and then replicate into the
 index by using the [levelup API](https://github.com/Level/levelup#dbcreatereadstreamoptions)
 
-### Create a new index
+## Create a new index
 
 First, initialise an index, and then use `PUT` to add documents to the
 index.
@@ -21,7 +41,7 @@ const db = si({ name: indexName })
 PUT([ /* my array of objects */ ]).then(doStuff)
 ```
 
-## What is the difference between AND, GET and SEARCH?
+# What is the difference between AND, GET and SEARCH?
 
 * **AND** `AND` returns a set of documents that contain *all* of the
 terms contained in the query
@@ -35,7 +55,7 @@ documents which is ordered in terms of relevance. Search-index uses a
 TF-IDF algorithm to determine relevance.
 
 
-## How do I get out entire documents and not just document IDs?
+# How do I get out entire documents and not just document IDs?
 
 You need to join your resultset with `DOCUMENTS`
 
@@ -43,7 +63,7 @@ You need to join your resultset with `DOCUMENTS`
 AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(console.log)
 ```
 
-## How do I search on specific fields?
+# How do I search on specific fields?
 
 To return hits for all documents containing 'apples' or 'oranges' in
 the `title` field you would do something like this:
@@ -55,7 +75,7 @@ OR(
 )
 ```
 
-## How do I compose queries?
+# How do I compose queries?
 
 Queries can be composed by combining and nesting promises. For example
 
@@ -72,9 +92,9 @@ AND(
 ).then(console.log)  // returns a result
 ```
 
-## How do I perform a simple aggregation on a field?
+# How do I perform a simple aggregation on a field?
 
-### Get a list of unique values for a field
+## Get a list of unique values for a field
 
 Use `DISTINCT` to get a list of unique values for a field called "agency":
 
@@ -90,7 +110,7 @@ DISTINCT('agency').then(console.log)
 
 ```
 
-### Get a set of document ids per unique field value
+## Get a set of document ids per unique field value
 
 ```javascript
 DISTINCT('agency')
@@ -106,7 +126,7 @@ DISTINCT('agency')
 
 ```
 
-### Get counts per unique field value
+## Get counts per unique field value
 
 ```javascript
 DISTINCT('agency')
@@ -124,7 +144,7 @@ DISTINCT('agency')
 ```
 
 
-### Define custom "buckets"
+## Define custom "buckets"
 
 ```javascript
 Promise.all([
@@ -167,7 +187,7 @@ Promise.all([
 
 ```
 
-### Combine an aggregation with a search
+## Combine an aggregation with a search
 
 ```javascript
 const bucketStructure = DISTINCT('agency')
@@ -177,7 +197,7 @@ const search = SEARCH('board_approval_month:October')
 // satisfy the search criteria ('board_approval_month:October')
 BUCKETFILTER(bucketStructure, search).then(/* result */)
 ```
-## How do I make a simple typeahead / autosuggest / matcher
+# How do I make a simple typeahead / autosuggest / matcher
 
 There are of course many ways to do this, but if you just want a
 simple "begins with" autosuggest, then you can simply use the

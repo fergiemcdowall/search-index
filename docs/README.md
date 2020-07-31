@@ -1,23 +1,28 @@
-# Documentation - search-index
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Quickstart
 
-* <a href="#initializing"><b>Initializing</b></a>
-  * <a href="#init-default">Default method</a>
-  * <a href="#init-scripttag">Script tag method</a>
-  * <a href="#init-switchdb">Using something else than default db</a>
-* <a href="#add"><b>Add content</b></a>
-* <a href="#search"><b>Search the index</b></a>
-  * <a href="#search-standard">Standard search queries</a>
-  * <a href="#query-boolean">Using boolean expressions (AND, OR, NOT)</a>
-  * <a href="#combine-standard-or">Combine standard search with boolean OR</a>
-  * <a href="#search-querysplit">Splitting a multiple word query the right way</a>
-* <a href="#autocomplete"><b>Autocomplete / autosuggest</b></a>
+- [Initializing search-index](#initializing-search-index)
+  - [Default method](#default-method)
+  - [Script tag method](#script-tag-method)
+  - [Using something else than default db](#using-something-else-than-default-db)
+- [Add content](#add-content)
+- [Search the index](#search-the-index)
+  - [Standard search queries](#standard-search-queries)
+  - [Using boolean expressions (AND, OR, NOT)](#using-boolean-expressions-and-or-not)
+  - [Combine standard search with boolean OR](#combine-standard-search-with-boolean-or)
+  - [Splitting a multiple word query the right way](#splitting-a-multiple-word-query-the-right-way)
+- [Autocomplete / autosuggest](#autocomplete--autosuggest)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 <a name="initializing"></a>
 
-## Initializing search-index
+# Initializing search-index
 
 <a name="init-default"></a>
-### Default method
+## Default method
 
 `search-index` can be invoked with ES6 `import` or commonjs `require`
 using either lazy loading or a callback:
@@ -40,7 +45,7 @@ db.PUT([ /* my array of objects */ ]).then(doStuff)
 
 <a name="init-scripttag"></a>
 
-### Script tag method
+## Script tag method
 
 In the `/dist` folder there is a file called
 `search-index.<version>.js` that can be used as a standalone in a
@@ -58,7 +63,7 @@ called `searchIndex`:
 
 <a name="init-switchdb"></a>
 
-### Using something else than default db
+## Using something else than default db
 
 For node.js, levelDB is the default db and for the browser it is indexedDB. If you want to use something else, you can. 
 
@@ -87,20 +92,20 @@ levelup(encode(memdown('myDB'), {
 
 <a name="adding"></a>
 
-## Add content
+# Add content
 
 wip
 
 
 <a name="search"></a>
 
-## Search the index
+# Search the index
 
 The `db.SEARCH()` is the same as `db.AND().then(db.DOCUMENTS)`. It's a quick and standard way to get documents back from the index. If you want to do boolean search with any of the AND, OR or NOT or a combination, you have to chain it with a `.then(DOCUMENTS)` to get the matching documents to the IDs you've retrieved. 
 
 <a name="search-standard"></a>
 
-### Standard search queries
+## Standard search queries
 ```javascript
 
 // (given objects that contain: { land: <land>, colour: <colour>, population: <number> ... })
@@ -120,7 +125,7 @@ SEARCH('SCOTLAND', 'GREEN').then(result)
 
 <a name="query-boolean"></a>
          
-### Using boolean expressions (AND, OR, NOT)
+## Using boolean expressions (AND, OR, NOT)
 
 The boolean search operators AND, OR and NOT will only give you id's back, so you need to chain it with a `.then(DOCUMENTS)` to get actual documents for those id's back.
 
@@ -153,7 +158,7 @@ NOT(
 
 <a name="combine-standard-or"></a>
 
-### Combine standard search with boolean OR
+## Combine standard search with boolean OR
 
 ```javascript
 // SEARCH combined with boolean OR 
@@ -166,7 +171,7 @@ SEARCH(
 
 <a name="search-querysplit"></a>
 
-### Splitting a multiple word query the right way
+## Splitting a multiple word query the right way
 
 search-index store words, so searching for a string containing many words won't work. You need to split your query into a row of single words. 
 
@@ -190,7 +195,7 @@ idx.SEARCH(...queryString.split(' '))
 
 <a name="autocomplete"></a>
 
-## Autocomplete / autosuggest
+# Autocomplete / autosuggest
 
 For that you would use `DICTIONARY`. It can give you all tokens in the index, or tokens that are greater than and/or less than a given value.
 

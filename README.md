@@ -27,15 +27,10 @@ si().then(async index => {
 
 ```
 
-## More examples
-
-See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.
-
-
 ## Documentation
 
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
-* [Example code](docs/README.md)
-* [Browser demo](demo/) and [short explanation](demo/)
+* [Node demo](docs/README.md)
+* [Browser demo](demo/index.html) and [source code](demo/)
 

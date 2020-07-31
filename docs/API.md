@@ -1,6 +1,6 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**API Documentation for search-index**
+# API Documentation for search-index
 
 - [Module API](#module-api)
   - [Importing and requiring](#importing-and-requiring)
@@ -36,8 +36,12 @@
       - [SEARCH](#search)
       - [SORT](#sort)
   - [UPDATE](#update)
-    - [DELETE](#delete)
-    - [PUT](#put)
+    - [The _id field](#the-_id-field)
+    - [Making fields searchable](#making-fields-searchable)
+    - [Making fields storeable](#making-fields-storeable)
+    - [Update verbs](#update-verbs)
+      - [DELETE](#delete)
+      - [PUT](#put)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -78,10 +82,12 @@ si().then(idx => { /* idx is a new search index */ })
 | Name | Type | Default | Description |
 |---|---|---|---|
 | caseSensitive | boolean | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+| fii | fergies-inverted-index | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
 | name | String | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | tokenAppend | String | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
-| fii | fergies-inverted-index | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
+| stopWords | Array | `[]` | A list of words to be ignored when indexing and querying |
 
+TODO: test for stopwords
 
 # Index API
 
@@ -92,6 +98,10 @@ available as variables:
 ```javascript
 const { INDEX, QUERY, UPDATE } = await si()
 ```
+
+It may be helpful to check out the
+[tests](https://github.com/fergiemcdowall/search-index/tree/master/test)
+for more examples.
 
 
 ## INDEX
@@ -462,7 +472,23 @@ const result = await UPDATE(updateInstruction)`
 ```
 
 
-### DELETE
+### The _id field
+
+If any document does not contain an _id field, then one will be
+generated and assigned
+
+
+### Making fields searchable
+
+TODO
+
+### Making fields storeable
+
+TODO
+
+### Update verbs
+
+#### DELETE
 
 ```javascript
 // Delete documents from index
@@ -471,13 +497,28 @@ const result = await UPDATE(updateInstruction)`
 }
 ```
 
-### PUT
+#### PUT
 
 ```javascript
 // Add documents to index
 {
-  PUT: documents // an array of documents (plain old javascript objects)
+  // (required) an array of documents (plain old javascript objects)
+  DOCUMENTS: documents, 
+
+  // (optional) DO_NOT_INDEX_FIELD contains fields that are stored but
+  // not made searchable. This means that terms in these fields cannot be
+  // used to retrieve their originating documents
+  DO_NOT_INDEX_FIELD: arrayOfFieldNames,
+
+  // (Optional) DO_NOT_STORE_FIELD contains fields that are indexed
+  // (made searchable), but will not be stored in the index and will
+  // therefore not be visible when the document is retrieved from the
+  // index.
+  
+  DO_NOT_STORE_FIELD: arrayOfFieldNames
 }
+
+// TODO: test for DO_NOT_INDEX_FIELD and DO_NOT_STORE_FIELD
 
 // if any document does not contain an _id field, then one will be
 // generated and assigned
