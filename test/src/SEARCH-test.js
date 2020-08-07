@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'SEARCH'
+const indexName = sandbox + '_SEARCH'
 //const sanitise = str => str.replace(/[^0-9a-z ]/gi, '').toLowerCase()
 const data = [
   {
@@ -67,9 +67,9 @@ test('can add data', t => {
 })
 
 
-test('simple SEARCH with 1 clause', t => {
+test('simple _SEARCH with 1 clause', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName]._SEARCH(
     'paul'
   ).then(res => {
     t.deepEqual(res, [
@@ -82,9 +82,9 @@ test('simple SEARCH with 1 clause', t => {
   })
 })
 
-test('simple SEARCH with 2 clauses', t => {
+test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName]._SEARCH(
     'paul', 'musical'
   ).then(res => {
     t.deepEqual(res, [
@@ -93,9 +93,9 @@ test('simple SEARCH with 2 clauses', t => {
   })
 })
 
-test('simple SEARCH with 2 clauses', t => {
+test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName]._SEARCH(
     'paul', 'and'
   ).then(res => {
     t.deepEqual(res, [
@@ -106,12 +106,40 @@ test('simple SEARCH with 2 clauses', t => {
   })
 })
 
-test('simple SEARCH with 2 clauses and documents', t => {
+test('simple _SEARCH with 2 clauses and documents', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName]._SEARCH(
     'paul', 'and'
   )
-    .then(global[indexName].DOCUMENTS)
+    .then(global[indexName]._DOCUMENTS)
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '0',
+          _match: [ 'text:paul#0.50', 'text:and#0.50' ],
+          _score: 1.3,
+          _doc: data[0]
+        }, {
+          _id: '3',
+          _match: [ 'text:paul#0.33', 'text:and#0.67' ],
+          _score: 1.3,
+          _doc: data[3]
+        }, {
+          _id: '8',
+          _match: [ 'text:paul#0.25', 'text:and#0.50' ],
+          _score: 0.97,
+          _doc: data[8]
+        }
+    ])
+  })
+})
+
+test('simple _SEARCH with 2 clauses and documents', t => {
+  t.plan(1)
+  global[indexName].QUERY({
+    SEARCH: [ 'paul', 'and' ]
+  })
+    .then(global[indexName]._DOCUMENTS)
     .then(res => {
       t.deepEqual(res, [
         {

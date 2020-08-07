@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'BUCKET'
+const indexName = sandbox + '_BUCKET'
 
 test('create a search index', t => {
   t.plan(1)
@@ -81,10 +81,10 @@ test('can add data', t => {
 })
 
 
-test('simple BUCKET', t => {
-  const { BUCKET } = global[indexName]
+test('simple _BUCKET', t => {
+  const { _BUCKET } = global[indexName]
   t.plan(1)
-  BUCKET(
+  _BUCKET(
     'make:volvo',
   ).then(res => {
     t.deepEqual(res, {
@@ -93,10 +93,10 @@ test('simple BUCKET', t => {
   })
 })
 
-test('simple BUCKET with a range', t => {
-  const { BUCKET } = global[indexName]
+test('simple _BUCKET with a range', t => {
+  const { _BUCKET } = global[indexName]
   t.plan(1)
-  BUCKET({
+  _BUCKET({
     FIELD: 'make',
     VALUE: {
       GTE: 'a',

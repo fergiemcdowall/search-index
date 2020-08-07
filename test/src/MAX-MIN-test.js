@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple MAX', t => {
-  const { MAX } = global[indexName]
+test('simple _MAX', t => {
+  const { _MAX } = global[indexName]
   t.plan(1)
-  MAX('price').then(count => {
+  _MAX('price').then(count => {
     t.equals(count, '5000')
   })
 })
@@ -108,10 +108,10 @@ test('simple MAX (JSON)', t => {
   })
 })
 
-test('simple MIN', t => {
-  const { MIN } = global[indexName]
+test('simple _MIN', t => {
+  const { _MIN } = global[indexName]
   t.plan(1)
-  MIN('price').then(count => {
+  _MIN('price').then(count => {
     t.equals(count, '100')
   })
 })

@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'GET'
+const indexName = sandbox + '_GET'
 
 test('create a search index', t => {
   t.plan(1)
@@ -84,9 +84,9 @@ test('can add data', t => {
 })
 
 
-test('simple GET', t => {
+test('simple _GET', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName]._GET(
     'make:volvo'
   ).then(res => {
     t.deepEqual(res, [
@@ -97,9 +97,9 @@ test('simple GET', t => {
   })
 })
 
-test('simple GET', t => {
+test('simple _GET', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName]._GET(
     {
       FIELD: 'make',
       VALUE: 'volvo'
@@ -113,9 +113,9 @@ test('simple GET', t => {
   })
 })
 
-test('GET over 2 fields', t => {
+test('_GET over 2 fields', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName]._GET(
     {
       FIELD: [ 'make', 'brand' ],
       VALUE: 'volvo'
@@ -133,9 +133,9 @@ test('GET over 2 fields', t => {
   })
 })
 
-test('GET over all fields', t => {
+test('_GET over all fields', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName]._GET(
     {
       VALUE: 'volvo'
     }
@@ -154,9 +154,9 @@ test('GET over all fields', t => {
 })
 
 
-test('simple GET', t => {
+test('simple _GET', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName]._GET(
     {
       FIELD: 'make',
       VALUE: {

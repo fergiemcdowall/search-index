@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'BUCKETFILTER'
+const indexName = sandbox + '_BUCKETFILTER'
 
 test('create a search index', t => {
   t.plan(1)
@@ -81,11 +81,11 @@ test('can add data', t => {
 })
 
 test('simple BUCKETFILTER (Promise.all)', t => {
-  const { GET, BUCKET, BUCKETFILTER } = global[indexName]
+  const { _GET, _BUCKET, _BUCKETFILTER } = global[indexName]
   t.plan(1)
-  BUCKETFILTER(
+  _BUCKETFILTER(
     Promise.all([
-      BUCKET({
+      _BUCKET({
         FIELD: 'make',
         VALUE: {
           GTE: 'a',
@@ -93,7 +93,7 @@ test('simple BUCKETFILTER (Promise.all)', t => {
         }
       })
     ]),
-    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+    _GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
   ).then(res => {
     t.deepEqual(res, [
       {
@@ -103,12 +103,12 @@ test('simple BUCKETFILTER (Promise.all)', t => {
   })
 })
 
-test('simple BUCKETFILTER', t => {
-  const { GET, BUCKET, BUCKETFILTER } = global[indexName]
+test('simple _BUCKETFILTER', t => {
+  const { _GET, _BUCKET, _BUCKETFILTER } = global[indexName]
   t.plan(1)
-  BUCKETFILTER(
+  _BUCKETFILTER(
     [
-      BUCKET({
+      _BUCKET({
         FIELD: 'make',
         VALUE: {
           GTE: 'a',
@@ -116,7 +116,7 @@ test('simple BUCKETFILTER', t => {
         }
       })
     ],
-    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+    _GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
   ).then(res => {
     t.deepEqual(res, [
       {
@@ -195,19 +195,19 @@ test('simple BUCKETFILTER (JSON)', t => {
   })
 })
 
-test('simple BUCKETFILTER, using DICTIONARY', t => {
-  const { BUCKET, GET, DICTIONARY, BUCKETFILTER } = global[indexName]
+test('simple _BUCKETFILTER, using _DICTIONARY', t => {
+  const { _BUCKET, _GET, _DICTIONARY, _BUCKETFILTER } = global[indexName]
   t.plan(1)
-  BUCKETFILTER(
-    DICTIONARY({
+  _BUCKETFILTER(
+    _DICTIONARY({
       FIELD: ['make'],
       VALUE: {
         GTE: 'a',
         LTE: 'u'
       }
     }).then(dict => dict.map(item => 'make:' + item))
-      .then(dict => dict.map(BUCKET)),
-    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+      .then(dict => dict.map(_BUCKET)),
+    _GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
   ).then(res => {
     t.deepEqual(res, [
       { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },
@@ -216,18 +216,18 @@ test('simple BUCKETFILTER, using DICTIONARY', t => {
   })
 })
 
-test('simple BUCKETFILTER, using DISTINCT', t => {
-  const { BUCKET, GET, DISTINCT, BUCKETFILTER } = global[indexName]
+test('simple _BUCKETFILTER, using _DISTINCT', t => {
+  const { _BUCKET, _GET, _DISTINCT, _BUCKETFILTER } = global[indexName]
   t.plan(1)
-  BUCKETFILTER(
-    DISTINCT({
+  _BUCKETFILTER(
+    _DISTINCT({
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
         LTE: 'u'
       }
-    }).then(dict => dict.map(BUCKET)),
-    GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
+    }).then(dict => dict.map(_BUCKET)),
+    _GET('make:bmw') // TODO: this should be able to be just 'make:bmw'
   ).then(res => {
     t.deepEqual(res, [
       { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '1', '7', '9' ] },

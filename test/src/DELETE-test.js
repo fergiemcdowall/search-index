@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'DELETE-TEST'
+const indexName = sandbox + '_DELETE'
 
 const data = [
   {
@@ -49,25 +49,25 @@ test('can add some data', t => {
   })
 })
 
-test('DOCUMENT_COUNT is 3', t => {
+test('_DOCUMENT_COUNT is 3', t => {
   t.plan(1)
-  const { DOCUMENT_COUNT } = global[indexName]
-  DOCUMENT_COUNT().then(res => {
+  const { _DOCUMENT_COUNT } = global[indexName]
+  _DOCUMENT_COUNT().then(res => {
     t.equal(res, 3)
   })
 })
 
-test('can DELETE', t => {
+test('can _DELETE', t => {
   t.plan(1)
-  global[indexName].DELETE([ 'b' ]).then((res) => t.deepEqual(res, [    
+  global[indexName]._DELETE([ 'b' ]).then((res) => t.deepEqual(res, [    
     { _id: 'b', operation: 'DELETE', status: 'OK' } 
   ]))
 })
 
-test('DOCUMENT_COUNT is 2', t => {
+test('_DOCUMENT_COUNT is 2', t => {
   t.plan(1)
-  const { DOCUMENT_COUNT } = global[indexName]
-  DOCUMENT_COUNT().then(res => {
+  const { _DOCUMENT_COUNT } = global[indexName]
+  _DOCUMENT_COUNT().then(res => {
     t.equal(res, 2)
   })
 })
@@ -110,9 +110,9 @@ test('verify DELETE', t => {
 })
 
 
-test('verify DELETE using DOCUMENTS', t => {
+test('verify DELETE using _DOCUMENTS', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS([
+  global[indexName]._DOCUMENTS([
     {_id:'a'},
     {_id:'b'},
     {_id:'c'}
@@ -147,10 +147,10 @@ test('can DELETE with json', t => {
   ]))
 })
 
-test('DOCUMENT_COUNT is 1', t => {
+test('_DOCUMENT_COUNT is 1', t => {
   t.plan(1)
-  const { DOCUMENT_COUNT } = global[indexName]
-  DOCUMENT_COUNT().then(res => {
+  const { _DOCUMENT_COUNT } = global[indexName]
+  _DOCUMENT_COUNT().then(res => {
     t.equal(res, 1)
   })
 })

@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'NOT'
+const indexName = sandbox + '_NOT'
 
 test('create a search index', t => {
   t.plan(1)
@@ -81,10 +81,10 @@ test('can add data', t => {
 })
 
 
-test('simple NOT', t => {
-  const {AND, NOT} = global[indexName]
+test('simple _NOT', t => {
+  const { _NOT } = global[indexName]
   t.plan(1)
-  NOT(
+  _NOT(
     'make:volvo',
     'brand:tesla'
   ).then(res => {
@@ -95,10 +95,10 @@ test('simple NOT', t => {
   })
 })
 
-test('simple NOT', t => {
-  const {AND, NOT} = global[indexName]
+test('simple _NOT', t => {
+  const { _NOT } = global[indexName]
   t.plan(1)
-  NOT(
+  _NOT(
     'brand:volvo',
     'make:bmw'
   ).then(res => {
@@ -111,11 +111,11 @@ test('simple NOT', t => {
   })
 })
 
-test('simple NOT with OR clause', t => {
-  const {AND, OR, NOT} = global[indexName]
+test('simple _NOT with OR clause', t => {
+  const { _OR, _NOT } = global[indexName]
   t.plan(1)
-  NOT(
-    OR('make:bmw', 'make:volvo'),
+  _NOT(
+    _OR('make:bmw', 'make:volvo'),
     'brand:tesla'
   ).then(res => {
     t.deepEqual(res, [

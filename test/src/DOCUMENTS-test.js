@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'DOCUMENTS'
+const indexName = sandbox + '_DOCUMENTS'
 
 const data = [
   {
@@ -66,10 +66,10 @@ test('can add data', t => {
 
 test('simple SEARCH with 2 clauses and documents', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName]._SEARCH(
     'paul', 'and'
   )
-    .then(global[indexName].DOCUMENTS)
+    .then(global[indexName]._DOCUMENTS)
     .then(res => {
       t.deepEqual(res, [
         { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3, _doc: data[0] },
@@ -97,9 +97,9 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
    })
 })
 
-test('DOCUMENTS() returns all documents', t => {
+test('_DOCUMENTS() returns all documents', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(documents => {
+  global[indexName]._DOCUMENTS().then(documents => {
     t.deepEqual(documents, data.map(d => ({
       _id: d._id,
       _doc: d
@@ -107,7 +107,7 @@ test('DOCUMENTS() returns all documents', t => {
   })
 })
 
-test('DOCUMENTS() returns all documents (JSON)', t => {
+test('{ DOCUMENTS: true } returns all documents', t => {
   t.plan(1)
   global[indexName].QUERY({
     DOCUMENTS: true

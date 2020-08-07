@@ -3,7 +3,7 @@ import test from 'tape'
 import wbd from 'world-bank-dataset'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'WB'
+const indexName = sandbox + 'aggregation-test'
 
 
 test('create a search index', t => {
@@ -38,13 +38,13 @@ test('can add some worldbank data', t => {
 })
 
 test('can aggregate totalamt using underlying index', t => {
-  const { BUCKET, BUCKETFILTER, DISTINCT, SEARCH } = global[indexName]
+  const { _BUCKET, _BUCKETFILTER, _DISTINCT, _SEARCH } = global[indexName]
   t.plan(1)
-  BUCKETFILTER(
-    DISTINCT({
+  _BUCKETFILTER(
+    _DISTINCT({
       FIELD: 'totalamt'
-    }).then(dict => dict.map(BUCKET)),
-    SEARCH('board_approval_month:october')
+    }).then(dict => dict.map(_BUCKET)),
+    _SEARCH('board_approval_month:october')
   ).then(result => t.deepEqual(
     result,
     [
@@ -72,16 +72,16 @@ test('can aggregate totalamt using underlying index', t => {
   ))
 })
 
-test('can aggregate totalamt using BUCKETFILTER (aLTErnative invokation)', t => {
+test('can aggregate totalamt using _BUCKETFILTER (aLTErnative invokation)', t => {
   t.plan(1)
-  const { BUCKET, BUCKETFILTER, DISTINCT, SEARCH } = global[indexName]
+  const { _BUCKET, _BUCKETFILTER, _DISTINCT, _SEARCH } = global[indexName]
 
-  const b = DISTINCT({
+  const b = _DISTINCT({
     FIELD: 'totalamt'
-  }).then(dict => dict.map(BUCKET))
-  const s = SEARCH('board_approval_month:october')
+  }).then(dict => dict.map(_BUCKET))
+  const s = _SEARCH('board_approval_month:october')
   
-  BUCKETFILTER(b, s).then(result => t.deepEqual(
+  _BUCKETFILTER(b, s).then(result => t.deepEqual(
     result,
     [
       { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' }, _id: [
@@ -108,9 +108,9 @@ test('can aggregate totalamt using BUCKETFILTER (aLTErnative invokation)', t => 
   ))
 })
 
-test('BUCKETing', t => {
+test('_BUCKETing', t => {
   t.plan(1)
-  global[indexName].BUCKET({
+  global[indexName]._BUCKET({
     FIELD: 'totalamt',
     VALUE: {
       GTE: '0',
@@ -128,9 +128,9 @@ test('BUCKETing', t => {
 })
 
 
-test('BUCKETing', t => {
+test('_BUCKETing', t => {
   t.plan(1)
-  global[indexName].BUCKET({
+  global[indexName]._BUCKET({
     FIELD: 'totalamt',
     VALUE: {
       GTE: '00',
@@ -149,9 +149,9 @@ test('BUCKETing', t => {
 })
 
 
-test('BUCKETing', t => {
+test('_BUCKETing', t => {
   t.plan(1)
-  global[indexName].BUCKET({
+  global[indexName]._BUCKET({
     FIELD: 'totalamt',
     VALUE: {
       GTE: '26',
@@ -169,7 +169,7 @@ test('BUCKETing', t => {
 
 
 
-test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
+test('can aggregate totalamt using _BUCKETFILTER and custom buckets', t => {
   t.plan(1)  
   const b = Promise.all([
     {
@@ -184,9 +184,9 @@ test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
       FIELD: 'totalamt',
       VALUE: { GTE: '200000000', LTE: '200000000' }
     }
-  ].map(global[indexName].BUCKET))
-  const s = global[indexName].SEARCH('board_approval_month:october')  
-  global[indexName].BUCKETFILTER(b, s).then(result => t.deepEqual(
+  ].map(global[indexName]._BUCKET))
+  const s = global[indexName]._SEARCH('board_approval_month:october')  
+  global[indexName]._BUCKETFILTER(b, s).then(result => t.deepEqual(
     result,
     [
       { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' },
@@ -199,7 +199,7 @@ test('can aggregate totalamt using BUCKETFILTER and custom buckets', t => {
   ))
 })
 
-test('make some BUCKETs', t => {
+test('make some _BUCKETs', t => {
   t.plan(1)  
   const b = Promise.all([
     {
@@ -214,7 +214,7 @@ test('make some BUCKETs', t => {
       FIELD: 'totalamt',
       VALUE: { GTE: '200000000', LTE: '200000000' }
     }
-  ].map(global[indexName].BUCKET))
+  ].map(global[indexName]._BUCKET))
   b.then(result => t.deepEqual(
     result,
     [
@@ -237,7 +237,7 @@ test('make some BUCKETs', t => {
 
 test('can aggregate totalamt', t => {
   t.plan(1)
-  global[indexName].DISTINCT({
+  global[indexName]._DISTINCT({
     FIELD: 'impagency'
   }).then(result => t.deepEqual(
     result, [
@@ -305,10 +305,10 @@ test('can aggregate totalamt JSON DISTINCT', t => {
 
 test('can aggregate totalamt', t => {
   t.plan(1)
-  global[indexName].DISTINCT({
+  global[indexName]._DISTINCT({
     FIELD: 'impagency'
   })
-   .then(result => Promise.all(result.map(global[indexName].BUCKET)))
+   .then(result => Promise.all(result.map(global[indexName]._BUCKET)))
    .then(result => {
      t.deepEqual(
        result,
@@ -343,11 +343,11 @@ test('can aggregate totalamt', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName].BUCKETFILTER(
-    global[indexName].DISTINCT({
+  global[indexName]._BUCKETFILTER(
+    global[indexName]._DISTINCT({
       FIELD: 'impagency'
-    }).then(result => Promise.all(result.map(global[indexName].BUCKET))),
-    global[indexName].SEARCH('board_approval_month:october')
+    }).then(result => Promise.all(result.map(global[indexName]._BUCKET))),
+    global[indexName]._SEARCH('board_approval_month:october')
   ).then(result => {
     t.deepEqual(
       result,
@@ -438,7 +438,7 @@ test('JSON BUCKETFILTER', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName].BUCKET({
+  global[indexName]._BUCKET({
     FIELD: 'impagency',
     VALUE: 'pmu'
   }).then(result => {
@@ -475,7 +475,7 @@ test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName].BUCKET({
+  global[indexName]._BUCKET({
     FIELD: 'impagency',
     VALUE: {
       GTE: 'p',
@@ -500,13 +500,13 @@ test('can aggregate totalamt using underlying index', t => {
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
   Promise.all([
-    global[indexName].BUCKET({
+    global[indexName]._BUCKET({
       FIELD: 'totalamt',
       VALUE: {
         GTE: '0', LTE: '4999999999999'
       }
     }),
-    global[indexName].BUCKET({
+    global[indexName]._BUCKET({
       FIELD: 'totalamt',
       VALUE: {
         GTE: '5', LTE: '9'

@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'SORT'
+const indexName = sandbox + '_SORT'
 
 test('create a search index', t => {
   t.plan(1)
@@ -92,10 +92,10 @@ test('can add data', t => {
 
 
 
-test('SORT ALPHABETIC DESCENDING', t => {
+test('_SORT ALPHABETIC DESCENDING', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].SORT(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._SORT(docs, {
       TYPE: 'ALPHABETIC',
       DIRECTION: 'DESCENDING',
       FIELD: '_doc.make'
@@ -118,10 +118,10 @@ test('SORT ALPHABETIC DESCENDING', t => {
   })
 })
 
-test('SORT ALPHABETIC ASCENDING', t => {
+test('_SORT ALPHABETIC ASCENDING', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].SORT(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._SORT(docs, {
       TYPE: 'ALPHABETIC',
       DIRECTION: 'ASCENDING',
       FIELD: '_doc.make'
@@ -142,10 +142,10 @@ test('SORT ALPHABETIC ASCENDING', t => {
   })
 })
 
-test('SORT NUMERIC ASCENDING', t => {
+test('_SORT NUMERIC ASCENDING', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].SORT(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._SORT(docs, {
       TYPE: 'NUMERIC',
       DIRECTION: 'ASCENDING',
       FIELD: '_doc.price'
@@ -167,10 +167,10 @@ test('SORT NUMERIC ASCENDING', t => {
 })
 
 
-test('SORT NUMERIC DESCENDING', t => {
+test('_SORT NUMERIC DESCENDING', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].SORT(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._SORT(docs, {
       TYPE: 'NUMERIC',
       DIRECTION: 'DESCENDING',
       FIELD: '_doc.price'

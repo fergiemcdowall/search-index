@@ -349,30 +349,35 @@ const makeASearchIndex = (idx, ops) => {
   const r = reader(idx);
   return {
     // inherited from fergies-inverted-index
-    AND: idx.AND,
-    BUCKET: idx.BUCKET,
-    BUCKETFILTER: idx.BUCKETFILTER,
-    FIELDS: idx.FIELDS,
-    GET: idx.GET,
-    INDEX: idx,
-    MAX: idx.MAX,
-    MIN: idx.MIN,
-    NOT: idx.SET_SUBTRACTION,
-    OR: idx.OR,
+    _AND: idx.AND,
+    _BUCKET: idx.BUCKET,
+    _BUCKETFILTER: idx.BUCKETFILTER,
+    _FIELDS: idx.FIELDS,
+    _GET: idx.GET,
+    _MAX: idx.MAX,
+    _MIN: idx.MIN,
+    _NOT: idx.SET_SUBTRACTION,
+    _OR: idx.OR,
+
     // search-index read
-    DICTIONARY: r.DICTIONARY,
-    DISTINCT: r.DISTINCT,
-    DOCUMENTS: r.DOCUMENTS,
-    DOCUMENT_COUNT: r.DOCUMENT_COUNT,
-    PAGE: r.PAGE,
-    QUERY: r.QUERY,
-    SCORE: r.SCORE,
-    SEARCH: r.SEARCH,
-    SORT: r.SORT,
+    _DICTIONARY: r.DICTIONARY,
+    _DISTINCT: r.DISTINCT,
+    _DOCUMENTS: r.DOCUMENTS,
+    _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    _PAGE: r.PAGE,
+    _SCORE: r.SCORE,
+    _SEARCH: r.SEARCH,
+    _SORT: r.SORT,
+    
     // search-index write
-    DELETE: w.DELETE,
+    _DELETE: w.DELETE,
+
+    // public API
+    INDEX: idx,
     PUT: w.PUT,
+    QUERY: r.QUERY,
     UPDATE: w.UPDATE
+
   }
 };
 

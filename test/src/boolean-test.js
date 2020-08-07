@@ -36,9 +36,9 @@ test('can add some worldbank data', t => {
   })
 })
 
-test('AND', t => {
+test('_AND', t => {
   t.plan(1)
-  global[indexName].AND(
+  global[indexName]._AND(
     'sectorcode:bz',
     'sectorcode:bc'
   ).then(res => {
@@ -132,9 +132,9 @@ test('OR', t => {
   })
 })
 
-test('can NOT', t => {
+test('can _NOT', t => {
   t.plan(1)
-  global[indexName].NOT(
+  global[indexName]._NOT(
     'sectorcode:ti',
     'board_approval_month:november'
   ).then(res => {

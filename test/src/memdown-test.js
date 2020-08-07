@@ -51,7 +51,7 @@ test('create a fii with memdown', t => {
     }).then(db => db.PUT(data).then(() => {
       t.pass('ok')
     }).then(() => {
-      db.SEARCH(
+      db._SEARCH(
         'body.text:cool', // use colon? eg "body.text:cool"
         'body.text:really',
         'body.text:bananas'

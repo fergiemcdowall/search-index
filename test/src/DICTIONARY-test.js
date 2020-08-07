@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'DICTIONARY'
+const indexName = sandbox + '_DICTIONARY'
 
 test('create a search index', t => {
   t.plan(1)
@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple DICTIONARY', t => {
-  const { DICTIONARY } = global[indexName]
+test('simple _DICTIONARY', t => {
+  const { _DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({
+  _DICTIONARY({
     FIELD: ['colour']
   }).then(res => {
     t.deepEqual(res, [
@@ -104,10 +104,10 @@ test('simple DICTIONARY', t => {
   })
 })
 
-test('simple DICTIONARY- all entries', t => {
-  const { DICTIONARY } = global[indexName]
+test('simple _DICTIONARY- all entries', t => {
+  const { _DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY().then(res => {
+  _DICTIONARY().then(res => {
     t.deepEqual(res, [
       'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
     ])
@@ -125,10 +125,10 @@ test('simple DICTIONARY- all entries (JSON)', t => {
 })
 
 
-test('simple DICTIONARY, multiple fields', t => {
-  const { DICTIONARY } = global[indexName]
+test('simple _DICTIONARY, multiple fields', t => {
+  const { _DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({
+  _DICTIONARY({
     FIELD: ['colour', 'brand']
   }).then(res => {
     t.deepEqual(res, [
@@ -138,10 +138,10 @@ test('simple DICTIONARY, multiple fields', t => {
 })
 
 
-test('simple DICTIONARY, multiple fields, gte', t => {
-  const { DICTIONARY } = global[indexName]
+test('simple _DICTIONARY, multiple fields, gte', t => {
+  const { _DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({
+  _DICTIONARY({
     FIELD: ['colour', 'brand'],
     VALUE: {
       GTE: 'c'
@@ -153,10 +153,10 @@ test('simple DICTIONARY, multiple fields, gte', t => {
   })
 })
 
-test('simple DICTIONARY, multiple fields, gte + lte', t => {
-  const { DICTIONARY } = global[indexName]
+test('simple _DICTIONARY, multiple fields, gte + lte', t => {
+  const { _DICTIONARY } = global[indexName]
   t.plan(1)
-  DICTIONARY({
+  _DICTIONARY({
     FIELD: ['colour', 'brand'],
     VALUE: {
       GTE: 'c',

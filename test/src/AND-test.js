@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'AND'
+const indexName = sandbox + '_AND'
 
 test('create a search index', t => {
   t.plan(1)
@@ -81,9 +81,9 @@ test('can add data', t => {
 })
 
 
-test('simple AND with 1 clause', t => {
+test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName].AND(
+  global[indexName]._AND(
     'make:volvo'
   ).then(res => {
     t.deepEqual(res, [
@@ -94,9 +94,9 @@ test('simple AND with 1 clause', t => {
   })
 })
 
-test('simple AND with 1 clause', t => {
+test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName].AND(
+  global[indexName]._AND(
     'manufacturer:bmw'
   ).then(res => {
     t.deepEqual(res, [
@@ -105,9 +105,9 @@ test('simple AND with 1 clause', t => {
   })
 })
 
-test('simple AND with 2 clauses', t => {
+test('simple _AND with 2 clauses', t => {
   t.plan(1)
-  global[indexName].AND(
+  global[indexName]._AND(
     'make:volvo', 'manufacturer:bmw'
   ).then(res => {
     t.deepEqual(res, [
@@ -127,9 +127,9 @@ test('simple AND with 2 clauses (JSON)', t => {
   })
 })
 
-test('AND with no VALUE', t => {
+test('_AND with no VALUE', t => {
   t.plan(1)
-  global[indexName].AND({
+  global[indexName]._AND({
     FIELD: [ 'make' ]
   }).then(res => {
     t.deepEqual(res, [

@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'PAGE'
+const indexName = sandbox + '_PAGE'
 
 test('create a search index', t => {
   t.plan(1)
@@ -84,8 +84,8 @@ test('can add data', t => {
 
 test('get page 2 (called "1": count from "0") with page size of 3', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].PAGE(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._PAGE(docs, {
       NUMBER: 1,
       SIZE: 3
     })
@@ -120,8 +120,8 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
 
 test('get last page with page size of 4', t => {
   t.plan(1)
-  global[indexName].DOCUMENTS().then(
-    docs => global[indexName].PAGE(docs, {
+  global[indexName]._DOCUMENTS().then(
+    docs => global[indexName]._PAGE(docs, {
       NUMBER: -1,
       SIZE: 4
     })

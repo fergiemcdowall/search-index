@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'DISTINCT'
+const indexName = sandbox + '_DISTINCT'
 
 test('create a search index', t => {
   t.plan(1)
@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
+test('simple _DISTINCT', t => {
+  const { _DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
+  _DISTINCT({
     FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
@@ -105,10 +105,10 @@ test('simple DISTINCT', t => {
 })
 
 
-test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
+test('simple _DISTINCT with range', t => {
+  const { _DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
+  _DISTINCT({
     FIELD: 'colour',
     VALUE: {
       GTE: 'a',
@@ -122,10 +122,10 @@ test('simple DISTINCT with range', t => {
 })
 
 
-test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
+test('simple _DISTINCT with range', t => {
+  const { _DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
+  _DISTINCT({
     FIELD: 'colour',
     VALUE: {
       GTE: 'c'
@@ -139,10 +139,10 @@ test('simple DISTINCT with range', t => {
 })
 
 
-test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
+test('simple _DISTINCT with range', t => {
+  const { _DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
+  _DISTINCT({
     FIELD: 'colour',
     VALUE: {
       LTE: 'c'

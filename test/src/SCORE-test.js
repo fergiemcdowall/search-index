@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'SCORE'
+const indexName = sandbox + '_SCORE'
 
 test('create a search index', t => {
   t.plan(1)
@@ -92,10 +92,10 @@ test('can add data', t => {
 
 
 
-test('SCORE TFIDF', t => {
+test('_SCORE TFIDF', t => {
   t.plan(1)
-  global[indexName].SEARCH('tesla').then(
-    docs => global[indexName].SCORE(docs, 'TFIDF')
+  global[indexName]._SEARCH('tesla').then(
+    docs => global[indexName]._SCORE(docs, 'TFIDF')
   ).then(res => {
     t.deepEqual(res, [
       { _id: '2', _match: [ 'make:tesla#1.00', 'manufacturer:tesla#1.00' ], _score: 0.64 },
