@@ -48,7 +48,7 @@ test('create a fii with memdown', t => {
     t.error(err)
     si({
       fii: fii({ store: store })
-    }).then(db => db.PUT(data).then(() => {
+    }).then(db => db._PUT(data).then(() => {
       t.pass('ok')
     }).then(() => {
       db._SEARCH(

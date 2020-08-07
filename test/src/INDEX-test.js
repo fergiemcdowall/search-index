@@ -22,7 +22,7 @@ test('can add data', t => {
     }
   ]
   t.plan(1)
-  global[indexName].PUT(data).then(t.pass)
+  global[indexName]._PUT(data).then(t.pass)
 })
 
 

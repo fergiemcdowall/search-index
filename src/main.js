@@ -29,10 +29,10 @@ const makeASearchIndex = (idx, ops) => {
 
     // search-index write
     _DELETE: w.DELETE,
+    _PUT: w.PUT,
 
     // public API
     INDEX: idx,
-    PUT: w.PUT,
     GET: r.QUERY,
     UPDATE: w.UPDATE
 

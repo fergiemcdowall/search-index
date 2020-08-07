@@ -77,24 +77,21 @@ function writer (fii, ops) {
     })
     : doc;
 
-  const PUT = (docs, putOptions) => {
-    console.log(putOptions);
-    return fii.PUT(
-      docs
-        .map(parseStringAsDoc)
-        .map(generateId)
-        .map(createDocumentVector),
-      putOptions
-    ).then(
-      result => Promise.all(
-        docs.map(doc =>
-          fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-        )
-      ).then(() => result).then(
-        result => incrementDocCount(result.length).then(() => result)
-      )
+  const PUT = (docs, putOptions) => fii.PUT(
+    docs
+      .map(parseStringAsDoc)
+      .map(generateId)
+      .map(createDocumentVector),
+    putOptions
+  ).then(
+    result => Promise.all(
+      docs.map(doc =>
+               fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+              )
+    ).then(() => result).then(
+      result => incrementDocCount(result.length).then(() => result)
     )
-  };
+  );
 
   const DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
@@ -371,10 +368,10 @@ const makeASearchIndex = (idx, ops) => {
 
     // search-index write
     _DELETE: w.DELETE,
+    _PUT: w.PUT,
 
     // public API
     INDEX: idx,
-    PUT: w.PUT,
     GET: r.QUERY,
     UPDATE: w.UPDATE
 
