@@ -173,9 +173,9 @@ test('simple _GET', t => {
   })
 })
 
-test('simple GET using json with QUERY', t => {
+test('simple GET using json with GET', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     GET: {
       FIELD: 'make',
       VALUE: {
@@ -194,7 +194,7 @@ test('simple GET using json with QUERY', t => {
 
 test('GET by specifying a FIELD but no VALUE', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     GET: {
       FIELD: 'extrafield'
     }

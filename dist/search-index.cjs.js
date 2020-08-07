@@ -372,14 +372,14 @@ const makeASearchIndex = (idx, ops) => {
     _SCORE: r.SCORE,
     _SEARCH: r.SEARCH,
     _SORT: r.SORT,
-    
+
     // search-index write
     _DELETE: w.DELETE,
 
     // public API
     INDEX: idx,
     PUT: w.PUT,
-    QUERY: r.QUERY,
+    GET: r.QUERY,
     UPDATE: w.UPDATE
 
   }

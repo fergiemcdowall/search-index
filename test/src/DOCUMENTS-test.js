@@ -81,7 +81,7 @@ test('simple SEARCH with 2 clauses and documents', t => {
 
 test('simple SEARCH with 2 clauses and documents (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY(
+  global[indexName].GET(
     {
       SEARCH: [ 'paul', 'and' ]
     }, {
@@ -109,7 +109,7 @@ test('_DOCUMENTS() returns all documents', t => {
 
 test('{ DOCUMENTS: true } returns all documents', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     DOCUMENTS: true
   }).then(documents => {
     t.deepEqual(documents, data.map(d => ({

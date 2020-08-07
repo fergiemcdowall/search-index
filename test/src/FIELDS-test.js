@@ -81,7 +81,7 @@ test('simple _FIELDS', t => {
 
 test('simple FIELDS (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     FIELDS: true
   }).then(res => {
     t.deepEqual(res, [

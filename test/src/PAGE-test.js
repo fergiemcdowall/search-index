@@ -101,7 +101,7 @@ test('get page 2 (called "1": count from "0") with page size of 3', t => {
 
 test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     DOCUMENTS: true
   }, {
     PAGE: {

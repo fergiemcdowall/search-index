@@ -110,9 +110,9 @@ test('simple _BUCKET with a range', t => {
 })
 
 test('simple BUCKET (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     BUCKET: 'make:volvo'
   }).then(res => {
     t.deepEqual(res, {
@@ -123,9 +123,9 @@ test('simple BUCKET (JSON)', t => {
 
 
 test('simple BUCKET with a range (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     BUCKET: {
       FIELD: 'make',
       VALUE: {

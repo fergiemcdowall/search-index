@@ -113,7 +113,7 @@ test('_SCORE TFIDF', t => {
 
 test('SCORE TFIDF JSON', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     SEARCH: [ 'tesla' ]
   }, {
     SCORE: 'TFIDF'
@@ -134,7 +134,7 @@ test('SCORE TFIDF JSON', t => {
 
 test('SCORE SUM JSON', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     SEARCH: [ 'tesla' ]
   }, {
     SCORE: 'SUM'
@@ -154,7 +154,7 @@ test('SCORE SUM JSON', t => {
 
 test('SCORE PRODUCT JSON', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     SEARCH: [ 'tesla' ]
   }, {
     SCORE: 'PRODUCT'
@@ -174,7 +174,7 @@ test('SCORE PRODUCT JSON', t => {
 
 test('SCORE CONCAT JSON', t => {
   t.plan(1)
-  global[indexName].QUERY({
+  global[indexName].GET({
     AND: [ 'tesla' ]
   }, {
     SCORE: 'CONCAT'

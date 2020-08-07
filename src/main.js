@@ -33,7 +33,7 @@ const makeASearchIndex = (idx, ops) => {
     // public API
     INDEX: idx,
     PUT: w.PUT,
-    QUERY: r.QUERY,
+    GET: r.QUERY,
     UPDATE: w.UPDATE
 
   }

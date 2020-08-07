@@ -87,7 +87,7 @@ test('can add data to case sensitive index', t => {
 
 test('Match maKE:BMW', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
+  global[caseSensitivityTest].GET({
     AND: [ 'maKE:BMW' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -98,7 +98,7 @@ test('Match maKE:BMW', t => {
 
 test('Match make:bmw', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
+  global[caseSensitivityTest].GET({
     AND: [ 'make:bmw' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -108,7 +108,7 @@ test('Match make:bmw', t => {
 
 test('Match make:BMW', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
+  global[caseSensitivityTest].GET({
     AND: [ 'make:BMW' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -136,7 +136,7 @@ test('can add data to case insensitive index', t => {
 
 test('Match maKE:BMW', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
+  global[caseInsensitivityTest].GET({
     AND: [ 'maKE:BMW' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -149,7 +149,7 @@ test('Match maKE:BMW', t => {
 
 test('Match make:bmw', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
+  global[caseInsensitivityTest].GET({
     AND: [ 'make:bmw' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -162,7 +162,7 @@ test('Match make:bmw', t => {
 
 test('Match make:BMW', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
+  global[caseInsensitivityTest].GET({
     AND: [ 'make:BMW' ]
   }).then(res => {
     t.deepEqual(res, [

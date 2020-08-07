@@ -99,9 +99,9 @@ test('simple _MAX', t => {
 })
 
 test('simple MAX (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     MAX: 'price'
   }).then(count => {
     t.equals(count, '5000')
@@ -117,9 +117,9 @@ test('simple _MIN', t => {
 })
 
 test('simple MIN (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     MIN: 'price'
   }).then(count => {
     t.equals(count, '100')
@@ -127,9 +127,9 @@ test('simple MIN (JSON)', t => {
 })
 
 test('simple MAX (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     MAX: 'make'
   }).then(count => {
     t.equals(count, 'volvo')
@@ -137,9 +137,9 @@ test('simple MAX (JSON)', t => {
 })
 
 test('simple MIN (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { GET } = global[indexName]
   t.plan(1)
-  QUERY({
+  GET({
     MIN: 'make'
   }).then(count => {
     t.equals(count, 'bmw')
