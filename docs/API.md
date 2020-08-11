@@ -7,8 +7,9 @@
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
-  - [INDEX](#index)
-  - [QUERY](#query)
+  - [PUT](#put)
+  - [DELETE](#delete)
+  - [GET](#get)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
       - [Nesting query verbs](#nesting-query-verbs)
@@ -35,13 +36,14 @@
       - [SCORE](#score)
       - [SEARCH](#search)
       - [SORT](#sort)
-  - [UPDATE](#update)
+  - [INDEX](#index)
+  - [UPDATE (TODO: remove)](#update-todo-remove)
     - [The _id field](#the-_id-field)
     - [Making fields searchable](#making-fields-searchable)
     - [Making fields storeable](#making-fields-storeable)
     - [Update verbs](#update-verbs)
-      - [DELETE](#delete)
-      - [PUT](#put)
+      - [DELETE](#delete-1)
+      - [PUT](#put-1)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -104,13 +106,21 @@ It may be helpful to check out the
 for more examples.
 
 
-## INDEX
+## PUT
 
-`INDEX` is a variable that points to the underlying instance of
-[`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+TODO
 
 
-## QUERY
+## DELETE
+
+```javascript
+// Delete documents from index
+const result = await DELETE(documentIds) // documentIds is an Array of IDs
+                                         // result is the status of the deletion
+```
+
+
+## GET
 
 ### Running queries
 
@@ -462,7 +472,14 @@ PrecendingQuery, {
 
 ```
 
-## UPDATE
+
+## INDEX
+
+`INDEX` is a variable that points to the underlying instance of
+[`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
+## UPDATE (TODO: remove)
 
 `UPDATE` is a function that allows you to make changes to the search
 index. It returns a Promise.
@@ -523,3 +540,4 @@ TODO
 // if any document does not contain an _id field, then one will be
 // generated and assigned
 ```
+

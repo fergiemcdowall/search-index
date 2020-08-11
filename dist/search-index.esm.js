@@ -93,7 +93,7 @@ function writer (fii, ops) {
     )
   );
 
-  const DELETE = _ids => fii.DELETE(_ids).then(
+  const _DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
     ).then(
@@ -108,19 +108,19 @@ function writer (fii, ops) {
   );
 
   const parseJsonUpdate = update => {
-    if (update.DELETE) return DELETE(update.DELETE)
     if (update.DOCUMENTS) {
       return PUT(update.DOCUMENTS, {
         doNotIndexField: update.DO_NOT_INDEX_FIELD || []
       })
     }
   };
-
+  
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
-    DELETE: DELETE,
+    DELETE: docIds => _DELETE(docIds), // for external use
     PUT: PUT,
-    UPDATE: parseJsonUpdate
+    UPDATE: parseJsonUpdate, 
+    _DELETE: _DELETE,                  // for internal use
   }
 }
 
@@ -371,10 +371,12 @@ const makeASearchIndex = (idx, ops) => {
     _PUT: w.PUT,
 
     // public API
-    INDEX: idx,
+    DELETE: w.DELETE,
     GET: r.QUERY,
-    UPDATE: w.UPDATE
+    INDEX: idx,
 
+    // TODO: split this up into DELETE and PUT
+    UPDATE: w.UPDATE
   }
 };
 

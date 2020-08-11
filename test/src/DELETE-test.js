@@ -140,11 +140,11 @@ test('verify DELETE using _DOCUMENTS', t => {
 
 test('can DELETE with json', t => {
   t.plan(1)
-  global[indexName].UPDATE({
-    DELETE: [ 'c' ]
-  }).then((res) => t.deepEqual(res, [    
-    { _id: 'c', operation: 'DELETE', status: 'OK' } 
-  ]))
+  global[indexName]
+    .DELETE([ 'c' ])
+    .then((res) => t.deepEqual(res, [    
+      { _id: 'c', operation: 'DELETE', status: 'OK' } 
+    ]))
 })
 
 test('_DOCUMENT_COUNT is 1', t => {
@@ -189,9 +189,9 @@ test('verify DELETE', t => {
 
 test('DELETE with non-existent id', t => {
   t.plan(1)
-  global[indexName].UPDATE({
-    DELETE: [ 'd' ]
-  }).then((res) => t.deepEqual(res, [    
-    { _id: 'd', operation: 'DELETE', status: 'OK' } 
-  ]))
+  global[indexName]
+    .DELETE([ 'd' ])
+    .then((res) => t.deepEqual(res, [
+      { _id: 'd', operation: 'DELETE', status: 'OK' } 
+    ]))
 })

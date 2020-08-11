@@ -85,14 +85,14 @@ export default function (fii, ops) {
   ).then(
     result => Promise.all(
       docs.map(doc =>
-               fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-              )
+        fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+      )
     ).then(() => result).then(
       result => incrementDocCount(result.length).then(() => result)
     )
   )
 
-  const DELETE = _ids => fii.DELETE(_ids).then(
+  const _DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
     ).then(
@@ -107,7 +107,6 @@ export default function (fii, ops) {
   )
 
   const parseJsonUpdate = update => {
-    if (update.DELETE) return DELETE(update.DELETE)
     if (update.DOCUMENTS) {
       return PUT(update.DOCUMENTS, {
         doNotIndexField: update.DO_NOT_INDEX_FIELD || []
@@ -117,8 +116,9 @@ export default function (fii, ops) {
 
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
-    DELETE: DELETE,
+    DELETE: docIds => _DELETE(docIds), // for external use
     PUT: PUT,
-    UPDATE: parseJsonUpdate
+    UPDATE: parseJsonUpdate,
+    _DELETE: _DELETE // for internal use
   }
 }
