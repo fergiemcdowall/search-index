@@ -76,21 +76,28 @@ export default function (fii, ops) {
     })
     : doc
 
-  const _PUT = (docs, putOptions) => fii.PUT(
-    docs
-      .map(parseStringAsDoc)
-      .map(generateId)
-      .map(createDocumentVector), putOptions
-  ).then(
-    result => Promise.all(
-      docs.map(doc =>
-        fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-      )
-    ).then(() => result).then(
-      result => incrementDocCount(result.length).then(() => result)
+  const indexingPipeline = docs => new Promise (
+    resolve => resolve(
+      docs
+        .map(parseStringAsDoc)
+        .map(generateId)
     )
   )
-
+  
+  const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
+    docs => fii.PUT(
+      docs.map(createDocumentVector), putOptions
+    ).then(
+      result => Promise.all(
+        docs.map(doc =>
+                 fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+                )
+      ).then(() => result).then(
+        result => incrementDocCount(result.length).then(() => result)
+      )
+    )
+  )
+  
   const _DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
