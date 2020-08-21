@@ -37,13 +37,6 @@
       - [SEARCH](#search)
       - [SORT](#sort)
   - [INDEX](#index)
-  - [UPDATE (TODO: remove)](#update-todo-remove)
-    - [The _id field](#the-_id-field)
-    - [Making fields searchable](#making-fields-searchable)
-    - [Making fields storeable](#making-fields-storeable)
-    - [Update verbs](#update-verbs)
-      - [DELETE](#delete-1)
-      - [PUT](#put-1)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -108,15 +101,32 @@ for more examples.
 
 ## PUT
 
-TODO
+```javascript
+// Put documents into the index
+const result = await PUT(documents, options)
+// "result" is the shows the success or otherwise of the insertion
+// "documents" is an Array of javascript Objects.
+// "options" is an Object that contains indexing options
+```
+
+If any document does not contain an _id field, then one will be
+generated and assigned
+
+
+`options` is an optional object that can contain the following values:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+|doNotIndexField|Array|[]|These fields will not be searchable, but they will still be stored|
 
 
 ## DELETE
 
 ```javascript
-// Delete documents from index
-const result = await DELETE(documentIds) // documentIds is an Array of IDs
-                                         // result is the status of the deletion
+// Delete documents from the index
+const result = await DELETE(documentIds)
+// "documentIds" is an Array of IDs
+// "result" is the status of the deletion
 ```
 
 
@@ -477,67 +487,4 @@ PrecendingQuery, {
 
 `INDEX` is a variable that points to the underlying instance of
 [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
-
-
-## UPDATE (TODO: remove)
-
-`UPDATE` is a function that allows you to make changes to the search
-index. It returns a Promise.
-
-```javascript
-const result = await UPDATE(updateInstruction)`
-```
-
-
-### The _id field
-
-If any document does not contain an _id field, then one will be
-generated and assigned
-
-
-### Making fields searchable
-
-TODO
-
-### Making fields storeable
-
-TODO
-
-### Update verbs
-
-#### DELETE
-
-```javascript
-// Delete documents from index
-{
-  DELETE: documentIds // an array of document IDs
-}
-```
-
-#### PUT
-
-```javascript
-// Add documents to index
-{
-  // (required) an array of documents (plain old javascript objects)
-  DOCUMENTS: documents, 
-
-  // (optional) DO_NOT_INDEX_FIELD contains fields that are stored but
-  // not made searchable. This means that terms in these fields cannot be
-  // used to retrieve their originating documents
-  DO_NOT_INDEX_FIELD: arrayOfFieldNames,
-
-  // (Optional) DO_NOT_STORE_FIELD contains fields that are indexed
-  // (made searchable), but will not be stored in the index and will
-  // therefore not be visible when the document is retrieved from the
-  // index.
-  
-  DO_NOT_STORE_FIELD: arrayOfFieldNames
-}
-
-// TODO: test for DO_NOT_INDEX_FIELD and DO_NOT_STORE_FIELD
-
-// if any document does not contain an _id field, then one will be
-// generated and assigned
-```
 

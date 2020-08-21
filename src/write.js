@@ -76,12 +76,11 @@ export default function (fii, ops) {
     })
     : doc
 
-  const PUT = (docs, putOptions) => fii.PUT(
+  const _PUT = (docs, putOptions) => fii.PUT(
     docs
       .map(parseStringAsDoc)
       .map(generateId)
-      .map(createDocumentVector),
-    putOptions
+      .map(createDocumentVector), putOptions
   ).then(
     result => Promise.all(
       docs.map(doc =>
@@ -106,19 +105,11 @@ export default function (fii, ops) {
     )
   )
 
-  const parseJsonUpdate = update => {
-    if (update.DOCUMENTS) {
-      return PUT(update.DOCUMENTS, {
-        doNotIndexField: update.DO_NOT_INDEX_FIELD || []
-      })
-    }
-  }
-
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
-    PUT: PUT,
-    UPDATE: parseJsonUpdate,
-    _DELETE: _DELETE // for internal use
+    PUT: _PUT,
+    _DELETE: _DELETE, // for internal use
+    _PUT: _PUT
   }
 }

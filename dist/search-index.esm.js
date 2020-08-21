@@ -77,17 +77,16 @@ function writer (fii, ops) {
     })
     : doc;
 
-  const PUT = (docs, putOptions) => fii.PUT(
+  const _PUT = (docs, putOptions) => fii.PUT(
     docs
       .map(parseStringAsDoc)
       .map(generateId)
-      .map(createDocumentVector),
-    putOptions
+      .map(createDocumentVector), putOptions
   ).then(
     result => Promise.all(
       docs.map(doc =>
-               fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-              )
+        fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+      )
     ).then(() => result).then(
       result => incrementDocCount(result.length).then(() => result)
     )
@@ -107,20 +106,12 @@ function writer (fii, ops) {
     )
   );
 
-  const parseJsonUpdate = update => {
-    if (update.DOCUMENTS) {
-      return PUT(update.DOCUMENTS, {
-        doNotIndexField: update.DO_NOT_INDEX_FIELD || []
-      })
-    }
-  };
-  
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
-    PUT: PUT,
-    UPDATE: parseJsonUpdate, 
-    _DELETE: _DELETE,                  // for internal use
+    PUT: _PUT,
+    _DELETE: _DELETE, // for internal use
+    _PUT: _PUT
   }
 }
 
@@ -368,11 +359,12 @@ const makeASearchIndex = (idx, ops) => {
 
     // search-index write
     _DELETE: w.DELETE,
-    _PUT: w.PUT,
+    _PUT: w._PUT,
 
     // public API
     DELETE: w.DELETE,
     GET: r.QUERY,
+    PUT: w.PUT,
     INDEX: idx,
 
     // TODO: split this up into DELETE and PUT
