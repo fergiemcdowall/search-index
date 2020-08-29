@@ -89,12 +89,12 @@ export default function (fii, ops) {
       docs.map(createDocumentVector), putOptions
     ).then(
       result => Promise.all(
-        docs.map(doc =>
-                 fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-                )
-      ).then(() => result).then(
-        result => incrementDocCount(result.length).then(() => result)
-      )
+        (putOptions || {}).dontStoreRawDocs ? [] : docs.map(doc =>
+          fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+        )
+      ).then(
+        () => incrementDocCount(result.length)
+      ).then(() => result)
     )
   )
   
