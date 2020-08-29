@@ -61,8 +61,10 @@ const si = require('search-index')
 
 ## Instantiating an index
 
-Once `search-index` is assigned to a variable you can then instantiate an
-index by calling the variable as a Promise:
+Once the `search-index` module is assigned to a variable you can
+then instantiate an index by invoking the module variable as a
+Promise:
+    
 
 ```javascript
 si().then(idx => { /* idx is a new search index */ })
@@ -76,13 +78,12 @@ si().then(idx => { /* idx is a new search index */ })
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| caseSensitive | boolean | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-| fii | fergies-inverted-index | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
-| name | String | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
-| tokenAppend | String | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
-| stopWords | Array | `[]` | A list of words to be ignored when indexing and querying |
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+| `fii` | `fergies-inverted-index` | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
+| `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
+| `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
+| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
 
-TODO: test for stopwords
 
 # Index API
 
@@ -104,12 +105,12 @@ for more examples.
 ```javascript
 // Put documents into the index
 const result = await PUT(documents, options)
-// "result" is the shows the success or otherwise of the insertion
+// "result" shows the success or otherwise of the insertion
 // "documents" is an Array of javascript Objects.
 // "options" is an Object that contains indexing options
 ```
 
-If any document does not contain an _id field, then one will be
+If any document does not contain an `_id` field, then one will be
 generated and assigned
 
 
@@ -117,7 +118,8 @@ generated and assigned
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-|doNotIndexField|Array|[]|These fields will not be searchable, but they will still be stored|
+|`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+|`doNotStoreRawDocs`|`Boolean`|`false`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 
 
 ## DELETE

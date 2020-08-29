@@ -76,14 +76,14 @@ export default function (fii, ops) {
     })
     : doc
 
-  const indexingPipeline = docs => new Promise (
+  const indexingPipeline = docs => new Promise(
     resolve => resolve(
       docs
         .map(parseStringAsDoc)
         .map(generateId)
     )
   )
-  
+
   const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
     docs => fii.PUT(
       docs.map(createDocumentVector), putOptions
@@ -97,7 +97,7 @@ export default function (fii, ops) {
       ).then(() => result)
     )
   )
-  
+
   const _DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
