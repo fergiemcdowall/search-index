@@ -30,15 +30,14 @@ const makeASearchIndex = (idx, ops) => {
     // search-index write
     _DELETE: w.DELETE,
     _PUT: w._PUT,
+    _PUT_RAW: w._PUT_RAW,
 
     // public API
     DELETE: w.DELETE,
     GET: r.QUERY,
     PUT: w.PUT,
-    INDEX: idx,
-
-    // TODO: split this up into DELETE and PUT
-    UPDATE: w.UPDATE
+    PUT_RAW: w.PUT_RAW,
+    INDEX: idx
   }
 }
 

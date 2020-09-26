@@ -8,6 +8,7 @@
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
   - [PUT](#put)
+  - [PUT_RAW](#put_raw)
   - [DELETE](#delete)
   - [GET](#get)
     - [Running queries](#running-queries)
@@ -121,6 +122,28 @@ generated and assigned
 |`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
 |`doNotStoreRawDocs`|`Boolean`|`false`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 
+
+## PUT_RAW
+
+```javascript
+// Put raw documents into the index
+const result = await PUT_RAW(rawDocuments)
+// "result" shows the success or otherwise of the insertion
+// "rawDocuments" is an Array of javascript Objects that must
+// contain an _id field
+```
+
+`PUT_RAW` writes raw documents to the index. Raw documents are the
+documents that the index returns. Use raw documents when the documents
+that are indexed are not the same as the ones that you want the index
+to return. This can be useful if you want documents to be retrievable
+for terms that dont appear in the actual document. It can also be
+useful if you want to store stripped down versions of the document in
+the index in order to save space.
+
+NOTE: if the documents that the index returns are very different to
+the corresponding documents that are indexed, it may make sense to use
+the `doNotStoreRawDocs` flag when indexing.
 
 ## DELETE
 
@@ -382,7 +405,7 @@ PrecendingQuery, {
 #### MIN
 
 ```javascript
-// get the _alphabetically_ miniumum value of the given field
+// get the _alphabetically_ minimum value of the given field
 {
   MIN: fieldName
 }

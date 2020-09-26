@@ -81,28 +81,43 @@ function writer (fii, ops) {
     })
     : doc;
 
-  const indexingPipeline = docs => new Promise (
+  const indexingPipeline = docs => new Promise(
     resolve => resolve(
       docs
         .map(parseStringAsDoc)
         .map(generateId)
     )
   );
-  
+
   const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
     docs => fii.PUT(
       docs.map(createDocumentVector), putOptions
     ).then(
-      result => Promise.all(
-        (putOptions || {}).dontStoreRawDocs ? [] : docs.map(doc =>
-          fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-        )
+      result => (
+        (putOptions || {}).dontStoreRawDocs
+          ? Promise.all([])
+          : _PUT_RAW(docs)
       ).then(
         () => incrementDocCount(result.length)
       ).then(() => result)
     )
   );
-  
+
+  const _PUT_RAW = docs => Promise.all(
+    docs.map(
+      doc => fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+    )
+  ).then(
+    // TODO: make this actually deal with errors
+    result => docs.map(
+      doc => ({
+        _id: doc._id,
+        status: 'OK',
+        operation: '_PUT_RAW'
+      })
+    )
+  );
+
   const _DELETE = _ids => fii.DELETE(_ids).then(
     result => Promise.all(
       result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
@@ -121,8 +136,10 @@ function writer (fii, ops) {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
     PUT: _PUT,
+    PUT_RAW: _PUT_RAW,
     _DELETE: _DELETE, // for internal use
-    _PUT: _PUT
+    _PUT: _PUT,
+    _PUT_RAW: _PUT_RAW
   }
 }
 
@@ -371,15 +388,17 @@ const makeASearchIndex = (idx, ops) => {
     // search-index write
     _DELETE: w.DELETE,
     _PUT: w._PUT,
+    _PUT_RAW: w._PUT_RAW,
 
     // public API
     DELETE: w.DELETE,
     GET: r.QUERY,
     PUT: w.PUT,
+    PUT_RAW: w.PUT_RAW,
     INDEX: idx,
 
     // TODO: split this up into DELETE and PUT
-    UPDATE: w.UPDATE
+//    UPDATE: w.UPDATE
   }
 };
 

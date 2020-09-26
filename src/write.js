@@ -88,13 +88,28 @@ export default function (fii, ops) {
     docs => fii.PUT(
       docs.map(createDocumentVector), putOptions
     ).then(
-      result => Promise.all(
-        (putOptions || {}).dontStoreRawDocs ? [] : docs.map(doc =>
-          fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
-        )
+      result => (
+        (putOptions || {}).dontStoreRawDocs
+          ? Promise.all([])
+          : _PUT_RAW(docs)
       ).then(
         () => incrementDocCount(result.length)
       ).then(() => result)
+    )
+  )
+
+  const _PUT_RAW = docs => Promise.all(
+    docs.map(
+      doc => fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+    )
+  ).then(
+    // TODO: make this actually deal with errors
+    result => docs.map(
+      doc => ({
+        _id: doc._id,
+        status: 'OK',
+        operation: '_PUT_RAW'
+      })
     )
   )
 
@@ -116,7 +131,9 @@ export default function (fii, ops) {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
     PUT: _PUT,
+    PUT_RAW: _PUT_RAW,
     _DELETE: _DELETE, // for internal use
-    _PUT: _PUT
+    _PUT: _PUT,
+    _PUT_RAW: _PUT_RAW
   }
 }
