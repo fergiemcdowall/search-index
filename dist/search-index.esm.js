@@ -391,10 +391,7 @@ const makeASearchIndex = (idx, ops) => {
     GET: r.QUERY,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,
-    INDEX: idx,
-
-    // TODO: split this up into DELETE and PUT
-//    UPDATE: w.UPDATE
+    INDEX: idx
   }
 };
 

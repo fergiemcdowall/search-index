@@ -93,7 +93,7 @@ test('can add data', t => {
 test('simple _MAX', t => {
   const { _MAX } = global[indexName]
   t.plan(1)
-  _MAX('price').then(count => {
+  _MAX({ FIELD: 'price' }).then(count => {
     t.equals(count, '5000')
   })
 })
@@ -102,16 +102,31 @@ test('simple MAX (JSON)', t => {
   const { GET } = global[indexName]
   t.plan(1)
   GET({
-    MAX: 'price'
+    MAX: { FIELD: 'price' }
   }).then(count => {
     t.equals(count, '5000')
+  })
+})
+
+test('MAX with GTE', t => {
+  const { GET } = global[indexName]
+  t.plan(1)
+  GET({
+    MAX: {
+      FIELD: 'price',
+      VALUE: {
+        LTE: '4'
+      }
+    }
+  }).then(count => {
+    t.equals(count, '3000')
   })
 })
 
 test('simple _MIN', t => {
   const { _MIN } = global[indexName]
   t.plan(1)
-  _MIN('price').then(count => {
+  _MIN({ FIELD: 'price' }).then(count => {
     t.equals(count, '100')
   })
 })
@@ -120,7 +135,7 @@ test('simple MIN (JSON)', t => {
   const { GET } = global[indexName]
   t.plan(1)
   GET({
-    MIN: 'price'
+    MIN: { FIELD: 'price' }
   }).then(count => {
     t.equals(count, '100')
   })
@@ -130,7 +145,7 @@ test('simple MAX (JSON)', t => {
   const { GET } = global[indexName]
   t.plan(1)
   GET({
-    MAX: 'make'
+    MAX: { FIELD: 'make' }
   }).then(count => {
     t.equals(count, 'volvo')
   })
@@ -140,7 +155,7 @@ test('simple MIN (JSON)', t => {
   const { GET } = global[indexName]
   t.plan(1)
   GET({
-    MIN: 'make'
+    MIN: { FIELD: 'make' }
   }).then(count => {
     t.equals(count, 'bmw')
   })

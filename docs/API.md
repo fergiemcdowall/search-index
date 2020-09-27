@@ -395,9 +395,9 @@ PrecendingQuery, {
 #### MAX
 
 ```javascript
-// get the _alphabetically_ maxiumum value of the given field
+// get the _alphabetically_ maxiumum/last value of the given token space
 {
-  MAX: fieldName
+  MAX: token
 }
 ```
 
@@ -405,9 +405,9 @@ PrecendingQuery, {
 #### MIN
 
 ```javascript
-// get the _alphabetically_ minimum value of the given field
+// get the _alphabetically_ minimum/first value of the given token space
 {
-  MIN: fieldName
+  MIN: token
 }
 ```
 
