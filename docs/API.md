@@ -510,6 +510,5 @@ PrecendingQuery, {
 
 ## INDEX
 
-`INDEX` is a variable that points to the underlying instance of
-[`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
 
