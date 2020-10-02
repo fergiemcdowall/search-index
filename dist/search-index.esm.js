@@ -347,7 +347,8 @@ function reader (fii) {
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
-    DOCUMENT_COUNT: DOCUMENT_COUNT, // TODO: test
+    DOCUMENT_COUNT: DOCUMENT_COUNT,
+    FIELDS: fii.FIELDS,
     PAGE: PAGE,
     SCORE: SCORE,
     SEARCH: SEARCH,
@@ -388,10 +389,12 @@ const makeASearchIndex = (idx, ops) => {
 
     // public API
     DELETE: w.DELETE,
-    GET: r.QUERY,
+    DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    FIELDS: r.FIELDS,
+    INDEX: idx,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,
-    INDEX: idx
+    QUERY: r.QUERY
   }
 };
 

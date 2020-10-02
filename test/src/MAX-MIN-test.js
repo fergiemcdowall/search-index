@@ -99,9 +99,9 @@ test('simple _MAX', t => {
 })
 
 test('simple MAX (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     MAX: { FIELD: 'price' }
   }).then(count => {
     t.equals(count, '5000')
@@ -109,9 +109,9 @@ test('simple MAX (JSON)', t => {
 })
 
 test('MAX with GTE', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     MAX: {
       FIELD: 'price',
       VALUE: {
@@ -132,9 +132,9 @@ test('simple _MIN', t => {
 })
 
 test('simple MIN (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     MIN: { FIELD: 'price' }
   }).then(count => {
     t.equals(count, '100')
@@ -142,9 +142,9 @@ test('simple MIN (JSON)', t => {
 })
 
 test('simple MAX (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     MAX: { FIELD: 'make' }
   }).then(count => {
     t.equals(count, 'volvo')
@@ -152,9 +152,9 @@ test('simple MAX (JSON)', t => {
 })
 
 test('simple MIN (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     MIN: { FIELD: 'make' }
   }).then(count => {
     t.equals(count, 'bmw')

@@ -73,9 +73,9 @@ test('can search', t => {
 })
 
 // should be able to get non-tokenised (readable) version of object out of index
-test('can search with GET', t => {
+test('can search with QUERY', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     SEARCH: [
       'body.text:cool',
       'body.text:really',
@@ -375,7 +375,7 @@ test('_AND with embedded _OR', t => {
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     AND:['bananas']
   }).then(res => {
     t.deepEqual(res, [
@@ -386,7 +386,7 @@ test('AND with embedded OR (JSON API)', t => {
 
 test('AND with embedded OR (JSON API)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     AND:['bananas', {OR:['body.text:cool', 'body.text:coolness']}]
   }).then(res => {
     t.deepEqual(res, [
@@ -398,7 +398,7 @@ test('AND with embedded OR (JSON API)', t => {
 
 test('DOCUMENT (JSON API)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     DOCUMENTS:[{_id:'b'}, {_id:'a'}]
   }).then(res => {
     t.deepEqual(res, [
@@ -431,9 +431,9 @@ test('DOCUMENT (JSON API)', t => {
 
 // TODO: I think DOCUMENT should behave differently here
 // this should be a SEARCH should it not?
-test('GET with a string and then connect documents', t => {
+test('QUERY with a string and then connect documents', t => {
   t.plan(1)
-  global[indexName].GET('bananas', { DOCUMENTS: true }).then(res => {
+  global[indexName].QUERY('bananas', { DOCUMENTS: true }).then(res => {
     t.deepEqual(res, [
       {
         _id: 'b',

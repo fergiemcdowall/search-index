@@ -98,12 +98,20 @@ test('simple _DOCUMENT_COUNT', t => {
   })
 })
 
-test('simple DOCUMENT_COUNT (via GET)', t => {
-  const { GET } = global[indexName]
+test('simple DOCUMENT_COUNT (via QUERY)', t => {
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DOCUMENT_COUNT: true
   }).then(count => {
+    t.equals(count, 10)
+  })
+})
+
+test('simple DOCUMENT_COUNT', t => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  t.plan(1)
+  DOCUMENT_COUNT().then(count => {
     t.equals(count, 10)
   })
 })

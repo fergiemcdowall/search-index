@@ -155,9 +155,9 @@ test('simple _DISTINCT with range', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DISTINCT: {
       FIELD: 'colour'
     }
@@ -171,9 +171,9 @@ test('simple DISTINCT', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DISTINCT: {
       VALUE: 'red'
     }
@@ -185,9 +185,9 @@ test('simple DISTINCT', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DISTINCT: {
       VALUE: 'volvo'
     }
@@ -202,9 +202,9 @@ test('simple DISTINCT', t => {
 
 
 test('simple DISTINCT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DISTINCT: {
       FIELD: 'brand'
     }

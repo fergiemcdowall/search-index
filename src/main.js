@@ -34,10 +34,12 @@ const makeASearchIndex = (idx, ops) => {
 
     // public API
     DELETE: w.DELETE,
-    GET: r.QUERY,
+    DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    FIELDS: r.FIELDS,
+    INDEX: idx,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,
-    INDEX: idx
+    QUERY: r.QUERY
   }
 }
 

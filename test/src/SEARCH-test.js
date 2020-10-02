@@ -136,7 +136,7 @@ test('simple _SEARCH with 2 clauses and documents', t => {
 
 test('simple _SEARCH with 2 clauses and documents', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     SEARCH: [ 'paul', 'and' ]
   })
     .then(global[indexName]._DOCUMENTS)

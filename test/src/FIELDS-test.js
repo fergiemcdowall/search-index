@@ -81,9 +81,26 @@ test('simple _FIELDS', t => {
 
 test('simple FIELDS (JSON)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     FIELDS: true
   }).then(res => {
+    t.deepEqual(res, [
+      'brand',
+      'colours.bonnet.color',
+      'colours.bonnet.type',
+      'colours.roof.color',
+      'colours.roof.type',
+      'make',
+      'manufacturer',
+      'wheels.rims',
+      'wheels.tyres'
+    ])
+  })
+})
+
+test('simple FIELDS (JSON)', t => {
+  t.plan(1)
+  global[indexName].FIELDS().then(res => {
     t.deepEqual(res, [
       'brand',
       'colours.bonnet.color',

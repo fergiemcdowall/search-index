@@ -54,7 +54,7 @@ test('_AND', t => {
 
 test('AND', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     AND:[
       'sectorcode:bz',
       'sectorcode:bc'
@@ -71,7 +71,7 @@ test('AND', t => {
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     OR:[
       'sectorcode:ti',
       'sectorcode:bz'
@@ -89,7 +89,7 @@ test('OR', t => {
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     OR:[
       'sectorcode:yz',
       'sectorcode:bc'
@@ -104,7 +104,7 @@ test('OR', t => {
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     OR:[
       'sectorcode:yz',
       'sectorcode:bc'
@@ -119,7 +119,7 @@ test('OR', t => {
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     OR:[
       'sectorcode:fh',
       'sectorcode:yw',
@@ -147,7 +147,7 @@ test('can _NOT', t => {
 
 test('can NOT', t => {
   t.plan(1)
-  global[indexName].GET(
+  global[indexName].QUERY(
     {
       NOT: {
         INCLUDE: 'sectorcode:ti',

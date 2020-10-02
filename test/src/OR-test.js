@@ -132,7 +132,7 @@ test('simple _OR with 2 clauses', t => {
 
 test('simple _OR with 2 clauses', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     OR: [ 'brand:volvo', 'manufacturer:tesla' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -167,9 +167,9 @@ test('simple _OR with 2 clauses (embedded _AND)', t => {
 })
 
 test('simple OR with 2 clauses (embedded AND) (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     OR: [
       { AND: [ 'brand:volvo', 'manufacturer:tesla' ] },
       'make:bmw'

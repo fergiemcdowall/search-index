@@ -2,7 +2,7 @@ import si from '../../dist/search-index.esm.js'
 import test from 'tape'
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'GET'
+const indexName = sandbox + 'QUERY'
 
 test('create a search index', t => {
   t.plan(1)
@@ -82,9 +82,9 @@ test('can add data', t => {
 
 // AND
 test('simple AND with 2 clauses', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     AND: [ 'make:volvo', 'manufacturer:bmw' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -95,9 +95,9 @@ test('simple AND with 2 clauses', t => {
 
 // BUCKET
 test('simple BUCKET', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKET: {
       FIELD: 'make',
       VALUE: 'volvo'
@@ -111,9 +111,9 @@ test('simple BUCKET', t => {
 
 // BUCKETFILTER
 test('simple BUCKETFILTER', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: [
         {
@@ -134,9 +134,9 @@ test('simple BUCKETFILTER', t => {
 
 // DICTIONARY
 test('DICTIONARY', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DICTIONARY: {
       fields:['make']
     }
@@ -147,9 +147,9 @@ test('DICTIONARY', t => {
 
 // DISTINCT
 test('DISTINCT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     DISTINCT: {
       FIELD: 'make'
     }
@@ -164,9 +164,9 @@ test('DISTINCT', t => {
 
 // DISTINCT and BUCKETFILTER
 test('DISTINCT and BUCKETFILTER', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
@@ -191,11 +191,11 @@ test('DISTINCT and BUCKETFILTER', t => {
 
 // DOCUMENTS -> TODO
 
-// GET
-test('simple GET', t => {
-  const { GET } = global[indexName]
+// QUERY
+test('simple QUERY', t => {
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     GET: 'make:volvo'
   }).then(res => {
     t.deepEqual(res, [
@@ -208,9 +208,9 @@ test('simple GET', t => {
 
 // NOT -> TODO
 test('simple NOT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     NOT: {
       INCLUDE: 'manufacturer:tesla',
       EXCLUDE: 'brand:volvo'
@@ -224,9 +224,9 @@ test('simple NOT', t => {
 })
 
 test('simple NOT with DOCUMENTS', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     NOT: {
       INCLUDE: 'manufacturer:tesla',
       EXCLUDE: 'brand:volvo'
@@ -250,9 +250,9 @@ test('simple NOT with DOCUMENTS', t => {
 
 // OR
 test('simple OR with 2 clauses', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     OR: [ 'make:volvo', 'brand:tesla' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -266,9 +266,9 @@ test('simple OR with 2 clauses', t => {
 
 // SEARCH
 test('simple SEARCH', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     SEARCH: [ 'tesla' ]    // TODO: should be able to search without a normal string?
   }).then(res => {
     t.deepEqual(res, [

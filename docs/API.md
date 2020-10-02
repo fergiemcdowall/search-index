@@ -7,10 +7,11 @@
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
-  - [PUT](#put)
-  - [PUT_RAW](#put_raw)
   - [DELETE](#delete)
-  - [GET](#get)
+  - [DOCUMENT_COUNT](#document_count)
+  - [FIELDS](#fields)
+  - [INDEX](#index)
+  - [QUERY](#query)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
       - [Nesting query verbs](#nesting-query-verbs)
@@ -27,8 +28,6 @@
       - [DICTIONARY](#dictionary)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
-      - [DOCUMENT_COUNT](#document_count)
-      - [FIELDS](#fields)
       - [MAX](#max)
       - [MIN](#min)
       - [NOT](#not)
@@ -37,7 +36,8 @@
       - [SCORE](#score)
       - [SEARCH](#search)
       - [SORT](#sort)
-  - [INDEX](#index)
+  - [PUT](#put)
+  - [PUT_RAW](#put_raw)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -101,50 +101,6 @@ It may be helpful to check out the
 for more examples.
 
 
-## PUT
-
-```javascript
-// Put documents into the index
-const result = await PUT(documents, options)
-// "result" shows the success or otherwise of the insertion
-// "documents" is an Array of javascript Objects.
-// "options" is an Object that contains indexing options
-```
-
-If any document does not contain an `_id` field, then one will be
-generated and assigned
-
-
-`options` is an optional object that can contain the following values:
-
-| Name | Type | Default | Description |
-|---|---|---|---|
-|`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-|`doNotStoreRawDocs`|`Boolean`|`false`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-
-
-## PUT_RAW
-
-```javascript
-// Put raw documents into the index
-const result = await PUT_RAW(rawDocuments)
-// "result" shows the success or otherwise of the insertion
-// "rawDocuments" is an Array of javascript Objects that must
-// contain an _id field
-```
-
-`PUT_RAW` writes raw documents to the index. Raw documents are the
-documents that the index returns. Use raw documents when the documents
-that are indexed are not the same as the ones that you want the index
-to return. This can be useful if you want documents to be retrievable
-for terms that dont appear in the actual document. It can also be
-useful if you want to store stripped down versions of the document in
-the index in order to save space.
-
-NOTE: if the documents that the index returns are very different to
-the corresponding documents that are indexed, it may make sense to use
-the `doNotStoreRawDocs` flag when indexing.
-
 ## DELETE
 
 ```javascript
@@ -154,8 +110,28 @@ const result = await DELETE(documentIds)
 // "result" is the status of the deletion
 ```
 
+## DOCUMENT_COUNT
 
-## GET
+```javascript
+// returns the total amount of documents in the index
+const totalDocs = await DOCUMENT_COUNT()
+```
+
+
+## FIELDS
+
+```javascript
+// get every document field name that has been indexed:
+const fields = await FIELDS()
+```
+
+
+## INDEX
+
+`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
+## QUERY
 
 ### Running queries
 
@@ -372,25 +348,6 @@ PrecendingQuery, {
 }
 ```
 
-#### DOCUMENT_COUNT
-
-```javascript
-// returns the total amount of documents in the index
-{
-  DOCUMENT_COUNT: true
-}
-```
-
-
-#### FIELDS
-
-```javascript
-// see every document field name that has been indexed:
-{
-  FIELDS: true
-}
-```
-
 
 #### MAX
 
@@ -508,7 +465,46 @@ PrecendingQuery, {
 ```
 
 
-## INDEX
+## PUT
 
-`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+```javascript
+// Put documents into the index
+const result = await PUT(documents, options)
+// "result" shows the success or otherwise of the insertion
+// "documents" is an Array of javascript Objects.
+// "options" is an Object that contains indexing options
+```
 
+If any document does not contain an `_id` field, then one will be
+generated and assigned
+
+
+`options` is an optional object that can contain the following values:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+|`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+|`doNotStoreRawDocs`|`Boolean`|`false`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+
+
+## PUT_RAW
+
+```javascript
+// Put raw documents into the index
+const result = await PUT_RAW(rawDocuments)
+// "result" shows the success or otherwise of the insertion
+// "rawDocuments" is an Array of javascript Objects that must
+// contain an _id field
+```
+
+`PUT_RAW` writes raw documents to the index. Raw documents are the
+documents that the index returns. Use raw documents when the documents
+that are indexed are not the same as the ones that you want the index
+to return. This can be useful if you want documents to be retrievable
+for terms that dont appear in the actual document. It can also be
+useful if you want to store stripped down versions of the document in
+the index in order to save space.
+
+NOTE: if the documents that the index returns are very different to
+the corresponding documents that are indexed, it may make sense to use
+the `doNotStoreRawDocs` flag when indexing.

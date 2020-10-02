@@ -128,9 +128,9 @@ test('simple _NOT with OR clause', t => {
 })
 
 test('simple NOT', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     NOT: {
       INCLUDE: 'make:volvo',
       EXCLUDE: 'brand:tesla'

@@ -114,7 +114,7 @@ test('verify index structure', t => {
 
 test('search with stopwords', t => {
   t.plan(1)
-  global[testIndex].GET({
+  global[testIndex].QUERY({
     AND: 'this is a small banana'.split(' ')
   }).then(res => {
     t.deepEqual(res, [

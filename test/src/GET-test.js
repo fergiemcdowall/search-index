@@ -173,9 +173,9 @@ test('simple _GET', t => {
   })
 })
 
-test('simple GET using json with GET', t => {
+test('simple QUERY using json with QUERY', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     GET: {
       FIELD: 'make',
       VALUE: {
@@ -192,9 +192,9 @@ test('simple GET using json with GET', t => {
   })
 })
 
-test('GET by specifying a FIELD but no VALUE', t => {
+test('QUERY by specifying a FIELD but no VALUE', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     GET: {
       FIELD: 'extrafield'
     }
@@ -214,4 +214,4 @@ test('GET by specifying a FIELD but no VALUE', t => {
 })
 
 
-//TODO: an example of GET that shows more than one hit in _match
+//TODO: an example of QUERY that shows more than one hit in _match

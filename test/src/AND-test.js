@@ -118,7 +118,7 @@ test('simple _AND with 2 clauses', t => {
 
 test('simple AND with 2 clauses (JSON)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     AND: [ 'make:volvo', 'manufacturer:bmw' ]
   }).then(res => {
     t.deepEqual(res, [
@@ -150,7 +150,7 @@ test('_AND with no VALUE', t => {
 
 test('AND with no VALUE (JSON)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     AND: [
       {
         FIELD: [ 'make' ]

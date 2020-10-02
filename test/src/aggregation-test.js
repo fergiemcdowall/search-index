@@ -270,7 +270,7 @@ test('can aggregate totalamt', t => {
 
 test('can aggregate totalamt JSON DISTINCT', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     DISTINCT: {
       FIELD: 'impagency'
     }
@@ -381,7 +381,7 @@ test('can aggregate totalamt using underlying index', t => {
 
 test('JSON BUCKET', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     BUCKET: {
       FIELD: 'impagency',
       VALUE: 'of'
@@ -406,7 +406,7 @@ test('JSON BUCKET', t => {
 
 test('JSON BUCKETFILTER', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     BUCKETFILTER: {
       BUCKETS: [
         {
@@ -455,7 +455,7 @@ test('can aggregate totalamt using underlying index', t => {
 
 test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
   t.plan(1)
-  global[indexName].GET({
+  global[indexName].QUERY({
     BUCKET: {
       FIELD: 'impagency',
       VALUE: 'pmu'

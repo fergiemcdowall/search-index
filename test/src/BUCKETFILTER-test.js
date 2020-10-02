@@ -127,9 +127,9 @@ test('simple _BUCKETFILTER', t => {
 })
 
 test('simple BUCKETFILTER (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: [{
         FIELD: 'make',
@@ -150,9 +150,9 @@ test('simple BUCKETFILTER (JSON)', t => {
 })
 
 test('simple BUCKETFILTER (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: [{
         FIELD: 'make',
@@ -173,9 +173,9 @@ test('simple BUCKETFILTER (JSON)', t => {
 })
 
 test('simple BUCKETFILTER (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: [{
         FIELD: 'make',
@@ -237,9 +237,9 @@ test('simple _BUCKETFILTER, using _DISTINCT', t => {
 })
 
 test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
@@ -270,9 +270,9 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
 
 
 test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
@@ -299,9 +299,9 @@ test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
 })
 
 test('simple BUCKETFILTER, using DISTINCT (JSON)', t => {
-  const { GET } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  GET({
+  QUERY({
     BUCKETFILTER: {
       BUCKETS: {
         DISTINCT: {
