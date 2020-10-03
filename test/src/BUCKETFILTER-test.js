@@ -195,11 +195,11 @@ test('simple BUCKETFILTER (JSON)', t => {
   })
 })
 
-test('simple _BUCKETFILTER, using _DICTIONARY', t => {
-  const { _BUCKET, _GET, _DICTIONARY, _BUCKETFILTER } = global[indexName]
+test('simple _BUCKETFILTER, using DICTIONARY', t => {
+  const { DICTIONARY, _BUCKET, _GET, _BUCKETFILTER } = global[indexName]
   t.plan(1)
   _BUCKETFILTER(
-    _DICTIONARY({
+    DICTIONARY({
       FIELD: ['make'],
       VALUE: {
         GTE: 'a',

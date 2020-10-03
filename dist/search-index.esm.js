@@ -373,9 +373,8 @@ const makeASearchIndex = (idx, ops) => {
     _MIN: idx.MIN,
     _NOT: idx.SET_SUBTRACTION,
     _OR: idx.OR,
-    
+
     // search-index read
-    _DICTIONARY: r.DICTIONARY,
     _DISTINCT: r.DISTINCT,
     _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
@@ -391,6 +390,7 @@ const makeASearchIndex = (idx, ops) => {
 
     // public API
     DELETE: w.DELETE,
+    DICTIONARY: r.DICTIONARY,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: idx.EXPORT,
     FIELDS: r.FIELDS,

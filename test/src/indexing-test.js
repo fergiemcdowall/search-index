@@ -523,10 +523,10 @@ test('_SEARCH with embedded _OR', t => {
   })
 })
 
-test('_DICTIONARY with specified field', t => {
+test('DICTIONARY with specified field', t => {
   t.plan(1)
-  global[indexName]._DICTIONARY('body.text').then(res => {
-    global[indexName]._DICTIONARY({ FIELD: ['body.text'] }).then(res => {
+  global[indexName].DICTIONARY('body.text').then(res => {
+    global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
       t.deepEqual(res, [
         'bananas',
         'cool',
@@ -542,9 +542,9 @@ test('_DICTIONARY with specified field', t => {
   })
 })
 
-test('_DICTIONARY with specified field (JSON API)', t => {
+test('DICTIONARY with specified field (JSON API)', t => {
   t.plan(1)
-  global[indexName]._DICTIONARY({ FIELD: ['body.text'] }).then(res => {
+  global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
     t.deepEqual(res, [
       'bananas',
       'cool',
@@ -560,9 +560,9 @@ test('_DICTIONARY with specified field (JSON API)', t => {
 })
 
 
-test('_DICTIONARY with gte lte', t => {
+test('DICTIONARY with gte lte', t => {
   t.plan(1)
-  global[indexName]._DICTIONARY({
+  global[indexName].DICTIONARY({
     FIELD: ['body.text'],
     VALUE: {
       GTE: 'd',
@@ -579,9 +579,9 @@ test('_DICTIONARY with gte lte', t => {
 })
 
 
-test('_DICTIONARY without specified field', t => {
+test('DICTIONARY without specified field', t => {
   t.plan(1)
-  global[indexName]._DICTIONARY().then(res => {
+  global[indexName].DICTIONARY().then(res => {
     t.deepEqual(res, [
       '200',
       '500',
@@ -603,10 +603,10 @@ test('_DICTIONARY without specified field', t => {
   })
 })
 
-test('_DICTIONARY without specified field', t => {
+test('DICTIONARY without specified field', t => {
   t.plan(1)
-  const { _DICTIONARY } = global[indexName]
-  _DICTIONARY().then(res => {
+  const { DICTIONARY } = global[indexName]
+  DICTIONARY().then(res => {
     t.deepEqual(res, [
       '200',
       '500',

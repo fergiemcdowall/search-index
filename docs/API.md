@@ -8,6 +8,7 @@
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
   - [DELETE](#delete)
+  - [DICTIONARY](#dictionary)
   - [DOCUMENT_COUNT](#document_count)
   - [EXPORT](#export)
   - [FIELDS](#fields)
@@ -27,7 +28,6 @@
       - [AND](#and)
       - [BUCKET](#bucket)
       - [BUCKETFILTER](#bucketfilter)
-      - [DICTIONARY](#dictionary)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
       - [MAX](#max)
@@ -110,6 +110,15 @@ for more examples.
 const result = await DELETE(documentIds)
 // "documentIds" is an Array of IDs
 // "result" is the status of the deletion
+```
+
+
+## DICTIONARY
+
+```javascript
+// Return each available field value for the given token space. (see
+// also DISTINCT)
+const dictionary = await DICTIONARY(token)
 ```
 
 
@@ -323,16 +332,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-#### DICTIONARY
-
-```javascript
-// Return each available field value for the given token. (to see
-// fields use DISTINCT)
-{
-  DICTIONARY: token
-}
-```
-
 #### DISTINCT
 
 ```javascript
@@ -526,4 +525,7 @@ the index in order to save space.
 
 NOTE: if the documents that the index returns are very different to
 the corresponding documents that are indexed, it may make sense to use
-the `doNotStoreRawDocs` flag when indexing.
+the `doNotStoreRawDocs` flag when indexing (making indexing slightly
+faster), and instead add them with `PUT_RAW` afterwards.
+
+

@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName]._PUT(data).then(t.pass)
 })
 
-test('simple _DICTIONARY', t => {
-  const { _DICTIONARY } = global[indexName]
+test('simple DICTIONARY', t => {
+  const { DICTIONARY } = global[indexName]
   t.plan(1)
-  _DICTIONARY({
+  DICTIONARY({
     FIELD: ['colour']
   }).then(res => {
     t.deepEqual(res, [
@@ -104,10 +104,10 @@ test('simple _DICTIONARY', t => {
   })
 })
 
-test('simple _DICTIONARY- all entries', t => {
-  const { _DICTIONARY } = global[indexName]
+test('simple DICTIONARY- all entries', t => {
+  const { DICTIONARY } = global[indexName]
   t.plan(1)
-  _DICTIONARY().then(res => {
+  DICTIONARY().then(res => {
     t.deepEqual(res, [
       'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
     ])
@@ -125,10 +125,10 @@ test('simple DICTIONARY- all entries (JSON)', t => {
 })
 
 
-test('simple _DICTIONARY, multiple fields', t => {
-  const { _DICTIONARY } = global[indexName]
+test('simple DICTIONARY, multiple fields', t => {
+  const { DICTIONARY } = global[indexName]
   t.plan(1)
-  _DICTIONARY({
+  DICTIONARY({
     FIELD: ['colour', 'brand']
   }).then(res => {
     t.deepEqual(res, [
@@ -138,10 +138,10 @@ test('simple _DICTIONARY, multiple fields', t => {
 })
 
 
-test('simple _DICTIONARY, multiple fields, gte', t => {
-  const { _DICTIONARY } = global[indexName]
+test('simple DICTIONARY, multiple fields, gte', t => {
+  const { DICTIONARY } = global[indexName]
   t.plan(1)
-  _DICTIONARY({
+  DICTIONARY({
     FIELD: ['colour', 'brand'],
     VALUE: {
       GTE: 'c'
@@ -153,10 +153,10 @@ test('simple _DICTIONARY, multiple fields, gte', t => {
   })
 })
 
-test('simple _DICTIONARY, multiple fields, gte + lte', t => {
-  const { _DICTIONARY } = global[indexName]
+test('simple DICTIONARY, multiple fields, gte + lte', t => {
+  const { DICTIONARY } = global[indexName]
   t.plan(1)
-  _DICTIONARY({
+  DICTIONARY({
     FIELD: ['colour', 'brand'],
     VALUE: {
       GTE: 'c',
