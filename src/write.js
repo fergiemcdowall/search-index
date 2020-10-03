@@ -130,6 +130,7 @@ export default function (fii, ops) {
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
+    IMPORT: fii.IMPORT,
     PUT: _PUT,
     PUT_RAW: _PUT_RAW,
     _DELETE: _DELETE, // for internal use

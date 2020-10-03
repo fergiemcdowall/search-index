@@ -203,6 +203,7 @@ export default function (fii) {
   }
 
   return {
+    // TODO: Should be own function?
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,

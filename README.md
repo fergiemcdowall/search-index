@@ -18,10 +18,10 @@ const si = require('search-index')
 // or
 // import si from search-index
 
-si().then(async { PUT, GET } => {
+si().then(async { PUT, QUERY } => {
   await PUT([ /* an array of objects */ ])
   // objects are now indexed
-  const results = await GET( /* a search string */ )
+  const results = await QUERY( /* a search query */ )
   // results contains search results
 })
 

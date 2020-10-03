@@ -6,7 +6,7 @@ const makeASearchIndex = (idx, ops) => {
   const w = writer(idx, ops)
   const r = reader(idx)
   return {
-    // inherited from fergies-inverted-index
+    // internal functions inherited from fergies-inverted-index
     _AND: idx.AND,
     _BUCKET: idx.BUCKET,
     _BUCKETFILTER: idx.BUCKETFILTER,
@@ -35,7 +35,9 @@ const makeASearchIndex = (idx, ops) => {
     // public API
     DELETE: w.DELETE,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    EXPORT: idx.EXPORT,
     FIELDS: r.FIELDS,
+    IMPORT: idx.IMPORT,
     INDEX: idx,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,

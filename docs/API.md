@@ -9,7 +9,9 @@
 - [Index API](#index-api)
   - [DELETE](#delete)
   - [DOCUMENT_COUNT](#document_count)
+  - [EXPORT](#export)
   - [FIELDS](#fields)
+  - [IMPORT](#import)
   - [INDEX](#index)
   - [QUERY](#query)
     - [Running queries](#running-queries)
@@ -110,6 +112,7 @@ const result = await DELETE(documentIds)
 // "result" is the status of the deletion
 ```
 
+
 ## DOCUMENT_COUNT
 
 ```javascript
@@ -118,11 +121,27 @@ const totalDocs = await DOCUMENT_COUNT()
 ```
 
 
+## EXPORT
+
+```javascript
+// creates a backup/export of an index
+const indexExport = await EXPORT()
+```
+
+
 ## FIELDS
 
 ```javascript
 // get every document field name that has been indexed:
 const fields = await FIELDS()
+```
+
+
+## IMPORT
+
+```javascript
+// creates an index from a backup/export
+await IMPORT(index)
 ```
 
 
