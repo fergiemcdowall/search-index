@@ -113,11 +113,11 @@ test('simple BUCKET (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    BUCKET: 'make:volvo'
+    BUCKETS: [ 'make:volvo' ]
   }).then(res => {
-    t.deepEqual(res, {
+    t.deepEqual(res, [{
       FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
-    })
+    }])
   })
 })
 
@@ -126,17 +126,17 @@ test('simple BUCKET with a range (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    BUCKET: {
+    BUCKETS: [{
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
         LTE: 'u'
       }
-    }
+    }]
   }).then(res => {
-    t.deepEqual(res, {
+    t.deepEqual(res, [{
       FIELD: [ 'make' ], VALUE: { GTE: 'a', LTE: 'u' }, _id: [ '0', '1', '2', '3', '6', '7', '9' ] 
-    })
+    }])
   })
 })
 

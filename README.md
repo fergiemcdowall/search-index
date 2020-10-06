@@ -31,6 +31,5 @@ si().then(async { PUT, QUERY } => {
 
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
-* [Node demo](docs/README.md)
 * [Browser demo](demo/index.html) and [source code](demo/)
 

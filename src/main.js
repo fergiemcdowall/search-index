@@ -18,6 +18,7 @@ const makeASearchIndex = (idx, ops) => {
     _OR: idx.OR,
 
     // search-index read
+    _BUCKETS: r.BUCKETS,
     _DISTINCT: r.DISTINCT,
     _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,

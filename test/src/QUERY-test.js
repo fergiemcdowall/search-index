@@ -98,14 +98,18 @@ test('simple BUCKET', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    BUCKET: {
-      FIELD: 'make',
-      VALUE: 'volvo'
-    }
+    BUCKETS: [
+      {
+        FIELD: 'make',
+        VALUE: 'volvo'
+      }
+    ]
   }).then(res => {
-    t.deepEqual(res, {
-      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
-    })
+    t.deepEqual(res, [
+      {
+        FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '4', '5', '8' ]
+      }
+    ])
   })
 })
 

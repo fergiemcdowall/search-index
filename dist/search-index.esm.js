@@ -141,6 +141,10 @@ function writer (fii, ops) {
 }
 
 function reader (fii) {
+  const BUCKETS = (...buckets) => Promise.all(
+    buckets.map(fii.BUCKET)
+  );
+
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
     return (Array.isArray(requestedDocs))
@@ -293,29 +297,24 @@ function reader (fii) {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (...q) => {
+    const getBuckets = bkts => bkts.DISTINCT
+      ? DISTINCT(bkts.DISTINCT).then(
+        dist => BUCKETS(...dist)
+      ) : BUCKETS(...bkts);
+
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
       if (command.FIELD) return fii.GET(command)
       if (command.VALUE) return fii.GET(command)
-
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETFILTER) {
-        if (command.BUCKETFILTER.BUCKETS.DISTINCT) {
-          return fii.BUCKETFILTER(
-            DISTINCT(command.BUCKETFILTER.BUCKETS.DISTINCT)
-              .then(bkts => bkts.map(fii.BUCKET)),
-            promisifyQuery(command.BUCKETFILTER.FILTER)
-          )
-        } else {
-          return fii.BUCKETFILTER(
-            command.BUCKETFILTER.BUCKETS.map(fii.BUCKET),
-            promisifyQuery(command.BUCKETFILTER.FILTER)
-          )
-        }
+        return fii.BUCKETFILTER(
+          getBuckets(command.BUCKETFILTER.BUCKETS),
+          promisifyQuery(command.BUCKETFILTER.FILTER)
+        )
       }
-      // feed in preceding results if present (ie if not first promise)
-      if (command.BUCKET) return fii.BUCKET(resultFromPreceding || command.BUCKET)
+      if (command.BUCKETS) return getBuckets(command.BUCKETS)
       if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
       if (command.DISTINCT) return DISTINCT(command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
@@ -346,6 +345,7 @@ function reader (fii) {
 
   return {
     // TODO: Should be own function?
+    BUCKETS: BUCKETS,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
@@ -375,6 +375,7 @@ const makeASearchIndex = (idx, ops) => {
     _OR: idx.OR,
 
     // search-index read
+    _BUCKETS: r.BUCKETS,
     _DISTINCT: r.DISTINCT,
     _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,

@@ -2,10 +2,10 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # FAQ
 
+- [How do I create an index?](#how-do-i-create-an-index)
 - [How do I get my data into search-index?](#how-do-i-get-my-data-into-search-index)
-  - [Replicate an index](#replicate-an-index)
-  - [Create a new index](#create-a-new-index)
-- [What is the difference between AND, GET and SEARCH?](#what-is-the-difference-between-and-get-and-search)
+  - [Export/Import an index](#exportimport-an-index)
+  - [Add documents to an index](#add-documents-to-an-index)
 - [How do I get out entire documents and not just document IDs?](#how-do-i-get-out-entire-documents-and-not-just-document-ids)
 - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
 - [How do I compose queries?](#how-do-i-compose-queries)
@@ -20,94 +20,102 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-# How do I get my data into search-index?
-
-You can either replicate an index from an existing index, or create a
-completely new index.
-
-## Replicate an index
-
-Get the underlying index by using INDEX and then replicate into the
-index by using the [levelup API](https://github.com/Level/levelup#dbcreatereadstreamoptions)
-
-## Create a new index
-
-First, initialise an index, and then use `PUT` to add documents to the
-index.
+# How do I create an index?
 
 ```javascript
-const db = si({ name: indexName })
+const si = import si from 'si'
+
+// ...
+
+const index = await si() // or si().then(index => ...)
+```
+
+
+# How do I get my data into search-index?
+
+You can either import an index, or add documents.
+
+## Export/Import an index
+
+```javascript
+// EXPORT an index
+const exportFile = await index1.EXPORT()
+
+// IMPORT an index
+index2.IMPORT(exportFile)
+```
+
+NOTE: `IMPORT`ing an index completely overwrites any existing index
+
+## Add documents to an index
+
+```javascript
 // then somewhere else in the code, being aware of asynchronousity
 PUT([ /* my array of objects */ ]).then(doStuff)
 ```
 
-# What is the difference between AND, GET and SEARCH?
-
-* **AND** `AND` returns a set of documents that contain *all* of the
-terms contained in the query
-
-* **GET** `GET` returns a set of documents that contain the terms
-contained in the query. `GET` is the same as `AND` or `OR` with only
-one term specified.
-
-* **SEARCH** `SEARCH` performs an `AND` query and returns a set of
-documents which is ordered in terms of relevance. Search-index uses a
-TF-IDF algorithm to determine relevance.
-
 
 # How do I get out entire documents and not just document IDs?
 
-You need to join your resultset with `DOCUMENTS`
+Use `{ DOCUMENTS: true }`.
 
+Query that returns document IDs:
 ```javascript
-AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(console.log)
+QUERY({
+  SEARCH: [ 'search', 'terms' ]
+})
 ```
+
+Query that returns documents:
+```javascript
+QUERY({
+  SEARCH: [ 'search', 'terms' ]
+}, {
+  DOCUMENTS: true
+})
+```
+
 
 # How do I search on specific fields?
 
-To return hits for all documents containing 'apples' or 'oranges' in
+To return hits for all documents containing 'orange' in
 the `title` field you would do something like this:
 
 ```javascript
-OR(
-  'title:apples',
-  'title:oranges',
-)
+QUERY({
+  SEARCH: [ 'title:orange' ]
+})
+
+// can also be expressed as:
+QUERY({
+  SEARCH: [{
+    FIELD: [ 'title' ],
+    VALUE: 'orange'
+  }]
+})
 ```
 
 # How do I compose queries?
 
-Queries can be composed by combining and nesting promises. For example
+Queries can be composed by nesting `SEARCH`, `AND`, `NOT` and `OR`
+clauses as deeply as required. For example:
 
 ```javascript
-AND(
-  OR(
-    'title:quite',
-    AND(
-      'body.text:totally',
-      'body.text:different'
-    )
-  ),
-  'body.metadata:cool'
-).then(console.log)  // returns a result
+QUERY({
+  OR: [{
+    AND: [ 'brand:volvo', 'manufacturer:tesla' ]
+  }, 'make:bmw']
+})
 ```
 
 # How do I perform a simple aggregation on a field?
 
 ## Get a list of unique values for a field
 
-Use `DISTINCT` to get a list of unique values for a field called "agency":
-
 ```javascript
-DISTINCT('agency').then(console.log)
-/*
-[
-  'agency.POLICE',
-  'agency.DOJ',
-  'agency.SUPREMECOURT'
-]
-*/
-
+const uniqueValues = await QUERY({
+  DISTINCT: token
+})
 ```
 
 ## Get a set of document ids per unique field value

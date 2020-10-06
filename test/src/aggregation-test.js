@@ -382,24 +382,26 @@ test('can aggregate totalamt using underlying index', t => {
 test('JSON BUCKET', t => {
   t.plan(1)
   global[indexName].QUERY({
-    BUCKET: {
+    BUCKETS: [{
       FIELD: 'impagency',
       VALUE: 'of'
-    }
+    }]
   }).then(result => {
     t.deepEqual(
       result,
-      {
-        FIELD: [ 'impagency' ], VALUE: { GTE: 'of', LTE: 'of' },
-        _id: [
-          '52b213b38594d8a2be17c780',
-          '52b213b38594d8a2be17c781',
-          '52b213b38594d8a2be17c782',
-          '52b213b38594d8a2be17c784',
-          '52b213b38594d8a2be17c786',
-          '52b213b38594d8a2be17c789'
-        ]
-      }
+      [
+        {
+          FIELD: [ 'impagency' ], VALUE: { GTE: 'of', LTE: 'of' },
+          _id: [
+            '52b213b38594d8a2be17c780',
+            '52b213b38594d8a2be17c781',
+            '52b213b38594d8a2be17c782',
+            '52b213b38594d8a2be17c784',
+            '52b213b38594d8a2be17c786',
+            '52b213b38594d8a2be17c789'
+          ]
+        }
+      ]
     )
   })
 })
@@ -456,17 +458,20 @@ test('can aggregate totalamt using underlying index', t => {
 test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
   t.plan(1)
   global[indexName].QUERY({
-    BUCKET: {
-      FIELD: 'impagency',
-      VALUE: 'pmu'
-    }
-  }).then(result => {
-    t.deepEqual(
-      result,
+    BUCKETS: [
       {
-        FIELD: [ 'impagency' ], VALUE: { GTE: 'pmu', LTE: 'pmu' },
-        _id: ['52b213b38594d8a2be17c783']
+        FIELD: 'impagency',
+        VALUE: 'pmu'
       }
+    ]
+  }).then(result => {
+      t.deepEqual(
+      result, [
+        {
+          FIELD: [ 'impagency' ], VALUE: { GTE: 'pmu', LTE: 'pmu' },
+          _id: ['52b213b38594d8a2be17c783']
+        }
+      ]
     )
   })
 })
