@@ -154,9 +154,9 @@ test('DISTINCT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       FIELD: 'make'
-    }
+    }]
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'make', VALUE: 'bmw' },

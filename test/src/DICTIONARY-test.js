@@ -1,5 +1,6 @@
 import si from '../../dist/search-index.esm.js'
 import test from 'tape'
+import FuzzySet from 'fuzzyset'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DICTIONARY'
@@ -196,9 +197,38 @@ test('simple DICTIONARY (JSON)', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      'blue',
-      'red',
-      'yellow'
+      'blue', 'red', 'yellow'
     ])
+  })
+})
+
+
+test('simple DICTIONARY (JSON)', t => {
+  const { DICTIONARY } = global[indexName]
+  t.plan(1)
+  DICTIONARY().then(res => {
+    t.deepEqual(res, [
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+    ])
+  })
+})
+
+test('simple DICTIONARY (JSON)', t => {
+  const { DICTIONARY } = global[indexName]
+  t.plan(1)
+  DICTIONARY('bl').then(res => {
+    t.deepEqual(res, [
+      'blue'
+    ])
+  })
+})
+
+test('FuzzySet test', t => {
+  const { DICTIONARY } = global[indexName]
+  t.plan(1)
+  DICTIONARY().then(dict => {
+    const fs = FuzzySet()
+    dict.forEach(d => fs.add(d))
+    t.deepEqual(fs.get('blux'), [ [ 0.75, 'blue' ] ])
   })
 })

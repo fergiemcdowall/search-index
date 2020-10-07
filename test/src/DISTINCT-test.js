@@ -158,9 +158,9 @@ test('simple DISTINCT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       FIELD: 'colour'
-    }
+    }]
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'blue' },
@@ -174,9 +174,9 @@ test('simple DISTINCT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       VALUE: 'red'
-    }
+    }]
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'red' }
@@ -188,9 +188,9 @@ test('simple DISTINCT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       VALUE: 'volvo'
-    }
+    }]
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'volvo' },
@@ -205,14 +205,61 @@ test('simple DISTINCT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       FIELD: 'brand'
-    }
+    }]
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'bmw' },
       { FIELD: 'brand', VALUE: 'tesla' },
       { FIELD: 'brand', VALUE: 'volvo' } 
+    ])
+  })
+})
+
+
+test('DISTINCT on 2 fields', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: [{
+      FIELD: [ 'brand', 'colour' ]
+    }]
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'brand', VALUE: 'bmw' },
+      { FIELD: 'brand', VALUE: 'tesla' },
+      { FIELD: 'brand', VALUE: 'volvo' },
+      { FIELD: 'colour', VALUE: 'blue' },
+      { FIELD: 'colour', VALUE: 'red' },
+      { FIELD: 'colour', VALUE: 'yellow' } 
+    ])
+  })
+})
+
+test('DISTINCT on 2 fields with GTE/LTE', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    DISTINCT: [
+      {
+        FIELD: [ 'brand' ],
+        VALUE: {
+          GTE: 'f'
+        }
+      }, {
+        FIELD: [ 'colour' ],
+        VALUE: {
+          LTE: 'x'
+        }
+      }
+    ]
+  }).then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'brand', VALUE: 'tesla' },
+      { FIELD: 'brand', VALUE: 'volvo' },
+      { FIELD: 'colour', VALUE: 'blue' },
+      { FIELD: 'colour', VALUE: 'red' }
     ])
   })
 })

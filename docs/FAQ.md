@@ -10,7 +10,7 @@
 - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
 - [How do I compose queries?](#how-do-i-compose-queries)
 - [How do I perform a simple aggregation on a field?](#how-do-i-perform-a-simple-aggregation-on-a-field)
-  - [Get a list of unique values for a field](#get-a-list-of-unique-values-for-a-field)
+  - [Get a list of unique values for a given field](#get-a-list-of-unique-values-for-a-given-field)
   - [Get a set of document ids per unique field value](#get-a-set-of-document-ids-per-unique-field-value)
   - [Get counts per unique field value](#get-counts-per-unique-field-value)
   - [Define custom "buckets"](#define-custom-buckets)
@@ -110,101 +110,66 @@ QUERY({
 
 # How do I perform a simple aggregation on a field?
 
-## Get a list of unique values for a field
+## Get a list of unique values for a given field
 
 ```javascript
 const uniqueValues = await QUERY({
-  DISTINCT: token
+  DISTINCT: { FIELD: fieldName }
 })
 ```
 
 ## Get a set of document ids per unique field value
 
 ```javascript
-DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
- .then(console.log)
-/*
-[
-  { gte: 'agency.POLICE', lte: 'agency.POLICE', _id: [ 2,3,4,7 ] },
-  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ]
-  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ]
-]
-*/
-
+const buckets = await QUERY({
+  BUCKETS: {
+    DISTINCT: { FIELD: fieldName }
+  }
+})
 ```
 
 ## Get counts per unique field value
 
 ```javascript
-DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
- .then(result => result.map(item => { item.count = item._id.length; return item } ))
- .then(console.log)
-/*
-[
-  { gte: 'agency.POLICE' lte: 'agency.POLICE', _id: [ 2,3,4,7 ], count: 4 },
-  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ], count: 2 },
-  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ], count: 2 }
-]
-*/
-
+const buckets = await QUERY({
+  BUCKETS: {
+    DISTINCT: { FIELD: fieldName }
+  }
+}).then(bkts => bkts.map(
+  bkt => ({
+    FIELD: bkt.FIELD,
+    VALUE: bkt.VALUE,
+    count: bkt._id.length
+  })
+))
 ```
 
 
 ## Define custom "buckets"
 
 ```javascript
-Promise.all([
-  'totalamt.0',
-  'totalamt.10000000',
-  'totalamt.200000000'
-].map(BUCKET))
- .then(console.log)
-/*
-[
-  { gte: 'totalamt.0',
-    lte: 'totalamt.0',
-    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
-  { gte: 'totalamt.10000000',
-    lte: 'totalamt.10000000',
-    _id: [ '52b213b38594d8a2be17c785' ] },
-  { gte: 'totalamt.200000000',
-    lte: 'totalamt.200000000',
-    _id: [ '52b213b38594d8a2be17c789' ] }
-]
-*/
-```
-
-```javascript
-Promise.all([
-  { gte: 'totalamt.0', lte: 'totalamt.10000000'},
-  { gte: 'totalamt.10000001', lte: 'totalamt.99999999'}
-].map(BUCKET))
- .then(console.log)
-/*
-[
-  { gte: 'totalamt.0',
-    lte: 'totalamt.10000000',
-    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c785', '52b213b38594d8a2be17c787' ] },
-  { gte: 'totalamt.10000001',
-    lte: 'totalamt.99999999',
-    _id: [ '52b213b38594d8a2be17c789' ] }
-]
-*/
-
+const buckets = await QUERY({
+  BUCKETS: [
+    token1,
+    token2,
+    token3
+  ]
+})
 ```
 
 ## Combine an aggregation with a search
 
 ```javascript
-const bucketStructure = DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
-const search = SEARCH('board_approval_month:October')
-// here the aggregation will only be performed on documents matching that
-// satisfy the search criteria ('board_approval_month:October')
-BUCKETFILTER(bucketStructure, search).then(/* result */)
+const buckets = QUERY({
+  BUCKETFILTER: {
+    BUCKETS: [ token1, token2, token3 ],
+    FILTER: {
+      SEARCH: searchTerms
+    }
+  }
+})
 ```
+
 # How do I make a simple typeahead / autosuggest / matcher
 
 There are of course many ways to do this, but if you just want a
@@ -212,21 +177,21 @@ simple "begins with" autosuggest, then you can simply use the
 `DICTIONARY` function:
 
 ```javascript
-// get all tokens in the index
-DICTIONARY().then( /* array of tokens */ )
-
-// get all tokens in the body.text field
-DICTIONARY('body.text').then( /* array of tokens */ )
-
-// get tokens in the body.text field that starts with 'cool'
-DICTIONARY('body.text.cool').then( /* array of tokens */ )
-
-// you can also use gte/lte ("greater/less than or equal")
-DICTIONARY({
-  gte: 'body.text.a',
-  lte: 'body.text.g'
-}).then( /* array of tokens */ )
+const results = DICTIONARY('b')   // ['bananas','branch','brunch']
+const results = DICTIONARY('br')  // ['branch','brunch']
+const results = DICTIONARY('bra') // ['branch']
 ```
 
 Alternatively you can use `DICTIONARY` to extract all terms from the
 index and then feed them into some third-party matcher logic.
+
+```javascript
+import FuzzySet from 'fuzzyset'
+// ...
+const dict = await DICTIONARY()
+const fs = FuzzySet()
+dict.forEach(d => fs.add(d))
+// ...
+// fuzzy matching
+fs.get(searchTerm)
+```

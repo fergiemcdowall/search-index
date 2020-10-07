@@ -26,8 +26,8 @@
       - [Find where a field exists](#find-where-a-field-exists)
     - [Query verbs](#query-verbs)
       - [AND](#and)
-      - [BUCKET](#bucket)
       - [BUCKETFILTER](#bucketfilter)
+      - [BUCKETS](#buckets)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
       - [MAX](#max)
@@ -310,16 +310,17 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-#### BUCKET
-
-```javascript
-// Return the IDs of documents that exist with the given token
-{
-  BUCKET: token
-}
-```
-
 #### BUCKETFILTER
+
+// TODO: return the FILTER set if desired
+
+// TODO: rename ->
+
+AGGREGATE: {
+  FACETS: (DISTINCT),
+  BUCKETS: ...
+  QUERY: ...
+}
 
 ```javascript
 // Fetch a collection of BUCKETs and then subtract any documents that
@@ -327,15 +328,36 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 {
   BUCKETFILTER: {
     BUCKETS: [ token1, token2, ... ],
-    FILTER: token3
+    FILTER: query
   }
 }
 ```
 
-#### DISTINCT
+#### BUCKETS
+
+// TODO: should BUCKETS be FACETS?
 
 ```javascript
-// Return each available field and value for the given token.
+// Return the IDs of documents for each given token
+{
+  BUCKETS: [ token1, token2, ... ]
+}
+
+// Create a BUCKET for each DISTINCT field/value in the given token
+{
+  BUCKETS: { DISTINCT: token }
+}
+
+```
+
+#### DISTINCT
+
+TODO: can DISTINCT tokens handle an array of FIELD names?
+
+TODO: can DISTINCT handle an array of tokens?
+
+```javascript
+// Return each distinct field/value combination for the given token.
 {
   DISTINCT: token
 }

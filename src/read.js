@@ -31,7 +31,9 @@ export default function (fii) {
     ).sort()
   )
 
-  const DISTINCT = token => fii.DISTINCT(token).then(result => [
+  const DISTINCT = (...tokens) => fii.DISTINCT(
+    ...tokens
+  ).then(result => [
     // Stringify Set entries so that Set can determine duplicates
     ...result.reduce((acc, cur) => acc.add(JSON.stringify(
       Object.assign(cur, {
@@ -174,7 +176,7 @@ export default function (fii) {
       }
       if (command.BUCKETS) return getBuckets(command.BUCKETS)
       if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
-      if (command.DISTINCT) return DISTINCT(command.DISTINCT)
+      if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()

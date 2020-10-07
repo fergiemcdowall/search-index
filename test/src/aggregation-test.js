@@ -271,9 +271,9 @@ test('can aggregate totalamt', t => {
 test('can aggregate totalamt JSON DISTINCT', t => {
   t.plan(1)
   global[indexName].QUERY({
-    DISTINCT: {
+    DISTINCT: [{
       FIELD: 'impagency'
-    }
+    }]
   }).then(result => t.deepEqual(
     result, [
       { FIELD: 'impagency', VALUE: 'administration' },

@@ -182,6 +182,30 @@ test('QUERY { BUCKETS.DISTINCT: ... }', t => {
   })
 })
 
+test('QUERY { BUCKETS.DISTINCT: ... } with sum of documents', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    BUCKETS: {
+      DISTINCT: { FIELD: 'make' }
+    }
+  }).then(bkts => bkts.map(
+    bkt => ({
+      FIELD: bkt.FIELD,
+      VALUE: bkt.VALUE,
+      count: bkt._id.length
+    })
+  )).then(bkts => {
+    t.deepEqual(bkts, [
+      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, count: 3 },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, count: 4 },
+      { FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, count: 3 } 
+    ])
+  })
+})
+
+
+
 test('QUERY { BUCKETS.DISTINCT: ... } with GTE', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
