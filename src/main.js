@@ -7,9 +7,10 @@ const makeASearchIndex = (idx, ops) => {
   const r = reader(idx)
   return {
     // internal functions inherited from fergies-inverted-index
+    _AGGREGATE: idx.AGGREGATE,
     _AND: idx.AND,
     _BUCKET: idx.BUCKET,
-    _BUCKETFILTER: idx.BUCKETFILTER,
+    _BUCKETS: idx.BUCKETS,
     _FIELDS: idx.FIELDS,
     _GET: idx.GET,
     _MAX: idx.MAX,
@@ -18,10 +19,10 @@ const makeASearchIndex = (idx, ops) => {
     _OR: idx.OR,
 
     // search-index read
-    _BUCKETS: r.BUCKETS,
     _DISTINCT: r.DISTINCT,
     _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    _FACETS: r.FACETS,
     _PAGE: r.PAGE,
     _SCORE: r.SCORE,
     _SEARCH: r.SEARCH,

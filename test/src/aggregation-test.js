@@ -38,74 +38,74 @@ test('can add some worldbank data', t => {
 })
 
 test('can aggregate totalamt using underlying index', t => {
-  const { _BUCKET, _BUCKETFILTER, _DISTINCT, _SEARCH } = global[indexName]
+  const { _AGGREGATE, _FACETS, _SEARCH } = global[indexName]
   t.plan(1)
-  _BUCKETFILTER(
-    _DISTINCT({
+  _AGGREGATE({
+    FACETS: _FACETS({
       FIELD: 'totalamt'
-    }).then(dict => dict.map(_BUCKET)),
-    _SEARCH('board_approval_month:october')
-  ).then(result => t.deepEqual(
-    result,
-    [
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' }, _id: [
-        '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '10000000', LTE: '10000000' }, _id: [
-        '52b213b38594d8a2be17c785'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '130000000', LTE: '130000000' }, _id: [] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '13100000', LTE: '13100000' }, _id: [
-        '52b213b38594d8a2be17c784'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '160000000', LTE: '160000000' }, _id: [
-        '52b213b38594d8a2be17c788'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '200000000', LTE: '200000000' }, _id: [
-        '52b213b38594d8a2be17c789'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '500000000', LTE: '500000000' }, _id: [
-        '52b213b38594d8a2be17c786'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '6060000', LTE: '6060000' }, _id: [] }      
-    ]
+    }),
+    QUERY: _SEARCH('board_approval_month:october')
+  }).then(result => t.deepEqual(
+    result, {
+      BUCKETS: [],
+      FACETS: [
+        { FIELD: 'totalamt', VALUE: '0', _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+        { FIELD: 'totalamt', VALUE: '10000000', _id: [ '52b213b38594d8a2be17c785' ] },
+        { FIELD: 'totalamt', VALUE: '130000000', _id: [] },
+        { FIELD: 'totalamt', VALUE: '13100000', _id: [ '52b213b38594d8a2be17c784' ] },
+        { FIELD: 'totalamt', VALUE: '160000000', _id: [ '52b213b38594d8a2be17c788' ] },
+        { FIELD: 'totalamt', VALUE: '200000000', _id: [ '52b213b38594d8a2be17c789' ] },
+        { FIELD: 'totalamt', VALUE: '500000000', _id: [ '52b213b38594d8a2be17c786' ] },
+        { FIELD: 'totalamt', VALUE: '6060000', _id: [] }
+      ],
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c783', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c784', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c785', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c786', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c787', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c788', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c789', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 }
+      ]
+    }
   ))
 })
 
-test('can aggregate totalamt using _BUCKETFILTER (aLTErnative invokation)', t => {
+test('can aggregate totalamt using _AGGREGATE (aLTErnative invokation)', t => {
   t.plan(1)
-  const { _BUCKET, _BUCKETFILTER, _DISTINCT, _SEARCH } = global[indexName]
+  const { _FACETS, _AGGREGATE, _SEARCH } = global[indexName]
 
-  const b = _DISTINCT({
+  const f = _FACETS({
     FIELD: 'totalamt'
-  }).then(dict => dict.map(_BUCKET))
+  })
   const s = _SEARCH('board_approval_month:october')
   
-  _BUCKETFILTER(b, s).then(result => t.deepEqual(
-    result,
-    [
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' }, _id: [
-        '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '10000000', LTE: '10000000' }, _id: [
-        '52b213b38594d8a2be17c785'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '130000000', LTE: '130000000' }, _id: [] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '13100000', LTE: '13100000' }, _id: [
-        '52b213b38594d8a2be17c784'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '160000000', LTE: '160000000' }, _id: [
-        '52b213b38594d8a2be17c788'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '200000000', LTE: '200000000' }, _id: [
-        '52b213b38594d8a2be17c789'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '500000000', LTE: '500000000' }, _id: [
-        '52b213b38594d8a2be17c786'
-      ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '6060000', LTE: '6060000' }, _id: [] }
-    ]
-  ))
+  _AGGREGATE({
+    FACETS: f,
+    QUERY: s
+  }).then(result => t.deepEqual(
+    result, {
+      BUCKETS: [],
+      FACETS: [
+        { FIELD: 'totalamt', VALUE: '0', _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+        { FIELD: 'totalamt', VALUE: '10000000', _id: [ '52b213b38594d8a2be17c785' ] },
+        { FIELD: 'totalamt', VALUE: '130000000', _id: [] },
+        { FIELD: 'totalamt', VALUE: '13100000', _id: [ '52b213b38594d8a2be17c784' ] },
+        { FIELD: 'totalamt', VALUE: '160000000', _id: [ '52b213b38594d8a2be17c788' ] },
+        { FIELD: 'totalamt', VALUE: '200000000', _id: [ '52b213b38594d8a2be17c789' ] },
+        { FIELD: 'totalamt', VALUE: '500000000', _id: [ '52b213b38594d8a2be17c786' ] },
+        { FIELD: 'totalamt', VALUE: '6060000', _id: [] }
+      ],
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c783', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c784', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c785', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c786', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c787', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c788', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c789', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 }
+      ]
+    }))
 })
 
 test('_BUCKETing', t => {
@@ -169,9 +169,9 @@ test('_BUCKETing', t => {
 
 
 
-test('can aggregate totalamt using _BUCKETFILTER and custom buckets', t => {
+test('can aggregate totalamt using _AGGREGATE and custom buckets', t => {
   t.plan(1)  
-  const b = Promise.all([
+  const b = global[indexName]._BUCKETS(
     {
       FIELD: 'totalamt',
       VALUE: { GTE: '0', LTE: '0' }
@@ -184,19 +184,32 @@ test('can aggregate totalamt using _BUCKETFILTER and custom buckets', t => {
       FIELD: 'totalamt',
       VALUE: { GTE: '200000000', LTE: '200000000' }
     }
-  ].map(global[indexName]._BUCKET))
+  )
   const s = global[indexName]._SEARCH('board_approval_month:october')  
-  global[indexName]._BUCKETFILTER(b, s).then(result => t.deepEqual(
-    result,
-    [
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' },
-        _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '10000000', LTE: '10000000' },
+  global[indexName]._AGGREGATE({
+    BUCKETS: b,
+    QUERY: s
+  }).then(result => t.deepEqual(
+    result, {
+      BUCKETS: [
+        { FIELD: [ 'totalamt' ], VALUE: { GTE: '0', LTE: '0' },
+          _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
+        { FIELD: [ 'totalamt' ], VALUE: { GTE: '10000000', LTE: '10000000' },
         _id: [ '52b213b38594d8a2be17c785' ] },
-      { FIELD: [ 'totalamt' ], VALUE: { GTE: '200000000', LTE: '200000000' },
-        _id: [ '52b213b38594d8a2be17c789' ] }
-    ]
-  ))
+        { FIELD: [ 'totalamt' ], VALUE: { GTE: '200000000', LTE: '200000000' },
+          _id: [ '52b213b38594d8a2be17c789' ] }
+      ],
+      FACETS: [],
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c783', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c784', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c785', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c786', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c787', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c788', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c789', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 }
+      ]
+    }))
 })
 
 test('make some _BUCKETs', t => {
@@ -343,39 +356,49 @@ test('can aggregate totalamt', t => {
 
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
-  global[indexName]._BUCKETFILTER(
-    global[indexName]._DISTINCT({
+  global[indexName]._AGGREGATE({
+    FACETS: global[indexName]._FACETS({
       FIELD: 'impagency'
-    }).then(result => Promise.all(result.map(global[indexName]._BUCKET))),
-    global[indexName]._SEARCH('board_approval_month:october')
-  ).then(result => {
+    }),
+    QUERY: global[indexName]._SEARCH('board_approval_month:october')
+  }).then(result => {
     t.deepEqual(
-      result,
-      [
-        { FIELD: [ 'impagency' ], VALUE: { GTE: 'administration', LTE: 'administration' }, _id: [ '52b213b38594d8a2be17c787' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'and', LTE: 'and' }, _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'communications', LTE: 'communications' }, _id: [] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'departmant', LTE: 'departmant' }, _id: [ '52b213b38594d8a2be17c788' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'education', LTE: 'education' }, _id: [] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'energy', LTE: 'energy' }, _id: [ '52b213b38594d8a2be17c787' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'finance', LTE: 'finance' }, _id: [ '52b213b38594d8a2be17c789' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'highways', LTE: 'highways' }, _id: [ '52b213b38594d8a2be17c786' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'industry', LTE: 'industry' }, _id: [ '52b213b38594d8a2be17c784' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'intensive', LTE: 'intensive' }, _id: [ '52b213b38594d8a2be17c783' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'labor', LTE: 'labor' }, _id: [ '52b213b38594d8a2be17c783' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'ministry', LTE: 'ministry' }, _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786', '52b213b38594d8a2be17c789' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'national', LTE: 'national' }, _id: [ '52b213b38594d8a2be17c787' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'of', LTE: 'of' }, _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786', '52b213b38594d8a2be17c789' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'pmu', LTE: 'pmu' }, _id: [ '52b213b38594d8a2be17c783' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'project', LTE: 'project' }, _id: [ '52b213b38594d8a2be17c783' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'public', LTE: 'public' }, _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'rajasthan', LTE: 'rajasthan' }, _id: [ '52b213b38594d8a2be17c788' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'road', LTE: 'road' }, _id: [ '52b213b38594d8a2be17c786' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'trade', LTE: 'trade' }, _id: [ '52b213b38594d8a2be17c784' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'transport', LTE: 'transport' }, _id: [ '52b213b38594d8a2be17c786' ] },
-         { FIELD: [ 'impagency' ], VALUE: { GTE: 'works', LTE: 'works' }, _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] }
-      ]
-    )
+      result, {
+        BUCKETS: [],
+        FACETS: [
+          { FIELD: 'impagency', VALUE: 'administration', _id: [ '52b213b38594d8a2be17c787' ] },
+          { FIELD: 'impagency', VALUE: 'and', _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786' ] },
+          { FIELD: 'impagency', VALUE: 'communications', _id: [] },
+          { FIELD: 'impagency', VALUE: 'departmant', _id: [ '52b213b38594d8a2be17c788' ] },
+          { FIELD: 'impagency', VALUE: 'education', _id: [] },
+          { FIELD: 'impagency', VALUE: 'energy', _id: [ '52b213b38594d8a2be17c787' ] },
+          { FIELD: 'impagency', VALUE: 'finance', _id: [ '52b213b38594d8a2be17c789' ] },
+          { FIELD: 'impagency', VALUE: 'highways', _id: [ '52b213b38594d8a2be17c786' ] },
+          { FIELD: 'impagency', VALUE: 'industry', _id: [ '52b213b38594d8a2be17c784' ] },
+          { FIELD: 'impagency', VALUE: 'intensive', _id: [ '52b213b38594d8a2be17c783' ] },
+          { FIELD: 'impagency', VALUE: 'labor', _id: [ '52b213b38594d8a2be17c783' ] },
+          { FIELD: 'impagency', VALUE: 'ministry', _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786', '52b213b38594d8a2be17c789' ] },
+          { FIELD: 'impagency', VALUE: 'national', _id: [ '52b213b38594d8a2be17c787' ] },
+          { FIELD: 'impagency', VALUE: 'of', _id: [ '52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786', '52b213b38594d8a2be17c789' ] },
+          { FIELD: 'impagency', VALUE: 'pmu', _id: [ '52b213b38594d8a2be17c783' ] },
+          { FIELD: 'impagency', VALUE: 'project', _id: [ '52b213b38594d8a2be17c783' ] },
+          { FIELD: 'impagency', VALUE: 'public', _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] },
+          { FIELD: 'impagency', VALUE: 'rajasthan', _id: [ '52b213b38594d8a2be17c788' ] },
+          { FIELD: 'impagency', VALUE: 'road', _id: [ '52b213b38594d8a2be17c786' ] },
+          { FIELD: 'impagency', VALUE: 'trade', _id: [ '52b213b38594d8a2be17c784' ] },
+          { FIELD: 'impagency', VALUE: 'transport', _id: [ '52b213b38594d8a2be17c786' ] },
+          { FIELD: 'impagency', VALUE: 'works', _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c788' ] } 
+        ],
+        RESULT: [
+          { _id: '52b213b38594d8a2be17c783', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c784', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c785', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c786', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c787', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c788', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c789', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 } 
+        ]
+      })
   })
 })
 
@@ -406,34 +429,41 @@ test('JSON BUCKET', t => {
   })
 })
 
-test('JSON BUCKETFILTER', t => {
+test('JSON AGGREGATE', t => {
   t.plan(1)
   global[indexName].QUERY({
-    BUCKETFILTER: {
+    AGGREGATE: {
       BUCKETS: [
         {
           FIELD: 'impagency',
           VALUE: 'of'
         }
       ],
-      FILTER: {
+      QUERY: {
         SEARCH: [ 'board_approval_month:october' ]
       }
     }
   }).then(result => {
     t.deepEqual(
-      result,
-      [
-        {
-          FIELD: [ 'impagency' ], VALUE: { GTE: 'of', LTE: 'of' },
-          _id: [
+      result, {
+        BUCKETS: [{
+          FIELD: [ 'impagency' ], VALUE: { GTE: 'of', LTE: 'of' }, _id: [
             '52b213b38594d8a2be17c784',
             '52b213b38594d8a2be17c786',
             '52b213b38594d8a2be17c789'
-          ]
-        }
-      ]
-    )
+          ]}
+        ],
+        FACETS: [],
+        RESULT: [
+          { _id: '52b213b38594d8a2be17c783', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c784', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c785', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c786', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c787', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c788', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 },
+          { _id: '52b213b38594d8a2be17c789', _match: [ 'board_approval_month:october#1.00' ], _score: 0.45 }
+        ]
+      })
   })
 })
   

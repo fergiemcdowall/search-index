@@ -49,7 +49,7 @@
 
 ## Importing and requiring
 
-This module can either be invoked using `import` or `require`
+This module can be invoked with `import` and/or `require`
 depending on your environment:
 
 ```javascript
@@ -65,8 +65,7 @@ const si = require('search-index')
 ## Instantiating an index
 
 Once the `search-index` module is assigned to a variable you can
-then instantiate an index by invoking the module variable as a
-Promise:
+instantiate an index by invoking the module variable as a Promise:
     
 
 ```javascript
@@ -93,6 +92,8 @@ si().then(idx => { /* idx is a new search index */ })
 For the purposes of brevity, this document assumes that a search index
 has been initialized in such a way that `INDEX`, `QUERY` and `UPDATE` are
 available as variables:
+
+    // TODO: FIX
 
 ```javascript
 const { INDEX, QUERY, UPDATE } = await si()
@@ -316,9 +317,9 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 // TODO: rename ->
 
-AGGREGATE: {
-  FACETS: (DISTINCT),
-  BUCKETS: ...
+FACETS: {
+  DISTINCT: (optional) ... ,
+  BUCKETS: (optional) ... ,
   QUERY: ...
 }
 
@@ -335,8 +336,6 @@ AGGREGATE: {
 
 #### BUCKETS
 
-// TODO: should BUCKETS be FACETS?
-
 ```javascript
 // Return the IDs of documents for each given token
 {
@@ -351,10 +350,6 @@ AGGREGATE: {
 ```
 
 #### DISTINCT
-
-TODO: can DISTINCT tokens handle an array of FIELD names?
-
-TODO: can DISTINCT handle an array of tokens?
 
 ```javascript
 // Return each distinct field/value combination for the given token.

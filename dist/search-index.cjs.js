@@ -188,6 +188,17 @@ function reader (fii) {
     )), new Set())
   ].map(JSON.parse)); // un-stringify
 
+  const FACETS = (...tokens) => fii.FACETS(
+    ...tokens
+  ).then(result => [
+    // Stringify Set entries so that Set can determine duplicates
+    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
+      Object.assign(cur, {
+        VALUE: cur.VALUE.split('#')[0]
+      })
+    )), new Set())
+  ].map(JSON.parse)); // un-stringify
+
   const PAGE = (results, options) => {
     options = Object.assign({
       NUMBER: 0,
@@ -311,21 +322,22 @@ function reader (fii) {
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
-      if (command.FIELD) return fii.GET(command)
-      if (command.VALUE) return fii.GET(command)
-      if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
-      if (command.BUCKETFILTER) {
-        return fii.BUCKETFILTER(
-          getBuckets(command.BUCKETFILTER.BUCKETS),
-          promisifyQuery(command.BUCKETFILTER.FILTER)
-        )
+      if (command.AGGREGATE) {
+        return fii.AGGREGATE({
+          BUCKETS: command.AGGREGATE.BUCKETS ? fii.BUCKETS(...command.AGGREGATE.BUCKETS) : [],
+          FACETS: command.AGGREGATE.FACETS ? FACETS(command.AGGREGATE.FACETS) : [],
+          QUERY: promisifyQuery(command.AGGREGATE.QUERY)
+        })
       }
+      if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETS) return getBuckets(command.BUCKETS)
       if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
       if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
       if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()
+      if (command.FACETS) return FACETS(...command.FACETS)
+      if (command.FIELD) return fii.GET(command) // TODO: needed?
       if (command.FIELDS) return fii.FIELDS()
       if (command.GET) return fii.GET(command.GET)
       if (command.MAX) return fii.MAX(command.MAX)
@@ -341,6 +353,7 @@ function reader (fii) {
       if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
       if (command.SORT) return SORT(resultFromPreceding, command.SORT)
+      if (command.VALUE) return fii.GET(command) // TODO: needed?
     };
     // Turn the array of commands into a chain of promises
     return q.reduce((acc, cur) => acc.then(
@@ -356,6 +369,7 @@ function reader (fii) {
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
     DOCUMENT_COUNT: DOCUMENT_COUNT,
+    FACETS: FACETS,
     FIELDS: fii.FIELDS,
     PAGE: PAGE,
     SCORE: SCORE,
@@ -370,9 +384,10 @@ const makeASearchIndex = (idx, ops) => {
   const r = reader(idx);
   return {
     // internal functions inherited from fergies-inverted-index
+    _AGGREGATE: idx.AGGREGATE,
     _AND: idx.AND,
     _BUCKET: idx.BUCKET,
-    _BUCKETFILTER: idx.BUCKETFILTER,
+    _BUCKETS: idx.BUCKETS,
     _FIELDS: idx.FIELDS,
     _GET: idx.GET,
     _MAX: idx.MAX,
@@ -381,10 +396,10 @@ const makeASearchIndex = (idx, ops) => {
     _OR: idx.OR,
 
     // search-index read
-    _BUCKETS: r.BUCKETS,
     _DISTINCT: r.DISTINCT,
     _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    _FACETS: r.FACETS,
     _PAGE: r.PAGE,
     _SCORE: r.SCORE,
     _SEARCH: r.SEARCH,

@@ -113,26 +113,32 @@ test('simple BUCKET', t => {
   })
 })
 
-// BUCKETFILTER
-test('simple BUCKETFILTER', t => {
+// AGGREGATE
+test('simple AGGREGATE', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    BUCKETFILTER: {
+    AGGREGATE: {
       BUCKETS: [
         {
           FIELD: 'make',
           VALUE: 'volvo'        
         }
       ],
-      FILTER: {
+      QUERY: {
         GET: 'brand:tesla'
       }
     }
   }).then(res => {
-    t.deepEqual(res, [{
-      FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ]
-    }])
+    t.deepEqual(res, {
+      BUCKETS: [
+        { FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] } ],
+      FACETS: [],
+      RESULT: [
+        { _id: '7', _match: [ 'brand:tesla#1.00' ] },
+        { _id: '8', _match: [ 'brand:tesla#1.00' ] }
+      ]
+    })
   })
 })
 
@@ -167,17 +173,15 @@ test('DISTINCT', t => {
 })
 
 // DISTINCT and BUCKETFILTER
-test('DISTINCT and BUCKETFILTER', t => {
+test('FACETS and AGGREGATE', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    BUCKETFILTER: {
-      BUCKETS: {
-        DISTINCT: {
-          FIELD: 'make'
-        }
+    AGGREGATE: {
+      FACETS: {
+        FIELD: 'make'
       },
-      FILTER: {
+      QUERY: {
         GET: {
           FIELD: 'brand',
           VALUE: 'tesla'
@@ -185,11 +189,18 @@ test('DISTINCT and BUCKETFILTER', t => {
       }
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: [ 'make' ], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: [ '7' ] },
-      { FIELD: [ 'make' ], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: [] },
-      { FIELD: [ 'make' ], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [ '8' ] }
-    ])
+    t.deepEqual(res, {
+      BUCKETS: [],
+      FACETS: [
+        { FIELD: 'make', VALUE: 'bmw', _id: [ '7' ] },
+        { FIELD: 'make', VALUE: 'tesla', _id: [] },
+        { FIELD: 'make', VALUE: 'volvo', _id: [ '8' ] }
+      ],
+      RESULT: [
+        { _id: '7', _match: [ 'brand:tesla#1.00' ] },
+        { _id: '8', _match: [ 'brand:tesla#1.00' ] }
+      ]
+    })
   })
 })
 
