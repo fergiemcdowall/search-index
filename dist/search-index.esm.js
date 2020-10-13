@@ -310,24 +310,23 @@ function reader (fii) {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (...q) => {
-    const getBuckets = bkts => bkts.DISTINCT
-      ? DISTINCT(bkts.DISTINCT).then(
-        dist => BUCKETS(...dist)
-      ) : BUCKETS(...bkts);
 
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
       if (typeof command === 'string') return fii.GET(command)
       if (command.AGGREGATE) {
         return fii.AGGREGATE({
-          BUCKETS: command.AGGREGATE.BUCKETS ? fii.BUCKETS(...command.AGGREGATE.BUCKETS) : [],
-          FACETS: command.AGGREGATE.FACETS ? FACETS(command.AGGREGATE.FACETS) : [],
+          BUCKETS: command.AGGREGATE.BUCKETS
+            ? fii.BUCKETS(...command.AGGREGATE.BUCKETS)
+            : [],
+          FACETS: command.AGGREGATE.FACETS
+            ? FACETS(command.AGGREGATE.FACETS)
+            : [],
           QUERY: promisifyQuery(command.AGGREGATE.QUERY)
         })
       }
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
-      if (command.BUCKETS) return getBuckets(command.BUCKETS)
-      if (command.DICTIONARY) return DICTIONARY(command.DICTIONARY)
+      if (command.BUCKETS) return BUCKETS(...command.BUCKETS)
       if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)

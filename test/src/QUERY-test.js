@@ -142,19 +142,6 @@ test('simple AGGREGATE', t => {
   })
 })
 
-// DICTIONARY
-test('DICTIONARY', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    DICTIONARY: {
-      fields:['make']
-    }
-  }).then(res => {
-    t.deepEqual(res, [ 'bmw', 'tesla', 'volvo' ])
-  })
-})
-
 // DISTINCT
 test('DISTINCT', t => {
   const { QUERY } = global[indexName]

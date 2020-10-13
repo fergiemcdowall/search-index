@@ -26,10 +26,11 @@
       - [Find where a field exists](#find-where-a-field-exists)
     - [Query verbs](#query-verbs)
       - [AND](#and)
-      - [BUCKETFILTER](#bucketfilter)
+      - [AGGREGATE](#aggregate)
       - [BUCKETS](#buckets)
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
+      - [FACETS](#facets)
       - [MAX](#max)
       - [MIN](#min)
       - [NOT](#not)
@@ -161,6 +162,8 @@ await IMPORT(index)
 
 
 ## QUERY
+
+// TODO: query should take an options object QUERY(q, options)
 
 ### Running queries
 
@@ -311,25 +314,16 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-#### BUCKETFILTER
-
-// TODO: return the FILTER set if desired
-
-// TODO: rename ->
-
-FACETS: {
-  DISTINCT: (optional) ... ,
-  BUCKETS: (optional) ... ,
-  QUERY: ...
-}
+#### AGGREGATE
 
 ```javascript
-// Fetch a collection of BUCKETs and then subtract any documents that
-// are returned by FILTER
+// Define aggregations (FACETS, BUCKETS) and then subtract any
+// document ids that are NOT returned by the QUERY
 {
-  BUCKETFILTER: {
-    BUCKETS: [ token1, token2, ... ],
-    FILTER: query
+  AGGREGATE: {
+    FACETS: [ token1, token2 /*, ...*/ ] ,  // optional
+    BUCKETS: [ token3, token4 /*, ...*/ ] , // optional
+    QUERY: query
   }
 }
 ```
@@ -341,12 +335,6 @@ FACETS: {
 {
   BUCKETS: [ token1, token2, ... ]
 }
-
-// Create a BUCKET for each DISTINCT field/value in the given token
-{
-  BUCKETS: { DISTINCT: token }
-}
-
 ```
 
 #### DISTINCT
@@ -359,6 +347,8 @@ FACETS: {
 ```
 
 #### DOCUMENTS
+
+TODO: should these be options passed to QUERY rather than a command?
 
 ```javascript
 // Returns full documents instead of just metadata. If preceded by a
@@ -383,8 +373,20 @@ PrecendingQuery, {
 }
 ```
 
+#### FACETS
+
+```javascript
+// Return document ids for each distinct field/value combination for
+// the given token space.
+{
+  FACETS: token
+}
+```
+
 
 #### MAX
+
+// TODO: given that this is not composable, maybe it should be a top level function?
 
 ```javascript
 // get the _alphabetically_ maxiumum/last value of the given token space
@@ -395,6 +397,8 @@ PrecendingQuery, {
 
 
 #### MIN
+
+// TODO: given that this is not composable, maybe it should be a top level function?
 
 ```javascript
 // get the _alphabetically_ minimum/first value of the given token space
@@ -426,6 +430,8 @@ PrecendingQuery, {
 
 #### PAGE
 
+TODO: should these be options passed to QUERY rather than a command?
+
 ```javascript
 // show a single page of the result set
 {
@@ -448,6 +454,8 @@ PrecendingQuery, {
 ```
 
 #### SCORE
+
+TODO: should these be options passed to QUERY rather than a command?
 
 ```javascript
 // show a single page of the result set
@@ -475,6 +483,8 @@ PrecendingQuery, {
 
 
 #### SORT
+
+TODO: should these be options passed to QUERY rather than a command?
 
 ```javascript
 // Return search results sorted by relevance to query tokens
