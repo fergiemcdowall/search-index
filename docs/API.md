@@ -94,14 +94,12 @@ For the purposes of brevity, this document assumes that a search index
 has been initialized in such a way that `INDEX`, `QUERY` and `UPDATE` are
 available as variables:
 
-    // TODO: FIX
-
 ```javascript
 const { INDEX, QUERY, UPDATE } = await si()
 ```
 
 It may be helpful to check out the
-[tests](https://github.com/fergiemcdowall/search-index/tree/master/test)
+[tests](https://github.com/fergiemcdowall/search-index/tree/master/test/src)
 for more examples.
 
 
@@ -489,7 +487,7 @@ TODO: should these be options passed to QUERY rather than a command?
 
 ```javascript
 // get the _alphabetically_ maxiumum/last value of the given token space
-MAX(token)
+const max = await MAX(token)
 ```
 
 
@@ -497,7 +495,7 @@ MAX(token)
 
 ```javascript
 // get the _alphabetically_ minimum/first value of the given token space
-MIN(token)
+const min = await MIN(token)
 ```
 
 
