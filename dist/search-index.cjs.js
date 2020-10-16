@@ -360,13 +360,13 @@ function reader (fii) {
     };
 
     return promisifyQuery(q).then(
-      result => options.DOCUMENTS ? DOCUMENTS(result) : result
-    ).then(
       result => options.SCORE ? SCORE(result, options.SCORE) : result
     ).then(
       result => options.SORT ? SORT(result, options.SORT) : result
     ).then(
       result => options.PAGE ? PAGE(result, options.PAGE) : result
+    ).then(
+      result => options.DOCUMENTS ? DOCUMENTS(result) : result
     )
   };
 
