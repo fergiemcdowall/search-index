@@ -110,9 +110,9 @@ test('verify DELETE', t => {
 })
 
 
-test('verify DELETE using _DOCUMENTS', t => {
+test('verify DELETE using DOCUMENT', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS([
+  global[indexName].DOCUMENTS([
     {_id:'a'},
     {_id:'b'},
     {_id:'c'}

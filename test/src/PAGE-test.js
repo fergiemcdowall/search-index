@@ -84,7 +84,7 @@ test('can add data', t => {
 
 test('get page 2 (called "1": count from "0") with page size of 3', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._PAGE(docs, {
       NUMBER: 1,
       SIZE: 3
@@ -99,20 +99,19 @@ test('get page 2 (called "1": count from "0") with page size of 3', t => {
 })
 
 
+
 test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    DOCUMENTS: true
-  }, {
+  global[indexName].QUERY({ FIELD: 'make' }, {
     PAGE: {
       NUMBER: 1,
       SIZE: 3
     }
   }).then(res => {
     t.deepEqual(res, [
-      { _id: 3, _doc: { _id: 3, make: 'Tesla', manufacturer: 'Volvo', brand: 'BMW' } },
-      { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo' } },
-      { _id: 5, _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo' } } 
+      { _id: '3', _match: [ 'make:tesla#1.00' ] },
+      { _id: '4', _match: [ 'make:volvo#1.00' ] },
+      { _id: '5', _match: [ 'make:volvo#1.00' ] } 
     ])
   })
 })
@@ -120,7 +119,7 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
 
 test('get last page with page size of 4', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._PAGE(docs, {
       NUMBER: -1,
       SIZE: 4

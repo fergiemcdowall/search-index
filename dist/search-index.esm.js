@@ -147,7 +147,7 @@ function reader (fii) {
 
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
-    return (Array.isArray(requestedDocs))
+    return Array.isArray(requestedDocs)
       ? Promise.all(
         requestedDocs.map(
           doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(e => null)
@@ -208,7 +208,6 @@ function reader (fii) {
   };
 
   // score by tfidf by default
-  // TODO: should also be an option to score by field
   // TODO: Total hits (length of _match)
   const SCORE = (results, type) => {
     type = type || 'TFIDF'; // default
@@ -309,10 +308,10 @@ function reader (fii) {
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
-  const parseJsonQuery = (...q) => {
-    // TODO: remove need for resultFromPreceding by using QUERY options
-    // needs to be called with "command" and result from previous "thenable"
-    var promisifyQuery = (command, resultFromPreceding) => {
+  const parseJsonQuery = (q, options) => {
+    options = options || {};
+
+    var promisifyQuery = (command) => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
       if (typeof command === 'string') return fii.GET(command)
@@ -337,12 +336,12 @@ function reader (fii) {
       if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
       // TODO: documents should be a QUERY option
       // feed in preceding results if present (ie if not first promise)
-      if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
+      if (command.DOCUMENTS) return DOCUMENTS(command.DOCUMENTS)
       if (command.FACETS) return FACETS(...command.FACETS)
-      if (command.FIELDS) return fii.FIELDS() // TODO: own function
+      //      if (command.FIELDS) return fii.FIELDS() // TODO: own function
       if (command.GET) return fii.GET(command.GET)
-      if (command.MAX) return fii.MAX(command.MAX) // TODO: own function
-      if (command.MIN) return fii.MIN(command.MIN) // TODO: own function
+      // if (command.MAX) return fii.MAX(command.MAX) // TODO: own function
+      // if (command.MIN) return fii.MIN(command.MIN) // TODO: own function
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
@@ -350,23 +349,24 @@ function reader (fii) {
         )
       }
       if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
-      // TODO: make into an option
-      if (command.PAGE) return PAGE(resultFromPreceding, command.PAGE)
-      // TODO: make into an option
-      if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
+      //      if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
       // TODO: make into an option
-      if (command.SORT) return SORT(resultFromPreceding, command.SORT)
+      //      if (command.SORT) return SORT(resultFromPreceding, command.SORT)
     };
-    // Turn the array of commands into a chain of promises
-    return q.reduce((acc, cur) => acc.then(
-      result => promisifyQuery(cur, result)
-    ), promisifyQuery(q.shift())) // <- Separate the first promise in the chain
-    //                                  to be used as the start point in .reduce
+
+    return promisifyQuery(q).then(
+      result => options.DOCUMENTS ? DOCUMENTS(result) : result
+    ).then(
+      result => options.SCORE ? SCORE(result, options.SCORE) : result
+    ).then(
+      result => options.SORT ? SORT(result, options.SORT) : result
+    ).then(
+      result => options.PAGE ? PAGE(result, options.PAGE) : result
+    )
   };
 
   return {
-    // TODO: Should be own function?
     BUCKETS: BUCKETS,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
@@ -398,7 +398,6 @@ const makeASearchIndex = (idx, ops) => {
 
     // search-index read
     _DISTINCT: r.DISTINCT,
-    _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     _FACETS: r.FACETS,
     _PAGE: r.PAGE,
@@ -414,6 +413,7 @@ const makeASearchIndex = (idx, ops) => {
     // public API
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
+    DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: idx.EXPORT,
     FIELDS: r.FIELDS,

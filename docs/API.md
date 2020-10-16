@@ -77,7 +77,7 @@ si().then(idx => { /* idx is a new search index */ })
 
 `si(options)` returns a Promise which creates a search index when invoked
 
-`options` is an optional object that can contain the following values:
+`options` is an optional object that can contain the following properties:
 
 | Name | Type | Default | Description |
 |---|---|---|---|
@@ -161,32 +161,35 @@ await IMPORT(index)
 
 ## QUERY
 
-// TODO: query should take an options object QUERY(q, options)
-
 ### Running queries
 
 `QUERY` is a function that allows you to run queries on the search
 index. It is called with a query object and returns a Promise:
 
 ```javascript
-const results = await QUERY(query)`
+const results = await QUERY(query, options)
 ```
+
+`options` is an optional object that can contain the following properties:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| [`DOCUMENTS`](#DOCUMENTS) | `boolean` | `false` | If `true` return entire document, if not `true` return reference to document|
+| [`PAGE`](#PAGE) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
+| [`SCORE`](#SCORE) | `String` | `'TFIDF'` | Calculate a value per document |
+| [`SORT`](#SORT) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
 
 #### Returning references or documents
 
 `QUERY` can return both refences to documents and the documents
 themselves.
 
-References are returned by default. To return documents, append the
-[`DOCUMENTS`](#DOCUMENTS) command to the query:
+References are returned by default. To return documents, pass the
+[`DOCUMENTS`](#DOCUMENTS) option:
 
 ```javascript
-const results = await QUERY(query, { DOCUMENTS: true })`
+    const results = await QUERY(query, { DOCUMENTS: true })
 ```
-
-(**Performance tip:** When dealing with large result sets, use
-[`SCORE`](#SCORE), [`SORT`](#SORT) and [`PAGE`](#PAGE) before [`DOCUMENTS`](#DOCUMENTS) in order to minimize the
-amount of documents that need to be fetched from the index)
 
 #### Nesting query verbs
 
@@ -205,24 +208,21 @@ Query verbs can be nested to create powerful expressions:
 
 #### Manipulating result sets
 
-[SCORE](#score), [SORT](#sort) and [PAGE](#page) can be invoked after
-results have been returned:
+Results can be paginated with [SCORE](#score), [SORT](#sort) and [PAGE](#page)
 
 ```javascript
 // Example: get the second page of documents ordered by price
 QUERY({
-  FIELD: 'price'  // Select all documents that have a 'price'
+  FIELD: 'price'           // Select all documents that have a 'price'
 }, {
-  SCORE: 'SUM'    // Score on the sum of the price field
-}, {
+  SCORE: 'SUM',            // Score on the sum of the price field
   SORT: {
     TYPE: 'NUMERIC',       // sort numerically, not alphabetically
     DIRECTION: 'ASCENDING' // cheapest first
-  }
-}, {
+  },
   PAGE: {
-    NUMBER: 1,    // '1' is the second page (pages counted from '0')
-    SIZE: 20      // 20 results per page
+    NUMBER: 1,             // '1' is the second page (pages counted from '0')
+    SIZE: 20               // 20 results per page
   }
 })
 ```
@@ -346,26 +346,8 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 #### DOCUMENTS
 
-TODO: should these be options passed to QUERY rather than a command?
-
 ```javascript
-// Returns full documents instead of just metadata. If preceded by a
-// query that returns document metadata such as AND, OR, NOT, or
-// SEARCH, { DOCUMENTS: true } will return documents associated with
-// that result set. { DOCUMENTS: true } without a preceding query will
-// return all documents in index 
-PrecendingQuery, {
-  DOCUMENTS: true
-}
-
-// For example:
-{
-  SEARCH: [ token1, token2 ]
-}, {
-  DOCUMENTS: true  // returns only documents associated with preceding result set
-}
-
-// returns every single document in index:
+// Returns full documents instead of just metadata.
 {
   DOCUMENTS: true
 }
@@ -404,8 +386,6 @@ PrecendingQuery, {
 
 #### PAGE
 
-TODO: should these be options passed to QUERY rather than a command?
-
 ```javascript
 // show a single page of the result set
 {
@@ -414,36 +394,16 @@ TODO: should these be options passed to QUERY rather than a command?
     SIZE: pageSize
   }
 }
-
-// PAGEing can only be invoked once a result set has been generated
-{
-  SEARCH: [ token1, token2 ]
-}, {
-  PAGE: {
-    NUMBER: 1,
-    SIZE: 20
-  }
-}
-
 ```
 
-#### SCORE
 
-TODO: should these be options passed to QUERY rather than a command?
+#### SCORE
 
 ```javascript
 // show a single page of the result set
 {
   SCORE: scoreType // can be 'TFIDF', 'SUM, 'PRODUCT' or 'CONCAT'
 }
-
-// SCOREing can only be invoked once a result set has been generated
-{
-  AND: [ token1, token2 ]
-}, {
-  SCORE: 'SUM'
-}
-
 ```
 
 #### SEARCH
@@ -458,8 +418,6 @@ TODO: should these be options passed to QUERY rather than a command?
 
 #### SORT
 
-TODO: should these be options passed to QUERY rather than a command?
-
 ```javascript
 // Return search results sorted by relevance to query tokens
 {
@@ -469,18 +427,6 @@ TODO: should these be options passed to QUERY rather than a command?
     FIELD: field             // field to sort on
   }
 }
-
-// SORTing can only be invoked once a result set has been generated
-{
-  DOCUMENTS: true
-}, {
-  SORT: {
-    TYPE: 'NUMERIC',
-    DIRECTION: 'ASCENDING',
-    FIELD: '_doc.price'
-  }
-}
-
 ```
 
 ## MAX

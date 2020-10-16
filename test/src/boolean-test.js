@@ -28,8 +28,7 @@ test('can add some worldbank data', t => {
       totalamt: item.totalamt
     }
   })
-//  console.log(data)
-  console.log(JSON.stringify(data, null, 2))
+//  console.log(JSON.stringify(data, null, 2))
   t.plan(1)
   global[indexName]._PUT(data).then(result => {
     t.pass('ok')

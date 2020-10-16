@@ -18,7 +18,6 @@ const makeASearchIndex = (idx, ops) => {
 
     // search-index read
     _DISTINCT: r.DISTINCT,
-    _DOCUMENTS: r.DOCUMENTS,
     _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     _FACETS: r.FACETS,
     _PAGE: r.PAGE,
@@ -34,6 +33,7 @@ const makeASearchIndex = (idx, ops) => {
     // public API
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
+    DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: idx.EXPORT,
     FIELDS: r.FIELDS,

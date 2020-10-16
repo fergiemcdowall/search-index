@@ -156,7 +156,7 @@ test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
   t.plan(1)
   global[indexName]._SEARCH(
     '500'
-  ).then(global[indexName]._DOCUMENTS)
+  ).then(global[indexName].DOCUMENTS)
    .then(res => {
      t.deepEqual(res, [
        { _id: 'b', _match: [ 'importantnumber:500#1.00' ], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } } 

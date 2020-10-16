@@ -69,7 +69,7 @@ test('simple SEARCH with 2 clauses and documents', t => {
   global[indexName]._SEARCH(
     'paul', 'and'
   )
-    .then(global[indexName]._DOCUMENTS)
+    .then(global[indexName].DOCUMENTS)
     .then(res => {
       t.deepEqual(res, [
         { _id: '0', _match: [ 'text:paul#0.50', 'text:and#0.50' ], _score: 1.3, _doc: data[0] },
@@ -97,21 +97,9 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
    })
 })
 
-test('_DOCUMENTS() returns all documents', t => {
+test('DOCUMENTS() returns all documents', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(documents => {
-    t.deepEqual(documents, data.map(d => ({
-      _id: d._id,
-      _doc: d
-    })))
-  })
-})
-
-test('{ DOCUMENTS: true } returns all documents', t => {
-  t.plan(1)
-  global[indexName].QUERY({
-    DOCUMENTS: true
-  }).then(documents => {
+  global[indexName].DOCUMENTS().then(documents => {
     t.deepEqual(documents, data.map(d => ({
       _id: d._id,
       _doc: d

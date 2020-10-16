@@ -51,8 +51,6 @@ const data = [
   }
 ]
 
-
-
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName }).then(db => {
@@ -111,7 +109,7 @@ test('simple _SEARCH with 2 clauses and documents', t => {
   global[indexName]._SEARCH(
     'paul', 'and'
   )
-    .then(global[indexName]._DOCUMENTS)
+    .then(global[indexName].DOCUMENTS)
     .then(res => {
       t.deepEqual(res, [
         {
@@ -139,7 +137,7 @@ test('simple _SEARCH with 2 clauses and documents', t => {
   global[indexName].QUERY({
     SEARCH: [ 'paul', 'and' ]
   })
-    .then(global[indexName]._DOCUMENTS)
+    .then(global[indexName].DOCUMENTS)
     .then(res => {
       t.deepEqual(res, [
         {

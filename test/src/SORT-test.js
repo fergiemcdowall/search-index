@@ -94,7 +94,7 @@ test('can add data', t => {
 
 test('_SORT ALPHABETIC DESCENDING', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._SORT(docs, {
       TYPE: 'ALPHABETIC',
       DIRECTION: 'DESCENDING',
@@ -120,7 +120,7 @@ test('_SORT ALPHABETIC DESCENDING', t => {
 
 test('_SORT ALPHABETIC ASCENDING', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._SORT(docs, {
       TYPE: 'ALPHABETIC',
       DIRECTION: 'ASCENDING',
@@ -144,7 +144,7 @@ test('_SORT ALPHABETIC ASCENDING', t => {
 
 test('_SORT NUMERIC ASCENDING', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._SORT(docs, {
       TYPE: 'NUMERIC',
       DIRECTION: 'ASCENDING',
@@ -169,7 +169,7 @@ test('_SORT NUMERIC ASCENDING', t => {
 
 test('_SORT NUMERIC DESCENDING', t => {
   t.plan(1)
-  global[indexName]._DOCUMENTS().then(
+  global[indexName].DOCUMENTS().then(
     docs => global[indexName]._SORT(docs, {
       TYPE: 'NUMERIC',
       DIRECTION: 'DESCENDING',
