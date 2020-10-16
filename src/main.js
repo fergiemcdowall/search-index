@@ -13,8 +13,6 @@ const makeASearchIndex = (idx, ops) => {
     _BUCKETS: idx.BUCKETS,
     _FIELDS: idx.FIELDS,
     _GET: idx.GET,
-    _MAX: idx.MAX,
-    _MIN: idx.MIN,
     _NOT: idx.SET_SUBTRACTION,
     _OR: idx.OR,
 
@@ -41,6 +39,8 @@ const makeASearchIndex = (idx, ops) => {
     FIELDS: r.FIELDS,
     IMPORT: idx.IMPORT,
     INDEX: idx,
+    MAX: idx.MAX,
+    MIN: idx.MIN,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,
     QUERY: r.QUERY

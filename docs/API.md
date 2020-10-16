@@ -31,14 +31,14 @@
       - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
       - [FACETS](#facets)
-      - [MAX](#max)
-      - [MIN](#min)
       - [NOT](#not)
       - [OR](#or)
       - [PAGE](#page)
       - [SCORE](#score)
       - [SEARCH](#search)
       - [SORT](#sort)
+  - [MAX](#max)
+  - [MIN](#min)
   - [PUT](#put)
   - [PUT_RAW](#put_raw)
 
@@ -384,30 +384,6 @@ PrecendingQuery, {
 ```
 
 
-#### MAX
-
-// TODO: given that this is not composable, maybe it should be a top level function?
-
-```javascript
-// get the _alphabetically_ maxiumum/last value of the given token space
-{
-  MAX: token
-}
-```
-
-
-#### MIN
-
-// TODO: given that this is not composable, maybe it should be a top level function?
-
-```javascript
-// get the _alphabetically_ minimum/first value of the given token space
-{
-  MIN: token
-}
-```
-
-
 #### NOT
 
 ```javascript
@@ -507,6 +483,21 @@ TODO: should these be options passed to QUERY rather than a command?
   }
 }
 
+```
+
+## MAX
+
+```javascript
+// get the _alphabetically_ maxiumum/last value of the given token space
+MAX(token)
+```
+
+
+## MIN
+
+```javascript
+// get the _alphabetically_ minimum/first value of the given token space
+MIN(token)
 ```
 
 

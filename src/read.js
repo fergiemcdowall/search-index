@@ -168,9 +168,17 @@ export default function (fii) {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (...q) => {
+    // TODO: remove need for resultFromPreceding by using QUERY options
     // needs to be called with "command" and result from previous "thenable"
     var promisifyQuery = (command, resultFromPreceding) => {
+      // if string or object with only FIELD or VALUE, assume
+      // that this is a GET
       if (typeof command === 'string') return fii.GET(command)
+      if (command.FIELD) return fii.GET(command)
+      if (command.VALUE) return fii.GET(command)
+
+      // else:
+
       if (command.AGGREGATE) {
         return fii.AGGREGATE({
           BUCKETS: command.AGGREGATE.BUCKETS
@@ -185,15 +193,14 @@ export default function (fii) {
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
       if (command.BUCKETS) return BUCKETS(...command.BUCKETS)
       if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
+      // TODO: documents should be a QUERY option
       // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(resultFromPreceding || command.DOCUMENTS)
-      if (command.DOCUMENT_COUNT) return DOCUMENT_COUNT()
       if (command.FACETS) return FACETS(...command.FACETS)
-      if (command.FIELD) return fii.GET(command) // TODO: needed?
-      if (command.FIELDS) return fii.FIELDS()
+      if (command.FIELDS) return fii.FIELDS() // TODO: own function
       if (command.GET) return fii.GET(command.GET)
-      if (command.MAX) return fii.MAX(command.MAX)
-      if (command.MIN) return fii.MIN(command.MIN)
+      if (command.MAX) return fii.MAX(command.MAX) // TODO: own function
+      if (command.MIN) return fii.MIN(command.MIN) // TODO: own function
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
@@ -201,11 +208,13 @@ export default function (fii) {
         )
       }
       if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
+      // TODO: make into an option
       if (command.PAGE) return PAGE(resultFromPreceding, command.PAGE)
+      // TODO: make into an option
       if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
+      // TODO: make into an option
       if (command.SORT) return SORT(resultFromPreceding, command.SORT)
-      if (command.VALUE) return fii.GET(command) // TODO: needed?
     }
     // Turn the array of commands into a chain of promises
     return q.reduce((acc, cur) => acc.then(

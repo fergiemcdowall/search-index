@@ -91,72 +91,46 @@ test('can add data', t => {
 })
 
 test('simple _MAX', t => {
-  const { _MAX } = global[indexName]
+  const { MAX } = global[indexName]
   t.plan(1)
-  _MAX({ FIELD: 'price' }).then(count => {
-    t.equals(count, '5000')
-  })
-})
-
-test('simple MAX (JSON)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    MAX: { FIELD: 'price' }
-  }).then(count => {
+  MAX({ FIELD: 'price' }).then(count => {
     t.equals(count, '5000')
   })
 })
 
 test('MAX with GTE', t => {
-  const { QUERY } = global[indexName]
+  const { MAX } = global[indexName]
   t.plan(1)
-  QUERY({
-    MAX: {
-      FIELD: 'price',
-      VALUE: {
-        LTE: '4'
-      }
+  MAX({
+    FIELD: 'price',
+    VALUE: {
+      LTE: '4'
     }
   }).then(count => {
     t.equals(count, '3000')
   })
 })
 
-test('simple _MIN', t => {
-  const { _MIN } = global[indexName]
+test('simple MIN', t => {
+  const { MIN } = global[indexName]
   t.plan(1)
-  _MIN({ FIELD: 'price' }).then(count => {
-    t.equals(count, '100')
-  })
-})
-
-test('simple MIN (JSON)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    MIN: { FIELD: 'price' }
-  }).then(count => {
+  MIN({ FIELD: 'price' }).then(count => {
     t.equals(count, '100')
   })
 })
 
 test('simple MAX (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { MAX } = global[indexName]
   t.plan(1)
-  QUERY({
-    MAX: { FIELD: 'make' }
-  }).then(count => {
-    t.equals(count, 'volvo')
+  MAX({ FIELD: 'make' }).then(make => {
+    t.equals(make, 'volvo')
   })
 })
 
 test('simple MIN (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { MIN } = global[indexName]
   t.plan(1)
-  QUERY({
-    MIN: { FIELD: 'make' }
-  }).then(count => {
+    MIN({ FIELD: 'make' }).then(count => {
     t.equals(count, 'bmw')
   })
 })
