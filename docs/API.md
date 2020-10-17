@@ -28,7 +28,6 @@
       - [AND](#and)
       - [AGGREGATE](#aggregate)
       - [BUCKETS](#buckets)
-      - [DISTINCT](#distinct)
       - [DOCUMENTS](#documents)
       - [FACETS](#facets)
       - [NOT](#not)
@@ -312,6 +311,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
+
 #### AGGREGATE
 
 ```javascript
@@ -326,6 +326,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
+
 #### BUCKETS
 
 ```javascript
@@ -335,14 +336,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-#### DISTINCT
-
-```javascript
-// Return each distinct field/value combination for the given token.
-{
-  DISTINCT: token
-}
-```
 
 #### DOCUMENTS
 
@@ -352,6 +345,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
   DOCUMENTS: true
 }
 ```
+
 
 #### FACETS
 

@@ -102,29 +102,22 @@ clauses as deeply as required. For example:
 
 ```javascript
 QUERY({
-  OR: [{
-    AND: [ 'brand:volvo', 'manufacturer:tesla' ]
-  }, 'make:bmw']
+  OR: [
+    {
+      AND: [ 'brand:volvo', 'manufacturer:tesla' ]
+    },
+    'make:bmw'
+  ]
 })
 ```
 
 # How do I perform a simple aggregation on a field?
 
-## Get a list of unique values for a given field
-
-```javascript
-const uniqueValues = await QUERY({
-  DISTINCT: { FIELD: fieldName }
-})
-```
-
 ## Get a set of document ids per unique field value
 
 ```javascript
 const buckets = await QUERY({
-  BUCKETS: {
-    DISTINCT: { FIELD: fieldName }
-  }
+  BUCKETS: { FIELD: fieldName }
 })
 ```
 
@@ -132,9 +125,7 @@ const buckets = await QUERY({
 
 ```javascript
 const buckets = await QUERY({
-  BUCKETS: {
-    DISTINCT: { FIELD: fieldName }
-  }
+  BUCKETS: { FIELD: fieldName }
 }).then(bkts => bkts.map(
   bkt => ({
     FIELD: bkt.FIELD,
@@ -161,11 +152,10 @@ const buckets = await QUERY({
 
 ```javascript
 const buckets = QUERY({
-  BUCKETFILTER: {
-    BUCKETS: [ token1, token2, token3 ],
-    FILTER: {
-      SEARCH: searchTerms
-    }
+  AGGREGATE: {
+    BUCKETS: buckets,
+    FACETS: facets,
+    QUERY: query
   }
 })
 ```
