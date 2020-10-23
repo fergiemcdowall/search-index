@@ -46,30 +46,41 @@ test('create a fii with memdown', t => {
     valueEncoding: 'json'
   }), (err, store) => {
     t.error(err)
-    si({
-      fii: fii({ store: store })
-    }).then(db => db._PUT(data).then(() => {
-      t.pass('ok')
-    }).then(() => {
-      db._SEARCH(
-        'body.text:cool', // use colon? eg "body.text:cool"
-        'body.text:really',
-        'body.text:bananas'
-      ).then(res => {
-        t.deepEqual(res, [
-          {
-            _id: 'b',
-            // how about "match"
-            _match: [
-              'body.text:cool#1.00',
-              'body.text:really#1.00',
-              'body.text:bananas#1.00'
-            ],
-            _score: 4.16
-          }
-        ])
+
+    fii({ db: store })
+      .then(newFii => {
+        return si({
+          fii: newFii
+        })
       })
-    }))
-    
+      .then(db => db.PUT(data).then(res => {
+        t.deepEqual(res, [
+          { _id: 'a', status: 'OK', operation: 'PUT' },
+          { _id: 'b', status: 'OK', operation: 'PUT' },
+          { _id: 'c', status: 'OK', operation: 'PUT' }
+        ])
+        return db
+      }))
+      .then(db => {
+        db._SEARCH(
+          'body.text:cool',
+          'body.text:really',
+          'body.text:bananas'
+        ).then(res => {
+          t.deepEqual(res, [
+            {
+              _id: 'b',
+              // how about "match"
+              _match: [
+                'body.text:cool#1.00',
+                'body.text:really#1.00',
+                'body.text:bananas#1.00'
+              ],
+              _score: 4.16
+            }
+          ])
+        })
+      })
   })
+  
 })

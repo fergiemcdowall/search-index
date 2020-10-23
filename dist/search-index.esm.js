@@ -382,19 +382,19 @@ function reader (fii) {
   }
 }
 
-const makeASearchIndex = (idx, ops) => {
-  const w = writer(idx, ops);
-  const r = reader(idx);
+const makeASearchIndex = ops => {
+  const w = writer(ops.fii, ops);
+  const r = reader(ops.fii);
   return {
     // internal functions inherited from fergies-inverted-index
-    _AGGREGATE: idx.AGGREGATE,
-    _AND: idx.AND,
-    _BUCKET: idx.BUCKET,
-    _BUCKETS: idx.BUCKETS,
-    _FIELDS: idx.FIELDS,
-    _GET: idx.GET,
-    _NOT: idx.SET_SUBTRACTION,
-    _OR: idx.OR,
+    _AGGREGATE: ops.fii.AGGREGATE,
+    _AND: ops.fii.AND,
+    _BUCKET: ops.fii.BUCKET,
+    _BUCKETS: ops.fii.BUCKETS,
+    _FIELDS: ops.fii.FIELDS,
+    _GET: ops.fii.GET,
+    _NOT: ops.fii.SET_SUBTRACTION,
+    _OR: ops.fii.OR,
 
     // search-index read
     _DISTINCT: r.DISTINCT,
@@ -415,32 +415,30 @@ const makeASearchIndex = (idx, ops) => {
     DICTIONARY: r.DICTIONARY,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
-    EXPORT: idx.EXPORT,
+    EXPORT: ops.fii.EXPORT,
     FIELDS: r.FIELDS,
-    IMPORT: idx.IMPORT,
-    INDEX: idx,
-    MAX: idx.MAX,
-    MIN: idx.MIN,
+    IMPORT: ops.fii.IMPORT,
+    INDEX: ops.fii,
+    MAX: ops.fii.MAX,
+    MIN: ops.fii.MIN,
     PUT: w.PUT,
     PUT_RAW: w.PUT_RAW,
     QUERY: r.QUERY
   }
 };
 
-function main (ops) {
-  return new Promise((resolve, reject) => {
-    ops = Object.assign({
-      tokenAppend: '#',
-      caseSensitive: false
-    }, ops || {});
-    // if a fergies-inverted-index is passed as an option
-    if (ops.fii) return resolve(makeASearchIndex(ops.fii, ops))
-    // else make a new fergies-inverted-index
-    fii(ops, (err, idx) => {
-      if (err) return reject(err)
-      resolve(makeASearchIndex(idx, ops));
-    });
-  })
-}
+const initIndex = (ops = {}) => new Promise((resolve, reject) => {
+  ops = Object.assign({
+    tokenAppend: '#',
+    caseSensitive: false
+  }, ops);
+  if (ops.fii) return resolve(ops)
+  // else
+  return fii(ops).then(
+    aNewFii => resolve(Object.assign({ fii: aNewFii }, ops))
+  )
+});
+
+var main = ops => initIndex(ops).then(makeASearchIndex);
 
 export default main;
