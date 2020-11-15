@@ -1,5 +1,5 @@
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_FACETS'
@@ -7,7 +7,7 @@ const indexName = sandbox + '_FACETS'
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName }).then(db => {
-    global[indexName] = db    
+    global[indexName] = db
     t.pass('ok')
   })
 })
@@ -15,74 +15,74 @@ test('create a search index', t => {
 test('can add data', t => {
   const data = [
     {
-      "_id": 0,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "yellow"
+      _id: 0,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'yellow'
     },
     {
-      "_id": 1,
-      "make": "BMW",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 1,
+      make: 'BMW',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'red'
     },
     {
-      "_id": 2,
-      "make": "Tesla",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "blue"
+      _id: 2,
+      make: 'Tesla',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'blue'
     },
     {
-      "_id": 3,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "BMW",
-      "colour": "red"
+      _id: 3,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'BMW',
+      colour: 'red'
     },
     {
-      "_id": 4,
-      "make": "Volvo",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 4,
+      make: 'Volvo',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'red'
     },
     {
-      "_id": 5,
-      "make": "Volvo",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "blue"
+      _id: 5,
+      make: 'Volvo',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'blue'
     },
     {
-      "_id": 6,
-      "make": "Tesla",
-      "manufacturer": "Tesla",
-      "brand": "BMW",
-      "colour": "yellow"
+      _id: 6,
+      make: 'Tesla',
+      manufacturer: 'Tesla',
+      brand: 'BMW',
+      colour: 'yellow'
     },
     {
-      "_id": 7,
-      "make": "BMW",
-      "manufacturer": "Tesla",
-      "brand": "Tesla",
-      "colour": "yellow"
+      _id: 7,
+      make: 'BMW',
+      manufacturer: 'Tesla',
+      brand: 'Tesla',
+      colour: 'yellow'
     },
     {
-      "_id": 8,
-      "make": "Volvo",
-      "manufacturer": "BMW",
-      "brand": "Tesla",
-      "colour": "blue"
+      _id: 8,
+      make: 'Volvo',
+      manufacturer: 'BMW',
+      brand: 'Tesla',
+      colour: 'blue'
     },
     {
-      "_id": 9,
-      "make": "BMW",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 9,
+      make: 'BMW',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'red'
     }
   ]
 
@@ -97,13 +97,12 @@ test('simple _FACETS', t => {
     FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] },
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] },
-      { FIELD: 'colour', VALUE: 'yellow', _id: [ '0', '6', '7' ] } 
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] },
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] },
+      { FIELD: 'colour', VALUE: 'yellow', _id: ['0', '6', '7'] }
     ])
   })
 })
-
 
 test('simple _FACETS with range', t => {
   const { _FACETS } = global[indexName]
@@ -116,11 +115,10 @@ test('simple _FACETS with range', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] }
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }
     ])
   })
 })
-
 
 test('simple _FACETS with range', t => {
   const { _FACETS } = global[indexName]
@@ -132,12 +130,11 @@ test('simple _FACETS with range', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] },
-      { FIELD: 'colour', VALUE: 'yellow', _id: [ '0', '6', '7' ] }
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] },
+      { FIELD: 'colour', VALUE: 'yellow', _id: ['0', '6', '7'] }
     ])
   })
 })
-
 
 test('simple _FACETS with range', t => {
   const { _FACETS } = global[indexName]
@@ -149,7 +146,7 @@ test('simple _FACETS with range', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] }
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }
     ])
   })
 })
@@ -163,9 +160,9 @@ test('simple FACETS', t => {
     }]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] },
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] },
-      { FIELD: 'colour', VALUE: 'yellow', _id: [ '0', '6', '7' ] } 
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] },
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] },
+      { FIELD: 'colour', VALUE: 'yellow', _id: ['0', '6', '7'] }
     ])
   })
 })
@@ -179,7 +176,7 @@ test('simple FACETS', t => {
     }]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] }    ])
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] }])
   })
 })
 
@@ -192,13 +189,12 @@ test('simple FACETS', t => {
     }]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'volvo', _id: [ '0', '1', '2', '4', '5', '9' ] },
-      { FIELD: 'make', VALUE: 'volvo', _id: [ '4', '5', '8' ] },
-      { FIELD: 'manufacturer', VALUE: 'volvo', _id: [ '0', '1', '3', '4' ] } 
+      { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] },
+      { FIELD: 'make', VALUE: 'volvo', _id: ['4', '5', '8'] },
+      { FIELD: 'manufacturer', VALUE: 'volvo', _id: ['0', '1', '3', '4'] }
     ])
   })
 })
-
 
 test('simple FACETS', t => {
   const { QUERY } = global[indexName]
@@ -209,29 +205,28 @@ test('simple FACETS', t => {
     }]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'bmw', _id: [ '3', '6' ] },
-      { FIELD: 'brand', VALUE: 'tesla', _id: [ '7', '8' ] },
-      { FIELD: 'brand', VALUE: 'volvo', _id: [ '0', '1', '2', '4', '5', '9' ] } 
+      { FIELD: 'brand', VALUE: 'bmw', _id: ['3', '6'] },
+      { FIELD: 'brand', VALUE: 'tesla', _id: ['7', '8'] },
+      { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] }
     ])
   })
 })
-
 
 test('FACETS on 2 fields', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
     FACETS: [{
-      FIELD: [ 'brand', 'colour' ]
+      FIELD: ['brand', 'colour']
     }]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'bmw', _id: [ '3', '6' ] },
-      { FIELD: 'brand', VALUE: 'tesla', _id: [ '7', '8' ] },
-      { FIELD: 'brand', VALUE: 'volvo', _id: [ '0', '1', '2', '4', '5', '9' ] },
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] },
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] },
-      { FIELD: 'colour', VALUE: 'yellow', _id: [ '0', '6', '7' ] }
+      { FIELD: 'brand', VALUE: 'bmw', _id: ['3', '6'] },
+      { FIELD: 'brand', VALUE: 'tesla', _id: ['7', '8'] },
+      { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] },
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] },
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] },
+      { FIELD: 'colour', VALUE: 'yellow', _id: ['0', '6', '7'] }
     ])
   })
 })
@@ -242,12 +237,12 @@ test('FACETS on 2 fields with GTE/LTE', t => {
   QUERY({
     FACETS: [
       {
-        FIELD: [ 'brand' ],
+        FIELD: ['brand'],
         VALUE: {
           GTE: 'f'
         }
       }, {
-        FIELD: [ 'colour' ],
+        FIELD: ['colour'],
         VALUE: {
           LTE: 'x'
         }
@@ -255,10 +250,10 @@ test('FACETS on 2 fields with GTE/LTE', t => {
     ]
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'tesla', _id: [ '7', '8' ] },
-      { FIELD: 'brand', VALUE: 'volvo', _id: [ '0', '1', '2', '4', '5', '9' ] },
-      { FIELD: 'colour', VALUE: 'blue', _id: [ '2', '5', '8' ] },
-      { FIELD: 'colour', VALUE: 'red', _id: [ '1', '3', '4', '9' ] } 
+      { FIELD: 'brand', VALUE: 'tesla', _id: ['7', '8'] },
+      { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] },
+      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] },
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] }
     ])
   })
 })

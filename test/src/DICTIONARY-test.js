@@ -1,6 +1,6 @@
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
-import FuzzySet from 'fuzzyset'
+const si = require('../../')
+const test = require('tape')
+const FuzzySet = require('fuzzyset')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DICTIONARY'
@@ -8,7 +8,7 @@ const indexName = sandbox + '_DICTIONARY'
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName }).then(db => {
-    global[indexName] = db    
+    global[indexName] = db
     t.pass('ok')
   })
 })
@@ -16,74 +16,74 @@ test('create a search index', t => {
 test('can add data', t => {
   const data = [
     {
-      "_id": 0,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "yellow"
+      _id: 0,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'yellow'
     },
     {
-      "_id": 1,
-      "make": "BMW",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 1,
+      make: 'BMW',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'red'
     },
     {
-      "_id": 2,
-      "make": "Tesla",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "blue"
+      _id: 2,
+      make: 'Tesla',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'blue'
     },
     {
-      "_id": 3,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "BMW",
-      "colour": "red"
+      _id: 3,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'BMW',
+      colour: 'red'
     },
     {
-      "_id": 4,
-      "make": "Volvo",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 4,
+      make: 'Volvo',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      colour: 'red'
     },
     {
-      "_id": 5,
-      "make": "Volvo",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "blue"
+      _id: 5,
+      make: 'Volvo',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'blue'
     },
     {
-      "_id": 6,
-      "make": "Tesla",
-      "manufacturer": "Tesla",
-      "brand": "BMW",
-      "colour": "yellow"
+      _id: 6,
+      make: 'Tesla',
+      manufacturer: 'Tesla',
+      brand: 'BMW',
+      colour: 'yellow'
     },
     {
-      "_id": 7,
-      "make": "BMW",
-      "manufacturer": "Tesla",
-      "brand": "Tesla",
-      "colour": "yellow"
+      _id: 7,
+      make: 'BMW',
+      manufacturer: 'Tesla',
+      brand: 'Tesla',
+      colour: 'yellow'
     },
     {
-      "_id": 8,
-      "make": "Volvo",
-      "manufacturer": "BMW",
-      "brand": "Tesla",
-      "colour": "blue"
+      _id: 8,
+      make: 'Volvo',
+      manufacturer: 'BMW',
+      brand: 'Tesla',
+      colour: 'blue'
     },
     {
-      "_id": 9,
-      "make": "BMW",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colour": "red"
+      _id: 9,
+      make: 'BMW',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colour: 'red'
     }
   ]
 
@@ -110,11 +110,10 @@ test('simple DICTIONARY- all entries', t => {
   t.plan(1)
   DICTIONARY().then(res => {
     t.deepEqual(res, [
-      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow'
     ])
   })
 })
-
 
 test('simple DICTIONARY, multiple fields', t => {
   const { DICTIONARY } = global[indexName]
@@ -123,11 +122,10 @@ test('simple DICTIONARY, multiple fields', t => {
     FIELD: ['colour', 'brand']
   }).then(res => {
     t.deepEqual(res, [
-      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow'
     ])
   })
 })
-
 
 test('simple DICTIONARY, multiple fields, gte', t => {
   const { DICTIONARY } = global[indexName]
@@ -139,7 +137,7 @@ test('simple DICTIONARY, multiple fields, gte', t => {
     }
   }).then(res => {
     t.deepEqual(res, [
-      'red', 'tesla', 'volvo', 'yellow' 
+      'red', 'tesla', 'volvo', 'yellow'
     ])
   })
 })
@@ -160,12 +158,11 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
   })
 })
 
-
 test('simple DICTIONARY (field: colour)', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY({
-    FIELD: [ 'colour' ]
+    FIELD: ['colour']
   }).then(res => {
     t.deepEqual(res, [
       'blue', 'red', 'yellow'
@@ -173,13 +170,12 @@ test('simple DICTIONARY (field: colour)', t => {
   })
 })
 
-
 test('simple DICTIONARY (return all)', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY().then(res => {
     t.deepEqual(res, [
-      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow' 
+      'blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow'
     ])
   })
 })
@@ -200,6 +196,6 @@ test('FuzzySet test', t => {
   DICTIONARY().then(dict => {
     const fs = FuzzySet()
     dict.forEach(d => fs.add(d))
-    t.deepEqual(fs.get('blux'), [ [ 0.75, 'blue' ] ])
+    t.deepEqual(fs.get('blux'), [[0.75, 'blue']])
   })
 })

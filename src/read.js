@@ -1,4 +1,5 @@
-export default function (fii) {
+// export default function (fii) {
+module.exports = fii => {
   const BUCKETS = (...buckets) => Promise.all(
     buckets.map(fii.BUCKET)
   )
@@ -7,14 +8,14 @@ export default function (fii) {
     // Either return document per id
     return Array.isArray(requestedDocs)
       ? Promise.all(
-        requestedDocs.map(
-          doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(e => null)
-        )
-      ).then(returnedDocs => requestedDocs.map(
-        (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
-      ))
+          requestedDocs.map(
+            doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(e => null)
+          )
+        ).then(returnedDocs => requestedDocs.map(
+          (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
+        ))
       : new Promise((resolve, reject) => {
-        var result = []
+        const result = []
         fii.STORE.createReadStream({
           gte: '￮DOC_RAW￮',
           lte: '￮DOC_RAW￮￮'
@@ -136,23 +137,23 @@ export default function (fii) {
       // fetch all the documents before doing a sort
       return (path[0] === '_match')
         ? (obj._match.find(
-          _match => (path.slice(1).join('.') === _match.split(':')[0])
+            _match => (path.slice(1).join('.') === _match.split(':')[0])
           // gracefully fail if field name not found
-        ) || ':#').split(':')[1].split('#')[0]
+          ) || ':#').split(':')[1].split('#')[0]
         : path.reduce((o, i) => o[i], obj)
     }
     const sortFunction = {
-      'NUMERIC': {
-        'DESCENDING': (a, b) => +deepRef(b) - +deepRef(a),
-        'ASCENDING': (a, b) => +deepRef(a) - +deepRef(b)
+      NUMERIC: {
+        DESCENDING: (a, b) => +deepRef(b) - +deepRef(a),
+        ASCENDING: (a, b) => +deepRef(a) - +deepRef(b)
       },
-      'ALPHABETIC': {
-        'DESCENDING': (a, b) => {
+      ALPHABETIC: {
+        DESCENDING: (a, b) => {
           if (deepRef(a) < deepRef(b)) return 1
           if (deepRef(a) > deepRef(b)) return -1
           return 0
         },
-        'ASCENDING': (a, b) => {
+        ASCENDING: (a, b) => {
           if (deepRef(a) < deepRef(b)) return -1
           if (deepRef(a) > deepRef(b)) return 1
           return 0
@@ -169,7 +170,7 @@ export default function (fii) {
   const parseJsonQuery = (q, options) => {
     options = options || {}
 
-    var promisifyQuery = (command) => {
+    const promisifyQuery = (command) => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
       if (typeof command === 'string') return fii.GET(command)

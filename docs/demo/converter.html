@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Create a search-index export file</title>
+    <style>
+     input:invalid {
+         border-color: red;
+     }
+    </style>
+    <script src="bundle.js"></script>
+  </head>
+  <body>
+    <h1>Create a search-index export file</h1>
+    <label for="upload">Upload data:</label>
+    <br>
+    <input type="file" id="upload" />
+    <br>
+    <textarea id="output" rows="40" cols="100"></textarea>
+    <script>
+     const upload = document.getElementById('upload')       
+     const out = document.getElementById('output')
+     const validate = document.getElementById('validate')
+
+     console.log(searchIndex)
+     searchIndex({ name: 'searchIndexInBrowser' }).then(console.log)
+     
+     const verifyFile = f => {
+       try {
+         JSON.parse(f)
+         return true
+       } catch (e) {
+         return false
+       }
+     }
+     
+     const getFile = event => {
+       const f = event.target.files[0]
+       const reader = new FileReader()
+       reader.readAsText(f);
+       reader.onload = () => {
+         out.value = reader.result
+         if (verifyFile(reader.result)) {
+           upload.setCustomValidity('')
+         } else {
+           upload.setCustomValidity('oops- that seems to be invalid JSON')
+         }
+       }
+     }
+     
+     upload.addEventListener('change', getFile)
+    </script>
+  </body>
+</html>

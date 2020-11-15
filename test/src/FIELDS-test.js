@@ -1,5 +1,5 @@
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'FIELDS'
@@ -7,7 +7,7 @@ const indexName = sandbox + 'FIELDS'
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName }).then(db => {
-    global[indexName] = db    
+    global[indexName] = db
     t.pass('ok')
   })
 })
@@ -15,52 +15,51 @@ test('create a search index', t => {
 test('can add data', t => {
   const data = [
     {
-      "_id": 0,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "Volvo"
+      _id: 0,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'Volvo'
     },
     {
-      "_id": 1,
-      "make": "BMW",
-      "manufacturer": "Volvo",
-      "brand": "Volvo",
-      "wheels": {
-        "tyres": "goodyear",
-        "rims": "alloy"
+      _id: 1,
+      make: 'BMW',
+      manufacturer: 'Volvo',
+      brand: 'Volvo',
+      wheels: {
+        tyres: 'goodyear',
+        rims: 'alloy'
       }
     },
     {
-      "_id": 2,
-      "make": "Tesla",
-      "manufacturer": "Tesla",
-      "brand": "Volvo",
-      "colours": [
+      _id: 2,
+      make: 'Tesla',
+      manufacturer: 'Tesla',
+      brand: 'Volvo',
+      colours: [
         {
-          "roof": {
-            "color": [ 'red', 'yellow' ],
-            "type": "gloss"
+          roof: {
+            color: ['red', 'yellow'],
+            type: 'gloss'
           }
         },
         {
-          "bonnet": {
-            "color": [ 'green', 'yellow' ],
-            "type": "matt"
+          bonnet: {
+            color: ['green', 'yellow'],
+            type: 'matt'
           }
         }
       ]
     },
     {
-      "_id": 3,
-      "make": "Tesla",
-      "manufacturer": "Volvo",
-      "brand": "BMW"
+      _id: 3,
+      make: 'Tesla',
+      manufacturer: 'Volvo',
+      brand: 'BMW'
     }
   ]
   t.plan(1)
   global[indexName]._PUT(data).then(t.pass)
 })
-
 
 test('simple _FIELDS', t => {
   t.plan(1)
@@ -115,4 +114,3 @@ test('simple FIELDS (JSON)', t => {
     ])
   })
 })
-

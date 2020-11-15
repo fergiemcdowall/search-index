@@ -1,9 +1,9 @@
-import encode from 'encoding-down'
-import fii from 'fergies-inverted-index'
-import levelup from 'levelup'
-import memdown from 'memdown'
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const encode = require('encoding-down')
+const fii = require('fergies-inverted-index')
+const levelup = require('levelup')
+const memdown = require('memdown')
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'memdown-test'
@@ -37,8 +37,6 @@ const data = [
     importantNumber: 200
   }
 ]
-
-let db
 
 test('create a fii with memdown', t => {
   t.plan(3)
@@ -82,5 +80,4 @@ test('create a fii with memdown', t => {
         })
       })
   })
-  
 })

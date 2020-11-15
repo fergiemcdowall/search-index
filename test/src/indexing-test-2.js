@@ -1,6 +1,5 @@
-/* global si */
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'indexing-test-2'
@@ -38,11 +37,10 @@ const data = [
   }
 ]
 
-
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName }).then(db => {
-    global[indexName] = db    
+    global[indexName] = db
     t.pass('ok')
   })
 })
@@ -56,11 +54,11 @@ test('can add some data', t => {
 
 test('check that arrays were properly indexed', t => {
   t.plan(4)
-  var band = [
-    { key: 'band:george#1.00', value: [ 'a', 'b', 'c' ] },
-    { key: 'band:john#1.00', value: [ 'a', 'b', 'c' ] },
-    { key: 'band:paul#1.00', value: [ 'a', 'b', 'c' ] },
-    { key: 'band:ringo#1.00', value: [ 'a', 'b', 'c' ] }
+  const band = [
+    { key: 'band:george#1.00', value: ['a', 'b', 'c'] },
+    { key: 'band:john#1.00', value: ['a', 'b', 'c'] },
+    { key: 'band:paul#1.00', value: ['a', 'b', 'c'] },
+    { key: 'band:ringo#1.00', value: ['a', 'b', 'c'] }
   ]
   global[indexName].INDEX.STORE.createReadStream({
     gte: 'band!',

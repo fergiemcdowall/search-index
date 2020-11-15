@@ -1,5 +1,5 @@
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const caseSensitivityTest = sandbox + 'caseSensitivityTest'
@@ -7,67 +7,66 @@ const caseInsensitivityTest = sandbox + 'caseInsensitivityTest'
 
 const data = [
   {
-    "_id": 0,
-    "make": "Tesla",
-    "manufacturer": "Volvo",
-    "brand": "Volvo"
+    _id: 0,
+    make: 'Tesla',
+    manufacturer: 'Volvo',
+    brand: 'Volvo'
   },
   {
-    "_id": 1,
-    "make": "BMW",
-    "manufacturer": "Volvo",
-    "brand": "Volvo"
+    _id: 1,
+    make: 'BMW',
+    manufacturer: 'Volvo',
+    brand: 'Volvo'
   },
   {
-    "_id": 2,
-    "make": "Tesla",
-    "manufacturer": "Tesla",
-    "brand": "Volvo"
+    _id: 2,
+    make: 'Tesla',
+    manufacturer: 'Tesla',
+    brand: 'Volvo'
   },
   {
-    "_id": 3,
-    "make": "Tesla",
-    "manufacturer": "Volvo",
-    "brand": "BMW"
+    _id: 3,
+    make: 'Tesla',
+    manufacturer: 'Volvo',
+    brand: 'BMW'
   },
   {
-    "_id": 4,
-    "make": "Volvo",
-    "manufacturer": "Volvo",
-    "brand": "Volvo"
+    _id: 4,
+    make: 'Volvo',
+    manufacturer: 'Volvo',
+    brand: 'Volvo'
   },
   {
-    "_id": 5,
-    "make": "Volvo",
-    "manufacturer": "Tesla",
-    "brand": "Volvo"
+    _id: 5,
+    make: 'Volvo',
+    manufacturer: 'Tesla',
+    brand: 'Volvo'
   },
   {
-    "_id": 6,
-    "make": "Tesla",
-    "manufacturer": "Tesla",
-    "brand": "BMW"
+    _id: 6,
+    make: 'Tesla',
+    manufacturer: 'Tesla',
+    brand: 'BMW'
   },
   {
-    "_id": 7,
-    "make": "BMW",
-    "manufacturer": "Tesla",
-    "brand": "Tesla"
+    _id: 7,
+    make: 'BMW',
+    manufacturer: 'Tesla',
+    brand: 'Tesla'
   },
   {
-    "_id": 8,
-    "make": "Volvo",
-    "manufacturer": "BMW",
-    "brand": "Tesla"
+    _id: 8,
+    make: 'Volvo',
+    manufacturer: 'BMW',
+    brand: 'Tesla'
   },
   {
-    "_id": 9,
-    "maKE": "BMW",
-    "manufacturer": "Tesla",
-    "brand": "Volvo"
+    _id: 9,
+    maKE: 'BMW',
+    manufacturer: 'Tesla',
+    brand: 'Volvo'
   }
 ]
-
 
 test('create a case sensitive search index', t => {
   t.plan(1)
@@ -75,7 +74,7 @@ test('create a case sensitive search index', t => {
     name: caseSensitivityTest,
     caseSensitive: true
   }).then(db => {
-    global[caseSensitivityTest] = db    
+    global[caseSensitivityTest] = db
     t.pass('ok')
   })
 })
@@ -88,10 +87,10 @@ test('can add data to case sensitive index', t => {
 test('Match maKE:BMW', t => {
   t.plan(1)
   global[caseSensitivityTest].QUERY({
-    AND: [ 'maKE:BMW' ]
+    AND: ['maKE:BMW']
   }).then(res => {
     t.deepEqual(res, [
-      { _id: '9', _match: [ 'maKE:BMW#1.00' ] }
+      { _id: '9', _match: ['maKE:BMW#1.00'] }
     ])
   })
 })
@@ -99,7 +98,7 @@ test('Match maKE:BMW', t => {
 test('Match make:bmw', t => {
   t.plan(1)
   global[caseSensitivityTest].QUERY({
-    AND: [ 'make:bmw' ]
+    AND: ['make:bmw']
   }).then(res => {
     t.deepEqual(res, [
     ])
@@ -109,11 +108,11 @@ test('Match make:bmw', t => {
 test('Match make:BMW', t => {
   t.plan(1)
   global[caseSensitivityTest].QUERY({
-    AND: [ 'make:BMW' ]
+    AND: ['make:BMW']
   }).then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: [ 'make:BMW#1.00' ] },
-      { _id: '7', _match: [ 'make:BMW#1.00' ] }
+      { _id: '1', _match: ['make:BMW#1.00'] },
+      { _id: '7', _match: ['make:BMW#1.00'] }
     ])
   })
 })
@@ -124,7 +123,7 @@ test('create a case insensitive search index', t => {
     name: caseInsensitivityTest,
     caseSensitive: false
   }).then(db => {
-    global[caseInsensitivityTest] = db    
+    global[caseInsensitivityTest] = db
     t.pass('ok')
   })
 })
@@ -137,12 +136,12 @@ test('can add data to case insensitive index', t => {
 test('Match maKE:BMW', t => {
   t.plan(1)
   global[caseInsensitivityTest].QUERY({
-    AND: [ 'maKE:BMW' ]
+    AND: ['maKE:BMW']
   }).then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: [ 'make:bmw#1.00' ] },
-      { _id: '7', _match: [ 'make:bmw#1.00' ] },
-      { _id: '9', _match: [ 'make:bmw#1.00' ] }
+      { _id: '1', _match: ['make:bmw#1.00'] },
+      { _id: '7', _match: ['make:bmw#1.00'] },
+      { _id: '9', _match: ['make:bmw#1.00'] }
     ])
   })
 })
@@ -150,12 +149,12 @@ test('Match maKE:BMW', t => {
 test('Match make:bmw', t => {
   t.plan(1)
   global[caseInsensitivityTest].QUERY({
-    AND: [ 'make:bmw' ]
+    AND: ['make:bmw']
   }).then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: [ 'make:bmw#1.00' ] },
-      { _id: '7', _match: [ 'make:bmw#1.00' ] },
-      { _id: '9', _match: [ 'make:bmw#1.00' ] }
+      { _id: '1', _match: ['make:bmw#1.00'] },
+      { _id: '7', _match: ['make:bmw#1.00'] },
+      { _id: '9', _match: ['make:bmw#1.00'] }
     ])
   })
 })
@@ -163,12 +162,12 @@ test('Match make:bmw', t => {
 test('Match make:BMW', t => {
   t.plan(1)
   global[caseInsensitivityTest].QUERY({
-    AND: [ 'make:BMW' ]
+    AND: ['make:BMW']
   }).then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: [ 'make:bmw#1.00' ] },
-      { _id: '7', _match: [ 'make:bmw#1.00' ] },
-      { _id: '9', _match: [ 'make:bmw#1.00' ] }
+      { _id: '1', _match: ['make:bmw#1.00'] },
+      { _id: '7', _match: ['make:bmw#1.00'] },
+      { _id: '9', _match: ['make:bmw#1.00'] }
     ])
   })
 })

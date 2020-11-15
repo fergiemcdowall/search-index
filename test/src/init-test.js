@@ -1,6 +1,5 @@
-/* global si */
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const data = [
   {
@@ -35,15 +34,14 @@ const data = [
 test('can create a search index WITHOUT an options object', t => {
   t.plan(1)
   si().then(db => {
-    global['db'] = db    
+    global.db = db
     t.pass('ok')
   })
 })
 
 test('can add some data', t => {
   t.plan(1)
-  global['db']._PUT(data).then(() => {
+  global.db._PUT(data).then(() => {
     t.pass('ok')
   })
 })
-

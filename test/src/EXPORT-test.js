@@ -1,32 +1,32 @@
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const exportingIndexName = sandbox + 'EXPORT'
 const importingIndexName = sandbox + 'IMPORT'
 
-var exportedIndex = null
+let exportedIndex = null
 
 const carData = [
   {
-    "_id": 0,
-    "make": "Tesla",
-    "manufacturer": "Volvo",
-    "brand": "Volvo"
+    _id: 0,
+    make: 'Tesla',
+    manufacturer: 'Volvo',
+    brand: 'Volvo'
   },
   {
-    "_id": 1,
-    "make": "BMW",
-    "manufacturer": "Volvo",
-    "brand": "Volvo"
+    _id: 1,
+    make: 'BMW',
+    manufacturer: 'Volvo',
+    brand: 'Volvo'
   }
 ]
 
 const expectedIndex = [
-  { key: 'brand:volvo#1.00', value: [ '0', '1' ] },
-  { key: 'make:bmw#1.00', value: [ '1' ] },
-  { key: 'make:tesla#1.00', value: [ '0' ] },
-  { key: 'manufacturer:volvo#1.00', value: [ '0', '1' ] },
+  { key: 'brand:volvo#1.00', value: ['0', '1'] },
+  { key: 'make:bmw#1.00', value: ['1'] },
+  { key: 'make:tesla#1.00', value: ['0'] },
+  { key: 'manufacturer:volvo#1.00', value: ['0', '1'] },
   { key: '￮DOCUMENT_COUNT￮', value: 2 },
   {
     key: '￮DOC_RAW￮0￮',
@@ -37,20 +37,21 @@ const expectedIndex = [
     value: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo' }
   },
   {
-    key: '￮DOC￮0￮', value: {
+    key: '￮DOC￮0￮',
+    value: {
       _id: '0',
-      make: [ 'tesla#1.00' ],
-      manufacturer: [ 'volvo#1.00' ],
-      brand: [ 'volvo#1.00' ]
+      make: ['tesla#1.00'],
+      manufacturer: ['volvo#1.00'],
+      brand: ['volvo#1.00']
     }
   },
   {
     key: '￮DOC￮1￮',
     value: {
       _id: '1',
-      make: [ 'bmw#1.00' ],
-      manufacturer: [ 'volvo#1.00' ],
-      brand: [ 'volvo#1.00' ]
+      make: ['bmw#1.00'],
+      manufacturer: ['volvo#1.00'],
+      brand: ['volvo#1.00']
     }
   },
   { key: '￮FIELD￮brand￮', value: 'brand' },
@@ -61,7 +62,7 @@ const expectedIndex = [
 test('create a search index for exporting from', t => {
   t.plan(1)
   si({ name: exportingIndexName }).then(db => {
-    global[exportingIndexName] = db    
+    global[exportingIndexName] = db
     t.pass('ok')
   })
 })
@@ -70,7 +71,7 @@ test('can add data', t => {
   t.plan(1)
   global[exportingIndexName]._PUT(carData).then(response =>
     t.deepEquals(response, [
-      { _id: '0', status: 'OK', operation: 'PUT' },   
+      { _id: '0', status: 'OK', operation: 'PUT' },
       { _id: '1', status: 'OK', operation: 'PUT' }
     ])
   )
@@ -89,7 +90,7 @@ test('can export data', t => {
 test('create a search index for importing to', t => {
   t.plan(1)
   si({ name: importingIndexName }).then(db => {
-    global[importingIndexName] = db    
+    global[importingIndexName] = db
     t.pass('ok')
   })
 })
@@ -106,7 +107,6 @@ test('can add data that will be overwritten', t => {
   )
 })
 
-
 test('can import data', t => {
   t.plan(1)
   global[importingIndexName]
@@ -116,7 +116,6 @@ test('can import data', t => {
 
 test('verify structure of imported data', t => {
   t.plan(1)
-  debugger
   global[importingIndexName]
     .EXPORT()
     .then(index => {

@@ -1,6 +1,10 @@
-import fii from 'fergies-inverted-index'
-import writer from './write.js'
-import reader from './read.js'
+// import fii from 'fergies-inverted-index'
+// import writer from './write.js'
+// import reader from './read.js'
+
+const fii = require('fergies-inverted-index')
+const writer = require('./write.js')
+const reader = require('./read.js')
 
 const makeASearchIndex = ops => {
   const w = writer(ops.fii, ops)
@@ -59,4 +63,5 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   )
 })
 
-export default ops => initIndex(ops).then(makeASearchIndex)
+// export default ops => initIndex(ops).then(makeASearchIndex)
+module.exports = ops => initIndex(ops).then(makeASearchIndex)
