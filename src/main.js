@@ -51,7 +51,8 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   ops = Object.assign({
     tokenAppend: '#',
     caseSensitive: false,
-    storeVectors: false
+    storeVectors: false,
+    storeRawDocs: true
   }, ops)
   if (ops.fii) return resolve(ops)
   // else

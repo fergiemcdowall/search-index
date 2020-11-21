@@ -86,13 +86,13 @@ module.exports = (fii, ops) => {
   const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
     docs => fii.PUT(
       docs.map(createDocumentVector), Object.assign(
-        putOptions || {}, ops
+        ops, putOptions
       )
     ).then(
       result => (
-        (putOptions || {}).dontStoreRawDocs
-          ? Promise.all([])
-          : _PUT_RAW(docs)
+        ops.storeRawDocs
+          ? _PUT_RAW(docs)
+          : Promise.all([])
       ).then(
         () => incrementDocCount(result.length)
       ).then(() => result)

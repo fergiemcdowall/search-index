@@ -33,7 +33,7 @@ test('can add data', t => {
   t.plan(1)
   global[indexName]._PUT(
     carData, {
-      dontStoreRawDocs: true
+      storeRawDocs: false
     }).then(response =>
     t.deepEquals(response, [
       { _id: '0', status: 'OK', operation: 'PUT' },

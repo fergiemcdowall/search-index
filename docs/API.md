@@ -457,10 +457,12 @@ generated and assigned
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-|`storeVectors`|`boolean`|`true`|When true, documents will not be deletable or overwritable, but will take up less space on disk|
+|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-|`doNotStoreRawDocs`|`boolean`|`false`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 
+
+TODO: doNotStoreRawDocs -> storeRawDocs
 
 ## PUT_RAW
 
