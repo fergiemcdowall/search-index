@@ -22,9 +22,6 @@ module.exports = (fii, ops) => {
   ]) => {
     // if fieldname is undefined, ignore and procede to next
     if (fieldValue === undefined) return acc
-    /* ops = Object.assign({
-     *   caseSensitive: false
-     * }, ops || {}) */
     if (fieldName === '_id') {
       acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
     } else if (Array.isArray(fieldValue)) {
@@ -88,7 +85,9 @@ module.exports = (fii, ops) => {
 
   const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
     docs => fii.PUT(
-      docs.map(createDocumentVector), putOptions
+      docs.map(createDocumentVector), Object.assign(
+        putOptions || {}, ops
+      )
     ).then(
       result => (
         (putOptions || {}).dontStoreRawDocs

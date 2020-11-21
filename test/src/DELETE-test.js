@@ -36,7 +36,10 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
+  si({
+    name: indexName,
+    storeVectors: true
+  }).then(db => {
     global[indexName] = db
     t.pass('ok')
   })

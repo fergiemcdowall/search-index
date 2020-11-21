@@ -55,9 +55,6 @@ test('Verify that _PUT has created an appropriate index (_PUT_1)', t => {
     { key: '￮DOC_RAW￮0￮', value: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮1￮', value: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮2￮', value: { _id: 2, make: 'Tesla', manufacturer: 'Tesla', brand: 'Volvo' } },
-    { key: '￮DOC￮0￮', value: { _id: '0', make: ['tesla#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮1￮', value: { _id: '1', make: ['bmw#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮2￮', value: { _id: '2', make: ['tesla#1.00'], manufacturer: ['tesla#1.00'], brand: ['volvo#1.00'] } },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮make￮', value: 'make' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
@@ -91,9 +88,6 @@ test('Verify that _PUT_RAW has created an appropriate index', t => {
     { key: '￮DOC_RAW￮0￮', value: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮1￮', value: { _id: '1', text: 'this is an altered raw doc' } },
     { key: '￮DOC_RAW￮2￮', value: { _id: 2, make: 'Tesla', manufacturer: 'Tesla', brand: 'Volvo' } },
-    { key: '￮DOC￮0￮', value: { _id: '0', make: ['tesla#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮1￮', value: { _id: '1', make: ['bmw#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮2￮', value: { _id: '2', make: ['tesla#1.00'], manufacturer: ['tesla#1.00'], brand: ['volvo#1.00'] } },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮make￮', value: 'make' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
@@ -127,9 +121,6 @@ test('Verify that _PUT_RAW has created an appropriate index', t => {
     { key: '￮DOC_RAW￮0￮', value: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮1￮', value: { _id: '1', text: 'this is an altered raw doc' } },
     { key: '￮DOC_RAW￮2￮', value: { _id: '2', text: 'this is an altered raw doc for 2' } },
-    { key: '￮DOC￮0￮', value: { _id: '0', make: ['tesla#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮1￮', value: { _id: '1', make: ['bmw#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮2￮', value: { _id: '2', make: ['tesla#1.00'], manufacturer: ['tesla#1.00'], brand: ['volvo#1.00'] } },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮make￮', value: 'make' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }

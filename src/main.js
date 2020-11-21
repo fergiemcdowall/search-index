@@ -1,7 +1,3 @@
-// import fii from 'fergies-inverted-index'
-// import writer from './write.js'
-// import reader from './read.js'
-
 const fii = require('fergies-inverted-index')
 const writer = require('./write.js')
 const reader = require('./read.js')
@@ -54,7 +50,8 @@ const makeASearchIndex = ops => {
 const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   ops = Object.assign({
     tokenAppend: '#',
-    caseSensitive: false
+    caseSensitive: false,
+    storeVectors: false
   }, ops)
   if (ops.fii) return resolve(ops)
   // else

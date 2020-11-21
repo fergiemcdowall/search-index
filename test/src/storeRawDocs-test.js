@@ -49,8 +49,6 @@ test('Verify that an appropriate index has been created', t => {
     { key: 'make:tesla#1.00', value: ['0'] },
     { key: 'manufacturer:volvo#1.00', value: ['0', '1'] },
     { key: '￮DOCUMENT_COUNT￮', value: 2 },
-    { key: '￮DOC￮0￮', value: { _id: '0', make: ['tesla#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮1￮', value: { _id: '1', make: ['bmw#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮make￮', value: 'make' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }

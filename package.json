@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && ln -s ./dist/search-index-*.js ./dist/search-index.js",
+    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && ln -s $PWD/dist/search-index-*.js dist/search-index.js",
     "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
     "lint": "standard --fix test/src/* src/*",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ' && doctoc docs/README.md --title '# Quickstart'",
@@ -47,7 +47,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "8.0.2",
+    "fergies-inverted-index": "8.1.0",
     "term-vector": "^1.0.0"
   }
 }

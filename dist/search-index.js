@@ -1,1 +1,1 @@
-./dist/search-index-2.0.0.js
+/Users/fergie/projects/search-index/dist/search-index-2.0.0.js
