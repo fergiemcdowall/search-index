@@ -3,33 +3,35 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./mini-default.min.css">
-    <link rel="stylesheet" href="./mini-additions.css">
-    <script src="../dist/search-index.1.0.6.js"></script>
-    <title>search-index browser example</title>
+    <script src="./search-index.js"></script>
+    <title>r/Earthporn</title>
+    <style>
+
+      li {
+        display: inline-block;
+      }
+      
+      img {
+        float: left;
+      }
+      
+      ul {
+        width: 600px;
+        list-style: none;
+        padding-left: 0px;
+      }
+    </style>
   </head>
 
   <body>
     <div id="header">
-      <h1>Search-index browser example</h1>
+      <h1>Nature pic search</h1>
     </div>
 
-    <div id="addContainer">
-      <h2>Add content</h2>
-      <label for="title">Title:</label>
-      <input type="text" id="title" placeholder="Document title" /><br />
-      <label for="body">Text:</label>
-      <input type="text" id="body" placeholder="Body text" /><br />
-      <button type="button" id="indexContent">Add</button>
-    </div>
+    <input id="query" placeholder="search query" />
 
-    <div id="searchBar">
-      <h2>Search for content</h2>
-      <input aria-label="search query" id="searchQuery" placeholder="search query" />
-    </div>
-
-    <div id="searchResults"></div>                                                                                   
-
+    <ul id="result"></ul>
+    
     <script src="./search-app.js"></script>
   </body>
 </html> 

@@ -462,8 +462,6 @@ generated and assigned
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 
 
-TODO: doNotStoreRawDocs -> storeRawDocs
-
 ## PUT_RAW
 
 ```javascript
@@ -483,8 +481,8 @@ useful if you want to store stripped down versions of the document in
 the index in order to save space.
 
 NOTE: if the documents that the index returns are very different to
-the corresponding documents that are indexed, it may make sense to use
-the `doNotStoreRawDocs` flag when indexing (making indexing slightly
-faster), and instead add them with `PUT_RAW` afterwards.
+the corresponding documents that are indexed, it may make sense to set
+`storeRawDocs: false` when indexing (making indexing slightly faster),
+and instead add them with `PUT_RAW` afterwards.
 
 
