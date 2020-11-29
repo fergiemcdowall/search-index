@@ -9,34 +9,27 @@ const makeASearchIndex = ops => {
     // internal functions inherited from fergies-inverted-index
     _AGGREGATE: ops.fii.AGGREGATE,
     _AND: ops.fii.AND,
-    _BUCKET: ops.fii.BUCKET, // TODO: needed?
-    _FIELDS: ops.fii.FIELDS,
+    _BUCKET: ops.fii.BUCKET,
     _GET: ops.fii.GET,
     _NOT: ops.fii.SET_SUBTRACTION,
     _OR: ops.fii.OR,
 
     // search-index read
-    //    _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     _PAGE: r.PAGE,
     _SCORE: r.SCORE,
     _SEARCH: r.SEARCH,
     _SORT: r.SORT,
 
-    // search-index write
-    _DELETE: w.DELETE,
-    _PUT: w._PUT,
-    _PUT_RAW: w._PUT_RAW,
-
     // public API
-    BUCKETS: ops.fii.BUCKETS,
+    BUCKETS: ops.fii.BUCKETS, // TODO- documention
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
-    DISTINCT: r.DISTINCT,
-    DOCUMENTS: r.DOCUMENTS,
+    DISTINCT: r.DISTINCT, // TODO- documention
+    DOCUMENTS: r.DOCUMENTS, // TODO- documention, also, should return as {RESULT: [...]} so that sorting/paging (and maybe even scoring?) works
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
-    FACETS: r.FACETS,
-    FIELDS: r.FIELDS,
+    FACETS: r.FACETS, // TODO- documention
+    FIELDS: ops.fii.FIELDS,
     IMPORT: ops.fii.IMPORT,
     INDEX: ops.fii,
     MAX: ops.fii.MAX,
@@ -61,5 +54,4 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   )
 })
 
-// export default ops => initIndex(ops).then(makeASearchIndex)
 module.exports = ops => initIndex(ops).then(makeASearchIndex)

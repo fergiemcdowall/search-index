@@ -41,7 +41,7 @@ test('can create a search index WITHOUT an options object', t => {
 
 test('can add some data', t => {
   t.plan(1)
-  global.db._PUT(data).then(() => {
+  global.db.PUT(data).then(() => {
     t.pass('ok')
   })
 })

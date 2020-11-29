@@ -51,7 +51,7 @@ test('create a search index for exporting from', t => {
 
 test('can add data', t => {
   t.plan(1)
-  global[exportingIndexName]._PUT(carData).then(response =>
+  global[exportingIndexName].PUT(carData).then(response =>
     t.deepEquals(response, [
       { _id: '0', status: 'OK', operation: 'PUT' },
       { _id: '1', status: 'OK', operation: 'PUT' }
@@ -79,7 +79,7 @@ test('create a search index for importing to', t => {
 
 test('can add data that will be overwritten', t => {
   t.plan(1)
-  global[importingIndexName]._PUT([{
+  global[importingIndexName].PUT([{
     _id: '999',
     text: 'this doc will be removed during IMPORT'
   }]).then(response =>

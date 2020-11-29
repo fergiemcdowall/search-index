@@ -44,7 +44,7 @@ test('create a search index', t => {
 
 test('can add some data', t => {
   t.plan(1)
-  global[indexName]._PUT(data).then(() => {
+  global[indexName].PUT(data).then(() => {
     t.pass('ok')
   })
 })

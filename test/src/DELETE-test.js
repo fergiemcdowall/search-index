@@ -47,7 +47,7 @@ test('create a search index', t => {
 
 test('can add some data', t => {
   t.plan(1)
-  global[indexName]._PUT(data).then(() => {
+  global[indexName].PUT(data).then(() => {
     t.pass('ok')
   })
 })
@@ -60,9 +60,9 @@ test('_DOCUMENT_COUNT is 3', t => {
   })
 })
 
-test('can _DELETE', t => {
+test('can DELETE', t => {
   t.plan(1)
-  global[indexName]._DELETE(['b']).then((res) => t.deepEqual(res, [
+  global[indexName].DELETE(['b']).then((res) => t.deepEqual(res, [
     { _id: 'b', operation: 'DELETE', status: 'OK' }
   ]))
 })

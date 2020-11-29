@@ -77,7 +77,7 @@ test('can add data', t => {
   ]
 
   t.plan(1)
-  global[indexName]._PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })
 
 test('get page 2 (called "1": count from "0") with page size of 3', t => {

@@ -30,7 +30,7 @@ test('can add some worldbank data', t => {
   })
   //  console.log(JSON.stringify(data, null, 2))
   t.plan(1)
-  global[indexName]._PUT(data).then(result => {
+  global[indexName].PUT(data).then(result => {
     t.pass('ok')
   })
 })

@@ -25,7 +25,7 @@ test('create a case sensitive search index', t => {
 
 test('can add data to case sensitive index', t => {
   t.plan(9)
-  global[testIndex]._PUT(data).then(response => response.forEach(item => {
+  global[testIndex].PUT(data).then(response => response.forEach(item => {
     t.equals(item.operation, 'PUT')
     t.equals(item.status, 'OK')
     t.match(item._id, /\d{13}-\d/gm, 'id has correct format')

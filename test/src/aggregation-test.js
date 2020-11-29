@@ -33,7 +33,7 @@ test('can add some worldbank data', t => {
    *   board_approval_month: item.board_approval_month,
    * })), null, 2)) */
   t.plan(1)
-  global[indexName]._PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })
 
 test('can aggregate totalamt using underlying index', t => {

@@ -60,7 +60,7 @@ test('create a search index', t => {
 
 test('can add data', t => {
   t.plan(1)
-  global[indexName]._PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })
 
 test('simple SEARCH with 2 clauses and documents', t => {

@@ -2,7 +2,7 @@ const si = require('../../')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + '_PUT_RAW_DOCUMENTS'
+const indexName = sandbox + 'PUT_RAW_DOCUMENTS'
 
 const carData = [
   {
@@ -35,7 +35,7 @@ test('create a search index', t => {
 
 test('can add data', t => {
   t.plan(1)
-  global[indexName]._PUT(carData).then(response =>
+  global[indexName].PUT(carData).then(response =>
     t.deepEquals(response, [
       { _id: '0', status: 'OK', operation: 'PUT' },
       { _id: '1', status: 'OK', operation: 'PUT' },
@@ -44,7 +44,7 @@ test('can add data', t => {
   )
 })
 
-test('Verify that _PUT has created an appropriate index (_PUT_1)', t => {
+test('Verify that PUT has created an appropriate index (_PUT_1)', t => {
   const indexEntries = [
     { key: 'brand:volvo#1.00', value: ['0', '1', '2'] },
     { key: 'make:bmw#1.00', value: ['1'] },
@@ -67,7 +67,7 @@ test('Verify that _PUT has created an appropriate index (_PUT_1)', t => {
 
 test('can add raw document', t => {
   t.plan(1)
-  global[indexName]._PUT_RAW([{
+  global[indexName].PUT_RAW([{
     _id: '1',
     text: 'this is an altered raw doc'
   }]).then(response =>
@@ -77,7 +77,7 @@ test('can add raw document', t => {
   )
 })
 
-test('Verify that _PUT_RAW has created an appropriate index', t => {
+test('Verify that PUT_RAW has created an appropriate index', t => {
   const indexEntries = [
     { key: 'brand:volvo#1.00', value: ['0', '1', '2'] },
     { key: 'make:bmw#1.00', value: ['1'] },
@@ -110,7 +110,7 @@ test('can add raw document with external API (no underscore)', t => {
   )
 })
 
-test('Verify that _PUT_RAW has created an appropriate index', t => {
+test('Verify that PUT_RAW has created an appropriate index', t => {
   const indexEntries = [
     { key: 'brand:volvo#1.00', value: ['0', '1', '2'] },
     { key: 'make:bmw#1.00', value: ['1'] },

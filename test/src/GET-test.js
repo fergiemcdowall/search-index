@@ -80,7 +80,7 @@ test('can add data', t => {
   ]
 
   t.plan(1)
-  global[indexName]._PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })
 
 test('simple _GET', t => {

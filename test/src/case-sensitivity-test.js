@@ -81,7 +81,7 @@ test('create a case sensitive search index', t => {
 
 test('can add data to case sensitive index', t => {
   t.plan(1)
-  global[caseSensitivityTest]._PUT(data).then(t.pass)
+  global[caseSensitivityTest].PUT(data).then(t.pass)
 })
 
 test('Match maKE:BMW', t => {
@@ -138,7 +138,7 @@ test('create a case insensitive search index', t => {
 
 test('can add data to case insensitive index', t => {
   t.plan(1)
-  global[caseInsensitivityTest]._PUT(data).then(t.pass)
+  global[caseInsensitivityTest].PUT(data).then(t.pass)
 })
 
 test('Match maKE:BMW', t => {

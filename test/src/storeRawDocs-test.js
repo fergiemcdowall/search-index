@@ -31,7 +31,7 @@ test('create a search index', t => {
 
 test('can add data', t => {
   t.plan(1)
-  global[indexName]._PUT(
+  global[indexName].PUT(
     carData, {
       storeRawDocs: false
     }).then(response =>

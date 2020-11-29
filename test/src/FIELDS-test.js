@@ -58,12 +58,12 @@ test('can add data', t => {
     }
   ]
   t.plan(1)
-  global[indexName]._PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple _FIELDS', t => {
+test('simple FIELDS', t => {
   t.plan(1)
-  global[indexName]._FIELDS().then(res => {
+  global[indexName].FIELDS().then(res => {
     t.deepEqual(res, [
       'brand',
       'colours.bonnet.color',

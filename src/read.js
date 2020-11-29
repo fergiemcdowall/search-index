@@ -1,9 +1,4 @@
-// export default function (fii) {
 module.exports = fii => {
-  const BUCKETS = (...buckets) => Promise.all(
-    buckets.map(fii.BUCKET)
-  )
-
   const DOCUMENTS = requestedDocs => {
     // Either return document per id
     return Array.isArray(requestedDocs)
@@ -170,39 +165,40 @@ module.exports = fii => {
   const parseJsonQuery = (q, options) => {
     options = options || {}
 
-    const promisifyQuery = (command) => {
+    const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof command === 'string') return fii.GET(command)
-      if (command.FIELD) return fii.GET(command)
-      if (command.VALUE) return fii.GET(command)
+      if (typeof cmd === 'string') return fii.GET(cmd)
+      if (cmd.FIELD) return fii.GET(cmd)
+      if (cmd.VALUE) return fii.GET(cmd)
 
       // else:
-      if (command.AGGREGATE) {
+      // TODO: AGGREGATE IN OWN FUNCTION
+      if (cmd.AGGREGATE) {
         return fii.AGGREGATE({
-          BUCKETS: command.AGGREGATE.BUCKETS
-            ? fii.BUCKETS(...command.AGGREGATE.BUCKETS)
+          BUCKETS: cmd.AGGREGATE.BUCKETS
+            ? fii.BUCKETS(...cmd.AGGREGATE.BUCKETS)
             : [],
-          FACETS: command.AGGREGATE.FACETS
-            ? FACETS(command.AGGREGATE.FACETS)
+          FACETS: cmd.AGGREGATE.FACETS
+            ? FACETS(cmd.AGGREGATE.FACETS)
             : [],
-          QUERY: promisifyQuery(command.AGGREGATE.QUERY)
+          QUERY: runQuery(cmd.AGGREGATE.QUERY)
         })
       }
-      if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
-      if (command.DOCUMENTS) return DOCUMENTS(command.DOCUMENTS)
-      if (command.GET) return fii.GET(command.GET)
-      if (command.NOT) {
+      if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
+      if (cmd.DOCUMENTS) return DOCUMENTS(cmd.DOCUMENTS)
+      if (cmd.GET) return fii.GET(cmd.GET)
+      if (cmd.NOT) {
         return fii.SET_SUBTRACTION(
-          promisifyQuery(command.NOT.INCLUDE),
-          promisifyQuery(command.NOT.EXCLUDE)
+          runQuery(cmd.NOT.INCLUDE),
+          runQuery(cmd.NOT.EXCLUDE)
         )
       }
-      if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
-      if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
+      if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
+      if (cmd.SEARCH) return SEARCH(...cmd.SEARCH.map(runQuery))
     }
 
-    return promisifyQuery(q).then(result =>
+    return runQuery(q).then(result =>
       // FORMAT RESULTS
       result.RESULT
         ? Object.assign(result, {
@@ -242,13 +238,11 @@ module.exports = fii => {
   }
 
   return {
-    BUCKETS: BUCKETS,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,
     DOCUMENT_COUNT: DOCUMENT_COUNT,
     FACETS: FACETS,
-    FIELDS: fii.FIELDS,
     PAGE: PAGE,
     SCORE: SCORE,
     SEARCH: SEARCH,
