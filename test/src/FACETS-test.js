@@ -2,7 +2,7 @@ const si = require('../../')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + '_FACETS'
+const indexName = sandbox + 'FACETS'
 
 test('create a search index', t => {
   t.plan(1)
@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName]._PUT(data).then(t.pass)
 })
 
-test('simple _FACETS', t => {
-  const { _FACETS } = global[indexName]
+test('simple FACETS', t => {
+  const { FACETS } = global[indexName]
   t.plan(1)
-  _FACETS({
+  FACETS({
     FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
@@ -104,10 +104,10 @@ test('simple _FACETS', t => {
   })
 })
 
-test('simple _FACETS with range', t => {
-  const { _FACETS } = global[indexName]
+test('simple FACETS with range', t => {
+  const { FACETS } = global[indexName]
   t.plan(1)
-  _FACETS({
+  FACETS({
     FIELD: 'colour',
     VALUE: {
       GTE: 'a',
@@ -120,10 +120,10 @@ test('simple _FACETS with range', t => {
   })
 })
 
-test('simple _FACETS with range', t => {
-  const { _FACETS } = global[indexName]
+test('simple FACETS with range', t => {
+  const { FACETS } = global[indexName]
   t.plan(1)
-  _FACETS({
+  FACETS({
     FIELD: 'colour',
     VALUE: {
       GTE: 'c'
@@ -136,10 +136,10 @@ test('simple _FACETS with range', t => {
   })
 })
 
-test('simple _FACETS with range', t => {
-  const { _FACETS } = global[indexName]
+test('simple FACETS with range', t => {
+  const { FACETS } = global[indexName]
   t.plan(1)
-  _FACETS({
+  FACETS({
     FIELD: 'colour',
     VALUE: {
       LTE: 'c'
@@ -152,12 +152,10 @@ test('simple _FACETS with range', t => {
 })
 
 test('simple FACETS', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [{
-      FIELD: 'colour'
-    }]
+  FACETS({
+    FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] },
@@ -168,12 +166,10 @@ test('simple FACETS', t => {
 })
 
 test('simple FACETS', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [{
-      VALUE: 'red'
-    }]
+  FACETS({
+    VALUE: 'red'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] }])
@@ -181,12 +177,10 @@ test('simple FACETS', t => {
 })
 
 test('simple FACETS', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [{
-      VALUE: 'volvo'
-    }]
+  FACETS({
+    VALUE: 'volvo'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] },
@@ -197,12 +191,10 @@ test('simple FACETS', t => {
 })
 
 test('simple FACETS', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [{
-      FIELD: 'brand'
-    }]
+  FACETS({
+    FIELD: 'brand'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'bmw', _id: ['3', '6'] },
@@ -213,12 +205,10 @@ test('simple FACETS', t => {
 })
 
 test('FACETS on 2 fields', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [{
-      FIELD: ['brand', 'colour']
-    }]
+  FACETS({
+    FIELD: ['brand', 'colour']
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'bmw', _id: ['3', '6'] },
@@ -232,22 +222,18 @@ test('FACETS on 2 fields', t => {
 })
 
 test('FACETS on 2 fields with GTE/LTE', t => {
-  const { QUERY } = global[indexName]
+  const { FACETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    FACETS: [
-      {
-        FIELD: ['brand'],
-        VALUE: {
-          GTE: 'f'
-        }
-      }, {
-        FIELD: ['colour'],
-        VALUE: {
-          LTE: 'x'
-        }
-      }
-    ]
+  FACETS({
+    FIELD: ['brand'],
+    VALUE: {
+      GTE: 'f'
+    }
+  }, {
+    FIELD: ['colour'],
+    VALUE: {
+      LTE: 'x'
+    }
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'tesla', _id: ['7', '8'] },

@@ -182,11 +182,14 @@ test('simple QUERY using json with QUERY', t => {
       }
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '1', _match: ['make:bmw#1.00'] },
-      { _id: '7', _match: ['make:bmw#1.00'] },
-      { _id: '9', _match: ['make:bmw#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '1', _match: ['make:bmw#1.00'] },
+        { _id: '7', _match: ['make:bmw#1.00'] },
+        { _id: '9', _match: ['make:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 3
+    })
   })
 })
 
@@ -197,26 +200,29 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
       FIELD: 'extrafield'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: '0',
-        _match: [
-          'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-        ]
-      },
-      {
-        _id: '3',
-        _match: [
-          'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-        ]
-      },
-      {
-        _id: '6',
-        _match: [
-          'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-        ]
-      }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: '0',
+          _match: [
+            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
+          ]
+        },
+        {
+          _id: '3',
+          _match: [
+            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
+          ]
+        },
+        {
+          _id: '6',
+          _match: [
+            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
+          ]
+        }
+      ],
+      RESULT_LENGTH: 3
+    })
   })
 })
 

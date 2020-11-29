@@ -108,32 +108,34 @@ test('simple _BUCKET with a range', t => {
   })
 })
 
+// TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    BUCKETS: ['make:volvo']
-  }).then(res => {
+  BUCKETS('make:volvo').then(res => {
     t.deepEqual(res, [{
-      FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['4', '5', '8']
+      FIELD: ['make'],
+      VALUE: { GTE: 'volvo', LTE: 'volvo' },
+      _id: ['4', '5', '8']
     }])
   })
 })
 
+// TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET with a range (JSON)', t => {
-  const { QUERY } = global[indexName]
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    BUCKETS: [{
-      FIELD: 'make',
-      VALUE: {
-        GTE: 'a',
-        LTE: 'u'
-      }
-    }]
+  BUCKETS({
+    FIELD: 'make',
+    VALUE: {
+      GTE: 'a',
+      LTE: 'u'
+    }
   }).then(res => {
     t.deepEqual(res, [{
-      FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' }, _id: ['0', '1', '2', '3', '6', '7', '9']
+      FIELD: ['make'],
+      VALUE: { GTE: 'a', LTE: 'u' },
+      _id: ['0', '1', '2', '3', '6', '7', '9']
     }])
   })
 })

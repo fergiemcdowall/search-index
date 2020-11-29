@@ -2,7 +2,7 @@ const si = require('../../')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + '_DISTINCT'
+const indexName = sandbox + 'DISTINCT'
 
 test('create a search index', t => {
   t.plan(1)
@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName]._PUT(data).then(t.pass)
 })
 
-test('simple _DISTINCT', t => {
-  const { _DISTINCT } = global[indexName]
+test('simple DISTINCT', t => {
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  _DISTINCT({
+  DISTINCT({
     FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
@@ -104,10 +104,10 @@ test('simple _DISTINCT', t => {
   })
 })
 
-test('simple _DISTINCT with range', t => {
-  const { _DISTINCT } = global[indexName]
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  _DISTINCT({
+  DISTINCT({
     FIELD: 'colour',
     VALUE: {
       GTE: 'a',
@@ -120,10 +120,10 @@ test('simple _DISTINCT with range', t => {
   })
 })
 
-test('simple _DISTINCT with range', t => {
-  const { _DISTINCT } = global[indexName]
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  _DISTINCT({
+  DISTINCT({
     FIELD: 'colour',
     VALUE: {
       GTE: 'c'
@@ -136,10 +136,10 @@ test('simple _DISTINCT with range', t => {
   })
 })
 
-test('simple _DISTINCT with range', t => {
-  const { _DISTINCT } = global[indexName]
+test('simple DISTINCT with range', t => {
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  _DISTINCT({
+  DISTINCT({
     FIELD: 'colour',
     VALUE: {
       LTE: 'c'
@@ -152,12 +152,10 @@ test('simple _DISTINCT with range', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      FIELD: 'colour'
-    }]
+  DISTINCT({
+    FIELD: 'colour'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'blue' },
@@ -168,12 +166,10 @@ test('simple DISTINCT', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      VALUE: 'red'
-    }]
+  DISTINCT({
+    VALUE: 'red'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'colour', VALUE: 'red' }
@@ -182,12 +178,10 @@ test('simple DISTINCT', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      VALUE: 'volvo'
-    }]
+  DISTINCT({
+    VALUE: 'volvo'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'volvo' },
@@ -198,12 +192,10 @@ test('simple DISTINCT', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      FIELD: 'brand'
-    }]
+  DISTINCT({
+    FIELD: 'brand'
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'bmw' },
@@ -214,12 +206,10 @@ test('simple DISTINCT', t => {
 })
 
 test('DISTINCT on 2 fields', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      FIELD: ['brand', 'colour']
-    }]
+  DISTINCT({
+    FIELD: ['brand', 'colour']
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'bmw' },
@@ -233,22 +223,18 @@ test('DISTINCT on 2 fields', t => {
 })
 
 test('DISTINCT on 2 fields with GTE/LTE', t => {
-  const { QUERY } = global[indexName]
+  const { DISTINCT } = global[indexName]
   t.plan(1)
-  QUERY({
-    DISTINCT: [
-      {
-        FIELD: ['brand'],
-        VALUE: {
-          GTE: 'f'
-        }
-      }, {
-        FIELD: ['colour'],
-        VALUE: {
-          LTE: 'x'
-        }
-      }
-    ]
+  DISTINCT({
+    FIELD: ['brand'],
+    VALUE: {
+      GTE: 'f'
+    }
+  }, {
+    FIELD: ['colour'],
+    VALUE: {
+      LTE: 'x'
+    }
   }).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'tesla' },

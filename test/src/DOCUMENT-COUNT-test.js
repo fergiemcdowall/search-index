@@ -2,7 +2,7 @@ const si = require('../../')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
-const indexName = sandbox + '_DOCUMENT_COUNT'
+const indexName = sandbox + 'DOCUMENT_COUNT'
 
 test('create a search index', t => {
   t.plan(1)
@@ -90,10 +90,10 @@ test('can add data', t => {
   global[indexName]._PUT(data).then(t.pass)
 })
 
-test('simple _DOCUMENT_COUNT', t => {
-  const { _DOCUMENT_COUNT } = global[indexName]
+test('simple DOCUMENT_COUNT', t => {
+  const { DOCUMENT_COUNT } = global[indexName]
   t.plan(1)
-  _DOCUMENT_COUNT().then(count => {
+  DOCUMENT_COUNT().then(count => {
     t.equals(count, 10)
   })
 })

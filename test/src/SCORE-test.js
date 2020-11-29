@@ -115,16 +115,19 @@ test('SCORE TFIDF JSON', t => {
   }, {
     SCORE: 'TFIDF'
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
-      { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
-      { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
+        { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
+        { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
+        { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
+        { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
+      ],
+      RESULT_LENGTH: 8
+    })
   })
 })
 
@@ -134,8 +137,8 @@ test('SCORE SUM JSON', t => {
     SEARCH: ['tesla']
   }, {
     SCORE: 'SUM'
-  }).then(res => {
-    t.deepEqual(res, [
+  }).then(({ RESULT }) => {
+    t.deepEqual(RESULT, [
       { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 2 },
       { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 2 },
       { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 2 },
@@ -155,16 +158,19 @@ test('SCORE PRODUCT JSON', t => {
   }, {
     SCORE: 'PRODUCT'
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
-      { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
-      { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
-      { _id: '0', _match: ['make:tesla#1.00'], _score: 1 },
-      { _id: '3', _match: ['make:tesla#1.00'], _score: 1 },
-      { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 1 },
-      { _id: '8', _match: ['brand:tesla#1.00'], _score: 1 },
-      { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 1 }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '0', _match: ['make:tesla#1.00'], _score: 1 },
+        { _id: '3', _match: ['make:tesla#1.00'], _score: 1 },
+        { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '8', _match: ['brand:tesla#1.00'], _score: 1 },
+        { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 1 }
+      ],
+      RESULT_LENGTH: 8
+    })
   })
 })
 
@@ -175,15 +181,18 @@ test('SCORE CONCAT JSON', t => {
   }, {
     SCORE: 'CONCAT'
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['make:tesla#1.00'], _score: '1.00' },
-      { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
-      { _id: '3', _match: ['make:tesla#1.00'], _score: '1.00' },
-      { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: '1.00' },
-      { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
-      { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
-      { _id: '8', _match: ['brand:tesla#1.00'], _score: '1.00' },
-      { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: '1.00' }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '0', _match: ['make:tesla#1.00'], _score: '1.00' },
+        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
+        { _id: '3', _match: ['make:tesla#1.00'], _score: '1.00' },
+        { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: '1.00' },
+        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
+        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: '1.001.00' },
+        { _id: '8', _match: ['brand:tesla#1.00'], _score: '1.00' },
+        { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: '1.00' }
+      ],
+      RESULT_LENGTH: 8
+    })
   })
 })

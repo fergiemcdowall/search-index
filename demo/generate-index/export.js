@@ -2,9 +2,11 @@ const data = require('./EarthPorn-top-processed.json')
 const fs = require('fs')
 const si = require('../../')
 
-si({ name: __dirname + '/earthporn' }).then(db => db.PUT(data, {
+si({ name: __dirname + '/earthporn' })
+  .then(db => db.INDEX.STORE.clear().then(() => db))
+  .then(db => db.PUT(data, {
   doNotIndexField: [ 'thumbnail', 'url_overridden_by_dest' ],
-  storeVectors: false
+  storeVectors: true
 }).then(
   () => db
 )).then(

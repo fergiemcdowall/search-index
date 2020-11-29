@@ -134,16 +134,19 @@ test('simple _OR with 2 clauses', t => {
   global[indexName].QUERY({
     OR: ['brand:volvo', 'manufacturer:tesla']
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['brand:volvo#1.00'] },
-      { _id: '1', _match: ['brand:volvo#1.00'] },
-      { _id: '2', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-      { _id: '4', _match: ['brand:volvo#1.00'] },
-      { _id: '5', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-      { _id: '6', _match: ['manufacturer:tesla#1.00'] },
-      { _id: '7', _match: ['manufacturer:tesla#1.00'] },
-      { _id: '9', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '0', _match: ['brand:volvo#1.00'] },
+        { _id: '1', _match: ['brand:volvo#1.00'] },
+        { _id: '2', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
+        { _id: '4', _match: ['brand:volvo#1.00'] },
+        { _id: '5', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
+        { _id: '6', _match: ['manufacturer:tesla#1.00'] },
+        { _id: '7', _match: ['manufacturer:tesla#1.00'] },
+        { _id: '9', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] }
+      ],
+      RESULT_LENGTH: 8
+    })
   })
 })
 
@@ -173,12 +176,15 @@ test('simple OR with 2 clauses (embedded AND) (JSON)', t => {
       'make:bmw'
     ]
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '1', _match: ['make:bmw#1.00'] },
-      { _id: '2', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-      { _id: '5', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-      { _id: '7', _match: ['make:bmw#1.00'] },
-      { _id: '9', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00', 'make:bmw#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '1', _match: ['make:bmw#1.00'] },
+        { _id: '2', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
+        { _id: '5', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
+        { _id: '7', _match: ['make:bmw#1.00'] },
+        { _id: '9', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00', 'make:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 5
+    })
   })
 })

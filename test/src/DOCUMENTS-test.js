@@ -88,11 +88,14 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
     }
   )
     .then(res => {
-      t.deepEqual(res, [
-        { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3, _doc: data[0] },
-        { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3, _doc: data[3] },
-        { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97, _doc: data[8] }
-      ])
+      t.deepEqual(res, {
+        RESULT: [
+          { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3, _doc: data[0] },
+          { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3, _doc: data[3] },
+          { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97, _doc: data[8] }
+        ],
+        RESULT_LENGTH: 3
+      })
     })
 })
 

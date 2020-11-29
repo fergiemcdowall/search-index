@@ -9,17 +9,14 @@ const makeASearchIndex = ops => {
     // internal functions inherited from fergies-inverted-index
     _AGGREGATE: ops.fii.AGGREGATE,
     _AND: ops.fii.AND,
-    _BUCKET: ops.fii.BUCKET,
-    _BUCKETS: ops.fii.BUCKETS,
+    _BUCKET: ops.fii.BUCKET, // TODO: needed?
     _FIELDS: ops.fii.FIELDS,
     _GET: ops.fii.GET,
     _NOT: ops.fii.SET_SUBTRACTION,
     _OR: ops.fii.OR,
 
     // search-index read
-    _DISTINCT: r.DISTINCT,
-    _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
-    _FACETS: r.FACETS,
+    //    _DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     _PAGE: r.PAGE,
     _SCORE: r.SCORE,
     _SEARCH: r.SEARCH,
@@ -31,11 +28,14 @@ const makeASearchIndex = ops => {
     _PUT_RAW: w._PUT_RAW,
 
     // public API
+    BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
+    DISTINCT: r.DISTINCT,
     DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
+    FACETS: r.FACETS,
     FIELDS: r.FIELDS,
     IMPORT: ops.fii.IMPORT,
     INDEX: ops.fii,

@@ -40,7 +40,7 @@ const run = (sub, cat, after) => getPage(sub, cat, after).then(
     if (results.length < maxResults) run(sub, cat, after)
     else fs.writeFileSync(
       __dirname + '/' + sub + '-' + cat + '-raw.json',
-      JSON.stringify(results)
+      JSON.stringify(results, null, 2)
     )
   })
 

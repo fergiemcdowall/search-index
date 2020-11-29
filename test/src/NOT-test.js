@@ -135,9 +135,12 @@ test('simple NOT', t => {
       EXCLUDE: 'brand:tesla'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '4', _match: ['make:volvo#1.00'] },
+        { _id: '5', _match: ['make:volvo#1.00'] }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })

@@ -87,23 +87,22 @@ test('simple AND with 2 clauses', t => {
   QUERY({
     AND: ['make:volvo', 'manufacturer:bmw']
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '8', _match: ['make:volvo#1.00', 'manufacturer:bmw#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '8', _match: ['make:volvo#1.00', 'manufacturer:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
 // BUCKET
 test('simple BUCKET', t => {
-  const { QUERY } = global[indexName]
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    BUCKETS: [
-      {
-        FIELD: 'make',
-        VALUE: 'volvo'
-      }
-    ]
+  BUCKETS({
+    FIELD: 'make',
+    VALUE: 'volvo'
   }).then(res => {
     t.deepEqual(res, [
       {
@@ -137,27 +136,28 @@ test('simple AGGREGATE', t => {
       RESULT: [
         { _id: '7', _match: ['brand:tesla#1.00'] },
         { _id: '8', _match: ['brand:tesla#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 2
     })
   })
 })
 
-// DISTINCT
-test('DISTINCT', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    DISTINCT: [{
-      FIELD: 'make'
-    }]
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'make', VALUE: 'bmw' },
-      { FIELD: 'make', VALUE: 'tesla' },
-      { FIELD: 'make', VALUE: 'volvo' }
-    ])
-  })
-})
+// // DISTINCT (no longer under QUERY)
+// test('DISTINCT', t => {
+//   const { QUERY } = global[indexName]
+//   t.plan(1)
+//   QUERY({
+//     DISTINCT: [{
+//       FIELD: 'make'
+//     }]
+//   }).then(res => {
+//     t.deepEqual(res, [
+//       { FIELD: 'make', VALUE: 'bmw' },
+//       { FIELD: 'make', VALUE: 'tesla' },
+//       { FIELD: 'make', VALUE: 'volvo' }
+//     ])
+//   })
+// })
 
 // DISTINCT and BUCKETFILTER
 test('FACETS and AGGREGATE', t => {
@@ -186,7 +186,8 @@ test('FACETS and AGGREGATE', t => {
       RESULT: [
         { _id: '7', _match: ['brand:tesla#1.00'] },
         { _id: '8', _match: ['brand:tesla#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 2
     })
   })
 })
@@ -200,15 +201,18 @@ test('simple QUERY', t => {
   QUERY({
     GET: 'make:volvo'
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '4', _match: ['make:volvo#1.00'] },
+        { _id: '5', _match: ['make:volvo#1.00'] },
+        { _id: '8', _match: ['make:volvo#1.00'] }
+      ],
+      RESULT_LENGTH: 3
+    })
   })
 })
 
-// NOT -> TODO
+// NOT
 test('simple NOT', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
@@ -218,10 +222,13 @@ test('simple NOT', t => {
       EXCLUDE: 'brand:volvo'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '6', _match: ['manufacturer:tesla#1.00'] },
-      { _id: '7', _match: ['manufacturer:tesla#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '6', _match: ['manufacturer:tesla#1.00'] },
+        { _id: '7', _match: ['manufacturer:tesla#1.00'] }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
@@ -234,22 +241,25 @@ test('simple NOT with DOCUMENTS', t => {
       EXCLUDE: 'brand:volvo'
     }
   }, { DOCUMENTS: true }).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: '6',
-        _match: ['manufacturer:tesla#1.00'],
-        _doc: {
-          _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW'
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: '6',
+          _match: ['manufacturer:tesla#1.00'],
+          _doc: {
+            _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW'
+          }
+        },
+        {
+          _id: '7',
+          _match: ['manufacturer:tesla#1.00'],
+          _doc: {
+            _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla'
+          }
         }
-      },
-      {
-        _id: '7',
-        _match: ['manufacturer:tesla#1.00'],
-        _doc: {
-          _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla'
-        }
-      }
-    ])
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
@@ -260,12 +270,15 @@ test('simple OR with 2 clauses', t => {
   QUERY({
     OR: ['make:volvo', 'brand:tesla']
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '7', _match: ['brand:tesla#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00', 'brand:tesla#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '4', _match: ['make:volvo#1.00'] },
+        { _id: '5', _match: ['make:volvo#1.00'] },
+        { _id: '7', _match: ['brand:tesla#1.00'] },
+        { _id: '8', _match: ['make:volvo#1.00', 'brand:tesla#1.00'] }
+      ],
+      RESULT_LENGTH: 4
+    })
   })
 })
 
@@ -276,15 +289,18 @@ test('simple SEARCH', t => {
   QUERY({
     SEARCH: ['tesla'] // TODO: should be able to search without a normal string?
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
-      { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
-      { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+        { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
+        { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
+        { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
+        { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
+        { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
+      ],
+      RESULT_LENGTH: 8
+    })
   })
 })

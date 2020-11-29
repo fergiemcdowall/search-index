@@ -37,10 +37,10 @@ test('can add some worldbank data', t => {
 })
 
 test('can aggregate totalamt using underlying index', t => {
-  const { _AGGREGATE, _FACETS, _SEARCH } = global[indexName]
+  const { _AGGREGATE, FACETS, _SEARCH } = global[indexName]
   t.plan(1)
   _AGGREGATE({
-    FACETS: _FACETS({
+    FACETS: FACETS({
       FIELD: 'totalamt'
     }),
     QUERY: _SEARCH('board_approval_month:october')
@@ -72,9 +72,9 @@ test('can aggregate totalamt using underlying index', t => {
 
 test('can aggregate totalamt using _AGGREGATE (aLTErnative invokation)', t => {
   t.plan(1)
-  const { _FACETS, _AGGREGATE, _SEARCH } = global[indexName]
+  const { FACETS, _AGGREGATE, _SEARCH } = global[indexName]
 
-  const f = _FACETS({
+  const f = FACETS({
     FIELD: 'totalamt'
   })
   const s = _SEARCH('board_approval_month:october')
@@ -170,7 +170,7 @@ test('_BUCKETing', t => {
 
 test('can aggregate totalamt using _AGGREGATE and custom buckets', t => {
   t.plan(1)
-  const b = global[indexName]._BUCKETS(
+  const b = global[indexName].BUCKETS(
     {
       FIELD: 'totalamt',
       VALUE: { GTE: '0', LTE: '0' }
@@ -260,7 +260,7 @@ test('make some _BUCKETs', t => {
 
 test('can aggregate totalamt', t => {
   t.plan(1)
-  global[indexName]._DISTINCT({
+  global[indexName].DISTINCT({
     FIELD: 'impagency'
   }).then(result => t.deepEqual(
     result, [
@@ -292,10 +292,8 @@ test('can aggregate totalamt', t => {
 
 test('can aggregate totalamt JSON DISTINCT', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    DISTINCT: [{
-      FIELD: 'impagency'
-    }]
+  global[indexName].DISTINCT({
+    FIELD: 'impagency'
   }).then(result => t.deepEqual(
     result, [
       { FIELD: 'impagency', VALUE: 'administration' },
@@ -326,7 +324,7 @@ test('can aggregate totalamt JSON DISTINCT', t => {
 
 test('can aggregate totalamt', t => {
   t.plan(1)
-  global[indexName]._DISTINCT({
+  global[indexName].DISTINCT({
     FIELD: 'impagency'
   })
     .then(result => Promise.all(result.map(global[indexName]._BUCKET)))
@@ -364,7 +362,7 @@ test('can aggregate totalamt', t => {
 test('can aggregate totalamt using underlying index', t => {
   t.plan(1)
   global[indexName]._AGGREGATE({
-    FACETS: global[indexName]._FACETS({
+    FACETS: global[indexName].FACETS({
       FIELD: 'impagency'
     }),
     QUERY: global[indexName]._SEARCH('board_approval_month:october')
@@ -411,11 +409,9 @@ test('can aggregate totalamt using underlying index', t => {
 
 test('JSON BUCKET', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    BUCKETS: [{
-      FIELD: 'impagency',
-      VALUE: 'of'
-    }]
+  global[indexName].BUCKETS({
+    FIELD: 'impagency',
+    VALUE: 'of'
   }).then(result => {
     t.deepEqual(
       result,
@@ -473,7 +469,8 @@ test('JSON AGGREGATE', t => {
           { _id: '52b213b38594d8a2be17c787', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
           { _id: '52b213b38594d8a2be17c788', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
           { _id: '52b213b38594d8a2be17c789', _match: ['board_approval_month:october#1.00'], _score: 0.45 }
-        ]
+        ],
+        RESULT_LENGTH: 7
       })
   })
 })
@@ -497,13 +494,9 @@ test('can aggregate totalamt using underlying index', t => {
 
 test('can aggregate totalamt using underlying index (JSON BUCKET)', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    BUCKETS: [
-      {
-        FIELD: 'impagency',
-        VALUE: 'pmu'
-      }
-    ]
+  global[indexName].BUCKETS({
+    FIELD: 'impagency',
+    VALUE: 'pmu'
   }).then(result => {
     t.deepEqual(
       result, [

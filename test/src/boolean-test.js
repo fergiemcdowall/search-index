@@ -59,12 +59,15 @@ test('AND', t => {
     ]
   }
   ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: '52b213b38594d8a2be17c789',
-        _match: ['sectorcode:bz#1.00', 'sectorcode:bc#1.00']
-      }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: '52b213b38594d8a2be17c789',
+          _match: ['sectorcode:bz#1.00', 'sectorcode:bc#1.00']
+        }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -77,13 +80,16 @@ test('OR', t => {
     ]
   }
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c782', _match: ['sectorcode:ti#1.00'] },
-      { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
-      { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] },
-      { _id: '52b213b38594d8a2be17c781', _match: ['sectorcode:bz#1.00'] },
-      { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bz#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c782', _match: ['sectorcode:ti#1.00'] },
+        { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
+        { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] },
+        { _id: '52b213b38594d8a2be17c781', _match: ['sectorcode:bz#1.00'] },
+        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bz#1.00'] }
+      ],
+      RESULT_LENGTH: 5
+    })
   })
 })
 
@@ -96,10 +102,13 @@ test('OR', t => {
     ]
   }
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
-      { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
+        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
@@ -112,10 +121,13 @@ test('OR', t => {
     ]
   }
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
-      { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
+        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
@@ -129,9 +141,12 @@ test('OR', t => {
     ]
   }
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:fh#1.00', 'sectorcode:yw#1.00', 'sectorcode:yz#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:fh#1.00', 'sectorcode:yw#1.00', 'sectorcode:yz#1.00'] }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -158,9 +173,12 @@ test('can NOT', t => {
       }
     }
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
-      { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
+        { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })

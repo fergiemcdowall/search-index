@@ -81,17 +81,20 @@ test('can search with QUERY', t => {
       'body.text:bananas'
     ]
   }).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _match: [
-          'body.text:cool#1.00',
-          'body.text:really#1.00',
-          'body.text:bananas#1.00'
-        ],
-        _score: 4.16
-      }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: 'b',
+          _match: [
+            'body.text:cool#1.00',
+            'body.text:really#1.00',
+            'body.text:bananas#1.00'
+          ],
+          _score: 4.16
+        }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -380,9 +383,12 @@ test('AND with embedded OR (JSON API)', t => {
   global[indexName].QUERY({
     AND: ['bananas']
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: 'b', _match: ['body.text:bananas#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: 'b', _match: ['body.text:bananas#1.00'] }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -391,9 +397,12 @@ test('AND with embedded OR (JSON API)', t => {
   global[indexName].QUERY({
     AND: ['bananas', { OR: ['body.text:cool', 'body.text:coolness'] }]
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: 'b', _match: ['body.text:bananas#1.00', 'body.text:cool#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: 'b', _match: ['body.text:bananas#1.00', 'body.text:cool#1.00'] }
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -402,31 +411,34 @@ test('DOCUMENT (JSON API)', t => {
   global[indexName].QUERY({
     DOCUMENTS: [{ _id: 'b' }, { _id: 'a' }]
   }).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _doc: {
+    t.deepEqual(res, {
+      RESULT: [
+        {
           _id: 'b',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool bananas',
-            metadata: 'coolness documentness'
-          },
-          importantNumber: 500
-        }
-      }, {
-        _id: 'a',
-        _doc: {
+          _doc: {
+            _id: 'b',
+            title: 'quite a cool document',
+            body: {
+              text: 'this document is really cool bananas',
+              metadata: 'coolness documentness'
+            },
+            importantNumber: 500
+          }
+        }, {
           _id: 'a',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool cool cool',
-            metadata: 'coolness documentness'
-          },
-          importantNumber: 5000
+          _doc: {
+            _id: 'a',
+            title: 'quite a cool document',
+            body: {
+              text: 'this document is really cool cool cool',
+              metadata: 'coolness documentness'
+            },
+            importantNumber: 5000
+          }
         }
-      }
-    ])
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
@@ -435,21 +447,24 @@ test('DOCUMENT (JSON API)', t => {
 test('QUERY with a string and then connect documents', t => {
   t.plan(1)
   global[indexName].QUERY('bananas', { DOCUMENTS: true }).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _match: ['body.text:bananas#1.00'],
-        _doc: {
+    t.deepEqual(res, {
+      RESULT: [
+        {
           _id: 'b',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool bananas',
-            metadata: 'coolness documentness'
-          },
-          importantNumber: 500
+          _match: ['body.text:bananas#1.00'],
+          _doc: {
+            _id: 'b',
+            title: 'quite a cool document',
+            body: {
+              text: 'this document is really cool bananas',
+              metadata: 'coolness documentness'
+            },
+            importantNumber: 500
+          }
         }
-      }
-    ])
+      ],
+      RESULT_LENGTH: 1
+    })
   })
 })
 
@@ -635,10 +650,10 @@ test('DICTIONARY without specified field', t => {
   })
 })
 
-test('_DOCUMENT_COUNT is 3', t => {
+test('DOCUMENT_COUNT is 3', t => {
   t.plan(1)
-  const { _DOCUMENT_COUNT } = global[indexName]
-  _DOCUMENT_COUNT().then(res => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
     t.equal(res, 3)
   })
 })

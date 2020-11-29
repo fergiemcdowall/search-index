@@ -81,10 +81,10 @@ test('can add data', t => {
 })
 
 test('simple AGGREGATE', t => {
-  const { _AND, _BUCKETS, _AGGREGATE } = global[indexName]
+  const { _AND, BUCKETS, _AGGREGATE } = global[indexName]
   t.plan(1)
   _AGGREGATE({
-    BUCKETS: _BUCKETS({
+    BUCKETS: BUCKETS({
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
@@ -145,7 +145,8 @@ test('simple AGGREGATE (JSON)', t => {
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
         { _id: '9', _match: ['make:bmw#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 3
     })
   })
 })
@@ -187,7 +188,8 @@ test('simple AGGREGATE (JSON)', t => {
           _match: [
             'make:bmw#1.00', 'manufacturer:tesla#1.00']
         }
-      ]
+      ],
+      RESULT_LENGTH: 2
     })
   })
 })
@@ -218,16 +220,17 @@ test('simple AGGREGATE (JSON)', t => {
         { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'] },
         { _id: '8', _match: ['brand:tesla#1.00'] },
         { _id: '9', _match: ['manufacturer:tesla#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 6
     })
   })
 })
 
 test('simple _AGGREGATE, using _DISTINCT', t => {
-  const { _GET, _FACETS, _AGGREGATE } = global[indexName]
+  const { _GET, FACETS, _AGGREGATE } = global[indexName]
   t.plan(1)
   _AGGREGATE({
-    FACETS: _FACETS({
+    FACETS: FACETS({
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
@@ -284,7 +287,8 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
         { _id: '9', _match: ['make:bmw#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 3
     })
   })
 })
@@ -319,7 +323,8 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
         { _id: '9', _match: ['make:bmw#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 3
     })
   })
 })
@@ -351,7 +356,66 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
         { _id: '9', _match: ['make:bmw#1.00'] }
-      ]
+      ],
+      RESULT_LENGTH: 3
     })
   })
 })
+
+test('simple AGGREGATE, using FACETS (JSON), return full documents', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    AGGREGATE: {
+      FACETS: {
+        FIELD: 'make',
+        VALUE: {
+          GTE: 'a',
+          LTE: 'u'
+        }
+      },
+      QUERY: {
+        GET: 'make:bmw'
+      }
+    }
+  }, {
+    DOCUMENTS: true
+  }).then(res => {
+    t.deepEqual(res, {
+      BUCKETS: [],
+      FACETS: [
+        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+        { FIELD: 'make', VALUE: 'tesla', _id: [] }
+      ],
+      RESULT: [
+        {
+          _id: '1',
+          _match: ['make:bmw#1.00'],
+          _doc: {
+            _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo'
+          }
+        },
+        {
+          _id: '7',
+          _match: ['make:bmw#1.00'],
+          _doc: {
+            _id: 7,
+            make: 'BMW',
+            manufacturer: 'Tesla',
+            brand: 'Tesla'
+          }
+        },
+        {
+          _id: '9',
+          _match: ['make:bmw#1.00'],
+          _doc: {
+            _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo'
+          }
+        }
+      ],
+      RESULT_LENGTH: 3
+    })
+  })
+})
+
+// TODO: can return full documents when ops has { DOCUMENTS: true }

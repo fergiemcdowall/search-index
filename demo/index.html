@@ -8,17 +8,26 @@
     <style>
 
       li {
+        margin-top: 10px;
         display: inline-block;
       }
       
       img {
         float: left;
+        margin-right: 10px;
       }
       
       ul {
         width: 600px;
         list-style: none;
         padding-left: 0px;
+        margin-top: 0px
+      }
+
+      .flex-container {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
       }
     </style>
   </head>
@@ -28,10 +37,16 @@
       <h1>Nature pic search</h1>
     </div>
 
-    <input id="query" placeholder="search query" />
+    <input id="query"
+           placeholder="search query"
+           style="font-size:x-large"
+           autofocus />
 
-    <ul id="result"></ul>
-    
+    <div class="flex-container">
+      <div style="width:200px">left bar</div>
+      <ul id="result"></ul>
+    </div>
+      
     <script src="./search-app.js"></script>
   </body>
 </html> 

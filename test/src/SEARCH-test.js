@@ -135,10 +135,11 @@ test('simple _SEARCH with 2 clauses and documents', t => {
   t.plan(1)
   global[indexName].QUERY({
     SEARCH: ['paul', 'and']
-  })
-    .then(global[indexName].DOCUMENTS)
-    .then(res => {
-      t.deepEqual(res, [
+  }, {
+    DOCUMENTS: true
+  }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
         {
           _id: '0',
           _match: ['text:paul#0.50', 'text:and#0.50'],
@@ -155,6 +156,8 @@ test('simple _SEARCH with 2 clauses and documents', t => {
           _score: 0.97,
           _doc: data[8]
         }
-      ])
+      ],
+      RESULT_LENGTH: 3
     })
+  })
 })

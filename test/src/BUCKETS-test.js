@@ -80,10 +80,10 @@ test('can add data', t => {
   global[indexName]._PUT(data).then(t.pass)
 })
 
-test('simple _BUCKETS', t => {
-  const { _BUCKETS } = global[indexName]
+test('simple BUCKETS', t => {
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  _BUCKETS(
+  BUCKETS(
     'make:volvo',
     'make:bmw',
     'make:tesla'
@@ -96,10 +96,10 @@ test('simple _BUCKETS', t => {
   })
 })
 
-test('simple _BUCKETS', t => {
-  const { _BUCKETS } = global[indexName]
+test('simple BUCKETS', t => {
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  _BUCKETS(
+  BUCKETS(
     { FIELD: 'make', VALUE: 'bmw' },
     { FIELD: 'make', VALUE: 'tesla' },
     { FIELD: 'make', VALUE: 'volvo' }
@@ -112,11 +112,11 @@ test('simple _BUCKETS', t => {
   })
 })
 
-test('simple _DISTINCT.then(_BUCKETS)', t => {
-  const { _DISTINCT, _BUCKETS } = global[indexName]
+test('simple DISTINCT.then(BUCKETS)', t => {
+  const { DISTINCT, BUCKETS } = global[indexName]
   t.plan(1)
-  _DISTINCT({ FIELD: 'make' }).then(
-    dist => _BUCKETS(...dist)
+  DISTINCT({ FIELD: 'make' }).then(
+    dist => BUCKETS(...dist)
   ).then(res => {
     t.deepEqual(res, [
       { FIELD: ['make'], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: ['1', '7', '9'] },
@@ -127,15 +127,13 @@ test('simple _DISTINCT.then(_BUCKETS)', t => {
 })
 
 test('QUERY { BUCKETS: ... }', t => {
-  const { QUERY } = global[indexName]
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    BUCKETS: [
-      'make:bmw',
-      'make:tesla',
-      'make:volvo'
-    ]
-  }).then(res => {
+  BUCKETS(
+    'make:bmw',
+    'make:tesla',
+    'make:volvo'
+  ).then(res => {
     t.deepEqual(res, [
       { FIELD: ['make'], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: ['1', '7', '9'] },
       { FIELD: ['make'], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: ['0', '2', '3', '6'] },
@@ -145,15 +143,13 @@ test('QUERY { BUCKETS: ... }', t => {
 })
 
 test('QUERY { BUCKETS: ... }', t => {
-  const { QUERY } = global[indexName]
+  const { BUCKETS } = global[indexName]
   t.plan(1)
-  QUERY({
-    BUCKETS: [
-      { FIELD: 'make', VALUE: 'bmw' },
-      { FIELD: 'make', VALUE: 'tesla' },
-      { FIELD: 'make', VALUE: 'volvo' }
-    ]
-  }).then(res => {
+  BUCKETS(
+    { FIELD: 'make', VALUE: 'bmw' },
+    { FIELD: 'make', VALUE: 'tesla' },
+    { FIELD: 'make', VALUE: 'volvo' }
+  ).then(res => {
     t.deepEqual(res, [
       { FIELD: ['make'], VALUE: { GTE: 'bmw', LTE: 'bmw' }, _id: ['1', '7', '9'] },
       { FIELD: ['make'], VALUE: { GTE: 'tesla', LTE: 'tesla' }, _id: ['0', '2', '3', '6'] },

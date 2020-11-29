@@ -104,11 +104,14 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
       SIZE: 3
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { _id: '3', _match: ['make:tesla#1.00'] },
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '3', _match: ['make:tesla#1.00'] },
+        { _id: '4', _match: ['make:volvo#1.00'] },
+        { _id: '5', _match: ['make:volvo#1.00'] }
+      ],
+      RESULT_LENGTH: 10
+    })
   })
 })
 

@@ -54,8 +54,8 @@ test('can add some data', t => {
 
 test('_DOCUMENT_COUNT is 3', t => {
   t.plan(1)
-  const { _DOCUMENT_COUNT } = global[indexName]
-  _DOCUMENT_COUNT().then(res => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
     t.equal(res, 3)
   })
 })
@@ -67,10 +67,10 @@ test('can _DELETE', t => {
   ]))
 })
 
-test('_DOCUMENT_COUNT is 2', t => {
+test('DOCUMENT_COUNT is 2', t => {
   t.plan(1)
-  const { _DOCUMENT_COUNT } = global[indexName]
-  _DOCUMENT_COUNT().then(res => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
     t.equal(res, 2)
   })
 })
@@ -156,10 +156,10 @@ test('can DELETE with json', t => {
     ]))
 })
 
-test('_DOCUMENT_COUNT is 1', t => {
+test('DOCUMENT_COUNT is 1', t => {
   t.plan(1)
-  const { _DOCUMENT_COUNT } = global[indexName]
-  _DOCUMENT_COUNT().then(res => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
     t.equal(res, 1)
   })
 })

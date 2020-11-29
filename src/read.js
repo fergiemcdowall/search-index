@@ -178,7 +178,6 @@ module.exports = fii => {
       if (command.VALUE) return fii.GET(command)
 
       // else:
-
       if (command.AGGREGATE) {
         return fii.AGGREGATE({
           BUCKETS: command.AGGREGATE.BUCKETS
@@ -191,16 +190,8 @@ module.exports = fii => {
         })
       }
       if (command.AND) return fii.AND(...command.AND.map(promisifyQuery))
-      if (command.BUCKETS) return BUCKETS(...command.BUCKETS)
-      if (command.DISTINCT) return DISTINCT(...command.DISTINCT)
-      // TODO: documents should be a QUERY option
-      // feed in preceding results if present (ie if not first promise)
       if (command.DOCUMENTS) return DOCUMENTS(command.DOCUMENTS)
-      if (command.FACETS) return FACETS(...command.FACETS)
-      //      if (command.FIELDS) return fii.FIELDS() // TODO: own function
       if (command.GET) return fii.GET(command.GET)
-      // if (command.MAX) return fii.MAX(command.MAX) // TODO: own function
-      // if (command.MIN) return fii.MIN(command.MIN) // TODO: own function
       if (command.NOT) {
         return fii.SET_SUBTRACTION(
           promisifyQuery(command.NOT.INCLUDE),
@@ -208,21 +199,46 @@ module.exports = fii => {
         )
       }
       if (command.OR) return fii.OR(...command.OR.map(promisifyQuery))
-      //      if (command.SCORE) return SCORE(resultFromPreceding, command.SCORE)
       if (command.SEARCH) return SEARCH(...command.SEARCH.map(promisifyQuery))
-      // TODO: make into an option
-      //      if (command.SORT) return SORT(resultFromPreceding, command.SORT)
     }
 
-    return promisifyQuery(q).then(
-      result => options.SCORE ? SCORE(result, options.SCORE) : result
+    return promisifyQuery(q).then(result =>
+      // FORMAT RESULTS
+      result.RESULT
+        ? Object.assign(result, {
+            RESULT_LENGTH: result.RESULT.length
+          })
+        : ({
+            RESULT: result,
+            RESULT_LENGTH: result.length
+          })
     ).then(
-      result => options.SORT ? SORT(result, options.SORT) : result
-    ).then(
-      result => options.PAGE ? PAGE(result, options.PAGE) : result
-    ).then(
-      result => options.DOCUMENTS ? DOCUMENTS(result) : result
-    )
+      // APPEND DOCUMENTS IF SPECIFIED
+      result => options.DOCUMENTS
+        ? DOCUMENTS(result.RESULT).then(
+            documentedResult => Object.assign(result, {
+              RESULT: documentedResult
+            }))
+        : result
+    ).then(result =>
+      // SCORE IF SPECIFIED
+      options.SCORE
+        ? SCORE(result.RESULT, options.SCORE).then(
+            scoredResult => Object.assign(result, {
+              RESULT: scoredResult
+            }))
+        : result
+    ).then(result => Object.assign(
+      // SORT IF SPECIFIED
+      result, options.SORT
+        ? { RESULT: SORT(result.RESULT, options.SORT) }
+        : {}
+    )).then(result => Object.assign(
+      // PAGE IF SPECIFIED
+      result, options.PAGE
+        ? { RESULT: PAGE(result.RESULT, options.PAGE) }
+        : {}
+    ))
   }
 
   return {
