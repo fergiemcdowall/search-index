@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && ln -s $PWD/dist/search-index-*.js dist/search-index.js",
-    "demo-export": "node demo/generate-index/export.js",    
+    "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",
     "demo-rebuild": "npm run demo-fetch && npm run demo-process && npm run demo-export",
@@ -53,7 +53,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "8.1.0",
+    "fergies-inverted-index": "8.2.0",
     "term-vector": "^1.0.0"
   }
 }

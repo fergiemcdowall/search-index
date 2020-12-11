@@ -117,22 +117,16 @@ test('simple AGGREGATE', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    AGGREGATE: {
-      BUCKETS: [
-        {
-          FIELD: 'make',
-          VALUE: 'volvo'
-        }
-      ],
-      QUERY: {
-        GET: 'brand:tesla'
-      }
-    }
+    GET: 'brand:tesla'
+  }, {
+    BUCKETS: [{
+      FIELD: 'make',
+      VALUE: 'volvo'
+    }]
   }).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
         { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }],
-      FACETS: [],
       RESULT: [
         { _id: '7', _match: ['brand:tesla#1.00'] },
         { _id: '8', _match: ['brand:tesla#1.00'] }
@@ -142,57 +136,34 @@ test('simple AGGREGATE', t => {
   })
 })
 
-// // DISTINCT (no longer under QUERY)
-// test('DISTINCT', t => {
-//   const { QUERY } = global[indexName]
-//   t.plan(1)
-//   QUERY({
-//     DISTINCT: [{
-//       FIELD: 'make'
-//     }]
-//   }).then(res => {
-//     t.deepEqual(res, [
-//       { FIELD: 'make', VALUE: 'bmw' },
-//       { FIELD: 'make', VALUE: 'tesla' },
-//       { FIELD: 'make', VALUE: 'volvo' }
-//     ])
-//   })
-// })
-
-// DISTINCT and BUCKETFILTER
-test('FACETS and AGGREGATE', t => {
+// QUERY with FACETS
+test('QUERY with FACETS', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    AGGREGATE: {
-      FACETS: {
-        FIELD: 'make'
-      },
-      QUERY: {
-        GET: {
-          FIELD: 'brand',
-          VALUE: 'tesla'
-        }
-      }
+    GET: {
+      FIELD: 'brand',
+      VALUE: 'tesla'
     }
+  }, {
+    FACETS: [{
+      FIELD: 'make'
+    }]
   }).then(res => {
     t.deepEqual(res, {
-      BUCKETS: [],
+      RESULT: [
+        { _id: '7', _match: ['brand:tesla#1.00'] },
+        { _id: '8', _match: ['brand:tesla#1.00'] }
+      ],
+      RESULT_LENGTH: 2,
       FACETS: [
         { FIELD: 'make', VALUE: 'bmw', _id: ['7'] },
         { FIELD: 'make', VALUE: 'tesla', _id: [] },
         { FIELD: 'make', VALUE: 'volvo', _id: ['8'] }
-      ],
-      RESULT: [
-        { _id: '7', _match: ['brand:tesla#1.00'] },
-        { _id: '8', _match: ['brand:tesla#1.00'] }
-      ],
-      RESULT_LENGTH: 2
+      ]
     })
   })
 })
-
-// DOCUMENTS -> TODO
 
 // QUERY
 test('simple QUERY', t => {

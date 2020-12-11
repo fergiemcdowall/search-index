@@ -24,18 +24,19 @@
       - [Find in named field or fields](#find-in-named-field-or-fields)
       - [Find within a range](#find-within-a-range)
       - [Find where a field exists](#find-where-a-field-exists)
+    - [Query options](#query-options)
+      - [DOCUMENTS](#documents)
+      - [PAGE](#page)
+      - [SCORE](#score)
+      - [SORT](#sort)
     - [Query verbs](#query-verbs)
       - [AND](#and)
       - [AGGREGATE](#aggregate)
       - [BUCKETS](#buckets)
-      - [DOCUMENTS](#documents)
       - [FACETS](#facets)
       - [NOT](#not)
       - [OR](#or)
-      - [PAGE](#page)
-      - [SCORE](#score)
       - [SEARCH](#search)
-      - [SORT](#sort)
   - [MAX](#max)
   - [MIN](#min)
   - [PUT](#put)
@@ -300,6 +301,54 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```
 
 
+### Query options
+
+#### DOCUMENTS
+
+```javascript
+// Returns full documents instead of just metadata.
+{
+  DOCUMENTS: true
+}
+```
+
+
+#### PAGE
+
+```javascript
+// show a single page of the result set
+{
+  PAGE: {
+    NUMBER: pageNumber, // to count from the end of the result set use negative numbers
+    SIZE: pageSize
+  }
+}
+```
+
+#### SCORE
+
+```javascript
+// show a single page of the result set
+{
+  SCORE: scoreType // can be 'TFIDF', 'SUM, 'PRODUCT' or 'CONCAT'
+}
+```
+
+
+#### SORT
+
+```javascript
+// Return search results sorted by relevance to query tokens
+{
+  SORT: {
+    TYPE: type,              // can be 'NUMERIC' or 'ALPHABETIC'
+    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING'
+    FIELD: field             // field to sort on
+  }
+}
+```
+
+
 ### Query verbs
 
 #### AND
@@ -337,16 +386,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```
 
 
-#### DOCUMENTS
-
-```javascript
-// Returns full documents instead of just metadata.
-{
-  DOCUMENTS: true
-}
-```
-
-
 #### FACETS
 
 ```javascript
@@ -378,28 +417,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```
 
 
-#### PAGE
-
-```javascript
-// show a single page of the result set
-{
-  PAGE: {
-    NUMBER: pageNumber, // to count from the end of the result set use negative numbers
-    SIZE: pageSize
-  }
-}
-```
-
-
-#### SCORE
-
-```javascript
-// show a single page of the result set
-{
-  SCORE: scoreType // can be 'TFIDF', 'SUM, 'PRODUCT' or 'CONCAT'
-}
-```
-
 #### SEARCH
 
 ```javascript
@@ -409,19 +426,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-
-#### SORT
-
-```javascript
-// Return search results sorted by relevance to query tokens
-{
-  SORT: {
-    TYPE: type,              // can be 'NUMERIC' or 'ALPHABETIC'
-    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING'
-    FIELD: field             // field to sort on
-  }
-}
-```
 
 ## MAX
 

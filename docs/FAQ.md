@@ -10,7 +10,6 @@
 - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
 - [How do I compose queries?](#how-do-i-compose-queries)
 - [How do I perform a simple aggregation on a field?](#how-do-i-perform-a-simple-aggregation-on-a-field)
-  - [Get a list of unique values for a given field](#get-a-list-of-unique-values-for-a-given-field)
   - [Get a set of document ids per unique field value](#get-a-set-of-document-ids-per-unique-field-value)
   - [Get counts per unique field value](#get-counts-per-unique-field-value)
   - [Define custom "buckets"](#define-custom-buckets)

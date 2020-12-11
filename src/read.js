@@ -229,7 +229,23 @@ module.exports = fii => {
       result, options.SORT
         ? { RESULT: SORT(result.RESULT, options.SORT) }
         : {}
-    )).then(result => Object.assign(
+    )).then(result =>
+      // BUCKETS IF SPECIFIED
+      options.BUCKETS
+        ? fii.BUCKETS(...options.BUCKETS).then(bkts => Object.assign(
+            result, {
+              BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
+            }))
+        : result
+    ).then(result =>
+      // FACETS IF SPECIFIED
+      options.FACETS
+        ? FACETS(...options.FACETS).then(fcts => Object.assign(
+            result, {
+              FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
+            }))
+        : result
+    ).then(result => Object.assign(
       // PAGE IF SPECIFIED
       result, options.PAGE
         ? { RESULT: PAGE(result.RESULT, options.PAGE) }
