@@ -80,18 +80,19 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple AGGREGATE', t => {
-  const { _AND, BUCKETS, _AGGREGATE } = global[indexName]
+test('simple aggregation', t => {
+  const { QUERY } = global[indexName]
   t.plan(1)
-  _AGGREGATE({
-    BUCKETS: BUCKETS({
+  QUERY({
+    AND: ['make:bmw']
+  }, {
+    BUCKETS: [{
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
         LTE: 'u'
       }
-    }),
-    QUERY: _AND('make:bmw')
+    }]
   }).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
@@ -103,7 +104,7 @@ test('simple AGGREGATE', t => {
           ]
         }
       ],
-      FACETS: [],
+      RESULT_LENGTH: 3,
       RESULT: [
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
@@ -117,54 +118,15 @@ test('simple AGGREGATE (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    AGGREGATE: {
-      BUCKETS: [
-        {
-          FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
-          }
-        }
-      ],
-      QUERY: { AND: ['make:bmw'] }
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [
-        {
-          FIELD: ['make'],
-          VALUE: { GTE: 'a', LTE: 'u' },
-          _id: [
-            '1', '7', '9'
-          ]
-        }
-      ],
-      FACETS: [],
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
-    })
-  })
-})
-
-test('simple AGGREGATE (JSON)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    AGGREGATE: {
-      BUCKETS: [{
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      }],
-      QUERY: { AND: ['make:bmw', 'manufacturer:tesla'] }
-    }
+    AND: ['make:bmw', 'manufacturer:tesla']
+  }, {
+    BUCKETS: [{
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
+    }]
   }).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
@@ -176,7 +138,6 @@ test('simple AGGREGATE (JSON)', t => {
           ]
         }
       ],
-      FACETS: [],
       RESULT: [
         {
           _id: '7',
@@ -198,21 +159,17 @@ test('simple AGGREGATE (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    AGGREGATE: {
-      BUCKETS: [{
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      }],
-      QUERY: { OR: ['brand:tesla', 'manufacturer:tesla'] }
-    }
+    OR: ['brand:tesla', 'manufacturer:tesla']
+  }, {
+    BUCKETS: [{
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
+    }]
   }).then(res => {
     t.deepEqual(res, {
-      BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' }, _id: ['2', '6', '7', '9'] }],
-      FACETS: [],
       RESULT: [
         { _id: '2', _match: ['manufacturer:tesla#1.00'] },
         { _id: '5', _match: ['manufacturer:tesla#1.00'] },
@@ -221,35 +178,39 @@ test('simple AGGREGATE (JSON)', t => {
         { _id: '8', _match: ['brand:tesla#1.00'] },
         { _id: '9', _match: ['manufacturer:tesla#1.00'] }
       ],
+      BUCKETS: [
+        { FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' }, _id: ['2', '6', '7', '9'] }],
       RESULT_LENGTH: 6
     })
   })
 })
 
-test('simple _AGGREGATE, using _DISTINCT', t => {
-  const { _GET, FACETS, _AGGREGATE } = global[indexName]
+test('simple aggregation', t => {
+  const { QUERY } = global[indexName]
   t.plan(1)
-  _AGGREGATE({
-    FACETS: FACETS({
+  QUERY({
+    GET: 'make:bmw'
+  }, {
+    FACETS: [{
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
         LTE: 'u'
       }
-    }),
-    QUERY: _GET('make:bmw')
+    }]
   }).then(res => {
     t.deepEqual(res, {
-      BUCKETS: [],
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
       RESULT: [
         { _id: '1', _match: ['make:bmw#1.00'] },
         { _id: '7', _match: ['make:bmw#1.00'] },
         { _id: '9', _match: ['make:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 3,
+      FACETS: [
+        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+        { FIELD: 'make', VALUE: 'tesla', _id: [] }
       ]
+
     })
   })
 })
@@ -258,131 +219,88 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
   QUERY({
-    AGGREGATE: {
-      FACETS: {
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      },
-      QUERY: {
-        GET: {
-          FIELD: ['make'],
-          VALUE: {
-            GTE: 'a',
-            LTE: 'c'
-          }
-        }
-      }
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [],
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
-    })
-  })
-})
-
-test('simple AGGREGATE, using DISTINCT (JSON)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    AGGREGATE: {
-      FACETS: {
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      },
-      QUERY: {
-        GET: {
-          FIELD: 'make',
-          VALUE: 'bmw'
-        }
-      }
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [],
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
-    })
-  })
-})
-
-test('simple AGGREGATE, using DISTINCT (JSON)', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    AGGREGATE: {
-      FACETS: {
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      },
-      QUERY: {
-        GET: 'make:bmw'
-      }
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [],
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
-    })
-  })
-})
-
-test('simple AGGREGATE, using FACETS (JSON), return full documents', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    AGGREGATE: {
-      FACETS: {
-        FIELD: 'make',
-        VALUE: {
-          GTE: 'a',
-          LTE: 'u'
-        }
-      },
-      QUERY: {
-        GET: 'make:bmw'
+    GET: {
+      FIELD: ['make'],
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
       }
     }
   }, {
-    DOCUMENTS: true
+    FACETS: [{
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
+    }]
   }).then(res => {
     t.deepEqual(res, {
-      BUCKETS: [],
+      FACETS: [
+        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+        { FIELD: 'make', VALUE: 'tesla', _id: [] }
+      ],
+      RESULT: [
+        { _id: '1', _match: ['make:bmw#1.00'] },
+        { _id: '7', _match: ['make:bmw#1.00'] },
+        { _id: '9', _match: ['make:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 3
+    })
+  })
+})
+
+test('simple aggregation', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    GET: {
+      FIELD: 'make',
+      VALUE: 'bmw'
+    }
+  }, {
+    FACETS: [{
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
+    }]
+  }).then(res => {
+    t.deepEqual(res, {
+      FACETS: [
+        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+        { FIELD: 'make', VALUE: 'tesla', _id: [] }
+      ],
+      RESULT: [
+        { _id: '1', _match: ['make:bmw#1.00'] },
+        { _id: '7', _match: ['make:bmw#1.00'] },
+        { _id: '9', _match: ['make:bmw#1.00'] }
+      ],
+      RESULT_LENGTH: 3
+    })
+  })
+})
+
+test('simple aggregation, return full documents', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    GET: {
+      FIELD: 'make',
+      VALUE: 'bmw'
+    }
+  }, {
+    DOCUMENTS: true,
+    FACETS: [{
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
+    }]
+  }).then(res => {
+    t.deepEqual(res, {
       FACETS: [
         { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
         { FIELD: 'make', VALUE: 'tesla', _id: [] }
@@ -417,5 +335,3 @@ test('simple AGGREGATE, using FACETS (JSON), return full documents', t => {
     })
   })
 })
-
-// TODO: can return full documents when ops has { DOCUMENTS: true }

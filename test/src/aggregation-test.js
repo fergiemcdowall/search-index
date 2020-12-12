@@ -37,16 +37,26 @@ test('can add some worldbank data', t => {
 })
 
 test('can aggregate totalamt using underlying index', t => {
-  const { _AGGREGATE, FACETS, _SEARCH } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
-  _AGGREGATE({
-    FACETS: FACETS({
+  QUERY({
+    SEARCH: ['board_approval_month:october']
+  }, {
+    FACETS: [{
       FIELD: 'totalamt'
-    }),
-    QUERY: _SEARCH('board_approval_month:october')
+    }]
   }).then(result => t.deepEqual(
     result, {
-      BUCKETS: [],
+      RESULT: [
+        { _id: '52b213b38594d8a2be17c783', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c784', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c785', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c786', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c787', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c788', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
+        { _id: '52b213b38594d8a2be17c789', _match: ['board_approval_month:october#1.00'], _score: 0.45 }
+      ],
+      RESULT_LENGTH: 7,
       FACETS: [
         { FIELD: 'totalamt', VALUE: '0', _id: ['52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787'] },
         { FIELD: 'totalamt', VALUE: '10000000', _id: ['52b213b38594d8a2be17c785'] },
@@ -56,55 +66,9 @@ test('can aggregate totalamt using underlying index', t => {
         { FIELD: 'totalamt', VALUE: '200000000', _id: ['52b213b38594d8a2be17c789'] },
         { FIELD: 'totalamt', VALUE: '500000000', _id: ['52b213b38594d8a2be17c786'] },
         { FIELD: 'totalamt', VALUE: '6060000', _id: [] }
-      ],
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c783', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c784', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c785', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c786', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c787', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c788', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c789', _match: ['board_approval_month:october#1.00'], _score: 0.45 }
       ]
     }
   ))
-})
-
-test('can aggregate totalamt using _AGGREGATE (aLTErnative invokation)', t => {
-  t.plan(1)
-  const { FACETS, _AGGREGATE, _SEARCH } = global[indexName]
-
-  const f = FACETS({
-    FIELD: 'totalamt'
-  })
-  const s = _SEARCH('board_approval_month:october')
-
-  _AGGREGATE({
-    FACETS: f,
-    QUERY: s
-  }).then(result => t.deepEqual(
-    result, {
-      BUCKETS: [],
-      FACETS: [
-        { FIELD: 'totalamt', VALUE: '0', _id: ['52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787'] },
-        { FIELD: 'totalamt', VALUE: '10000000', _id: ['52b213b38594d8a2be17c785'] },
-        { FIELD: 'totalamt', VALUE: '130000000', _id: [] },
-        { FIELD: 'totalamt', VALUE: '13100000', _id: ['52b213b38594d8a2be17c784'] },
-        { FIELD: 'totalamt', VALUE: '160000000', _id: ['52b213b38594d8a2be17c788'] },
-        { FIELD: 'totalamt', VALUE: '200000000', _id: ['52b213b38594d8a2be17c789'] },
-        { FIELD: 'totalamt', VALUE: '500000000', _id: ['52b213b38594d8a2be17c786'] },
-        { FIELD: 'totalamt', VALUE: '6060000', _id: [] }
-      ],
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c783', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c784', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c785', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c786', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c787', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c788', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
-        { _id: '52b213b38594d8a2be17c789', _match: ['board_approval_month:october#1.00'], _score: 0.45 }
-      ]
-    }))
 })
 
 test('_BUCKETing', t => {
@@ -168,9 +132,9 @@ test('_BUCKETing', t => {
   ))
 })
 
-test('can aggregate totalamt using _AGGREGATE and custom buckets', t => {
+test('can aggregate totalamt using custom buckets', t => {
   t.plan(1)
-  const b = global[indexName].BUCKETS(
+  const b = [
     {
       FIELD: 'totalamt',
       VALUE: { GTE: '0', LTE: '0' }
@@ -183,11 +147,12 @@ test('can aggregate totalamt using _AGGREGATE and custom buckets', t => {
       FIELD: 'totalamt',
       VALUE: { GTE: '200000000', LTE: '200000000' }
     }
-  )
-  const s = global[indexName]._SEARCH('board_approval_month:october')
-  global[indexName]._AGGREGATE({
-    BUCKETS: b,
-    QUERY: s
+  ]
+  const q = ['board_approval_month:october']
+  global[indexName].QUERY({
+    SEARCH: q
+  }, {
+    BUCKETS: b
   }).then(result => t.deepEqual(
     result, {
       BUCKETS: [
@@ -207,7 +172,7 @@ test('can aggregate totalamt using _AGGREGATE and custom buckets', t => {
           _id: ['52b213b38594d8a2be17c789']
         }
       ],
-      FACETS: [],
+      RESULT_LENGTH: 7,
       RESULT: [
         { _id: '52b213b38594d8a2be17c783', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
         { _id: '52b213b38594d8a2be17c784', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
@@ -359,17 +324,17 @@ test('can aggregate totalamt', t => {
     })
 })
 
-test('can aggregate totalamt using underlying index', t => {
+test('can run a query and create facets on impagency', t => {
   t.plan(1)
-  global[indexName]._AGGREGATE({
-    FACETS: global[indexName].FACETS({
+  global[indexName].QUERY({
+    SEARCH: ['board_approval_month:october']
+  }, {
+    FACETS: [{
       FIELD: 'impagency'
-    }),
-    QUERY: global[indexName]._SEARCH('board_approval_month:october')
+    }]
   }).then(result => {
     t.deepEqual(
       result, {
-        BUCKETS: [],
         FACETS: [
           { FIELD: 'impagency', VALUE: 'administration', _id: ['52b213b38594d8a2be17c787'] },
           { FIELD: 'impagency', VALUE: 'and', _id: ['52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786'] },
@@ -402,7 +367,8 @@ test('can aggregate totalamt using underlying index', t => {
           { _id: '52b213b38594d8a2be17c787', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
           { _id: '52b213b38594d8a2be17c788', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
           { _id: '52b213b38594d8a2be17c789', _match: ['board_approval_month:october#1.00'], _score: 0.45 }
-        ]
+        ],
+        RESULT_LENGTH: 7
       })
   })
 })
@@ -436,17 +402,14 @@ test('JSON BUCKET', t => {
 test('JSON AGGREGATE', t => {
   t.plan(1)
   global[indexName].QUERY({
-    AGGREGATE: {
-      BUCKETS: [
-        {
-          FIELD: 'impagency',
-          VALUE: 'of'
-        }
-      ],
-      QUERY: {
-        SEARCH: ['board_approval_month:october']
+    SEARCH: ['board_approval_month:october']
+  }, {
+    BUCKETS: [
+      {
+        FIELD: 'impagency',
+        VALUE: 'of'
       }
-    }
+    ]
   }).then(result => {
     t.deepEqual(
       result, {
@@ -458,9 +421,7 @@ test('JSON AGGREGATE', t => {
             '52b213b38594d8a2be17c786',
             '52b213b38594d8a2be17c789'
           ]
-        }
-        ],
-        FACETS: [],
+        }],
         RESULT: [
           { _id: '52b213b38594d8a2be17c783', _match: ['board_approval_month:october#1.00'], _score: 0.45 },
           { _id: '52b213b38594d8a2be17c784', _match: ['board_approval_month:october#1.00'], _score: 0.45 },

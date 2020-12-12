@@ -63,8 +63,7 @@ module.exports = fii => {
 
   // score by tfidf by default
   // TODO: Total hits (length of _match)
-  const SCORE = (results, type) => {
-    type = type || 'TFIDF' // default
+  const SCORE = (results, type = 'TFIDF') => {
     if (type === 'TFIDF') {
       return DOCUMENT_COUNT().then(
         docCount => results.map((x, _, resultSet) => {
@@ -162,9 +161,7 @@ module.exports = fii => {
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
-  const parseJsonQuery = (q, options) => {
-    options = options || {}
-
+  const parseJsonQuery = (q, options = {}) => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -173,18 +170,6 @@ module.exports = fii => {
       if (cmd.VALUE) return fii.GET(cmd)
 
       // else:
-      // TODO: AGGREGATE IN OWN FUNCTION
-      if (cmd.AGGREGATE) {
-        return fii.AGGREGATE({
-          BUCKETS: cmd.AGGREGATE.BUCKETS
-            ? fii.BUCKETS(...cmd.AGGREGATE.BUCKETS)
-            : [],
-          FACETS: cmd.AGGREGATE.FACETS
-            ? FACETS(cmd.AGGREGATE.FACETS)
-            : [],
-          QUERY: runQuery(cmd.AGGREGATE.QUERY)
-        })
-      }
       if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
       if (cmd.DOCUMENTS) return DOCUMENTS(cmd.DOCUMENTS)
       if (cmd.GET) return fii.GET(cmd.GET)
@@ -198,59 +183,68 @@ module.exports = fii => {
       if (cmd.SEARCH) return SEARCH(...cmd.SEARCH.map(runQuery))
     }
 
-    return runQuery(q).then(result =>
-      // FORMAT RESULTS
-      result.RESULT
-        ? Object.assign(result, {
-            RESULT_LENGTH: result.RESULT.length
-          })
-        : ({
-            RESULT: result,
-            RESULT_LENGTH: result.length
-          })
-    ).then(
-      // APPEND DOCUMENTS IF SPECIFIED
-      result => options.DOCUMENTS
-        ? DOCUMENTS(result.RESULT).then(
-            documentedResult => Object.assign(result, {
-              RESULT: documentedResult
-            }))
-        : result
-    ).then(result =>
-      // SCORE IF SPECIFIED
-      options.SCORE
-        ? SCORE(result.RESULT, options.SCORE).then(
-            scoredResult => Object.assign(result, {
-              RESULT: scoredResult
-            }))
-        : result
-    ).then(result => Object.assign(
-      // SORT IF SPECIFIED
+    const formatResults = result => result.RESULT
+      ? Object.assign(result, {
+          RESULT_LENGTH: result.RESULT.length
+        })
+      : ({
+          RESULT: result,
+          RESULT_LENGTH: result.length
+        })
+
+    // APPEND DOCUMENTS IF SPECIFIED
+    const appendDocuments = result => options.DOCUMENTS
+      ? DOCUMENTS(result.RESULT).then(
+          documentedResult => Object.assign(result, {
+            RESULT: documentedResult
+          }))
+      : result
+
+    // SCORE IF SPECIFIED
+    const score = result => options.SCORE
+      ? SCORE(result.RESULT, options.SCORE).then(
+          scoredResult => Object.assign(result, {
+            RESULT: scoredResult
+          }))
+      : result
+
+    // SORT IF SPECIFIED
+    const sort = result => Object.assign(
       result, options.SORT
         ? { RESULT: SORT(result.RESULT, options.SORT) }
         : {}
-    )).then(result =>
-      // BUCKETS IF SPECIFIED
-      options.BUCKETS
-        ? fii.BUCKETS(...options.BUCKETS).then(bkts => Object.assign(
-            result, {
-              BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
-            }))
-        : result
-    ).then(result =>
-      // FACETS IF SPECIFIED
-      options.FACETS
-        ? FACETS(...options.FACETS).then(fcts => Object.assign(
-            result, {
-              FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
-            }))
-        : result
-    ).then(result => Object.assign(
-      // PAGE IF SPECIFIED
+    )
+
+    // BUCKETS IF SPECIFIED
+    const buckets = result => options.BUCKETS
+      ? fii.BUCKETS(...options.BUCKETS).then(bkts => Object.assign(
+          result, {
+            BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
+          }))
+      : result
+
+    // FACETS IF SPECIFIED
+    const facets = result => options.FACETS
+      ? FACETS(...options.FACETS).then(fcts => Object.assign(
+          result, {
+            FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
+          }))
+      : result
+
+    // PAGE IF SPECIFIED
+    const page = result => Object.assign(
       result, options.PAGE
         ? { RESULT: PAGE(result.RESULT, options.PAGE) }
         : {}
-    ))
+    )
+
+    return runQuery(q)
+      .then(formatResults)
+      .then(appendDocuments).then(score)
+      .then(sort)
+      .then(buckets)
+      .then(facets)
+      .then(page)
   }
 
   return {

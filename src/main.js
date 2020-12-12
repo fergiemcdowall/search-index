@@ -7,7 +7,6 @@ const makeASearchIndex = ops => {
   const r = reader(ops.fii)
   return {
     // internal functions inherited from fergies-inverted-index
-    _AGGREGATE: ops.fii.AGGREGATE,
     _AND: ops.fii.AND,
     _BUCKET: ops.fii.BUCKET,
     _GET: ops.fii.GET,
@@ -21,14 +20,14 @@ const makeASearchIndex = ops => {
     _SORT: r.SORT,
 
     // public API
-    BUCKETS: ops.fii.BUCKETS, // TODO- documention
+    BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
     DISTINCT: r.DISTINCT, // TODO- documention
     DOCUMENTS: r.DOCUMENTS, // TODO- documention, also, should return as {RESULT: [...]} so that sorting/paging (and maybe even scoring?) works
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
-    FACETS: r.FACETS, // TODO- documention
+    FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
     IMPORT: ops.fii.IMPORT,
     INDEX: ops.fii,

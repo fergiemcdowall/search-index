@@ -7,10 +7,14 @@
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
+  - [BUCKETS](#buckets)
   - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
+  - [DOCUMENTS](#documents)
+  - [DISTINCT](#distinct)
   - [DOCUMENT_COUNT](#document_count)
   - [EXPORT](#export)
+  - [FACETS](#facets)
   - [FIELDS](#fields)
   - [IMPORT](#import)
   - [INDEX](#index)
@@ -25,15 +29,14 @@
       - [Find within a range](#find-within-a-range)
       - [Find where a field exists](#find-where-a-field-exists)
     - [Query options](#query-options)
-      - [DOCUMENTS](#documents)
+      - [BUCKETS](#buckets-1)
+      - [DOCUMENTS](#documents-1)
+      - [FACETS](#facets-1)
       - [PAGE](#page)
       - [SCORE](#score)
       - [SORT](#sort)
     - [Query verbs](#query-verbs)
       - [AND](#and)
-      - [AGGREGATE](#aggregate)
-      - [BUCKETS](#buckets)
-      - [FACETS](#facets)
       - [NOT](#not)
       - [OR](#or)
       - [SEARCH](#search)
@@ -70,14 +73,14 @@ instantiate an index by invoking the module variable as a Promise:
     
 
 ```javascript
-si().then(idx => { /* idx is a new search index */ })
+const idx = await si(options)
 ```
 
 ### `si(options)`
 
 `si(options)` returns a Promise which creates a search index when invoked
 
-`options` is an optional object that can contain the following properties:
+`options` is an object that can contain the following properties:
 
 | Name | Type | Default | Description |
 |---|---|---|---|
@@ -103,6 +106,18 @@ It may be helpful to check out the
 for more examples.
 
 
+## BUCKETS
+
+```javascript
+// Return the IDs of documents for each given token filtered by the
+// query result
+  
+{
+  BUCKETS: [ token1, token2, ... ]
+}
+```
+
+
 ## DELETE
 
 ```javascript
@@ -122,6 +137,22 @@ const dictionary = await DICTIONARY(token)
 ```
 
 
+## DOCUMENTS
+
+```javascript
+// Return all documents in index
+const documents = await DOCUMENTS()
+```
+
+
+## DISTINCT
+
+```javascript
+// Return distinct field values from index
+const distinct = await DISTINCT(token)
+```
+
+
 ## DOCUMENT_COUNT
 
 ```javascript
@@ -135,6 +166,17 @@ const totalDocs = await DOCUMENT_COUNT()
 ```javascript
 // creates a backup/export of an index
 const indexExport = await EXPORT()
+```
+
+
+## FACETS
+
+```javascript
+// Return document ids for each distinct field/value combination for
+// the given token space.
+{
+  FACETS: token
+}
 ```
 
 
@@ -174,10 +216,12 @@ const results = await QUERY(query, options)
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| [`DOCUMENTS`](#DOCUMENTS) | `boolean` | `false` | If `true` return entire document, if not `true` return reference to document|
-| [`PAGE`](#PAGE) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
-| [`SCORE`](#SCORE) | `String` | `'TFIDF'` | Calculate a value per document |
-| [`SORT`](#SORT) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
+| [`BUCKETS`](#buckets-1) | `Array` | `[]` | Aggregate on user defined buckets |
+| [`DOCUMENTS`](#documents) | `boolean` | `false` | If `true` return entire document, if not `true` return reference to document|
+| [`FACETS`](#facets-1) | `Array` | `[]` | Aggregate on fields in the index |
+| [`PAGE`](#page) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
+| [`SCORE`](#score) | `String` | `'TFIDF'` | Calculate a value per document |
+| [`SORT`](#sort) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
 
 #### Returning references or documents
 
@@ -303,12 +347,39 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 ### Query options
 
+
+#### BUCKETS
+
+See also [BUCKETS](#buckets)
+
+```javascript
+// Return the IDs of documents for each given token filtered by the
+// query result
+  
+{
+  BUCKETS: [ token1, token2, ... ]
+}
+```
+
 #### DOCUMENTS
 
 ```javascript
 // Returns full documents instead of just metadata.
 {
   DOCUMENTS: true
+}
+```
+
+
+#### FACETS
+
+See also [FACETS](#facets)
+
+```javascript
+// Return document ids for each distinct field/value combination for
+// the given token space, filtered by the query result.
+{
+  FACETS: token
 }
 ```
 
@@ -357,42 +428,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 // Boolean AND: Return results that contain all tokens
 {
   AND: [ token1, token2, ... ]
-}
-```
-
-
-#### AGGREGATE
-
-```javascript
-// Define aggregations (FACETS, BUCKETS) and then subtract any
-// document ids that are NOT returned by the QUERY
-{
-  AGGREGATE: {
-    FACETS: [ token1, token2 /*, ...*/ ] ,  // optional
-    BUCKETS: [ token3, token4 /*, ...*/ ] , // optional
-    QUERY: query
-  }
-}
-```
-
-
-#### BUCKETS
-
-```javascript
-// Return the IDs of documents for each given token
-{
-  BUCKETS: [ token1, token2, ... ]
-}
-```
-
-
-#### FACETS
-
-```javascript
-// Return document ids for each distinct field/value combination for
-// the given token space.
-{
-  FACETS: token
 }
 ```
 
