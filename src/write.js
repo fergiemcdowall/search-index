@@ -42,7 +42,10 @@ module.exports = (fii, ops) => {
     } else {
       let str = fieldValue.toString().replace(matchLettersInAllLanguages, '')
       if (!ops.caseSensitive) str = str.toLowerCase()
-      acc[fieldName] = scoreArrayTFIDF(str.split(' ')).sort()
+      acc[fieldName] = scoreArrayTFIDF(
+        // make sure that empty tokens are removed
+        str.split(/\s+/).filter(item => item)
+      ).sort()
     }
     return acc
   }, {})
