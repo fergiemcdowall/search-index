@@ -165,6 +165,27 @@ test('QUERY with FACETS', t => {
   })
 })
 
+test('QUERY with FACETS where query gives an empty result', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY({
+    GET: {
+      FIELD: 'brand',
+      VALUE: 'teslaXXXXX'
+    }
+  }, {
+    FACETS: [{
+      FIELD: 'make'
+    }]
+  }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [],
+      RESULT_LENGTH: 0,
+      FACETS: []
+    })
+  })
+})
+
 // QUERY
 test('simple QUERY', t => {
   const { QUERY } = global[indexName]

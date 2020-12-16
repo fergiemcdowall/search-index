@@ -225,10 +225,16 @@ module.exports = fii => {
 
     // FACETS IF SPECIFIED
     const facets = result => options.FACETS
-      ? FACETS(...options.FACETS).then(fcts => Object.assign(
-          result, {
-            FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
-          }))
+      ? (result.RESULT.length)
+          ? FACETS(...options.FACETS).then(fcts => Object.assign(
+              result, {
+                FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
+              }))
+    // if empty result set then just return empty facets
+          : Object.assign(
+            result, {
+              FACETS: []
+            })
       : result
 
     // PAGE IF SPECIFIED
