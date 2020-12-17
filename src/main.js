@@ -1,10 +1,17 @@
 const fii = require('fergies-inverted-index')
-const writer = require('./write.js')
+
+const Cache = require('./cache.js')
 const reader = require('./read.js')
+const writer = require('./write.js')
 
 const makeASearchIndex = ops => {
-  const w = writer(ops.fii, ops)
-  const r = reader(ops.fii)
+  const cache = new Cache()
+  cache.set('boom', 'diggy')
+  cache.has('boom')
+  console.log(cache.get('boom'))
+
+  const w = writer(ops.fii, ops) // TODO: should be just ops?
+  const r = reader(ops.fii, cache)
   return {
     // internal functions inherited from fergies-inverted-index
     _AND: ops.fii.AND,
@@ -23,8 +30,8 @@ const makeASearchIndex = ops => {
     BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
     DICTIONARY: r.DICTIONARY,
-    DISTINCT: r.DISTINCT, // TODO- documention
-    DOCUMENTS: r.DOCUMENTS, // TODO- documention, also, should return as {RESULT: [...]} so that sorting/paging (and maybe even scoring?) works
+    DISTINCT: r.DISTINCT,
+    DOCUMENTS: r.DOCUMENTS,
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,

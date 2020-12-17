@@ -121,8 +121,7 @@ test('get last page with page size of 4', t => {
     docs => global[indexName]._PAGE(docs, {
       NUMBER: -1,
       SIZE: 4
-    })
-  ).then(res => {
+    })).then(res => {
     t.deepEqual(res, [
       { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW' } },
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla' } },

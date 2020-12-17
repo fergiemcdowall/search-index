@@ -5,8 +5,7 @@ const si = require('../../')
 si({ name: __dirname + '/earthporn' })
   .then(db => db.INDEX.STORE.clear().then(() => db))
   .then(db => db.PUT(data, {
-  doNotIndexField: [ 'thumbnail', 'url_overridden_by_dest' ],
-  storeVectors: true
+  doNotIndexField: [ 'thumbnail', 'url_overridden_by_dest' ]
 }).then(
   () => db
 )).then(

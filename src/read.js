@@ -1,25 +1,30 @@
-module.exports = fii => {
-  const DOCUMENTS = requestedDocs => {
-    // Either return document per id
-    return Array.isArray(requestedDocs)
-      ? Promise.all(
-          requestedDocs.map(
-            doc => fii.STORE.get('￮DOC_RAW￮' + doc._id + '￮').catch(e => null)
-          )
-        ).then(returnedDocs => requestedDocs.map(
-          (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
-        ))
-      : new Promise((resolve, reject) => {
-        const result = []
-        fii.STORE.createReadStream({
-          gte: '￮DOC_RAW￮',
-          lte: '￮DOC_RAW￮￮'
-        }).on('data', d => result.push({
-          _id: d.value._id,
-          _doc: d.value
-        })).on('end', () => resolve(result))
-      })
-  }
+module.exports = (fii, cache) => {
+  const ALL_DOCUMENTS = () => new Promise((resolve, reject) => {
+    if (cache.has('ALL_DOCUMENTS'))
+      return resolve(cache.get('ALL_DOCUMENTS'))
+    const result = []
+    fii.STORE.createReadStream({
+      gte: '￮DOC_RAW￮',
+      lte: '￮DOC_RAW￮￮'
+    }).on('data', d => result.push({
+      _id: d.value._id,
+      _doc: d.value
+    })).on('end', () => resolve(
+      cache.set('ALL_DOCUMENTS', result)
+    ))
+  })
+
+  const DOCUMENTS = requestedDocs => Array.isArray(requestedDocs)
+    ? Promise.all(
+        requestedDocs.map(doc =>
+          fii.STORE.get(
+            '￮DOC_RAW￮' + doc._id + '￮'
+          ).catch(e => null)
+        )
+      ).then(returnedDocs => requestedDocs.map(
+        (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
+      ))
+    : ALL_DOCUMENTS()
 
   const DICTIONARY = token => DISTINCT(token).then(results =>
     Array.from(results.reduce(
@@ -230,7 +235,7 @@ module.exports = fii => {
               result, {
                 FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
               }))
-    // if empty result set then just return empty facets
+        // if empty result set then just return empty facets
           : Object.assign(
             result, {
               FACETS: []

@@ -6,14 +6,14 @@
     <script src="./search-index.js"></script>
     <title>r/Earthporn</title>
     <style>
-
-      li {
-        margin-top: 10px;
-        display: inline-block;
+      .hit {
+        display: block;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row;
       }
       
       img {
-        float: left;
         margin-right: 10px;
       }
       
@@ -24,10 +24,14 @@
         margin-top: 0px
       }
 
-      .flex-container {
+      .container {
         margin-top: 20px;
         display: flex;
         flex-direction: row;
+      }
+
+      #facets {
+        width:200px;
       }
     </style>
   </head>
@@ -42,8 +46,8 @@
            style="font-size:x-large"
            autofocus />
 
-    <div class="flex-container">
-      <div style="width:200px">left bar</div>
+    <div class="container">
+      <ul id="facets">left bar</ul>
       <ul id="result"></ul>
     </div>
       

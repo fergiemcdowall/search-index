@@ -82,7 +82,7 @@ test('can add data', t => {
       make: 'BMW',
       manufacturer: 'Tesla',
       brand: 'Volvo',
-      price: 1000
+      price: 1100
     }
   ]
 
@@ -110,7 +110,7 @@ test('_SORT ALPHABETIC DESCENDING', t => {
       { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW', price: 500 } },
       { _id: 1, _doc: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo', price: 12000 } },
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
-      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } }
+      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1100 } }
 
     ])
   })
@@ -128,7 +128,7 @@ test('_SORT ALPHABETIC ASCENDING', t => {
     t.deepEqual(res, [
       { _id: 1, _doc: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo', price: 12000 } },
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
-      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } },
+      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1100 } },
       { _id: 0, _doc: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo', price: 3000 } },
       { _id: 2, _doc: { _id: 2, make: 'Tesla', manufacturer: 'Tesla', brand: 'Volvo', price: 14000 } },
       { _id: 3, _doc: { _id: 3, make: 'Tesla', manufacturer: 'Volvo', brand: 'BMW', price: 140000 } },
@@ -153,7 +153,7 @@ test('_SORT NUMERIC ASCENDING', t => {
       { _id: 8, _doc: { _id: 8, make: 'Volvo', manufacturer: 'BMW', brand: 'Tesla', price: 100 } },
       { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW', price: 500 } },
       { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo', price: 1000 } },
-      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } },
+      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1100 } },
       { _id: 5, _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo', price: 2000 } },
       { _id: 0, _doc: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo', price: 3000 } },
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
@@ -180,8 +180,8 @@ test('_SORT NUMERIC DESCENDING', t => {
       { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
       { _id: 0, _doc: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo', price: 3000 } },
       { _id: 5, _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo', price: 2000 } },
+      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1100 } },
       { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo', price: 1000 } },
-      { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } },
       { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW', price: 500 } },
       { _id: 8, _doc: { _id: 8, make: 'Volvo', manufacturer: 'BMW', brand: 'Tesla', price: 100 } }
     ])
@@ -207,8 +207,8 @@ test('SORT NUMERIC DESCENDING (JSON)', t => {
         { _id: 7, _doc: { _id: 7, make: 'BMW', manufacturer: 'Tesla', brand: 'Tesla', price: 5000 } },
         { _id: 0, _doc: { _id: 0, make: 'Tesla', manufacturer: 'Volvo', brand: 'Volvo', price: 3000 } },
         { _id: 5, _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo', price: 2000 } },
+        { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1100 } },
         { _id: 4, _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo', price: 1000 } },
-        { _id: 9, _doc: { _id: 9, make: 'BMW', manufacturer: 'Tesla', brand: 'Volvo', price: 1000 } },
         { _id: 6, _doc: { _id: 6, make: 'Tesla', manufacturer: 'Tesla', brand: 'BMW', price: 500 } },
         { _id: 8, _doc: { _id: 8, make: 'Volvo', manufacturer: 'BMW', brand: 'Tesla', price: 100 } }
       ],
@@ -237,8 +237,8 @@ test('SORT on _match.price without fetching documents', t => {
       { _id: '7', _match: ['price:5000#1.00'], _score: 0.1 },
       { _id: '0', _match: ['price:3000#1.00'], _score: 0.1 },
       { _id: '5', _match: ['price:2000#1.00'], _score: 0.1 },
+      { _id: '9', _match: ['price:1100#1.00'], _score: 0.1 },
       { _id: '4', _match: ['price:1000#1.00'], _score: 0.1 },
-      { _id: '9', _match: ['price:1000#1.00'], _score: 0.1 },
       { _id: '6', _match: ['price:500#1.00'], _score: 0.1 },
       { _id: '8', _match: ['price:100#1.00'], _score: 0.1 }
     ])
@@ -268,7 +268,7 @@ test('gracefully handle SORT on field that doesnt exist', t => {
       { _id: '6', _match: ['price:500#1.00'], _score: 0.1 },
       { _id: '7', _match: ['price:5000#1.00'], _score: 0.1 },
       { _id: '8', _match: ['price:100#1.00'], _score: 0.1 },
-      { _id: '9', _match: ['price:1000#1.00'], _score: 0.1 }
+      { _id: '9', _match: ['price:1100#1.00'], _score: 0.1 }
 
     ])
   })
