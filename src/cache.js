@@ -21,8 +21,7 @@ module.exports = class Cache {
 
   set (key, value) {
     // if size limit reached, delete oldest entry
-    if (this.LRUStore.size == this.limit)
-      this.LRUStore.delete(Array.from(this.LRUStore.keys()).shift());
+    if (this.LRUStore.size === this.limit) { this.LRUStore.delete(Array.from(this.LRUStore.keys()).shift()) }
     // remove key from current position in cache (if present)
     this.LRUStore.delete(key)
     this.LRUStore.set(key, value)

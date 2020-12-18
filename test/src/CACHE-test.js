@@ -125,35 +125,35 @@ test('query', t => {
 test('inspect cache', t => {
   const { _CACHE } = global[indexName]
   t.plan(2)
-  for (let [key, value] of _CACHE.LRUStore) {
+  for (const [key, value] of _CACHE.LRUStore) {
     t.equals(key, '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}')
     t.deepEquals(value, {
-      "RESULT": [
+      RESULT: [
         {
-          "_id": "7",
-          "_match": [
-            "brand:tesla#1.00"
+          _id: '7',
+          _match: [
+            'brand:tesla#1.00'
           ]
         },
         {
-          "_id": "8",
-          "_match": [
-            "brand:tesla#1.00"
+          _id: '8',
+          _match: [
+            'brand:tesla#1.00'
           ]
         }
       ],
-      "RESULT_LENGTH": 2,
-      "BUCKETS": [
+      RESULT_LENGTH: 2,
+      BUCKETS: [
         {
-          "FIELD": [
-            "make"
+          FIELD: [
+            'make'
           ],
-          "VALUE": {
-            "GTE": "volvo",
-            "LTE": "volvo"
+          VALUE: {
+            GTE: 'volvo',
+            LTE: 'volvo'
           },
-          "_id": [
-            "8"
+          _id: [
+            '8'
           ]
         }
       ]
@@ -222,7 +222,7 @@ test('cache has stripped all duplicate entries', t => {
 })
 
 test('bump oldest cache entry to newest', t => {
-  const { QUERY, DOCUMENTS, DICTIONARY } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
   QUERY('two').then(res => t.pass('done'))
 })
@@ -259,7 +259,7 @@ test('cache is now cleared', t => {
 })
 
 test('bump oldest cache entry to newest', t => {
-  const { QUERY, DOCUMENTS, DICTIONARY } = global[indexName]
+  const { QUERY } = global[indexName]
   t.plan(1)
   QUERY('boooom').then(res => t.pass('done'))
 })
