@@ -1,8 +1,8 @@
-// TODO: maintain a maximum size
-// TODO: clear cache on write operations
+// A simple LRU cache
 
 module.exports = class Cache {
-  constructor () {
+  constructor (limit = 1000) {
+    this.limit = limit
     this.LRUStore = new Map()
   }
 
@@ -11,23 +11,35 @@ module.exports = class Cache {
   }
 
   get (key) {
-    console.log('check cache')
     const value = this.LRUStore.get(key)
-    console.log('value is', value)
     if (value) {
-      console.log('value found in cache')
+      // bump value to head of Map as most recently used
       this.set(key, value)
     }
     return value
   }
 
   set (key, value) {
-    console.log('setting cache...')
-    console.log('deleting...')
+    // if size limit reached, delete oldest entry
+    if (this.LRUStore.size == this.limit)
+      this.LRUStore.delete(Array.from(this.LRUStore.keys()).shift());
+    // remove key from current position in cache (if present)
     this.LRUStore.delete(key)
-    console.log('inserting...')
-    this.LRUStore.set(key, value) // bump to head
-    console.log('completed.')
+    this.LRUStore.set(key, value)
     return value
+  }
+
+  cache (key, q) {
+    key = JSON.stringify(key)
+    return this.has(key)
+      ? new Promise(resolve => resolve(this.get(key)))
+      : q.then(
+        result => this.set(key, result)
+      )
+  }
+
+  flush (operation) {
+    this.LRUStore = new Map()
+    return operation
   }
 }

@@ -5,17 +5,17 @@ const reader = require('./read.js')
 const writer = require('./write.js')
 
 const makeASearchIndex = ops => {
-  const cache = new Cache()
-  cache.set('boom', 'diggy')
-  cache.has('boom')
-  console.log(cache.get('boom'))
+  // ".flush" clears the cache ".cache" creates/promotes a cache entry
+  const c = new Cache(ops.cacheLength)
 
   const w = writer(ops.fii, ops) // TODO: should be just ops?
-  const r = reader(ops.fii, cache)
+  const r = reader(ops.fii)
+
   return {
     // internal functions inherited from fergies-inverted-index
     _AND: ops.fii.AND,
     _BUCKET: ops.fii.BUCKET,
+    _CACHE: c,
     _GET: ops.fii.GET,
     _NOT: ops.fii.SET_SUBTRACTION,
     _OR: ops.fii.OR,
@@ -29,25 +29,26 @@ const makeASearchIndex = ops => {
     // public API
     BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
-    DICTIONARY: r.DICTIONARY,
+    DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
     DISTINCT: r.DISTINCT,
-    DOCUMENTS: r.DOCUMENTS,
+    DOCUMENTS: docs => c.cache({ DOCUMENTS: docs || null }, r.DOCUMENTS(docs)),
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
-    IMPORT: ops.fii.IMPORT,
+    IMPORT: idx => c.flush(ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
     MAX: ops.fii.MAX,
     MIN: ops.fii.MIN,
-    PUT: w.PUT,
-    PUT_RAW: w.PUT_RAW,
-    QUERY: r.QUERY
+    PUT: (docs, pops) => c.flush(w.PUT(docs, pops)),
+    PUT_RAW: docs => c.flush(w.PUT_RAW(docs)),
+    QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops))
   }
 }
 
 const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   ops = Object.assign({
+    cacheLength: 1000,
     tokenAppend: '#',
     caseSensitive: false,
     storeVectors: false,

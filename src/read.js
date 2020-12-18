@@ -1,7 +1,5 @@
-module.exports = (fii, cache) => {
+module.exports = fii => {
   const ALL_DOCUMENTS = () => new Promise((resolve, reject) => {
-    if (cache.has('ALL_DOCUMENTS'))
-      return resolve(cache.get('ALL_DOCUMENTS'))
     const result = []
     fii.STORE.createReadStream({
       gte: '￮DOC_RAW￮',
@@ -9,9 +7,7 @@ module.exports = (fii, cache) => {
     }).on('data', d => result.push({
       _id: d.value._id,
       _doc: d.value
-    })).on('end', () => resolve(
-      cache.set('ALL_DOCUMENTS', result)
-    ))
+    })).on('end', () => resolve(result))
   })
 
   const DOCUMENTS = requestedDocs => Array.isArray(requestedDocs)
