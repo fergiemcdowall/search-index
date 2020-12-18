@@ -2,14 +2,16 @@
 
 module.exports = class Cache {
   constructor (limit = 1000) {
-    this.limit = limit
+    this.limit = limit // max entries in cache
     this.LRUStore = new Map()
   }
 
+  // check if entry exists for given key
   has (key) {
     return this.LRUStore.has(key)
   }
 
+  // get cached entry, return and promote entry if found
   get (key) {
     const value = this.LRUStore.get(key)
     if (value) {
@@ -19,6 +21,7 @@ module.exports = class Cache {
     return value
   }
 
+  // new entry, trim oldest entry if cache length exceeds limit
   set (key, value) {
     // if size limit reached, delete oldest entry
     if (this.LRUStore.size === this.limit) { this.LRUStore.delete(Array.from(this.LRUStore.keys()).shift()) }
@@ -28,6 +31,7 @@ module.exports = class Cache {
     return value
   }
 
+  // check if query is cached if it is return/promote, if not then add
   cache (key, q) {
     key = JSON.stringify(key)
     return this.has(key)
@@ -37,6 +41,7 @@ module.exports = class Cache {
       )
   }
 
+  // clear all entries in cache
   flush (operation) {
     this.LRUStore = new Map()
     return operation
