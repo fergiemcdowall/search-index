@@ -30,8 +30,22 @@
         flex-direction: row;
       }
 
+      .filter {
+        padding: 4px;
+        font-size: x-large;
+        display: inline-block;
+      }
+
+      #filters {
+        margin: 0px;
+      }
+
       #facets {
         width:200px;
+      }
+
+      #query {
+        font-size: x-large;
       }
     </style>
   </head>
@@ -41,14 +55,19 @@
       <h1>Nature pic search</h1>
     </div>
 
-    <input id="query"
-           placeholder="search query"
-           style="font-size:x-large"
-           autofocus />
-
     <div class="container">
-      <ul id="facets">left bar</ul>
-      <ul id="result"></ul>
+      <input id="query"
+             placeholder="search query"
+             autofocus />
+      <ul id="filters"></ul>
+    </div>
+      
+    <div class="container">
+      <ul id="facets">Loading...</ul>
+      <div>
+        <h2 id="resultLength"></h2>
+        <ul id="result"></ul>
+      </div>
     </div>
       
     <script src="./search-app.js"></script>

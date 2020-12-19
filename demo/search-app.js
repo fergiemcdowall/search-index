@@ -1,5 +1,17 @@
-
-const renderFacet = () => 'BOOOOM'
+const renderFacet = (acc, cur) => acc + `
+  <li>
+    <div>`
+      + (
+        document.getElementById(cur.FIELD + ':' + cur.VALUE)
+          ? '<a>'
+          : `<a href="/#" onclick="addFilter('${cur.FIELD}:${cur.VALUE}')">`
+      )
+      + `${cur.VALUE}
+      </a>
+      (${cur._id.length})
+    </div>
+  </li>
+`
 
 const renderResult = (acc, { _doc }) => acc + `
   <li class="hit">
@@ -12,41 +24,38 @@ const renderResult = (acc, { _doc }) => acc + `
         ${_doc.author}</a>
       ${_doc.month}
       ${_doc.year}
-  ${_doc._id}
     </p>
   </li>
 `
 
-const renderResults = ({ RESULT, FACETS }) => {
+const renderResults = ({ RESULT, FACETS, RESULT_LENGTH }) => {
   const yearFacet = FACETS
         .filter(f => f.FIELD === 'year')
         .filter(f => f._id.length)
-  console.log(FACETS)
-  console.log(yearFacet)
+  const monthFacet = FACETS
+        .filter(f => f.FIELD === 'month')
+        .filter(f => f._id.length)
 
+  const q = document.getElementById('query').value
+  
+  document.getElementById('resultLength').innerHTML =
+    (q.length)
+    ? `${RESULT_LENGTH} hits for "${q}"`
+    : ''
+  
   document.getElementById('result').innerHTML =
     RESULT.reduce(renderResult, '')
 
-  document.getElementById('facets').innerHTML = `
-    <div>
-      <b>Year</b>`
-    + yearFacet.reduce((acc, cur) => {
-      return acc + `<li>
-        <div>
-          <a href="/#">${cur.VALUE}</a>
-          (${cur._id.length})
-        </div>
-      </li>
-    `
-    }, '')
-    + "</div>"
+  document.getElementById('facets').innerHTML =
+    ((yearFacet.length) ? yearFacet.reduce(renderFacet, '<h3>Year</h3>') : '')
+    + ((monthFacet.length) ? monthFacet.reduce(renderFacet, '<h3>Month</h3>') : '')
 }
 
 const searchQuery = q => [{
-  SEARCH: q
+  SEARCH: q.concat(getFilters())
 }, {
   FACETS: [{
-    FIELD: 'year'
+    FIELD: [ 'month', 'year' ]
   }],
   DOCUMENTS: true
 }]
@@ -55,38 +64,54 @@ const emptySearchQuery = () => [{
   DOCUMENTS: true
 }, {
   FACETS: [{
-    FIELD: 'year'
+    FIELD: [ 'month', 'year' ]
   }]
 }]
 
-const search = q => (
-  (q.length)
-    ? si.QUERY(...searchQuery(q))
-    : si.QUERY(...emptySearchQuery())
-).then(res => {
-  console.log('rendering')
-  return renderResults(res)
-})
+const search = () => {
+  const q = document.getElementById('query').value.trim()
+        .split(/\s+/).filter(item => item)
+  return (
+    (q.length + getFilters().length)
+      ? si.QUERY(...searchQuery(q))
+      : si.QUERY(...emptySearchQuery())
+  ).then(renderResults)
+}
+
+
+const addFilter = f => {
+  document.getElementById('filters').innerHTML += `
+    <li id="${f}" class="filter">
+      <a href="/#" onclick=removeFilter('${f}')>${f}</a>
+    </li>
+  `
+  search()
+}
+
+const removeFilter = f => {
+  document.getElementById(f).remove()
+  search()
+}
+
+
+const getFilters = () => Array.from(
+  document.querySelectorAll('#filters>li')
+).map(li => li.textContent.trim())
 
 // init
 Promise.all([
   SearchIndex({ name: 'mySearchIndex' }),
   fetch('./EarthPorn-top-search-index.json').then(res => res.json())
 ]).then(([ thisSi, dump ]) => {
-  console.log(dump[0])
   // set global variable (in practice you might not want to do this)
   si = thisSi
   // replicate pregenerated index
-  console.log('importing')
-  si.IMPORT(dump).then(() => {
-    console.log('searching...')
-    return search([])
-  })
+  si.IMPORT(dump).then(search)
 })
+
 
 document.getElementById('query')
   .addEventListener('input', function (e) {
-    console.log('searching...')
-    search(this.value.trim().split(/\s+/).filter(item => item))
+    search()
   })
 
