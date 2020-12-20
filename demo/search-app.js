@@ -29,12 +29,13 @@ const renderResult = (acc, { _doc }) => acc + `
 `
 
 const renderResults = ({ RESULT, FACETS, RESULT_LENGTH }) => {
-  const yearFacet = FACETS
-        .filter(f => f.FIELD === 'year')
+
+  const getFacet = name => FACETS
+        .filter(f => f.FIELD === name)
         .filter(f => f._id.length)
-  const monthFacet = FACETS
-        .filter(f => f.FIELD === 'month')
-        .filter(f => f._id.length)
+  
+  const yearFacet = getFacet('year')
+  const monthFacet = getFacet('month')
 
   const q = document.getElementById('query').value
   

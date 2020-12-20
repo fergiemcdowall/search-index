@@ -13,18 +13,17 @@
 ## Quick start
 
 ```javascript
-
 const si = require('search-index')
 // or
 // import si from search-index
 
-si().then(async { PUT, QUERY } => {
-  await PUT([ /* an array of objects */ ])
-  // objects are now indexed
-  const results = await QUERY( /* a search query */ )
-  // results contains search results
-})
+const { PUT, QUERY } = await si()
 
+// add documents to the index
+await PUT([ /* an array of objects */ ])
+
+// read documents from the index
+const results = await QUERY( /* a search query */ )
 ```
 
 ## Documentation

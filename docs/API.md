@@ -94,11 +94,11 @@ const idx = await si(options)
 # Index API
 
 For the purposes of brevity, this document assumes that a search index
-has been initialized in such a way that `INDEX`, `QUERY` and `UPDATE` are
+has been initialized in such a way that the functions below are
 available as variables:
 
 ```javascript
-const { INDEX, QUERY, UPDATE } = await si()
+const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
 ```
 
 It may be helpful to check out the
