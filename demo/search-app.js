@@ -1,3 +1,15 @@
+const stopwords = [
+  'about', 'after', 'all', 'also', 'am', 'an', 'and', 'another', 'any', 'are', 'as', 'at', 'be',
+  'because', 'been', 'before', 'being', 'between', 'both', 'but', 'by', 'came', 'can',
+  'come', 'could', 'did', 'do', 'each', 'for', 'from', 'get', 'got', 'has', 'had',
+  'he', 'have', 'her', 'here', 'him', 'himself', 'his', 'how', 'if', 'in', 'into',
+  'is', 'it', 'like', 'make', 'many', 'me', 'might', 'more', 'most', 'much', 'must',
+  'my', 'never', 'now', 'of', 'on', 'only', 'or', 'other', 'our', 'out', 'over',
+  'said', 'same', 'see', 'should', 'since', 'some', 'still', 'such', 'take', 'than',
+  'that', 'the', 'their', 'them', 'then', 'there', 'these', 'they', 'this', 'those',
+  'through', 'to', 'too', 'under', 'up', 'very', 'was', 'way', 'we', 'well', 'were',
+  'what', 'where', 'which', 'while', 'who', 'with', 'would', 'you', 'your', 'a', 'i']
+
 const renderFacet = (acc, cur) => acc + `
   <li>
     <div>`
@@ -15,7 +27,9 @@ const renderFacet = (acc, cur) => acc + `
 
 const renderResult = (acc, { _doc }) => acc + `
   <li class="hit">
-    <img src="${_doc.thumbnail}" />
+    <a href="https://www.reddit.com${_doc.permalink}" target="_blank">
+      <img src="${_doc.thumbnail}" />
+    </a>
     <p>      
       ${_doc.title}
       <br /><br />
@@ -28,7 +42,21 @@ const renderResult = (acc, { _doc }) => acc + `
   </li>
 `
 
-const renderResults = ({ RESULT, FACETS, RESULT_LENGTH }) => {
+const renderFilter = f => `
+  <li id="${f}" class="filter">
+    <a href="/#" onclick=removeFilter('${f}')>${f}</a>
+  </li>
+`
+
+const addFilter = (f, q) => {
+  document.getElementById('filters').innerHTML += renderFilter(f)
+  search(globalq)
+}
+
+
+var globalq = []
+
+const renderResults = (q, { RESULT, FACETS, RESULT_LENGTH }) => {
 
   const getFacet = name => FACETS
         .filter(f => f.FIELD === name)
@@ -37,7 +65,8 @@ const renderResults = ({ RESULT, FACETS, RESULT_LENGTH }) => {
   const yearFacet = getFacet('year')
   const monthFacet = getFacet('month')
 
-  const q = document.getElementById('query').value
+  globalq = q
+  document.getElementById('query').value = q
   
   document.getElementById('resultLength').innerHTML =
     (q.length)
@@ -48,7 +77,7 @@ const renderResults = ({ RESULT, FACETS, RESULT_LENGTH }) => {
     RESULT.reduce(renderResult, '')
 
   document.getElementById('facets').innerHTML =
-    ((yearFacet.length) ? yearFacet.reduce(renderFacet, '<h3>Year</h3>') : '')
+     ((yearFacet.length) ? yearFacet.reduce(renderFacet, '<h3>Year</h3>') : '')
     + ((monthFacet.length) ? monthFacet.reduce(renderFacet, '<h3>Month</h3>') : '')
 }
 
@@ -69,31 +98,18 @@ const emptySearchQuery = () => [{
   }]
 }]
 
-const search = () => {
-  const q = document.getElementById('query').value.trim()
-        .split(/\s+/).filter(item => item)
+const search = (q = []) => {
   return (
     (q.length + getFilters().length)
       ? si.QUERY(...searchQuery(q))
       : si.QUERY(...emptySearchQuery())
-  ).then(renderResults)
-}
-
-
-const addFilter = f => {
-  document.getElementById('filters').innerHTML += `
-    <li id="${f}" class="filter">
-      <a href="/#" onclick=removeFilter('${f}')>${f}</a>
-    </li>
-  `
-  search()
+  ).then(result => renderResults(q, result))
 }
 
 const removeFilter = f => {
   document.getElementById(f).remove()
-  search()
+  search(globalq)
 }
-
 
 const getFilters = () => Array.from(
   document.querySelectorAll('#filters>li')
@@ -101,7 +117,10 @@ const getFilters = () => Array.from(
 
 // init
 Promise.all([
-  SearchIndex({ name: 'mySearchIndex' }),
+  SearchIndex({
+    name: 'mySearchIndex',
+    stopwords: stopwords
+  }),
   fetch('./EarthPorn-top-search-index.json').then(res => res.json())
 ]).then(([ thisSi, dump ]) => {
   // set global variable (in practice you might not want to do this)
@@ -113,6 +132,14 @@ Promise.all([
 
 document.getElementById('query')
   .addEventListener('input', function (e) {
-    search()
+    search(this.value.trim().split(/\s+/).filter(item => item))
   })
 
+autocomplete('#query', { hint: false }, [{
+  source: (query, cb) => (query.length >= 3)
+    ? si.DICTIONARY(query).then(cb)
+    : cb ([]),
+  templates: { suggestion: suggestion => suggestion }
+}]).on('autocomplete:selected', function(event, suggestion) {
+  search([ suggestion ]);
+});

@@ -11,6 +11,7 @@ fs.writeFileSync(
         author: r.data.author,
         created_utc: r.data.created_utc,
         month: d.toLocaleString('default', { month: 'long' }),
+        permalink: r.data.permalink,
         year: d.getFullYear(),
         title: r.data.title,
         thumbnail: r.data.thumbnail,
