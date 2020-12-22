@@ -3,82 +3,17 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./search-index.js"></script>
+    <script src="./src/search-index.js"></script>
+    <!-- borrow an autocomplete lib -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.min.js"></script>
-    <title>r/Earthporn</title>
-    
-    <style>
-
-
-      .algolia-autocomplete .aa-hint {
-        color: #999;
-      }
-      .algolia-autocomplete .aa-dropdown-menu {
-        width: 100%;
-        background-color: #fff;
-        border: 1px solid #999;
-        border-top: none;
-      }
-      .algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
-        cursor: pointer;
-        padding: 5px 4px;
-      }
-      .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
-        background-color: #B2D7FF;
-      }
-      .algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
-        font-weight: bold;
-        font-style: normal;
-      }
-
-      
-      .hit {
-        display: block;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: row;
-      }
-      
-      img {
-        margin-right: 10px;
-      }
-      
-      ul {
-        width: 600px;
-        list-style: none;
-        padding-left: 0px;
-        margin-top: 0px
-      }
-
-      .container {
-        margin-top: 20px;
-        display: flex;
-        flex-direction: row;
-      }
-
-      .filter {
-        padding: 4px;
-        font-size: x-large;
-        display: inline-block;
-      }
-
-      #filters {
-        margin: 0px;
-      }
-
-      #facets {
-        width:200px;
-      }
-
-      #query {
-        font-size: x-large;
-      }
-    </style>
+    <title>Search-index demo</title>
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
     <div id="header">
-      <h1>Nature pic search</h1>
+      <h1>Search-index demo</h1>
+      A simple demo using a data dump from <a target="_blank" href="https://www.reddit.com/r/Earthporn">r/Earthporn</a>
     </div>
 
     <div class="container">
@@ -97,8 +32,8 @@
       </div>
     </div>
       
-    <script src="./stopwords.js"></script>
-    <script src="./templates.js"></script>
-    <script src="./search-app.js"></script>
+    <script src="./src/stopwords.js"></script>
+    <script src="./src/templates.js"></script>
+    <script src="./src/search-app.js"></script>
   </body>
 </html> 
