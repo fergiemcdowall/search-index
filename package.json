@@ -14,7 +14,7 @@
     "demo-rebuild": "npm run demo-fetch && npm run demo-process && npm run demo-export",
     "demo-start": "http-server -c-1 demo & open-cli http://127.0.0.1:8080",
     "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
-    "lint": "standard --fix test/src/* src/* demo/*",
+    "lint": "standard --fix test/src/* src/* demo/src/* demo/generate-index/*.js",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run empty-sandbox && tape test/src/*-test.js",

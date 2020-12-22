@@ -1,8 +1,9 @@
 const fs = require('fs')
 const json = require('./EarthPorn-top-raw.json')
+const path = require('path')
 
 fs.writeFileSync(
-  __dirname + '/EarthPorn-top-processed.json',
+  path.join(__dirname, '/EarthPorn-top-processed.json'),
   JSON.stringify(
     json.map((r, i) => {
       const d = new Date(r.data.created_utc * 1000)

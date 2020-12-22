@@ -1,18 +1,20 @@
+// eslint-disable-next-line no-unused-vars
 const renderFacet = (acc, cur) => acc + `
   <li>
-    <div>`
-      + (
+    <div>` +
+      (
         document.getElementById(cur.FIELD + ':' + cur.VALUE)
           ? '<a>'
           : `<a href="/#" onclick="addFilter('${cur.FIELD}:${cur.VALUE}')">`
-      )
-      + `${cur.VALUE}
+      ) +
+      `${cur.VALUE}
       </a>
       (${cur._id.length})
     </div>
   </li>
 `
 
+// eslint-disable-next-line no-unused-vars
 const renderResult = (acc, { _doc }) => acc + `
   <li class="hit">
     <a href="https://www.reddit.com${_doc.permalink}" target="_blank">
@@ -30,6 +32,7 @@ const renderResult = (acc, { _doc }) => acc + `
   </li>
 `
 
+// eslint-disable-next-line no-unused-vars
 const renderFilter = f => `
   <li id="${f}" class="filter">
     <a href="/#" onclick=removeFilter('${f}')>${f}</a>
