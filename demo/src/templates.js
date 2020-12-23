@@ -5,7 +5,7 @@ const renderFacet = (acc, cur) => acc + `
       (
         document.getElementById(cur.FIELD + ':' + cur.VALUE)
           ? '<a>'
-          : `<a href="/#" onclick="addFilter('${cur.FIELD}:${cur.VALUE}')">`
+          : `<a href="#" onclick="addFilter('${cur.FIELD}:${cur.VALUE}')">`
       ) +
       `${cur.VALUE}
       </a>
@@ -35,6 +35,6 @@ const renderResult = (acc, { _doc }) => acc + `
 // eslint-disable-next-line no-unused-vars
 const renderFilter = f => `
   <li id="${f}" class="filter">
-    <a href="/#" onclick=removeFilter('${f}')>${f}</a>
+    <a href="#" onclick=removeFilter('${f}')>${f}</a>
   </li>
 `
