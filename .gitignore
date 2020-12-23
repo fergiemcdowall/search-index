@@ -21,9 +21,4 @@ test/cjs/*
 fii
 demo/generate-index/earthporn
 
-
-demo
-dist
-docs
-src
-test
+IGNORE*
