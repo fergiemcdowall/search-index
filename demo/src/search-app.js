@@ -108,7 +108,7 @@ Promise.all([
     name: 'mySearchIndex',
     stopwords: stopwords
   }),
-  fetch('/generate-index/EarthPorn-top-search-index.json').then(res => res.json())
+  fetch('generate-index/EarthPorn-top-search-index.json').then(res => res.json())
 ]).then(([thisSi, dump]) => {
   // set global variable (in practice you might not want to do this)
   si = thisSi
