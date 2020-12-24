@@ -7,6 +7,11 @@
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
 - [Index API](#index-api)
+  - [Tokens](#tokens)
+    - [Find anywhere](#find-anywhere)
+    - [Find in named field or fields](#find-in-named-field-or-fields)
+    - [Find within a range](#find-within-a-range)
+    - [Find where a field exists](#find-where-a-field-exists)
   - [BUCKETS](#buckets)
   - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
@@ -23,11 +28,6 @@
       - [Returning references or documents](#returning-references-or-documents)
       - [Nesting query verbs](#nesting-query-verbs)
       - [Manipulating result sets](#manipulating-result-sets)
-    - [Query tokens](#query-tokens)
-      - [Find anywhere](#find-anywhere)
-      - [Find in named field or fields](#find-in-named-field-or-fields)
-      - [Find within a range](#find-within-a-range)
-      - [Find where a field exists](#find-where-a-field-exists)
     - [Query options](#query-options)
       - [BUCKETS](#buckets-1)
       - [DOCUMENTS](#documents-1)
@@ -84,6 +84,7 @@ const idx = await si(options)
 
 | Name | Type | Default | Description |
 |---|---|---|---|
+| `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 | `fii` | `fergies-inverted-index` | `fergies-inverted-index()` | The underlying index. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can instantiate `fergies-inverted-index` with the `leveldown` of your choice and then use it to make a new `search-index` |
 | `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
@@ -104,6 +105,79 @@ const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
 It may be helpful to check out the
 [tests](https://github.com/fergiemcdowall/search-index/tree/master/test/src)
 for more examples.
+
+## Tokens
+
+`search-index` is a text orientated reverse index. This means that
+documents are retrievable by passing text tokens that they contain
+into queries. There are various ways to express tokens:
+
+### Find anywhere
+
+```javascript
+'<token value>'
+```
+
+Example:
+
+```javascript
+'banana'
+```
+
+### Find in named field or fields
+
+```javascript
+'<field name>:<token value>'
+```
+Example:
+
+```javascript
+'fruit:banana'
+
+// (can also be expressed as ->)
+{
+  FIELD: 'fruit',
+  VALUE: 'banana'
+}
+```
+
+```javascript
+// Find in two or more specified fields:
+{
+  FIELD: [ 'fruit', 'description' ], // array of field names
+  VALUE: 'banana'
+}
+```
+
+### Find within a range
+```javascript
+{
+  FIELD: fieldName,
+  VALUE: {
+    GTE: gte,        // greater than or equal to
+    LTE: lte         // less than or equal to
+  }
+}
+```
+Example (get all fruits beginning with 'a', 'b' or 'c'):
+```javascript
+// this token range would capture 'banana'
+{
+  FIELD: 'fruit',
+  VALUE: {
+    GTE: 'a',
+    LTE: 'c'
+  }
+}
+```
+
+### Find where a field exists
+```javascript
+// Find all documents that contain a 'price' field
+{
+  FIELD: 'price'
+}
+```
 
 
 ## BUCKETS
@@ -269,79 +343,6 @@ QUERY({
     SIZE: 20               // 20 results per page
   }
 })
-```
-
-### Query tokens
-
-`search-index` is a text orientated reverse index. This means that
-documents are retrievable by passing text tokens that they contain
-into queries. There are various ways to express tokens:
-
-#### Find anywhere
-
-```javascript
-'<token value>'
-```
-
-Example:
-
-```javascript
-'banana'
-```
-
-#### Find in named field or fields
-
-```javascript
-'<field name>:<token value>'
-```
-Example:
-
-```javascript
-'fruit:banana'
-
-// (can also be expressed as ->)
-{
-  FIELD: 'fruit',
-  VALUE: 'banana'
-}
-```
-
-```javascript
-// Find in two or more specified fields:
-{
-  FIELD: [ 'fruit', 'description' ], // array of field names
-  VALUE: 'banana'
-}
-```
-
-#### Find within a range
-```javascript
-{
-  FIELD: fieldName,
-  VALUE: {
-    GTE: gte,        // greater than or equal to
-    LTE: lte         // less than or equal to
-  }
-}
-```
-Example (get all fruits beginning with 'a', 'b' or 'c'):
-```javascript
-// this token range would capture 'banana'
-{
-  FIELD: 'fruit',
-  VALUE: {
-    GTE: 'a',
-    LTE: 'c'
-  }
-}
-```
-
-#### Find where a field exists
-```javascript
-// Find all documents that contain a 'price' field
-{
-  FIELD: 'price'
-}
 ```
 
 

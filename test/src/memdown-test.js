@@ -38,6 +38,7 @@ const data = [
   }
 ]
 
+// TODO: there should probably be an api call for this
 test('create a fii with memdown', t => {
   t.plan(3)
   levelup(encode(memdown(indexName), {

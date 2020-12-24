@@ -14,16 +14,15 @@
 
 ```javascript
 const si = require('search-index')
-// or
-// import si from search-index
 
+// initialize an index
 const { PUT, QUERY } = await si()
 
 // add documents to the index
-await PUT([ /* an array of objects */ ])
+await PUT( /* objects */ )
 
 // read documents from the index
-const results = await QUERY( /* a search query */ )
+const results = await QUERY( /* query */ )
 ```
 
 ## Documentation

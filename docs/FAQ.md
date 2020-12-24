@@ -29,10 +29,23 @@ const si = import si from 'si'
 const index = await si() // or si().then(index => ...)
 ```
 
+There is also a file in the `dist` folder called
+`search-index.x.x.x.js` (replace 'x.x.x' with version number) that can
+be referenced from a `script` tag:
+
+```html
+<script type='text/javascript' src='search-index.x.x.x.js'></script>
+<script type='text/javascript'>
+  import si from search-index
+  // ...
+</script>
+
+```
+
 
 # How do I get my data into search-index?
 
-You can either import an index, or add documents.
+You can either import an index, or add documents:
 
 ## Export/Import an index
 
@@ -44,7 +57,15 @@ const exportFile = await index1.EXPORT()
 index2.IMPORT(exportFile)
 ```
 
-NOTE: `IMPORT`ing an index completely overwrites any existing index
+NOTE: `IMPORT`ing an index completely overwrites any existing index,
+so if you had an existing index that contained several thousand
+documents into which you imported an external index that contained one
+document, then your existing index would now contain one document.
+
+
+## Using something else than default db
+
+TODO
 
 ## Add documents to an index
 
@@ -92,6 +113,17 @@ QUERY({
     VALUE: 'orange'
   }]
 })
+
+// or even
+QUERY({
+  SEARCH: [{
+    FIELD: [ 'title' ],
+    VALUE: {
+      GTE: 'orange',
+      LTE: 'orange'
+    }
+  }]
+})
 ```
 
 # How do I compose queries?
@@ -115,47 +147,42 @@ QUERY({
 ## Get a set of document ids per unique field value
 
 ```javascript
-const buckets = await QUERY({
-  BUCKETS: { FIELD: fieldName }
-})
+const facets = await FACETS({ FIELD: name })
 ```
 
 ## Get counts per unique field value
 
 ```javascript
-const buckets = await QUERY({
-  BUCKETS: { FIELD: fieldName }
-}).then(bkts => bkts.map(
-  bkt => ({
-    FIELD: bkt.FIELD,
-    VALUE: bkt.VALUE,
-    count: bkt._id.length
-  })
-))
+const facets = await FACETS({ FIELD: name })
+  .then(fcts => fcts.map(
+    f => ({
+      FIELD: f.FIELD,
+      VALUE: f.VALUE,
+      count: f._id.length
+    })
+  ))
 ```
 
 
 ## Define custom "buckets"
 
 ```javascript
-const buckets = await QUERY({
-  BUCKETS: [
-    token1,
-    token2,
-    token3
-  ]
-})
+const buckets = await BUCKETS ([
+  token1,
+  token2,
+  token3
+])
 ```
 
 ## Combine an aggregation with a search
 
+By using `QUERY` with the appropriate `options`, you can create
+aggregations on the set of documents returned by the `QUERY`.
+
 ```javascript
-const buckets = QUERY({
-  AGGREGATE: {
-    BUCKETS: buckets,
-    FACETS: facets,
-    QUERY: query
-  }
+// also works with BUCKETS
+const buckets = QUERY(q, {
+  FACETS: [ { FIELD: name } ]
 })
 ```
 
@@ -166,9 +193,9 @@ simple "begins with" autosuggest, then you can simply use the
 `DICTIONARY` function:
 
 ```javascript
-const results = DICTIONARY('b')   // ['bananas','branch','brunch']
-const results = DICTIONARY('br')  // ['branch','brunch']
-const results = DICTIONARY('bra') // ['branch']
+const results = DICTIONARY('b')   // [ 'bananas','branch','brunch' ]
+const results = DICTIONARY('br')  // [ 'branch','brunch' ]
+const results = DICTIONARY('bra') // [ 'branch' ]
 ```
 
 Alternatively you can use `DICTIONARY` to extract all terms from the
