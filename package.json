@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && ln -s $PWD/dist/search-index-*.js dist/search-index.js",
+    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cd dist && ln -s search-index-*.js search-index.js && cd ..",
     "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",
