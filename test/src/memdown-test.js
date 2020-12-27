@@ -1,6 +1,3 @@
-const encode = require('encoding-down')
-const fii = require('fergies-inverted-index')
-const levelup = require('levelup')
 const memdown = require('memdown')
 const si = require('../../')
 const test = require('tape')
@@ -40,45 +37,29 @@ const data = [
 
 // TODO: there should probably be an api call for this
 test('create a fii with memdown', t => {
-  t.plan(3)
-  levelup(encode(memdown(indexName), {
-    valueEncoding: 'json'
-  }), (err, store) => {
-    t.error(err)
-
-    fii({ db: store })
-      .then(newFii => {
-        return si({
-          fii: newFii
-        })
-      })
-      .then(db => db.PUT(data).then(res => {
-        t.deepEqual(res, [
-          { _id: 'a', status: 'OK', operation: 'PUT' },
-          { _id: 'b', status: 'OK', operation: 'PUT' },
-          { _id: 'c', status: 'OK', operation: 'PUT' }
-        ])
-        return db
-      }))
-      .then(db => {
-        db._SEARCH(
-          'body.text:cool',
-          'body.text:really',
-          'body.text:bananas'
-        ).then(res => {
-          t.deepEqual(res, [
-            {
-              _id: 'b',
-              // how about "match"
-              _match: [
-                'body.text:cool#1.00',
-                'body.text:really#1.00',
-                'body.text:bananas#1.00'
-              ],
-              _score: 4.16
-            }
-          ])
-        })
-      })
+  t.plan(2)
+  si({
+    db: memdown(indexName)
+  }).then(idx => idx.PUT(data).then(res => {
+    t.deepEqual(res, [
+      { _id: 'a', status: 'OK', operation: 'PUT' },
+      { _id: 'b', status: 'OK', operation: 'PUT' },
+      { _id: 'c', status: 'OK', operation: 'PUT' }
+    ])
+    return idx
+  })).then(idx => {
+    idx._SEARCH(
+      'body.text:cool',
+      'body.text:really',
+      'body.text:bananas'
+    ).then(res => t.deepEquals(res, [{
+      _id: 'b',
+      _match: [
+        'body.text:cool#1.00',
+        'body.text:really#1.00',
+        'body.text:bananas#1.00'
+      ],
+      _score: 4.16
+    }]))
   })
 })

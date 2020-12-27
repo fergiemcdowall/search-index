@@ -54,7 +54,7 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
     storeVectors: false,
     storeRawDocs: true
   }, ops)
-  if (ops.fii) return resolve(ops)
+  //  if (ops.fii) return resolve(ops)
   // else
   return fii(ops).then(
     aNewFii => resolve(Object.assign({ fii: aNewFii }, ops))

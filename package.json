@@ -32,10 +32,7 @@
   "homepage": "https://github.com/fergiemcdowall/search-index#readme",
   "devDependencies": {
     "assert": "^2.0.0",
-    "browser-resolve": "^2.0.0",
-    "buffer": "^6.0.2",
     "doctoc": "^1.4.0",
-    "encoding-down": "^6.3.0",
     "fuzzyset": "^1.0.5",
     "http-server": "^0.12.3",
     "level-out": "^1.0.1",
@@ -54,7 +51,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "8.2.1",
+    "fergies-inverted-index": "8.3.2",
     "term-vector": "^1.0.0"
   }
 }
