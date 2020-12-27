@@ -5,6 +5,7 @@
 - [How do I create an index?](#how-do-i-create-an-index)
 - [How do I get my data into search-index?](#how-do-i-get-my-data-into-search-index)
   - [Export/Import an index](#exportimport-an-index)
+  - [Using something else than default db](#using-something-else-than-default-db)
   - [Add documents to an index](#add-documents-to-an-index)
 - [How do I get out entire documents and not just document IDs?](#how-do-i-get-out-entire-documents-and-not-just-document-ids)
 - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
@@ -63,16 +64,22 @@ documents into which you imported an external index that contained one
 document, then your existing index would now contain one document.
 
 
-## Using something else than default db
-
-TODO
-
 ## Add documents to an index
 
 ```javascript
 // then somewhere else in the code, being aware of asynchronousity
 PUT([ /* my array of objects */ ]).then(doStuff)
 ```
+
+# Can I use another backend like MySQL or Redis?
+
+Yes you can! Because `search-index` is built on top of
+[`levelup`](https://github.com/Level/levelup) its possible to use
+another backend by passing the appropriate
+[`abstract-leveldown`](https://github.com/Level/abstract-leveldown)
+when initialising. [Many datastores are
+supported](https://github.com/Level/awesome/#stores). Use the [`db`
+initialisation option](API.md#sioptions)
 
 
 # How do I get out entire documents and not just document IDs?
