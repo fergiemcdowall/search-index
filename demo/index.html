@@ -15,22 +15,13 @@
       <h1>Search-index demo</h1>
       A simple demo using a data dump from <a target="_blank" href="https://www.reddit.com/r/Earthporn">r/Earthporn</a>
     </div>
-
-    <div class="container">
-      <input id="query"
-             placeholder="search query"
-             autocomplete="off" />
-      <ul id="filters"></ul>
-    </div>
-      
-    <div class="container">
-      <ul id="facets">Loading...</ul>
-      <div>
-        <h2 id="resultLength"></h2>
-        <ul id="result"></ul>
-      </div>
-    </div>
-      
+    <input id="query"
+           placeholder="search query"
+           autocomplete="off" />
+    <ul id="filters"></ul>
+    <ul id="facets">Loading...</ul>
+    <h2 id="resultLength"></h2>
+    <ul id="result"></ul>
     <script src="./src/stopwords.js"></script>
     <script src="./src/templates.js"></script>
     <script src="./src/search-app.js"></script>

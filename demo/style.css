@@ -31,16 +31,10 @@ img {
 }
 
 ul {
-  width: 600px;
+  max-width: 600px;
   list-style: none;
   padding-left: 0px;
   margin-top: 0px
-}
-
-.container {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
 }
 
 .filter {
@@ -49,14 +43,8 @@ ul {
   display: inline-block;
 }
 
-#filters {
-  margin: 0px;
-}
-
-#facets {
-  width:200px;
-}
-
 #query {
   font-size: x-large;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

@@ -25,10 +25,10 @@ const renderResults = (q, { RESULT, FACETS, RESULT_LENGTH }) => {
     RESULT.reduce(renderResult, '')
   el('facets').innerHTML =
     ((yearFacet.length)
-      ? yearFacet.reduce(renderFacet, '<h3>Year</h3>')
+      ? yearFacet.reduce(renderFacet, '<b>Year: </b>')
       : '') +
     ((monthFacet.length)
-      ? monthFacet.reduce(renderFacet, '<h3>Month</h3>')
+      ? monthFacet.reduce(renderFacet, '<br /><b>Month: </b>')
       : '')
 }
 
