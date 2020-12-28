@@ -92,7 +92,7 @@ el('query').addEventListener('input', function (e) {
 // listen for typing and create suggestions. Listen for clicked
 // suggestions
 autocomplete('#query', { hint: false }, [{
-  source: (query, cb) => (query.length >= 3)
+  source: (query, cb) => (query.length >= 2)
     ? si.DICTIONARY(query).then(cb)
     // eslint-disable-next-line
     : cb([]),
