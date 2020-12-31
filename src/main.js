@@ -27,6 +27,7 @@ const makeASearchIndex = ops => {
     _SORT: r.SORT,
 
     // public API
+    ALL_DOCUMENTS: r.ALL_DOCUMENTS,
     BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
     DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),

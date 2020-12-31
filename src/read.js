@@ -1,9 +1,10 @@
 module.exports = fii => {
-  const ALL_DOCUMENTS = () => new Promise((resolve, reject) => {
+  const ALL_DOCUMENTS = limit => new Promise((resolve, reject) => {
     const result = []
     fii.STORE.createReadStream({
       gte: '￮DOC_RAW￮',
-      lte: '￮DOC_RAW￮￮'
+      lte: '￮DOC_RAW￮￮',
+      limit: limit
     }).on('data', d => result.push({
       _id: d.value._id,
       _doc: d.value
@@ -12,16 +13,14 @@ module.exports = fii => {
 
   const DOCUMENTS = requestedDocs => Array.isArray(requestedDocs)
     ? Promise.all(
-        requestedDocs.map(doc =>
+        requestedDocs.map(_id =>
           fii.STORE.get(
-            '￮DOC_RAW￮' + doc._id + '￮'
+            '￮DOC_RAW￮' + _id + '￮'
           ).catch(e => null)
         )
-      ).then(returnedDocs => requestedDocs.map(
-        (rd, i) => Object.assign(rd, { _doc: returnedDocs[i] })
-      ))
+      )
     : ALL_DOCUMENTS()
-
+  
   const DICTIONARY = token => DISTINCT(token).then(results =>
     Array.from(results.reduce(
       (acc, cur) => acc.add(cur.VALUE), new Set())
@@ -195,10 +194,13 @@ module.exports = fii => {
 
     // APPEND DOCUMENTS IF SPECIFIED
     const appendDocuments = result => options.DOCUMENTS
-      ? DOCUMENTS(result.RESULT).then(
-          documentedResult => Object.assign(result, {
-            RESULT: documentedResult
-          }))
+      ? DOCUMENTS(result.RESULT.map(doc => doc._id)).then(
+          documents => Object.assign(result, {
+            RESULT: result.RESULT.map((doc, i) => Object.assign(doc, {
+              _doc: documents[i]
+            }))
+          })
+        )
       : result
 
     // SCORE IF SPECIFIED
@@ -255,6 +257,7 @@ module.exports = fii => {
   }
 
   return {
+    ALL_DOCUMENTS: ALL_DOCUMENTS,
     DICTIONARY: DICTIONARY,
     DISTINCT: DISTINCT,
     DOCUMENTS: DOCUMENTS,

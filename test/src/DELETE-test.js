@@ -115,33 +115,27 @@ test('verify DELETE', t => {
 test('verify DELETE using DOCUMENT', t => {
   t.plan(1)
   global[indexName].DOCUMENTS([
-    { _id: 'a' },
-    { _id: 'b' },
-    { _id: 'c' }
+    'a',
+    'b',
+    'c'
   ]).then(docs => {
     t.deepEqual(docs, [
       {
         _id: 'a',
-        _doc: {
-          _id: 'a',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool cool cool', metadata: 'coolness documentness'
-          },
-          importantNumber: 5000
-        }
-      }, {
-        _id: 'b', _doc: null
-      }, {
+        title: 'quite a cool document',
+        body: {
+          text: 'this document is really cool cool cool', metadata: 'coolness documentness'
+        },
+        importantNumber: 5000
+      },
+      null,
+      {
         _id: 'c',
-        _doc: {
-          _id: 'c',
-          title: 'something different',
-          body: {
-            text: 'something totally different', metadata: 'coolness documentness'
-          },
-          importantNumber: 200
-        }
+        title: 'something different',
+        body: {
+          text: 'something totally different', metadata: 'coolness documentness'
+        },
+        importantNumber: 200
       }
     ])
   })

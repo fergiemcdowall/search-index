@@ -152,17 +152,17 @@ test('can do a mixture of fielded search and any-field search', t => {
   })
 })
 
-test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
-  t.plan(1)
-  global[indexName]._SEARCH(
-    '500'
-  ).then(global[indexName].DOCUMENTS)
-    .then(res => {
-      t.deepEqual(res, [
-        { _id: 'b', _match: ['importantnumber:500#1.00'], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } }
-      ])
-    })
-})
+// test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
+//   t.plan(1)
+//   global[indexName]._SEARCH(
+//     '500'
+//   ).then(global[indexName].DOCUMENTS)
+//     .then(res => {
+//       t.deepEqual(res, [
+//         { _id: 'b', _match: ['importantnumber:500#1.00'], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } }
+//       ])
+//     })
+// })
 
 test('can _OR by numeric value and _SORT by numeric value', t => {
   t.plan(1)
@@ -409,32 +409,26 @@ test('AND with embedded OR (JSON API)', t => {
 test('DOCUMENT (JSON API)', t => {
   t.plan(1)
   global[indexName].QUERY({
-    DOCUMENTS: [{ _id: 'b' }, { _id: 'a' }]
+    DOCUMENTS: ['b', 'a']
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
         {
           _id: 'b',
-          _doc: {
-            _id: 'b',
-            title: 'quite a cool document',
-            body: {
-              text: 'this document is really cool bananas',
-              metadata: 'coolness documentness'
-            },
-            importantNumber: 500
-          }
+          title: 'quite a cool document',
+          body: {
+            text: 'this document is really cool bananas',
+            metadata: 'coolness documentness'
+          },
+          importantNumber: 500
         }, {
           _id: 'a',
-          _doc: {
-            _id: 'a',
-            title: 'quite a cool document',
-            body: {
-              text: 'this document is really cool cool cool',
-              metadata: 'coolness documentness'
-            },
-            importantNumber: 5000
-          }
+          title: 'quite a cool document',
+          body: {
+            text: 'this document is really cool cool cool',
+            metadata: 'coolness documentness'
+          },
+          importantNumber: 5000
         }
       ],
       RESULT_LENGTH: 2

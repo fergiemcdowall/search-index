@@ -12,6 +12,7 @@
     - [Find in named field or fields](#find-in-named-field-or-fields)
     - [Find within a range](#find-within-a-range)
     - [Find where a field exists](#find-where-a-field-exists)
+  - [ALL_DOCUMENTS](#all_documents)
   - [BUCKETS](#buckets)
   - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
@@ -180,6 +181,16 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```
 
 
+## ALL_DOCUMENTS
+
+See also [DOCUMENTS](#documents)
+
+```javascript
+// Return all documents from index.
+const documents = await ALL_DOCUMENTS(limit)
+// "limit" is the maximum total of documents to be returned
+```
+
 ## BUCKETS
 
 ```javascript
@@ -203,22 +214,27 @@ const result = await DELETE(documentIds)
 
 ## DICTIONARY
 
+See also [DISTINCT](#distinct)
+
 ```javascript
-// Return each available field value for the given token space. (see
-// also DISTINCT)
+// Return each available field value for the given token space.
 const dictionary = await DICTIONARY(token)
 ```
 
 
 ## DOCUMENTS
 
+See also [ALL_DOCUMENTS](#all_documents)
+
 ```javascript
-// Return all documents in index
-const documents = await DOCUMENTS()
+// Return named documents from index.
+const documents = await DOCUMENTS(docIDs) // docIDs is an array
 ```
 
 
 ## DISTINCT
+
+See also [DICTIONARY](#dictionary)
 
 ```javascript
 // Return distinct field values from index
