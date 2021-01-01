@@ -16,7 +16,6 @@ const stopwords = [
   'what', 'where', 'which', 'while', 'who', 'with', 'would', 'you', 'your', 'a', 'i'
 ]
 
-
 si({
   name: path.join(__dirname, '/earthporn'),
   stopwords: stopwords
