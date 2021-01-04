@@ -46,7 +46,7 @@
     "stopword": "^1.0.6",
     "stream-browserify": "^3.0.0",
     "tape": "^5.1.0",
-    "tape-run": "^8.0.0",
+    "tape-run": "^7.0.0",
     "webpack": "^5.11.1",
     "webpack-cli": "^4.3.1",
     "world-bank-dataset": "^1.0.0"
