@@ -1,455 +1,543 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+# API Documentation for search-index
 
-- [API](#api)
-  - [Initialisation](#initialisation)
-    - [Make an index](#make-an-index)
-    - [Access the API](#access-the-api)
-  - [Altering the index](#altering-the-index)
-    - [DELETE](#delete)
-    - [PUT](#put)
-  - [Composable querying](#composable-querying)
-    - [AND](#and)
-    - [DOCUMENTS](#documents)
-    - [GET](#get)
-    - [NOT](#not)
-    - [OR](#or)
-  - [Searching](#searching)
-    - [SEARCH](#search)
-  - [Tokenisation](#tokenisation)
-    - [DICTIONARY](#dictionary)
-  - [Aggregation](#aggregation)
-    - [BUCKET](#bucket)
-    - [BUCKETFILTER](#bucketfilter)
-    - [DISTINCT](#distinct)
-  - [Accessing the underlying index](#accessing-the-underlying-index)
-    - [INDEX](#index)
-- [FAQ](#faq)
-  - [How do I get my data into search-index?](#how-do-i-get-my-data-into-search-index)
-    - [Replicate an index](#replicate-an-index)
-    - [Create a new index](#create-a-new-index)
-  - [What is the difference between AND, GET and SEARCH?](#what-is-the-difference-between-and-get-and-search)
-  - [How do I get out entire documents and not just document IDs?](#how-do-i-get-out-entire-documents-and-not-just-document-ids)
-  - [How do I search on specific fields?](#how-do-i-search-on-specific-fields)
-  - [How do I compose queries?](#how-do-i-compose-queries)
-  - [How do I perform a simple aggregation on a field?](#how-do-i-perform-a-simple-aggregation-on-a-field)
-    - [Get a list of unique values for a field](#get-a-list-of-unique-values-for-a-field)
-    - [Get a set of document ids per unique field value](#get-a-set-of-document-ids-per-unique-field-value)
-    - [Get counts per unique field value](#get-counts-per-unique-field-value)
-    - [Define custom "buckets"](#define-custom-buckets)
-    - [Combine an aggregation with a search](#combine-an-aggregation-with-a-search)
-  - [How do I make a simple typeahead / autosuggest / matcher](#how-do-i-make-a-simple-typeahead--autosuggest--matcher)
+- [Module API](#module-api)
+  - [Importing and requiring](#importing-and-requiring)
+  - [Instantiating an index](#instantiating-an-index)
+    - [`si(options)`](#sioptions)
+- [Index API](#index-api)
+  - [Tokens](#tokens)
+    - [Find anywhere](#find-anywhere)
+    - [Find in named field or fields](#find-in-named-field-or-fields)
+    - [Find within a range](#find-within-a-range)
+    - [Find where a field exists](#find-where-a-field-exists)
+  - [ALL_DOCUMENTS](#all_documents)
+  - [BUCKETS](#buckets)
+  - [DELETE](#delete)
+  - [DICTIONARY](#dictionary)
+  - [DOCUMENTS](#documents)
+  - [DISTINCT](#distinct)
+  - [DOCUMENT_COUNT](#document_count)
+  - [EXPORT](#export)
+  - [FACETS](#facets)
+  - [FIELDS](#fields)
+  - [IMPORT](#import)
+  - [INDEX](#index)
+  - [QUERY](#query)
+    - [Running queries](#running-queries)
+      - [Returning references or documents](#returning-references-or-documents)
+      - [Nesting query verbs](#nesting-query-verbs)
+      - [Manipulating result sets](#manipulating-result-sets)
+    - [Query options](#query-options)
+      - [BUCKETS](#buckets-1)
+      - [DOCUMENTS](#documents-1)
+      - [FACETS](#facets-1)
+      - [PAGE](#page)
+      - [SCORE](#score)
+      - [SORT](#sort)
+    - [Query verbs](#query-verbs)
+      - [AND](#and)
+      - [NOT](#not)
+      - [OR](#or)
+      - [SEARCH](#search)
+  - [MAX](#max)
+  - [MIN](#min)
+  - [PUT](#put)
+  - [PUT_RAW](#put_raw)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# API
+***(Convention: it is assumed here that the search-index module is always assigned to the variable `si`, but you can of course assign it to whatever you want)***
 
-## Initialisation
+# Module API
 
-### Make an index
+## Importing and requiring
 
-`si([options[, callback]])`
-
-```javascript
-import si from 'search-index'
-
-// creates a DB called "myDB" using levelDB (node.js), or indexedDB (browser)
-const db = si({ name: 'myDB' })
-```
-
-In some cases you will want to start operating on the database
-instentaneously. In these cases you can wait for the callback:
+This module can be invoked with `import` and/or `require`
+depending on your environment:
 
 ```javascript
-import si from 'search-index'
-
-// creates a DB called "myDB" using levelDB (node.js), or indexedDB (browser)
-si({ name: 'myDB' }, (err, db) => {
-  // db is guaranteed to be open and available
-})
-```
-
-### Access the API
-
-Using one of the methods above you should now have an index called
-`db` (or another name of your choosing). If you want to call, say
-`GET` or `SEARCH` you could do either
-
-```javascript
-db.SEARCH('searchterm')
-// ...
-db.GET('getterm')
+import si from search-index
 ```
 
 or
 
 ```javascript
-const { GET, SEARCH } = db
-
-SEARCH('searchterm')
-// ...
-GET('getterm')
+const si = require('search-index')
 ```
 
+## Instantiating an index
 
-## Altering the index
-
-***Add, update or delete data from the index***
-
-### DELETE
-
-`DELETE([ ...Promise ]).then(result)`
-
-Deletes all objects by ID
-
-### PUT
-
-`PUT([ ...Promise ]).then(result)`
-
-Add objects to database
-
-
-## Composable querying
-
-***These query functions can be [mixed together in any combination](#how-do-i-compose-queries) to make powerful and expressive queries that are returned in a set sorted by document id***
-
-### AND
-
-`AND([ ...Promise ]).then(result)`
-
-Boolean AND. Return IDs of objects that have prop.A AND prop.B
-
-### DOCUMENTS
-
-`DOCUMENTS([ ...id ]).then(result)`
-
-Get documents by ID
-
-### GET
-
-`GET(property).then(result)`
-
-`GET` returns all object ids for objects that contain the given
-property, aggregated by object id.
-
-For example get all names between `h` and `l`:
+Once the `search-index` module is assigned to a variable you can
+instantiate an index by invoking the module variable as a Promise:
+    
 
 ```javascript
-GET({ gte: 'h', lte: 'l' }).then(result)
+const idx = await si(options)
 ```
 
-Or to get all objects that have a `name` property that begins with 'h'
+### `si(options)`
+
+`si(options)` returns a Promise which creates a search index when invoked
+
+`options` is an object that can contain the following properties:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [`abstract-leveldown`](https://github.com/Level/awesome/#stores) compatible store |
+| `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+| `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
+| `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
+| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
+
+
+# Index API
+
+For the purposes of brevity, this document assumes that a search index
+has been initialized in such a way that the functions below are
+available as variables:
 
 ```javascript
-GET('h').then(result)
+const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
 ```
 
-### NOT
+It may be helpful to check out the
+[tests](https://github.com/fergiemcdowall/search-index/tree/master/test/src)
+for more examples.
 
-`NOT([ ...Promise ]).then(result)`
+## Tokens
 
-Where A and B are sets, `NOT` Returns the ids of objects that are
-present in A, but not in B.
+`search-index` is a text orientated reverse index. This means that
+documents are retrievable by passing text tokens that they contain
+into queries. There are various ways to express tokens:
 
-### OR
-
-`OR([ ...Promise ]).then(result)`
-
-Return ids of objects that are in one or more of the query clauses
-
-
-## Searching
-
-***Search in your corpus for keywords and return a set of documents that is sorted with the most relevant first***
-
-### SEARCH
-
-`SEARCH([ ...Promise ]).then(result)`
-
-Search the database and get documents back. 
+### Find anywhere
 
 ```javascript
-  SEARCH(
-    OR('bananas', 'different'),  // search clauses can be nested promises
-    'coolness'                       // or strings (defaults to GET)
-  ).then(result)
+'<token value>'
 ```
 
-## Tokenisation
-
-***Tokenisation allows you to create functionality based on the set of tokens that is in the index such as autosuggest or word clouds***
-
-### DICTIONARY
-
-`DICTIONARY(options).then(result)`
-
-Options:
-
-* gte : greater than or equal to
-* lte : less than or equal to
-
-Gets an array of tokens stored in the index. Usefull for i.e. auto-complete or auto-suggest scenarios.
-
-Examples on usage:
+Example:
 
 ```javascript
-// get all tokens in the index
-DICTIONARY().then( /* array of tokens */ )
-
-// get all tokens in the body.text field
-DICTIONARY('body.text').then( /* array of tokens */ )
-
-// get tokens in the body.text field that starts with 'cool'
-DICTIONARY('body.text.cool').then( /* array of tokens */ )
-
-// you can also use gte/lte ("greater/less than or equal")
-DICTIONARY({
-  gte: 'body.text.a',
-  lte: 'body.text.g'
-}).then( /* array of tokens */ )
+'banana'
 ```
 
-## Aggregation
-
-***You can use the aggregation functions to categorise the index data, normally for the purposes of website navigation or dividing data up into segments***
-
-### BUCKET
-
-`BUCKET([ ...Promise ]).then(result)`
-
-Return IDs of objects that match the query
-
-### BUCKETFILTER
-
-`BUCKETFILTER([ ...bucket ], filter query).then(result)`
-
-The first argument is an array of buckets, the second is an expression
-that filters each bucket
-
-### DISTINCT
-
-`DISTINCT(options).then(result)`
-
-`DISTINCT` returns every value in the db that is greater than equal
-to `gte` and less than or equal to `lte` (sorted alphabetically)
-
-For example- get all names between `h` and `l`:
+### Find in named field or fields
 
 ```javascript
-DISTINCT({ gte: 'h', lte: 'l' }).then(result)
+'<field name>:<token value>'
 ```
-
-## Accessing the underlying index
-### INDEX
-
-`INDEX`
-
-Points to the underlying [index](https://github.com/fergiemcdowall/fergies-inverted-index/).
-
-
-
-# FAQ
-
-## How do I get my data into search-index?
-
-You can either replicate an index from an existing index, or create a
-completely new index.
-
-### Replicate an index
-
-Get the underlying index by using INDEX and then replicate into the
-index by using the [levelup API](https://github.com/Level/levelup#dbcreatereadstreamoptions)
-
-### Create a new index
-
-First, initialise an index, and then use `PUT` to add documents to the
-index.
+Example:
 
 ```javascript
-const db = si({ name: indexName })
-// then somewhere else in the code, being aware of asynchronousity
-PUT([ /* my array of objects */ ]).then(doStuff)
-```
+'fruit:banana'
 
-## What is the difference between AND, GET and SEARCH?
-
-* **AND** `AND` returns a set of documents that contain *all* of the
-terms contained in the query
-
-* **GET** `GET` returns a set of documents that contain the terms
-contained in the query. `GET` is the same as `AND` or `OR` with only
-one term specified.
-
-* **SEARCH** `SEARCH` performs an `AND` query and returns a set of
-documents which is ordered in terms of relevance. Search-index uses a
-TF-IDF algorithm to determine relevance.
-
-
-## How do I get out entire documents and not just document IDs?
-
-You need to join your resultset with `DOCUMENTS`
-
-```javascript
-AND('land:SCOTLAND', 'colour:GREEN').then(DOCUMENTS).then(console.log)
-```
-
-## How do I search on specific fields?
-
-To return hits for all documents containing 'apples' or 'oranges' in
-the `title` field you would do something like this:
-
-```javascript
-OR(
-  'title:apples',
-  'title:oranges',
-)
-```
-
-## How do I compose queries?
-
-Queries can be composed by combining and nesting promises. For example
-
-```javascript
-AND(
-  OR(
-    'title:quite',
-    AND(
-      'body.text:totally',
-      'body.text:different'
-    )
-  ),
-  'body.metadata:cool'
-).then(console.log)  // returns a result
-```
-
-## How do I perform a simple aggregation on a field?
-
-### Get a list of unique values for a field
-
-Use `DISTINCT` to get a list of unique values for a field called "agency":
-
-```javascript
-DISTINCT('agency').then(console.log)
-/*
-[
-  'agency.POLICE',
-  'agency.DOJ',
-  'agency.SUPREMECOURT'
-]
-*/
-
-```
-
-### Get a set of document ids per unique field value
-
-```javascript
-DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
- .then(console.log)
-/*
-[
-  { gte: 'agency.POLICE', lte: 'agency.POLICE', _id: [ 2,3,4,7 ] },
-  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ]
-  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ]
-]
-*/
-
-```
-
-### Get counts per unique field value
-
-```javascript
-DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
- .then(result => result.map(item => { item.count = item._id.length; return item } ))
- .then(console.log)
-/*
-[
-  { gte: 'agency.POLICE' lte: 'agency.POLICE', _id: [ 2,3,4,7 ], count: 4 },
-  { gte: 'agency.DOJ' lte: 'agency.DOJ', _id: [ 1, 6 ], count: 2 },
-  { gte: 'agency.SUPREMECOURT' lte: 'agency.SUPREMECOURT', _id: [ 5, 7 ], count: 2 }
-]
-*/
-
-```
-
-
-### Define custom "buckets"
-
-```javascript
-Promise.all([
-  'totalamt.0',
-  'totalamt.10000000',
-  'totalamt.200000000'
-].map(BUCKET))
- .then(console.log)
-/*
-[
-  { gte: 'totalamt.0',
-    lte: 'totalamt.0',
-    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787' ] },
-  { gte: 'totalamt.10000000',
-    lte: 'totalamt.10000000',
-    _id: [ '52b213b38594d8a2be17c785' ] },
-  { gte: 'totalamt.200000000',
-    lte: 'totalamt.200000000',
-    _id: [ '52b213b38594d8a2be17c789' ] }
-]
-*/
+// (can also be expressed as ->)
+{
+  FIELD: 'fruit',
+  VALUE: 'banana'
+}
 ```
 
 ```javascript
-Promise.all([
-  { gte: 'totalamt.0', lte: 'totalamt.10000000'},
-  { gte: 'totalamt.10000001', lte: 'totalamt.99999999'}
-].map(BUCKET))
- .then(console.log)
-/*
-[
-  { gte: 'totalamt.0',
-    lte: 'totalamt.10000000',
-    _id: [ '52b213b38594d8a2be17c783', '52b213b38594d8a2be17c785', '52b213b38594d8a2be17c787' ] },
-  { gte: 'totalamt.10000001',
-    lte: 'totalamt.99999999',
-    _id: [ '52b213b38594d8a2be17c789' ] }
-]
-*/
-
+// Find in two or more specified fields:
+{
+  FIELD: [ 'fruit', 'description' ], // array of field names
+  VALUE: 'banana'
+}
 ```
 
-### Combine an aggregation with a search
+### Find within a range
+```javascript
+{
+  FIELD: fieldName,
+  VALUE: {
+    GTE: gte,        // greater than or equal to
+    LTE: lte         // less than or equal to
+  }
+}
+```
+Example (get all fruits beginning with 'a', 'b' or 'c'):
+```javascript
+// this token range would capture 'banana'
+{
+  FIELD: 'fruit',
+  VALUE: {
+    GTE: 'a',
+    LTE: 'c'
+  }
+}
+```
+
+### Find where a field exists
+```javascript
+// Find all documents that contain a 'price' field
+{
+  FIELD: 'price'
+}
+```
+
+
+## ALL_DOCUMENTS
+
+See also [DOCUMENTS](#documents)
 
 ```javascript
-const bucketStructure = DISTINCT('agency')
- .then(result => Promise.all(result.map(BUCKET)))
-const search = SEARCH('board_approval_month:October')
-// here the aggregation will only be performed on documents matching that
-// satisfy the search criteria ('board_approval_month:October')
-BUCKETFILTER(bucketStructure, search).then(/* result */)
+// Return all documents from index.
+const documents = await ALL_DOCUMENTS(limit)
+// "limit" is the maximum total of documents to be returned
 ```
-## How do I make a simple typeahead / autosuggest / matcher
 
-There are of course many ways to do this, but if you just want a
-simple "begins with" autosuggest, then you can simply use the
-`DICTIONARY` function:
+## BUCKETS
 
 ```javascript
-// get all tokens in the index
-DICTIONARY().then( /* array of tokens */ )
-
-// get all tokens in the body.text field
-DICTIONARY('body.text').then( /* array of tokens */ )
-
-// get tokens in the body.text field that starts with 'cool'
-DICTIONARY('body.text.cool').then( /* array of tokens */ )
-
-// you can also use gte/lte ("greater/less than or equal")
-DICTIONARY({
-  gte: 'body.text.a',
-  lte: 'body.text.g'
-}).then( /* array of tokens */ )
+// Return the IDs of documents for each given token filtered by the
+// query result
+{
+  BUCKETS: [ token1, token2, ... ]
+}
 ```
 
-Alternatively you can use `DICTIONARY` to extract all terms from the
-index and then feed them into some third-party matcher logic.
+
+## DELETE
+
+```javascript
+// Delete documents from the index
+const result = await DELETE(documentIds)
+// "documentIds" is an Array of IDs
+// "result" is the status of the deletion
+```
+
+
+## DICTIONARY
+
+See also [DISTINCT](#distinct)
+
+```javascript
+// Return each available field value for the given token space.
+const dictionary = await DICTIONARY(token)
+```
+
+
+## DOCUMENTS
+
+See also [ALL_DOCUMENTS](#all_documents)
+
+```javascript
+// Return named documents from index.
+const documents = await DOCUMENTS(docIDs) // docIDs is an array
+```
+
+
+## DISTINCT
+
+See also [DICTIONARY](#dictionary)
+
+```javascript
+// Return distinct field values from index
+const distinct = await DISTINCT(token)
+```
+
+
+## DOCUMENT_COUNT
+
+```javascript
+// returns the total amount of documents in the index
+const totalDocs = await DOCUMENT_COUNT()
+```
+
+
+## EXPORT
+
+```javascript
+// creates a backup/export of an index
+const indexExport = await EXPORT()
+```
+
+
+## FACETS
+
+```javascript
+// Return document ids for each distinct field/value combination for
+// the given token space.
+{
+  FACETS: token
+}
+```
+
+
+## FIELDS
+
+```javascript
+// get every document field name that has been indexed:
+const fields = await FIELDS()
+```
+
+
+## IMPORT
+
+```javascript
+// creates an index from a backup/export
+await IMPORT(index)
+```
+
+
+## INDEX
+
+`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
+## QUERY
+
+### Running queries
+
+`QUERY` is a function that allows you to run queries on the search
+index. It is called with a query object and returns a Promise:
+
+```javascript
+const results = await QUERY(query, options)
+```
+
+`options` is an optional object that can contain the following properties:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| [`BUCKETS`](#buckets-1) | `Array` | `[]` | Aggregate on user defined buckets |
+| [`DOCUMENTS`](#documents) | `boolean` | `false` | If `true` return entire document, if not `true` return reference to document|
+| [`FACETS`](#facets-1) | `Array` | `[]` | Aggregate on fields in the index |
+| [`PAGE`](#page) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
+| [`SCORE`](#score) | `String` | `'TFIDF'` | Calculate a value per document |
+| [`SORT`](#sort) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
+
+#### Returning references or documents
+
+`QUERY` can return both refences to documents and the documents
+themselves.
+
+References are returned by default. To return documents, pass the
+[`DOCUMENTS`](#DOCUMENTS) option:
+
+```javascript
+    const results = await QUERY(query, { DOCUMENTS: true })
+```
+
+#### Nesting query verbs
+
+Query verbs can be nested to create powerful expressions:
+
+```javascript
+// Example: AND with a nested OR with a nested AND
+{
+  AND: [ token1, token2, {
+    OR: [ token3, {
+      AND: [ token4, token5 ]
+    }]
+  }]
+}
+```
+
+#### Manipulating result sets
+
+Results can be paginated with [SCORE](#score), [SORT](#sort) and [PAGE](#page)
+
+```javascript
+// Example: get the second page of documents ordered by price
+QUERY({
+  FIELD: 'price'           // Select all documents that have a 'price'
+}, {
+  SCORE: 'SUM',            // Score on the sum of the price field
+  SORT: {
+    TYPE: 'NUMERIC',       // sort numerically, not alphabetically
+    DIRECTION: 'ASCENDING' // cheapest first
+  },
+  PAGE: {
+    NUMBER: 1,             // '1' is the second page (pages counted from '0')
+    SIZE: 20               // 20 results per page
+  }
+})
+```
+
+
+### Query options
+
+
+#### BUCKETS
+
+See also [BUCKETS](#buckets)
+
+```javascript
+// Return the IDs of documents for each given token filtered by the
+// query result
+  
+{
+  BUCKETS: [ token1, token2, ... ]
+}
+```
+
+#### DOCUMENTS
+
+```javascript
+// Returns full documents instead of just metadata.
+{
+  DOCUMENTS: true
+}
+```
+
+
+#### FACETS
+
+See also [FACETS](#facets)
+
+```javascript
+// Return document ids for each distinct field/value combination for
+// the given token space, filtered by the query result.
+{
+  FACETS: token
+}
+```
+
+
+#### PAGE
+
+```javascript
+// show a single page of the result set
+{
+  PAGE: {
+    NUMBER: pageNumber, // to count from the end of the result set use negative numbers
+    SIZE: pageSize
+  }
+}
+```
+
+#### SCORE
+
+```javascript
+// show a single page of the result set
+{
+  SCORE: scoreType // can be 'TFIDF', 'SUM, 'PRODUCT' or 'CONCAT'
+}
+```
+
+
+#### SORT
+
+```javascript
+// Return search results sorted by relevance to query tokens
+{
+  SORT: {
+    TYPE: type,              // can be 'NUMERIC' or 'ALPHABETIC'
+    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING'
+    FIELD: field             // field to sort on
+  }
+}
+```
+
+
+### Query verbs
+
+#### AND
+
+```javascript
+// Boolean AND: Return results that contain all tokens
+{
+  AND: [ token1, token2, ... ]
+}
+```
+
+
+#### NOT
+
+```javascript
+{
+  INCLUDE: queryExpression1,
+  EXCLUDE: queryExpression2
+}
+```
+
+
+#### OR
+
+```javascript
+// Boolean OR: Return results that contain one or more tokens
+{
+  OR: [ token1, token2, ... ]
+}
+```
+
+
+#### SEARCH
+
+```javascript
+// Return search results sorted by relevance to query tokens
+{
+  SEARCH: [ token1, token2, ... ]
+}
+```
+
+
+## MAX
+
+```javascript
+// get the _alphabetically_ maxiumum/last value of the given token space
+const max = await MAX(token)
+```
+
+
+## MIN
+
+```javascript
+// get the _alphabetically_ minimum/first value of the given token space
+const min = await MIN(token)
+```
+
+
+## PUT
+
+```javascript
+// Put documents into the index
+const result = await PUT(documents, options)
+// "result" shows the success or otherwise of the insertion
+// "documents" is an Array of javascript Objects.
+// "options" is an Object that contains indexing options
+```
+
+If any document does not contain an `_id` field, then one will be
+generated and assigned
+
+
+`options` is an optional object that can contain the following values:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
+|`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+
+
+## PUT_RAW
+
+```javascript
+// Put raw documents into the index
+const result = await PUT_RAW(rawDocuments)
+// "result" shows the success or otherwise of the insertion
+// "rawDocuments" is an Array of javascript Objects that must
+// contain an _id field
+```
+
+`PUT_RAW` writes raw documents to the index. Raw documents are the
+documents that the index returns. Use raw documents when the documents
+that are indexed are not the same as the ones that you want the index
+to return. This can be useful if you want documents to be retrievable
+for terms that dont appear in the actual document. It can also be
+useful if you want to store stripped down versions of the document in
+the index in order to save space.
+
+NOTE: if the documents that the index returns are very different to
+the corresponding documents that are indexed, it may make sense to set
+`storeRawDocs: false` when indexing (making indexing slightly faster),
+and instead add them with `PUT_RAW` afterwards.
+
+

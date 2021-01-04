@@ -1,44 +1,65 @@
-import fii from 'fergies-inverted-index'
-import writer from './write.js'
-import reader from './read.js'
-import util from './util.js'
+const fii = require('fergies-inverted-index')
 
-global.D = 0 // total docs in index
-global.searchableFields = [] // fields that are available for searching
+const Cache = require('./cache.js')
+const reader = require('./read.js')
+const writer = require('./write.js')
 
-const makeASearchIndex = idx => {
-  const w = writer(idx)
-  const r = reader(idx)
+const makeASearchIndex = ops => {
+  // ".flush" clears the cache ".cache" creates/promotes a cache entry
+  const c = new Cache(ops.cacheLength)
+
+  const w = writer(ops.fii, ops) // TODO: should be just ops?
+  const r = reader(ops.fii)
+
   return {
-    AND: r.AND,
-    BUCKET: r.BUCKET,
-    BUCKETFILTER: r.BUCKETFILTER,
+    // internal functions inherited from fergies-inverted-index
+    _AND: ops.fii.AND,
+    _BUCKET: ops.fii.BUCKET,
+    _CACHE: c,
+    _GET: ops.fii.GET,
+    _NOT: ops.fii.SET_SUBTRACTION,
+    _OR: ops.fii.OR,
+
+    // search-index read
+    _PAGE: r.PAGE,
+    _SCORE: r.SCORE,
+    _SEARCH: r.SEARCH,
+    _SORT: r.SORT,
+
+    // public API
+    ALL_DOCUMENTS: r.ALL_DOCUMENTS,
+    BUCKETS: ops.fii.BUCKETS,
     DELETE: w.DELETE,
-    DICTIONARY: r.DICTIONARY,
+    DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
     DISTINCT: r.DISTINCT,
-    DOCUMENTS: r.DOCUMENTS,
-    GET: r.GET,
-    INDEX: idx,
-    NOT: r.SET_DIFFERENCE,
-    OR: r.OR,
-    PUT: w.PUT,
-    SCORENUMERIC: r.SCORENUMERIC,
-    SCORETFIDF: r.SCORETFIDF,
-    SEARCH: r.SEARCH
+    DOCUMENTS: docs => c.cache({ DOCUMENTS: docs || null }, r.DOCUMENTS(docs)),
+    DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+    EXPORT: ops.fii.EXPORT,
+    FACETS: r.FACETS,
+    FIELDS: ops.fii.FIELDS,
+    IMPORT: idx => c.flush(ops.fii.IMPORT(idx)),
+    INDEX: ops.fii,
+    MAX: ops.fii.MAX,
+    MIN: ops.fii.MIN,
+    PUT: (docs, pops) => c.flush(w.PUT(docs, pops)),
+    PUT_RAW: docs => c.flush(w.PUT_RAW(docs)),
+    QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops))
   }
 }
 
-export default function (ops, callback) {
-  // if no callback then return lazy load
-  if (!callback) {
-    const idx = ops.fii || fii(ops)
-    // lazy calibration
-    util(idx).calibrate()
-    return makeASearchIndex(idx)
-  } else {
-    fii(ops, (err, idx) => {
-      util(idx).calibrate()
-        .then(() => callback(err, makeASearchIndex(idx)))
-    })
-  }
-}
+const initIndex = (ops = {}) => new Promise((resolve, reject) => {
+  ops = Object.assign({
+    cacheLength: 1000,
+    tokenAppend: '#',
+    caseSensitive: false,
+    storeVectors: false,
+    storeRawDocs: true
+  }, ops)
+  //  if (ops.fii) return resolve(ops)
+  // else
+  return fii(ops).then(
+    aNewFii => resolve(Object.assign({ fii: aNewFii }, ops))
+  )
+})
+
+module.exports = ops => initIndex(ops).then(makeASearchIndex)

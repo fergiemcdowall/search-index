@@ -1,35 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" manifest="searchindex.manifest">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./mini-default.min.css">
-    <link rel="stylesheet" href="./mini-additions.css">
-    <script src="../dist/search-index.1.0.6.js"></script>
-    <title>search-index browser example</title>
+    <script src="./lib/search-index.js"></script>
+    <!-- borrow autocomplete lib from https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.min.js-->
+    <script src="./lib/autocomplete.min.js"></script>
+    <title>Search-index demo</title>
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
     <div id="header">
-      <h1>Search-index browser example</h1>
+      <h1>Search-index demo</h1>
+      A simple demo using a data dump from <a target="_blank" href="https://www.reddit.com/r/Earthporn">Reddit</a>
     </div>
-
-    <div id="addContainer">
-      <h2>Add content</h2>
-      <label for="title">Title:</label>
-      <input type="text" id="title" placeholder="Document title" /><br />
-      <label for="body">Text:</label>
-      <input type="text" id="body" placeholder="Body text" /><br />
-      <button type="button" id="indexContent">Add</button>
-    </div>
-
-    <div id="searchBar">
-      <h2>Search for content</h2>
-      <input aria-label="search query" id="searchQuery" placeholder="search query" />
-    </div>
-
-    <div id="searchResults"></div>                                                                                   
-
-    <script src="./search-app.js"></script>
+    <input id="query"
+           placeholder="search query"
+           autocomplete="off" />
+    <ul id="filters"></ul>
+    <ul id="facets">Loading...</ul>
+    <h2 id="resultLength"></h2>
+    <ul id="result"></ul>
+    <script src="./src/stopwords.js"></script>
+    <script src="./src/templates.js"></script>
+    <script src="./src/search-app.js"></script>
   </body>
 </html> 

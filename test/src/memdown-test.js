@@ -1,9 +1,6 @@
-import encode from 'encoding-down'
-import fii from 'fergies-inverted-index'
-import levelup from 'levelup'
-import memdown from 'memdown'
-import si from '../../dist/search-index.esm.js'
-import test from 'tape'
+const memdown = require('memdown')
+const si = require('../../')
+const test = require('tape')
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'memdown-test'
@@ -38,40 +35,31 @@ const data = [
   }
 ]
 
-let db
-
+// TODO: there should probably be an api call for this
 test('create a fii with memdown', t => {
-  t.plan(3)
-  levelup(encode(memdown(indexName), {
-    valueEncoding: 'json'
-  }), (err, store) => {
-    t.error(err)
-    db = si({
-      fii: fii({ store: store })
-    })
-//    t.ok(!fs.existsSync('test/' + indexName)) // breaks browser tests
-    db.PUT(data).then(() => {
-      t.pass('ok')
-    }).then(() => {
-      db.SEARCH(
-        'body.text:cool', // use colon? eg "body.text:cool"
-        'body.text:really',
-        'body.text:bananas'
-      ).then(res => {
-        t.looseEqual(res, [
-          {
-            '_id': 'b',
-            // how about "match"
-            'match': [
-              'body.text.cool:0.17',
-              'body.text.really:0.17',
-              'body.text.bananas:0.17'
-            ],
-            'score': 0.71,
-            'obj': data[1]
-          }
-        ])
-      })
-    })
+  t.plan(2)
+  si({
+    db: memdown(indexName)
+  }).then(idx => idx.PUT(data).then(res => {
+    t.deepEqual(res, [
+      { _id: 'a', status: 'OK', operation: 'PUT' },
+      { _id: 'b', status: 'OK', operation: 'PUT' },
+      { _id: 'c', status: 'OK', operation: 'PUT' }
+    ])
+    return idx
+  })).then(idx => {
+    idx._SEARCH(
+      'body.text:cool',
+      'body.text:really',
+      'body.text:bananas'
+    ).then(res => t.deepEquals(res, [{
+      _id: 'b',
+      _match: [
+        'body.text:cool#1.00',
+        'body.text:really#1.00',
+        'body.text:bananas#1.00'
+      ],
+      _score: 4.16
+    }]))
   })
 })

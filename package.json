@@ -1,22 +1,25 @@
 {
   "name": "search-index",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
-  "main": "dist/search-index.cjs.js",
-  "module": "dist/search-index.esm.js",
+  "main": "src/main.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "compile-for-node": "npm run empty-dist && rollup -c",
-    "compile-all": "npm run compile-for-node && webpack && ln -s dist/search-index-$(node -p \"require('./package.json').version\").js dist/search-index.js",
-    "empty-sandbox": "rm -rf test/sandbox && mkdir test/sandbox",
-    "empty-dist": "rm -rf dist && mkdir dist",
-    "lint": "standard --fix test/* src/*",
-    "toc": "doctoc docs/API.md",
+    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cd dist && ln -s search-index-*.js search-index.js && cd ..",
+    "demo-export": "node demo/generate-index/export.js",
+    "demo-fetch": "node demo/generate-index/fetch.js",
+    "demo-process": "node demo/generate-index/process.js",
+    "demo-rebuild": "npm run demo-fetch && npm run demo-process && npm run demo-export && npm run demo-link-lib",
+    "demo-start": "http-server -c-1 demo & open-cli http://127.0.0.1:8080",
+    "demo-link-lib": "cd demo/lib &&  ln -sf ../../dist/search-index.js && cd ../../",
+    "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
+    "lint": "standard --fix test/src/* src/* demo/src/* demo/generate-index/*.js",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
-    "test-browser": "npm run empty-sandbox && npm run compile-all && cat test/sandbox/bundle.js | tape-run",
-    "test-node": "npm run compile-for-node && npm run empty-sandbox && tape test/cjs/*.js"
+    "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
+    "test-node": "npm run empty-sandbox && tape test/src/*-test.js",
+    "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
   },
   "repository": {
     "type": "git",
@@ -29,27 +32,27 @@
   },
   "homepage": "https://github.com/fergiemcdowall/search-index#readme",
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
-    "@babel/register": "^7.4.4",
-    "babel-loader": "^8.0.6",
-    "babel-plugin-add-module-exports": "^1.0.2",
+    "assert": "^2.0.0",
     "doctoc": "^1.4.0",
-    "level-out": "^1.0.0",
-    "memdown": "^4.0.0",
-    "rollup": "^1.12.3",
-    "standard": "^12.0.1",
-    "tape": "^4.10.1",
-    "tape-run": "^6.0.0",
-    "webpack": "^4.32.0",
-    "webpack-cli": "^3.3.2",
+    "fuzzyset": "^1.0.5",
+    "http-server": "^0.12.3",
+    "level-out": "^1.0.1",
+    "memdown": "^5.1.0",
+    "open-cli": "^6.0.1",
+    "path": "^0.12.7",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "standard": "^16.0.2",
+    "stopword": "^1.0.6",
+    "stream-browserify": "^3.0.0",
+    "tape": "^5.0.1",
+    "tape-run": "^7.0.0",
+    "webpack": "^5.4.0",
+    "webpack-cli": "^4.2.0",
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "1.0.0",
-    "http-serve": "^1.0.1",
-    "term-vector": "^1.0.0",
-    "traverse": "^0.6.6"
+    "fergies-inverted-index": "8.3.2",
+    "term-vector": "^1.0.0"
   }
 }

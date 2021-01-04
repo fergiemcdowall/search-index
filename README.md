@@ -10,68 +10,24 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 
 
-## Documentation
-
-* [API](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md)
-* [FAQ](https://github.com/fergiemcdowall/search-index/tree/master/docs/API.md#faq)
-* [Example code](https://github.com/fergiemcdowall/search-index/tree/master/docs/README.md)
-* [Browser demo](https://fergiemcdowall.github.io/search-index/demo/) and [short explanation](https://github.com/fergiemcdowall/search-index/tree/master/demo/)
-
-
 ## Quick start
 
-### Initialise search-index
-
-#### Default method
-
-`search-index` can be invoked with ES6 `import` or commonjs `require`
-using either lazy loading or a callback:
-
 ```javascript
-// Make a new index, or open an existing one with this name
-import si from 'search-index'
+const si = require('search-index')
 
-// "lazy load"- db may not be immediately initialized
-db = si({ name: 'mySearchIndex' })
+// initialize an index
+const { PUT, QUERY } = await si()
 
-// ... or callback to be sure you have it in time
-si({ name: 'myDB' }, (err, db) => {
-  // db is guaranteed to be open and available
-})
+// add documents to the index
+await PUT( /* objects */ )
+
+// read documents from the index
+const results = await QUERY( /* query */ )
 ```
 
-#### Script tag method
+## Documentation
 
-In the `/dist` folder there is a file called
-`search-index.<version>.js` that can be used as a standalone in a
-`<script>` tag. The library is then available under a global variable
-called `searchIndex`:
+* [API](docs/API.md)
+* [FAQ](docs/FAQ.md)
+* [Browser demo](https://fergiemcdowall.github.io/search-index/demo/index.html) ([source code](demo/))
 
-```html
-<script type='text/javascript' src='./search-index.1.0.2.js'></script>
-<script type='text/javascript'>
-  searchIndex({ name: 'myDB' }, (err, db) => {
-    // db is now available
-  })
-</script>
-```
-
-### Add documents to index
-
-```javascript
-// db exists in a leveldb instance if run on a server
-PUT([ /* my array of objects */ ]).then(doStuff)
-```
-
-### Search the index
-
-```javascript
-// search for terms without specifing any fields
-SEARCH('SCOTLAND', 'GREEN').then(result)
-
-```
-
-
-## More examples
-
-See the [tests](https://github.com/fergiemcdowall/search-index/tree/master/test) for more examples.
