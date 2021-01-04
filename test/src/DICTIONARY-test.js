@@ -194,8 +194,11 @@ test('FuzzySet test', t => {
   const { DICTIONARY } = global[indexName]
   t.plan(1)
   DICTIONARY().then(dict => {
+    console.log('BOOOOOM')
     const fs = FuzzySet()
+    console.log('BANG')
     dict.forEach(d => fs.add(d))
+    console.log('BIIIIM')
     t.deepEqual(fs.get('blux'), [[0.75, 'blue']])
   })
 })

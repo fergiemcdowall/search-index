@@ -20,7 +20,7 @@ module.exports = fii => {
         )
       )
     : ALL_DOCUMENTS()
-  
+
   const DICTIONARY = token => DISTINCT(token).then(results =>
     Array.from(results.reduce(
       (acc, cur) => acc.add(cur.VALUE), new Set())
