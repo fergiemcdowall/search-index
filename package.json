@@ -1,10 +1,14 @@
 {
   "name": "search-index",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "main": "src/main.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "directories": {
-    "lib": "lib"
+    "lib": "src"
   },
   "scripts": {
     "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cd dist && ln -s search-index-*.js search-index.js && cd ..",
@@ -25,12 +29,12 @@
     "type": "git",
     "url": "git+https://github.com/fergiemcdowall/search-index.git"
   },
-  "author": "",
+  "author": "Fergus McDowall",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fergiemcdowall/search-index/issues"
   },
-  "homepage": "https://github.com/fergiemcdowall/search-index#readme",
+  "homepage": "https://fergiemcdowall.github.io/search-index/",
   "devDependencies": {
     "assert": "^2.0.0",
     "doctoc": "^1.4.0",
