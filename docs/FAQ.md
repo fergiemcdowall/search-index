@@ -79,7 +79,7 @@ another backend by passing the appropriate
 [`abstract-leveldown`](https://github.com/Level/abstract-leveldown)
 when initialising. [Many datastores are
 supported](https://github.com/Level/awesome/#stores). Use the [`db`
-initialisation option](API.md#sioptions)
+initialisation option](API.md#sioptions). (see [tests](https://github.com/fergiemcdowall/search-index/blob/master/test/src/memdown-test.js) for a working example)
 
 
 # How do I get out entire documents and not just document IDs?
