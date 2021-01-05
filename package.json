@@ -2,6 +2,9 @@
   "name": "search-index",
   "version": "2.0.1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
+  "engines": {
+    "node": ">=12"
+  },
   "main": "src/main.js",
   "files": [
     "dist",
