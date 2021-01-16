@@ -53,8 +53,8 @@ test('can add data', t => {
   t.plan(1)
   global[exportingIndexName].PUT(carData).then(response =>
     t.deepEquals(response, [
-      { _id: '0', status: 'OK', operation: 'PUT' },
-      { _id: '1', status: 'OK', operation: 'PUT' }
+      { _id: '0', status: 'CREATED', operation: 'PUT' },
+      { _id: '1', status: 'CREATED', operation: 'PUT' }
     ])
   )
 })
@@ -84,7 +84,7 @@ test('can add data that will be overwritten', t => {
     text: 'this doc will be removed during IMPORT'
   }]).then(response =>
     t.deepEquals(response, [
-      { _id: '999', status: 'OK', operation: 'PUT' }
+      { _id: '999', status: 'CREATED', operation: 'PUT' }
     ])
   )
 })

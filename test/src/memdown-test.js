@@ -42,9 +42,9 @@ test('create a fii with memdown', t => {
     db: memdown(indexName)
   }).then(idx => idx.PUT(data).then(res => {
     t.deepEqual(res, [
-      { _id: 'a', status: 'OK', operation: 'PUT' },
-      { _id: 'b', status: 'OK', operation: 'PUT' },
-      { _id: 'c', status: 'OK', operation: 'PUT' }
+      { _id: 'a', status: 'CREATED', operation: 'PUT' },
+      { _id: 'b', status: 'CREATED', operation: 'PUT' },
+      { _id: 'c', status: 'CREATED', operation: 'PUT' }
     ])
     return idx
   })).then(idx => {

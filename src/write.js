@@ -92,19 +92,16 @@ module.exports = (fii, ops) => {
         ops, putOptions
       )
     ).then(
-      result => (
-        ops.storeRawDocs
-          ? _PUT_RAW(docs)
-          : Promise.all([])
-      ).then(
-        () => incrementDocCount(result.length)
-      ).then(() => result)
+      result => Promise.all([
+        _PUT_RAW(docs, !ops.storeRawDocs),
+        incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+      ]).then(() => result)
     )
   )
 
-  const _PUT_RAW = docs => Promise.all(
+  const _PUT_RAW = (docs, dontStoreValue) => Promise.all(
     docs.map(
-      doc => fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', doc)
+      doc => fii.STORE.put('￮DOC_RAW￮' + doc._id + '￮', dontStoreValue ? {} : doc)
     )
   ).then(
     // TODO: make this actually deal with errors
@@ -117,19 +114,13 @@ module.exports = (fii, ops) => {
     )
   )
 
-  const _DELETE = _ids => fii.DELETE(_ids).then(
-    result => Promise.all(
-      result.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))
-    ).then(
-      result => decrementDocCount(_ids.length).then(() => _ids.map(
-        _id => ({
-          _id: _id,
-          operation: 'DELETE',
-          status: 'OK'
-        })
-      ))
-    )
-  )
+  const _DELETE = _ids => fii.DELETE(_ids).then(result => {
+    const deleted = result.filter(d => d.status === 'DELETED')
+    return Promise.all([
+      Promise.all(deleted.map(r => fii.STORE.del('￮DOC_RAW￮' + r._id + '￮'))),
+      decrementDocCount(deleted.length)
+    ]).then(() => result)
+  })
 
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)

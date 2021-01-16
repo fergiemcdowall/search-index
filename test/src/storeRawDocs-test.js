@@ -36,8 +36,8 @@ test('can add data', t => {
       storeRawDocs: false
     }).then(response =>
     t.deepEquals(response, [
-      { _id: '0', status: 'OK', operation: 'PUT' },
-      { _id: '1', status: 'OK', operation: 'PUT' }
+      { _id: '0', status: 'CREATED', operation: 'PUT' },
+      { _id: '1', status: 'CREATED', operation: 'PUT' }
     ])
   )
 })
@@ -49,6 +49,8 @@ test('Verify that an appropriate index has been created', t => {
     { key: 'make:tesla#1.00', value: ['0'] },
     { key: 'manufacturer:volvo#1.00', value: ['0', '1'] },
     { key: '￮DOCUMENT_COUNT￮', value: 2 },
+    { key: '￮DOC_RAW￮0￮', value: {} },
+    { key: '￮DOC_RAW￮1￮', value: {} },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮make￮', value: 'make' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }

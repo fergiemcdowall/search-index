@@ -50,6 +50,7 @@ const makeASearchIndex = ops => {
 const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   ops = Object.assign({
     cacheLength: 1000,
+    docExistsSpace: 'DOC_RAW',
     tokenAppend: '#',
     caseSensitive: false,
     storeVectors: false,

@@ -37,9 +37,9 @@ test('can add data', t => {
   t.plan(1)
   global[indexName].PUT(carData).then(response =>
     t.deepEquals(response, [
-      { _id: '0', status: 'OK', operation: 'PUT' },
-      { _id: '1', status: 'OK', operation: 'PUT' },
-      { _id: '2', status: 'OK', operation: 'PUT' }
+      { _id: '0', status: 'CREATED', operation: 'PUT' },
+      { _id: '1', status: 'CREATED', operation: 'PUT' },
+      { _id: '2', status: 'CREATED', operation: 'PUT' }
     ])
   )
 })

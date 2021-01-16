@@ -63,7 +63,7 @@ test('_DOCUMENT_COUNT is 3', t => {
 test('can DELETE', t => {
   t.plan(1)
   global[indexName].DELETE(['b']).then((res) => t.deepEqual(res, [
-    { _id: 'b', operation: 'DELETE', status: 'OK' }
+    { _id: 'b', operation: 'DELETE', status: 'DELETED' }
   ]))
 })
 
@@ -146,7 +146,7 @@ test('can DELETE with json', t => {
   global[indexName]
     .DELETE(['c'])
     .then((res) => t.deepEqual(res, [
-      { _id: 'c', operation: 'DELETE', status: 'OK' }
+      { _id: 'c', operation: 'DELETE', status: 'DELETED' }
     ]))
 })
 
@@ -192,6 +192,6 @@ test('DELETE with non-existent id', t => {
   global[indexName]
     .DELETE(['d'])
     .then((res) => t.deepEqual(res, [
-      { _id: 'd', operation: 'DELETE', status: 'OK' }
+      { _id: 'd', operation: 'DELETE', status: 'NOT FOUND' }
     ]))
 })
