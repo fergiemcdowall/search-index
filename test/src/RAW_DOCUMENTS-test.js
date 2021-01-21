@@ -60,7 +60,7 @@ test('Verify that PUT has created an appropriate index (_PUT_1)', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -93,7 +93,7 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -126,7 +126,7 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })

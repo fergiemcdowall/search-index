@@ -56,7 +56,7 @@ test('Verify that an appropriate index has been created', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })

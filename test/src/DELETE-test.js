@@ -106,7 +106,7 @@ test('verify DELETE', t => {
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
   t.plan(expectedIndexStructure.length)
-  global[indexName].INDEX.STORE.createReadStream()
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' })
     .on('data', d => t.deepEquals(
       d, expectedIndexStructure.shift())
     )
@@ -181,7 +181,7 @@ test('verify DELETE', t => {
     { key: '￮FIELD￮title￮', value: 'title' }
   ]
   t.plan(expectedIndexStructure.length)
-  global[indexName].INDEX.STORE.createReadStream()
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' })
     .on('data', d => t.deepEquals(
       d, expectedIndexStructure.shift())
     )

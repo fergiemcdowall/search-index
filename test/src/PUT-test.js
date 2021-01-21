@@ -60,7 +60,7 @@ test('Verify that PUT has created an appropriate index (_PUT_1)', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -136,7 +136,7 @@ test('Verify that PUT has created an appropriate index (_PUT_1 again)', t => {
 
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream().on('data', d => t.deepEqual(d, indexEntries.shift()))
+  global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => t.deepEqual(d, indexEntries.shift()))
 })
 
 const indexName2 = sandbox + '_PUT-2'
@@ -175,7 +175,7 @@ test('Verify that PUT has created an appropriate index (_PUT_2)', t => {
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]
   t.plan(indexEntries.length)
-  global[indexName2].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName2].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -241,7 +241,7 @@ test('Verify that PUT has created an appropriate index (_PUT_3)', t => {
     { key: '￮FIELD￮make￮', value: 'make' }
   ]
   t.plan(indexEntries.length)
-  global[indexName3].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName3].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -307,7 +307,7 @@ test('Verify that PUT has created an appropriate index (_PUT_4)', t => {
     { key: '￮FIELD￮make￮', value: 'make' }
   ]
   t.plan(indexEntries.length)
-  global[indexName4].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName4].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })
@@ -380,7 +380,7 @@ test('Verify that PUT has created an appropriate index (doesnt index children of
     { key: '￮FIELD￮make￮', value: 'make' }
   ]
   t.plan(indexEntries.length)
-  global[indexName5].INDEX.STORE.createReadStream().on('data', d => {
+  global[indexName5].INDEX.STORE.createReadStream({ lt: '￮￮' }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
 })

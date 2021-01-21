@@ -64,6 +64,7 @@ test('can export data', t => {
   global[exportingIndexName]
     .EXPORT()
     .then(index => {
+      index.pop() // remove timestamp
       exportedIndex = index
       t.deepEquals(expectedIndex, index)
     })

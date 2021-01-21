@@ -60,7 +60,7 @@ test('verify index structure', t => {
     { key: '￮FIELD￮body￮', value: 'body' }
   ]
   t.plan(expectedIndexStructure.length)
-  global[testIndex].INDEX.STORE.createReadStream()
+  global[testIndex].INDEX.STORE.createReadStream({ lt: '￮￮' })
     .on('data', d => t.deepEquals(d, expectedIndexStructure.shift()))
 })
 

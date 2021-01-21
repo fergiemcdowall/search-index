@@ -59,6 +59,6 @@ test('index looks good', t => {
   global[dontIndexEmptyFields]
     .INDEX
     .STORE
-    .createReadStream()
+    .createReadStream({ lt: '￮￮' })
     .on('data', d => t.deepEquals(d, idx.shift()))
 })
