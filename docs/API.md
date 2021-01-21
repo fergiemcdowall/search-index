@@ -15,6 +15,7 @@
   - [ALL_DOCUMENTS](#all_documents)
   - [BUCKETS](#buckets)
   - [DELETE](#delete)
+  - [CREATED](#created)
   - [DICTIONARY](#dictionary)
   - [DOCUMENTS](#documents)
   - [DISTINCT](#distinct)
@@ -209,6 +210,14 @@ const documents = await ALL_DOCUMENTS(limit)
 const result = await DELETE(documentIds)
 // "documentIds" is an Array of IDs
 // "result" is the status of the deletion
+```
+
+
+## CREATED
+
+```javascript
+// find out when index was first created
+const timestamp = await CREATED()
 ```
 
 
