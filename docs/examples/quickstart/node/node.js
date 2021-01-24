@@ -1,12 +1,11 @@
 (async () => {
-
   const si = require('../../../../')
   const db = await si({ name: 'nodeQuickstart' })
   const readline = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
   })
-  
+
   await db.PUT([{
     _id: 1,
     bandName: 'The Beatles',
@@ -22,11 +21,10 @@
   }])
 
   const q = () => readline.question('ENTER A (CASE SENSITIVE) SEARCH TERM -> ', (term) => {
-    db.read({SEARCH: term.split(' ')})
+    db.QUERY({ SEARCH: term.split(' ') })
       .then(results => console.log(JSON.stringify(results, null, 2)))
       .then(q)
   })
 
   q()
-  
 })()

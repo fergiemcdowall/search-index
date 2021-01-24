@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
   const db = await si({ name: 'nodeQuickstart' })
-  
+
   await db.PUT([
     {
       _id: 1,
@@ -20,25 +19,25 @@
   ])
 
   console.log('\nAND ->')
-  await db.read({ AND: ['Rolling'] }).then(console.log)
+  await db.QUERY({ AND: ['Rolling'] }).then(console.log)
 
   console.log('\nAND and return whole documents ->')
-  await db.read({ AND: ['Rolling'] }).then(db.DOCUMENTS).then(console.log)
-  
-  console.log('\nAND ->')
-  await db.read({ AND: ['Rolling', 'Stones'] }).then(console.log)
+  await db.QUERY({ AND: ['Rolling'] }).then(db.DOCUMENTS).then(console.log)
 
   console.log('\nAND ->')
-  await db.read({ AND: ['Stones', 'Rolling'] }).then(console.log)
+  await db.QUERY({ AND: ['Rolling', 'Stones'] }).then(console.log)
 
   console.log('\nAND ->')
-  await db.read({ AND: ['boys'] }).then(console.log)
+  await db.QUERY({ AND: ['Stones', 'Rolling'] }).then(console.log)
 
   console.log('\nAND ->')
-  await db.read({ AND: ['The'] }).then(console.log)
+  await db.QUERY({ AND: ['boys'] }).then(console.log)
+
+  console.log('\nAND ->')
+  await db.QUERY({ AND: ['The'] }).then(console.log)
 
   console.log('\nAND with nested OR ->')
-  await db.read({
+  await db.QUERY({
     AND: [
       'The',
       {
@@ -48,18 +47,19 @@
   }).then(console.log)
 
   console.log('\nOR with nested AND ->')
-  await db.read({
+  await db.QUERY({
     OR: [
-      { AND: [ 'Rolling', 'Stones' ] },
-      { AND: [ 'The', 'Who' ] }
+      { AND: ['Rolling', 'Stones'] },
+      { AND: ['The', 'Who'] }
     ]
   }).then(console.log)
-  
+
   console.log('\nAND with scoped search terms ->')
-  await db.read({ AND: [
-    'description:The',
-    'description:rock',
-    'bandName:The'
-  ] }).then(console.log)
-  
+  await db.QUERY({
+    AND: [
+      'description:The',
+      'description:rock',
+      'bandName:The'
+    ]
+  }).then(console.log)
 })()

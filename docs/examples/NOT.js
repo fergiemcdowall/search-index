@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
   const db = await si({ name: 'nodeQuickstart' })
-  
+
   await db.PUT([
     {
       _id: 1,
@@ -20,13 +19,12 @@
   ])
 
   console.log('\nNOT-ing ->')
-  await db.read(
+  await db.QUERY(
     {
       NOT: {
-        include: 'The',
-        exclude: 'Rolling'
+        INCLUDE: 'The',
+        EXCLUDE: 'Rolling'
       }
     }
   ).then(console.log)
-  
 })()

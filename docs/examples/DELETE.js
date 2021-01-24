@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
   const db = await si({ name: 'nodeQuickstart' })
-  
+
   await db.PUT([
     {
       _id: 1,
@@ -20,12 +19,16 @@
   ])
 
   console.log('\nADDING ->')
-  await db.read({ DOCUMENTS: [{ _id: '3' }]}).then(console.log)
-  
+  await db.QUERY({ DOCUMENTS: ['3'] }).then(console.log)
+  await db.DOCUMENT_COUNT().then(console.log)
+  await db.ALL_DOCUMENTS().then(console.log)
+
   console.log('\nDELETING ->')
   await db.DELETE(['3']).then(console.log)
 
   console.log('\nCONFIRM DELETE ->')
-  await db.read({ DOCUMENTS: [{ _id: '3' }]}).then(console.log)
-  
+  await db.QUERY({ DOCUMENTS: ['3'] }).then(console.log)
+  await db.QUERY({ SEARCH: ['Who'] }).then(console.log)
+  await db.DOCUMENT_COUNT().then(console.log)
+  await db.ALL_DOCUMENTS().then(console.log)
 })()
