@@ -1,7 +1,11 @@
 (async () => {
   const si = require('../../')
-  const db = await si({ name: 'nodeQuickstart' })
+  const db = await si({
+    name: 'DELETE-EXAMPLE',
+    storeVectors: true
+  })
 
+  console.log('\nADDING ->')
   await db.PUT([
     {
       _id: 1,
@@ -16,9 +20,9 @@
       bandName: 'The Who',
       description: 'Nearly as good as Led Zeppelin'
     }
-  ])
+  ]).then(console.log)
 
-  console.log('\nADDING ->')
+  console.log('\nVERIFYING ->')
   await db.QUERY({ DOCUMENTS: ['3'] }).then(console.log)
   await db.DOCUMENT_COUNT().then(console.log)
   await db.ALL_DOCUMENTS().then(console.log)
@@ -31,4 +35,5 @@
   await db.QUERY({ SEARCH: ['Who'] }).then(console.log)
   await db.DOCUMENT_COUNT().then(console.log)
   await db.ALL_DOCUMENTS().then(console.log)
+
 })()

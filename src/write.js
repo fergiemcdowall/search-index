@@ -86,18 +86,19 @@ module.exports = (fii, ops) => {
     )
   )
 
-  const _PUT = (docs, putOptions) => indexingPipeline(docs).then(
-    docs => fii.PUT(
-      docs.map(createDocumentVector), Object.assign(
-        ops, putOptions
+  const _PUT = (docs, putOptions) => {
+    return indexingPipeline(docs).then(
+      docs => fii.PUT(
+        docs.map(createDocumentVector), Object.assign(
+          ops, putOptions
+        )
+      ).then(
+        result => Promise.all([
+          _PUT_RAW(docs, !ops.storeRawDocs),
+          incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+        ]).then(() => result)
       )
-    ).then(
-      result => Promise.all([
-        _PUT_RAW(docs, !ops.storeRawDocs),
-        incrementDocCount(result.filter(r => r.status === 'CREATED').length)
-      ]).then(() => result)
-    )
-  )
+    )}
 
   const _PUT_RAW = (docs, dontStoreValue) => Promise.all(
     docs.map(
