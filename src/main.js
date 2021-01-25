@@ -38,7 +38,7 @@ const makeASearchIndex = ops => {
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
-    IMPORT: idx => c.flush(() => ops.fii.IMPORT(idx)),
+    IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
     MAX: ops.fii.MAX,
     MIN: ops.fii.MIN,

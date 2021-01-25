@@ -48,5 +48,4 @@ module.exports = class Cache {
       return resolve()
     })
   }
-
 }

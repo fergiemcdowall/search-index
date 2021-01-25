@@ -81,7 +81,8 @@ test('create a search index', t => {
   t.plan(1)
   si({
     name: indexName,
-    storeRawDocs: false
+    storeRawDocs: false,
+    storeVectors: true
   }).then(db => {
     global[indexName] = db
     t.pass('ok')
@@ -131,7 +132,7 @@ test('can DELETE data', t => {
   global[indexName].DELETE(['3', '4', '7']).then(res => t.deepEquals(res, [
     { _id: '3', operation: 'DELETE', status: 'DELETED' },
     { _id: '4', operation: 'DELETE', status: 'DELETED' },
-    { _id: '7', operation: 'DELETE', status: 'NOT FOUND' }
+    { _id: '7', operation: 'DELETE', status: 'FAILED' }
   ]))
 })
 

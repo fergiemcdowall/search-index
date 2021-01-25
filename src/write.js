@@ -98,7 +98,8 @@ module.exports = (fii, ops) => {
           incrementDocCount(result.filter(r => r.status === 'CREATED').length)
         ]).then(() => result)
       )
-    )}
+    )
+  }
 
   const _PUT_RAW = (docs, dontStoreValue) => Promise.all(
     docs.map(

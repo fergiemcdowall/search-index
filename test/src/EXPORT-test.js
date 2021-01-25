@@ -64,8 +64,9 @@ test('can export data', t => {
   global[exportingIndexName]
     .EXPORT()
     .then(index => {
-      index.pop() // remove timestamp
       exportedIndex = index
+      index.pop() // remove timestamp
+      index.pop() // remove timestamp
       t.deepEquals(expectedIndex, index)
     })
 })
@@ -92,6 +93,7 @@ test('can add data that will be overwritten', t => {
 
 test('can import data', t => {
   t.plan(1)
+  console.log('HEEERE')
   global[importingIndexName]
     .IMPORT(exportedIndex)
     .then(() => t.ok('imported'))
