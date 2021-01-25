@@ -20,7 +20,7 @@
       bandName: 'The Who',
       description: 'Nearly as good as Led Zeppelin'
     }
-  ]).then(console.log)
+  ], { storeVectors: true }).then(console.log)
 
   console.log('\nVERIFYING ->')
   await db.QUERY({ DOCUMENTS: ['3'] }).then(console.log)
@@ -32,8 +32,6 @@
 
   console.log('\nCONFIRM DELETE ->')
   await db.QUERY({ DOCUMENTS: ['3'] }).then(console.log)
-  await db.QUERY({ SEARCH: ['Who'] }).then(console.log)
   await db.DOCUMENT_COUNT().then(console.log)
   await db.ALL_DOCUMENTS().then(console.log)
-
 })()

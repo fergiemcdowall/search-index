@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
   const db = await si({ name: 'nodeQuickstart' })
-  
+
   await db.PUT([
     {
       _id: 1,
@@ -20,12 +19,11 @@
   ])
 
   console.log('\nGETTING ->')
-  await db.read({ GET: ['Rolling']}).then(console.log)
+  await db.QUERY({ GET: ['Rolling'] }).then(console.log)
 
-  console.log('\nGETTING (calling .read() with a single string falls back to GET) ->')
-  await db.read('Rolling').then(console.log)
-  
+  console.log('\nGETTING (calling .QUERY() with a single string falls back to GET) ->')
+  await db.QUERY('Rolling').then(console.log)
+
   console.log('\nGETTING ->')
-  await db.read({ GET: ['The']}).then(console.log)
-  
+  await db.QUERY({ GET: ['The'] }).then(console.log)
 })()
