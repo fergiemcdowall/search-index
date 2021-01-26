@@ -94,28 +94,29 @@
 
   const si = require('../../')
   const db = await si({ name: 'BUCKET' })
-  await db.PUT(cars)
+  await db.PUT(cars, { storeVectors: true })
 
   console.log('\nBUCKETING ->')
-  await db.QUERY({ BUCKETS: 'make.Tesla' }).then(console.log)
+  await db.BUCKETS('make:Tesla').then(console.log)
 
   console.log('\nBUCKETING ->')
-  await db.QUERY({ BUCKETS: 'make.BMW' }).then(console.log)
+  await db.BUCKETS('make:BMW').then(console.log)
 
   console.log('\nBUCKETING ->')
-  await db.QUERY({ BUCKETS: 'make.BMW' }).then(console.log)
-
-  // TODO: this doesnt work properly- needs upstream fix in fii
-  console.log('\nBUCKETING ->')
-  await db.QUERY({
-    BUCKET: { lte: 'year.2010' }
+  await db.BUCKETS({
+    FIELD: 'year',
+    VALUE: {
+      LTE: '2010'
+    }
   }).then(console.log)
 
-  console.log('\nBUCKETING ->')
-  await db.QUERY({
-    ALL: [
-      { BUCKET: { gte: 'year.2000', lte: 'year.2008' } },
-      { BUCKET: { gte: 'year.2009', lte: 'year.2020' } }
-    ]
-  }).then(console.log)
+  // Fergus - This one I don't know how to express:
+  //
+  // console.log('\nBUCKETING ->')
+  // await db.read({
+  //   ALL: [
+  //     { BUCKET: { gte: 'year.2000', lte: 'year.2008' } },
+  //     { BUCKET: { gte: 'year.2009', lte: 'year.2020' } }
+  //   ]
+  // }).then(console.log)
 })()
