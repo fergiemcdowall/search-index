@@ -1,6 +1,7 @@
 (async () => {
   const si = require('../../')
   const db = await si({ name: 'nodeQuickstart' })
+  const print = txt => console.log(JSON.stringify(txt, null, 2))
 
   await db.PUT([
     {
@@ -18,23 +19,20 @@
     }
   ])
 
-  console.log('\nAND ->')
-  await db.QUERY({ AND: ['Rolling'] }).then(console.log)
+  console.log('\nAND with one clause ->')
+  await db.QUERY({ AND: ['Rolling'] }).then(print)
 
   console.log('\nAND and return whole documents ->')
-  await db.QUERY({ AND: ['Rolling'] }).then(db.DOCUMENTS).then(console.log)
+  await db.QUERY({ AND: ['Rolling'] }, { DOCUMENTS: true }).then(print)
 
   console.log('\nAND ->')
-  await db.QUERY({ AND: ['Rolling', 'Stones'] }).then(console.log)
+  await db.QUERY({ AND: ['Rolling', 'Stones'] }).then(print)
 
   console.log('\nAND ->')
-  await db.QUERY({ AND: ['Stones', 'Rolling'] }).then(console.log)
+  await db.QUERY({ AND: ['Stones', 'Rolling'] }).then(print)
 
   console.log('\nAND ->')
-  await db.QUERY({ AND: ['boys'] }).then(console.log)
-
-  console.log('\nAND ->')
-  await db.QUERY({ AND: ['The'] }).then(console.log)
+  await db.QUERY({ AND: ['boys'] }).then(print)
 
   console.log('\nAND with nested OR ->')
   await db.QUERY({
@@ -44,7 +42,7 @@
         OR: ['Rolling', 'Who']
       }
     ]
-  }).then(console.log)
+  }).then(print)
 
   console.log('\nOR with nested AND ->')
   await db.QUERY({
@@ -52,14 +50,35 @@
       { AND: ['Rolling', 'Stones'] },
       { AND: ['The', 'Who'] }
     ]
-  }).then(console.log)
+  }).then(print)
 
-  console.log('\nAND with scoped search terms ->')
+  console.log('\nAND with scoped search terms expressed as strings ->')
   await db.QUERY({
     AND: [
       'description:The',
       'description:rock',
       'bandName:The'
     ]
-  }).then(console.log)
+  }).then(print)
+
+
+  console.log('\nAND with scoped search terms expressed as objects ->')
+  await db.QUERY({
+    AND: [
+      {
+        FIELD: 'description',
+        VALUE: 'the'
+      },
+      {
+        FIELD: 'description',
+        VALUE: 'rock'
+      },
+      {
+        FIELD: 'bandname',
+        VALUE: 'the'
+      }
+    ]
+  }).then(print)
+
+
 })()

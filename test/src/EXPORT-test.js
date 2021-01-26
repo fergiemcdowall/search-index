@@ -93,7 +93,6 @@ test('can add data that will be overwritten', t => {
 
 test('can import data', t => {
   t.plan(1)
-  console.log('HEEERE')
   global[importingIndexName]
     .IMPORT(exportedIndex)
     .then(() => t.ok('imported'))
