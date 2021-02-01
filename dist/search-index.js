@@ -1,1 +1,1 @@
-search-index-2.1.0.js
+search-index-2.1.1.js
