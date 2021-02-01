@@ -42,8 +42,10 @@ module.exports = class Cache {
   }
 
   // clear all entries in cache
-  flush (operation) {
-    this.LRUStore = new Map()
-    return operation
+  flush () {
+    return new Promise(resolve => {
+      this.LRUStore = new Map()
+      return resolve()
+    })
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "engines": {
     "node": ">=12"
@@ -59,7 +59,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "9.2.0",
+    "fergies-inverted-index": "9.3.1",
     "term-vector": "^1.0.0"
   }
 }

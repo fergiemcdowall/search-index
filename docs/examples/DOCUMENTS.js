@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
-  const db = await si({ name: 'nodeQuickstart' })
-  
+  const db = await si({ name: 'TMP-DOCUMENTS' })
+
   await db.PUT([
     {
       _id: 1,
@@ -16,19 +15,22 @@
       _id: 3,
       bandName: 'The Who',
       description: 'Nearly as good as Led Zeppelin'
+    }, {
+      _id: 5,
+      bandName: 'Led Zappelin',
+      description: 'Just really good'
     }
   ])
 
   console.log('\nuse DOCUMENTS with SEARCH  (JSON style) ->')
-  await db.read({ SEARCH: ['Rolling'] }, { DOCUMENTS: true }).then(console.log)
+  await db.QUERY({ SEARCH: ['Rolling'] }, { DOCUMENTS: true }).then(console.log)
 
   console.log('\nuse DOCUMENTS with SEARCH (promise style) ->')
-  await db.read({ SEARCH: ['Rolling'] }).then(db.DOCUMENTS).then(console.log)
+  await db.QUERY({ SEARCH: ['Rolling'] }).then(db.DOCUMENTS).then(console.log)
 
   console.log('\nuse DOCUMENTS with with specified IDs ->')
-  await db.read({ DOCUMENTS: [{_id:1}, {_id:'two'}] }).then(console.log)
+  await db.QUERY({ DOCUMENTS: [{ _id: 1 }, { _id: 'two' }] }).then(console.log)
 
   console.log('\nuse DOCUMENTS with with specified IDs, one of which does not exist ->')
-  await db.read({ DOCUMENTS: [{_id:1}, {_id:9999}, {_id:'two'}] }).then(console.log)
-
+  await db.QUERY({ DOCUMENTS: [{ _id: 1 }, { _id: 9999 }, { _id: 'two' }] }).then(console.log)
 })()

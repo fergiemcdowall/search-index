@@ -192,6 +192,6 @@ test('DELETE with non-existent id', t => {
   global[indexName]
     .DELETE(['d'])
     .then((res) => t.deepEqual(res, [
-      { _id: 'd', operation: 'DELETE', status: 'NOT FOUND' }
+      { _id: 'd', operation: 'DELETE', status: 'FAILED' }
     ]))
 })

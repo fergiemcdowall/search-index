@@ -30,7 +30,7 @@ const makeASearchIndex = ops => {
     ALL_DOCUMENTS: r.ALL_DOCUMENTS,
     BUCKETS: ops.fii.BUCKETS,
     CREATED: ops.fii.CREATED,
-    DELETE: w.DELETE,
+    DELETE: ids => c.flush().then(() => w.DELETE(ids)),
     DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
     DISTINCT: r.DISTINCT,
     DOCUMENTS: docs => c.cache({ DOCUMENTS: docs || null }, r.DOCUMENTS(docs)),
@@ -38,12 +38,12 @@ const makeASearchIndex = ops => {
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
-    IMPORT: idx => c.flush(ops.fii.IMPORT(idx)),
+    IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
     MAX: ops.fii.MAX,
     MIN: ops.fii.MIN,
-    PUT: (docs, pops) => c.flush(w.PUT(docs, pops)),
-    PUT_RAW: docs => c.flush(w.PUT_RAW(docs)),
+    PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
+    PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
     QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops))
   }
 }

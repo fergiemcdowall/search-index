@@ -205,6 +205,9 @@ const documents = await ALL_DOCUMENTS(limit)
 
 ## DELETE
 
+NOTE: for indices to be deleteable documents must be indexed whith
+[`storeVectors`](#put) set to `true`
+
 ```javascript
 // Delete documents from the index
 const result = await DELETE(documentIds)
@@ -272,9 +275,7 @@ const indexExport = await EXPORT()
 ```javascript
 // Return document ids for each distinct field/value combination for
 // the given token space.
-{
-  FACETS: token
-}
+const facets = await FACETS(token)
 ```
 
 

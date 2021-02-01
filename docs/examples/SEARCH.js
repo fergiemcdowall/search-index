@@ -1,8 +1,7 @@
 (async () => {
-
   const si = require('../../')
-  const db = await si({ name: 'nodeQuickstart' })
-  
+  const db = await si({ name: 'TMP-SEARCH' })
+
   await db.PUT([
     {
       _id: 1,
@@ -20,30 +19,26 @@
   ])
 
   console.log('\nSEARCH-ing ->')
-  await db.read(
+  await db.QUERY(
     {
       SEARCH: ['The']
     }
   ).then(console.log)
 
-
   console.log('\nSEARCH-ing ->')
-  await db.read(
+  await db.QUERY(
     {
       SEARCH: ['The', 'Beatles']
     }
   ).then(console.log)
 
-
   console.log('\nSEARCH-ing with negation ->')
-  await db.read(
+  await db.QUERY(
     {
       NOT: {
-        include: {SEARCH: ['The']},
-        exclude: {SEARCH: ['Beatles']}
+        INCLUDE: { SEARCH: ['The'] },
+        EXCLUDE: { SEARCH: ['Beatles'] }
       }
     }
   ).then(console.log)
-
-  
 })()

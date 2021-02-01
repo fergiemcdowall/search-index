@@ -1,6 +1,6 @@
 (async () => {
   const si = require('../../')
-  const db = await si({ name: 'TMP-AND' })
+  const db = await si({ name: 'TMP-QUERY-2' })
   const print = txt => console.log(JSON.stringify(txt, null, 2))
 
   await db.PUT([
