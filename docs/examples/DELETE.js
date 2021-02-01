@@ -1,7 +1,7 @@
 (async () => {
   const si = require('../../')
   const db = await si({
-    name: 'DELETE-EXAMPLE',
+    name: 'TMP-DELETE',
     storeVectors: true
   })
 

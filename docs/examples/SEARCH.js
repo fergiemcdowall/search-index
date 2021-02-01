@@ -1,6 +1,6 @@
 (async () => {
   const si = require('../../')
-  const db = await si({ name: 'nodeQuickstart' })
+  const db = await si({ name: 'TMP-SEARCH' })
 
   await db.PUT([
     {
