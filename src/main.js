@@ -40,6 +40,7 @@ const makeASearchIndex = ops => {
     FIELDS: ops.fii.FIELDS,
     IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
+    LAST_UPDATED: ops.fii.LAST_UPDATED,
     MAX: ops.fii.MAX,
     MIN: ops.fii.MIN,
     PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
