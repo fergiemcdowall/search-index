@@ -197,9 +197,7 @@ const documents = await ALL_DOCUMENTS(limit)
 ```javascript
 // Return the IDs of documents for each given token filtered by the
 // query result
-{
-  BUCKETS: [ token1, token2, ... ]
-}
+const buckets = await BUCKETS(token1, token2, ...)
 ```
 
 
