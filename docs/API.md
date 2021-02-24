@@ -14,8 +14,8 @@
     - [Find where a field exists](#find-where-a-field-exists)
   - [ALL_DOCUMENTS](#all_documents)
   - [BUCKETS](#buckets)
-  - [DELETE](#delete)
   - [CREATED](#created)
+  - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
   - [DOCUMENTS](#documents)
   - [DISTINCT](#distinct)
@@ -23,6 +23,7 @@
   - [EXPORT](#export)
   - [FACETS](#facets)
   - [FIELDS](#fields)
+  - [FLUSH](#flush)
   - [IMPORT](#import)
   - [INDEX](#index)
   - [QUERY](#query)
@@ -201,24 +202,26 @@ const buckets = await BUCKETS(token1, token2, ...)
 ```
 
 
+## CREATED
+
+```javascript
+// find out when index was first created
+const timestamp = await CREATED()
+```
+
+
 ## DELETE
 
 NOTE: for indices to be deleteable documents must be indexed whith
 [`storeVectors`](#put) set to `true`
+
+See also [FLUSH](#flush)
 
 ```javascript
 // Delete documents from the index
 const result = await DELETE(documentIds)
 // "documentIds" is an Array of IDs
 // "result" is the status of the deletion
-```
-
-
-## CREATED
-
-```javascript
-// find out when index was first created
-const timestamp = await CREATED()
 ```
 
 
@@ -282,6 +285,13 @@ const facets = await FACETS(token)
 ```javascript
 // get every document field name that has been indexed:
 const fields = await FIELDS()
+```
+
+
+## FLUSH
+```javascript
+// Delete everything and start again (including creation metadata)
+await FLUSH()
 ```
 
 
