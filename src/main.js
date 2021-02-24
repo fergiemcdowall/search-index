@@ -38,6 +38,7 @@ const makeASearchIndex = ops => {
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
+    FLUSH: () => ops.fii.STORE.clear(),
     IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
     LAST_UPDATED: ops.fii.LAST_UPDATED,
