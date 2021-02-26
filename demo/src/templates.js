@@ -4,8 +4,7 @@ const renderFacet = (acc, cur) => acc + (
     ? '<a>'
     : `<a href="#/" onclick="addFilter('${cur.FIELD}:${cur.VALUE}')">`
 ) +
-  `${cur.VALUE}
-  </a>
+  `${cur.VALUE}</a>
   (${cur._id.length}) `
 
 // eslint-disable-next-line no-unused-vars
