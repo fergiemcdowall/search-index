@@ -22,9 +22,13 @@ module.exports = (fii, ops) => {
   ]) => {
     // if fieldname is undefined, ignore and procede to next
     if (fieldValue === undefined) return acc
+
     if (fieldName === '_id') {
       acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
-    } else if (Array.isArray(fieldValue)) {
+      return acc
+    }
+
+    if (Array.isArray(fieldValue)) {
       // split up fieldValue into an array or strings and an array of
       // other things. Then term-vectorize strings and recursively
       // process other things.
@@ -37,16 +41,21 @@ module.exports = (fii, ops) => {
         item => typeof item !== 'string'
       ).map(createDocumentVector)
       acc[fieldName] = strings.concat(notStrings).sort()
-    } else if (typeof fieldValue === 'object') {
-      acc[fieldName] = createDocumentVector(fieldValue)
-    } else {
-      let str = fieldValue.toString().replace(matchLettersInAllLanguages, '')
-      if (!ops.caseSensitive) str = str.toLowerCase()
-      acc[fieldName] = scoreArrayTFIDF(
-        // make sure that empty tokens are removed
-        str.split(/\s+/).filter(item => item)
-      ).sort()
+      return acc
     }
+
+    if (typeof fieldValue === 'object') {
+      acc[fieldName] = createDocumentVector(fieldValue)
+      return acc
+    }
+
+    // else
+    let str = fieldValue.toString().replace(matchLettersInAllLanguages, '')
+    if (!ops.caseSensitive) str = str.toLowerCase()
+    acc[fieldName] = scoreArrayTFIDF(
+      // make sure that empty tokens are removed
+      str.split(/\s+/).filter(item => item)
+    ).sort()
     return acc
   }, {})
 
