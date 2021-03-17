@@ -3,6 +3,7 @@ const fii = require('fergies-inverted-index')
 const Cache = require('./cache.js')
 const reader = require('./read.js')
 const writer = require('./write.js')
+const tp = require('./tokenizerPipeline.js')
 
 const makeASearchIndex = ops => {
   // ".flush" clears the cache ".cache" creates/promotes a cache entry
@@ -46,7 +47,8 @@ const makeASearchIndex = ops => {
     MIN: ops.fii.MIN,
     PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
     PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
-    QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops))
+    QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops)),
+    TPIPELINE: tp
   }
 }
 
@@ -56,10 +58,23 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
     docExistsSpace: 'DOC_RAW',
     tokenAppend: '#',
     caseSensitive: false,
+    ngrams: {},
     storeVectors: false,
-    storeRawDocs: true
+    storeRawDocs: true,
+    SPLIT: tp.SPLIT,
+    LOWCASE: tp.LOWCASE,
+    NGRAMS: tp.NGRAMS,
+    SCORE: tp.SCORE_TFIDF,
+    get tokenizerPipeline () {
+      return [
+        this.SPLIT,
+        this.LOWCASE,
+        this.NGRAMS,        
+        this.SCORE
+      ]
+    }
   }, ops)
-  //  if (ops.fii) return resolve(ops)
+
   // else
   return fii(ops).then(
     aNewFii => resolve(Object.assign({ fii: aNewFii }, ops))

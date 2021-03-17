@@ -1,20 +1,14 @@
-// import tv from 'term-vector'
-const tv = require('term-vector')
-
-const scoreArrayTFIDF = arr => {
-  const v = tv(arr)
-  const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)
-  return v
-    .map(item => item.term[0] + '#' +
-              (((item.positions.length / mostTokenOccurances)).toFixed(2)))
-}
-
 // export default function (fii, ops) {
 module.exports = (fii, ops) => {
-  const tokenizeString = str => {
-    str = ops.caseSensitive ? str : str.toLowerCase()
-    return scoreArrayTFIDF(str.match(/[\p{L}\d]+/ug)).sort()
-  }
+  // tokenize
+  // lowcase
+  // ngrams
+  // stopwords
+  // synonyms
+  // score
+  const runTokenizerPipeline = (fieldName, str) => ops.tokenizerPipeline.reduce(
+    (acc, cur) => cur(acc, fieldName, ops), str
+  )
 
   // traverse object, tokenising all leaves (strings to array) and then
   // scoring them
@@ -39,7 +33,7 @@ module.exports = (fii, ops) => {
       const strings = fieldValue.filter(item => typeof item === 'string')
       const notStrings = fieldValue.filter(item => typeof item !== 'string')
       acc[fieldName] = [
-        ...strings.map(tokenizeString),
+        ...strings.map(str => runTokenizerPipeline(fieldName, str)),
         ...notStrings.map(createDocumentVector)
       ].sort()
       return acc
@@ -51,8 +45,8 @@ module.exports = (fii, ops) => {
       return acc
     }
 
-    // else
-    acc[fieldName] = tokenizeString(fieldValue.toString())
+    // else fieldvalue is Number or String
+    acc[fieldName] = runTokenizerPipeline(fieldName, fieldValue.toString())
     return acc
   }, {})
 
@@ -84,26 +78,15 @@ module.exports = (fii, ops) => {
       })
     : doc
 
-  const indexingPipeline = docs => new Promise(
-    resolve => resolve(
-      docs
-        .map(parseStringAsDoc)
-        .map(generateId)
-    )
-  )
-
   const _PUT = (docs, putOptions) => {
-    return indexingPipeline(docs).then(
-      docs => fii.PUT(
-        docs.map(createDocumentVector), Object.assign(
-          ops, putOptions
-        )
-      ).then(
-        result => Promise.all([
-          _PUT_RAW(docs, !ops.storeRawDocs),
-          incrementDocCount(result.filter(r => r.status === 'CREATED').length)
-        ]).then(() => result)
-      )
+    docs = docs.map(parseStringAsDoc).map(generateId)
+    return fii.PUT(
+      docs.map(createDocumentVector), Object.assign(ops, putOptions)
+    ).then(
+      result => Promise.all([
+        _PUT_RAW(docs, !ops.storeRawDocs),
+        incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+      ]).then(() => result)
     )
   }
 
