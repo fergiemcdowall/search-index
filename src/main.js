@@ -69,7 +69,7 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
       return [
         this.SPLIT,
         this.LOWCASE,
-        this.NGRAMS,        
+        this.NGRAMS,
         this.SCORE
       ]
     }

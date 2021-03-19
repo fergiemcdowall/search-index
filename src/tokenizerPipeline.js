@@ -8,10 +8,10 @@ module.exports.LOWCASE = (tokens, field, ops) => tokens.map(
 )
 
 module.exports.NGRAMS = (tokens, field, ops) => {
-  console.log('in NGRAMS pipeline stage')
-  const { fields, ngramOps } = ops.ngrams
-  console.log(fields)
-  console.log(ngramOps)
+  const { fields, lengths, join = ' ' } = ops.ngrams
+  if (lengths) {
+    if (fields.includes(field)) { return ngraminator(tokens, lengths).map(t => t.join(join)) }
+  }
   return tokens
 }
 
