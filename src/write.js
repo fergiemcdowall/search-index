@@ -69,14 +69,16 @@ module.exports = (fii, ops) => {
     ? ({ body: doc })
     : doc
 
-  // TODO: generated IDs are derived from timestamps. Possibly there
-  // should be some sort of timer here that makes sure that this
-  // function uses at least 1 millisecond in order to avoid id collisions
+  let counter = 0;
   const generateId = (doc, i) => (typeof doc._id === 'undefined')
     ? Object.assign(doc, {
-        _id: Date.now() + '-' + i
-      })
-    : doc
+      // counter is needed because if this function is called in quick
+      // succession, Date.now() is not guaranteed to be unique. This could
+      // still conflict if the DB is closed, clock is reset to the past, then
+      // DB reopened. That's a bit of a corner case though.
+      _id: `${Date.now()}-${i}-${counter++}`,
+    })
+    : doc;
 
   const indexingPipeline = docs => new Promise(
     resolve => resolve(
