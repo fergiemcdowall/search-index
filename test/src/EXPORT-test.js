@@ -36,6 +36,8 @@ const expectedIndex = [
     key: '￮DOC_RAW￮1￮',
     value: { _id: 1, make: 'BMW', manufacturer: 'Volvo', brand: 'Volvo' }
   },
+  { key: '￮DOC￮0￮', value: { _id: '0', make: ['tesla#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
+  { key: '￮DOC￮1￮', value: { _id: '1', make: ['bmw#1.00'], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
   { key: '￮FIELD￮brand￮', value: 'brand' },
   { key: '￮FIELD￮make￮', value: 'make' },
   { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
@@ -67,7 +69,7 @@ test('can export data', t => {
       exportedIndex = index
       index.pop() // remove timestamp
       index.pop() // remove timestamp
-      t.deepEquals(expectedIndex, index)
+      t.deepEquals(index, expectedIndex)
     })
 })
 

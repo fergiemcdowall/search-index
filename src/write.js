@@ -1,54 +1,59 @@
 // export default function (fii, ops) {
 module.exports = (fii, ops) => {
-  // tokenize
-  // lowcase
-  // ngrams
-  // stopwords
-  // synonyms
-  // score
-  const runTokenizerPipeline = (fieldName, str) => ops.tokenizerPipeline.reduce(
-    (acc, cur) => cur(acc, fieldName, ops), str
-  )
+  const createDocumentVector = (docs, putOptions) => {
+    // tokenize
+    // lowcase
+    // ngrams
+    // stopwords
+    // synonyms
+    // score
+    const runTokenizerPipeline = (fieldName, str) =>
+      putOptions.tokenizerPipeline.reduce(
+        (acc, cur) => cur(acc, fieldName, putOptions), str
+      )
 
-  // traverse object, tokenising all leaves (strings to array) and then
-  // scoring them
-  // `ops` is a collection of indexing pipeline options
-  const createDocumentVector = obj => Object.entries(obj).reduce((acc, [
-    fieldName, fieldValue
-  ]) => {
-    // if fieldname is undefined, ignore and procede to next
-    if (fieldValue === undefined) return acc
+    // traverse object, tokenising all leaves (strings to array) and then
+    // scoring them
+    // `ops` is a collection of indexing pipeline options
+    const traverseObject = obj => Object.entries(obj).reduce((acc, [
+      fieldName, fieldValue
+    ]) => {
+      // if fieldname is undefined, ignore and procede to next
+      if (fieldValue === undefined) return acc
 
-    // if fieldName is '_id', return _id "as is" and stringify
-    if (fieldName === '_id') {
-      acc[fieldName] = fieldValue + ''
+      // if fieldName is '_id', return _id "as is" and stringify
+      if (fieldName === '_id') {
+        acc[fieldName] = fieldValue + ''
+        return acc
+      }
+
+      // If fieldValue is an Array
+      if (Array.isArray(fieldValue)) {
+        // split up fieldValue into an array of strings and an array of
+        // other things. Then tokenize strings and recursively process
+        // other things.
+        const strings = fieldValue.filter(item => typeof item === 'string')
+        const notStrings = fieldValue.filter(item => typeof item !== 'string')
+        acc[fieldName] = [
+          ...strings.map(str => runTokenizerPipeline(fieldName, str)),
+          ...notStrings.map(traverseObject)
+        ].sort()
+        return acc
+      }
+
+      // If fieldValue is an Object
+      if (typeof fieldValue === 'object') {
+        acc[fieldName] = traverseObject(fieldValue)
+        return acc
+      }
+
+      // else fieldvalue is Number or String
+      acc[fieldName] = runTokenizerPipeline(fieldName, fieldValue.toString())
       return acc
-    }
+    }, {})
 
-    // If fieldValue is an Array
-    if (Array.isArray(fieldValue)) {
-      // split up fieldValue into an array of strings and an array of
-      // other things. Then tokenize strings and recursively process
-      // other things.
-      const strings = fieldValue.filter(item => typeof item === 'string')
-      const notStrings = fieldValue.filter(item => typeof item !== 'string')
-      acc[fieldName] = [
-        ...strings.map(str => runTokenizerPipeline(fieldName, str)),
-        ...notStrings.map(createDocumentVector)
-      ].sort()
-      return acc
-    }
-
-    // If fieldValue is an Object
-    if (typeof fieldValue === 'object') {
-      acc[fieldName] = createDocumentVector(fieldValue)
-      return acc
-    }
-
-    // else fieldvalue is Number or String
-    acc[fieldName] = runTokenizerPipeline(fieldName, fieldValue.toString())
-    return acc
-  }, {})
+    return docs.map(traverseObject)
+  }
 
   const incrementDocCount = increment => fii.STORE.get(
     '￮DOCUMENT_COUNT￮'
@@ -79,12 +84,20 @@ module.exports = (fii, ops) => {
     : doc
 
   const _PUT = (docs, putOptions) => {
-    docs = docs.map(parseStringAsDoc).map(generateId)
+    // console.log(putOptions)
+
+    const rawDocs = docs
+      .map(parseStringAsDoc)
+      .map(generateId)
+
     return fii.PUT(
-      docs.map(createDocumentVector), Object.assign(ops, putOptions)
+      createDocumentVector(
+        rawDocs,
+        Object.assign(ops, putOptions)),
+      Object.assign(ops, putOptions)
     ).then(
       result => Promise.all([
-        _PUT_RAW(docs, !ops.storeRawDocs),
+        _PUT_RAW(rawDocs, !ops.storeRawDocs),
         incrementDocCount(result.filter(r => r.status === 'CREATED').length)
       ]).then(() => result)
     )

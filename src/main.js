@@ -48,37 +48,51 @@ const makeASearchIndex = ops => {
     PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
     PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
     QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops)),
-    TPIPELINE: tp
+
+    // pipeline stages
+    ...tp
   }
 }
 
 const initIndex = (ops = {}) => new Promise((resolve, reject) => {
+
   ops = Object.assign({
     cacheLength: 1000,
     docExistsSpace: 'DOC_RAW',
-    tokenAppend: '#',
-    caseSensitive: false,
+    caseSensitive: false,  // TODO: need to remove this as an option from fii
     ngrams: {},
-    storeVectors: false,
+    stopwords: [],
+    storeVectors: true,
     storeRawDocs: true,
-    SPLIT: tp.SPLIT,
-    LOWCASE: tp.LOWCASE,
-    NGRAMS: tp.NGRAMS,
-    SCORE: tp.SCORE_TFIDF,
-    get tokenizerPipeline () {
-      return [
-        this.SPLIT,
-        this.LOWCASE,
-        this.NGRAMS,
-        this.SCORE
-      ]
-    }
+    tokenizerPipeline: [
+      tp.SPLIT,
+      tp.LOWCASE,
+      tp.NGRAMS,
+      tp.STOPWORDS,
+      tp.SCORE_TFIDF
+    ],
+    doNotIndexField: []  // TODO: handle in tokenization pipeline
   }, ops)
-
+  
   // else
-  return fii(ops).then(
-    aNewFii => resolve(Object.assign({ fii: aNewFii }, ops))
+
+  // TODO: dont pass ops through to fii. Use the tokenization pipeline
+  // instead and always initialize fii with the same ops
+
+  // TODO: ops should be organised as defaults, user-defined, forced
+  
+  return fii(Object.assign({
+    name: 'searchindex',
+    caseSensitive: true,
+    storeVectors: true,
+    stopwords: [],   // handled in tokenisation pipeline
+    tokenAppend: '#'
+  }, ops)).then(
+    aNewFii => resolve(Object.assign({
+      fii: aNewFii
+    }, ops))
   )
 })
 
 module.exports = ops => initIndex(ops).then(makeASearchIndex)
+
