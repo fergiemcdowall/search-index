@@ -241,7 +241,7 @@ See also [ALL_DOCUMENTS](#all_documents)
 
 ```javascript
 // Return named documents from index.
-const documents = await DOCUMENTS(docIDs) // docIDs is an array
+const documents = await DOCUMENTS(id1, id2, id3 /* ... */)
 ```
 
 

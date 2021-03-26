@@ -215,7 +215,7 @@ test('cache has stripped all duplicate entries', t => {
   t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
     '{"QUERY":["two",null]}',
     '{"DICTIONARY":null}',
-    '{"DOCUMENTS":null}',
+    '{"DOCUMENTS":[]}',
     '{"QUERY":["three",null]}',
     '{"QUERY":["four",null]}'
   ])
@@ -232,7 +232,7 @@ test('oldest cache entry is now newest', t => {
   t.plan(1)
   t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
     '{"DICTIONARY":null}',
-    '{"DOCUMENTS":null}',
+    '{"DOCUMENTS":[]}',
     '{"QUERY":["three",null]}',
     '{"QUERY":["four",null]}',
     '{"QUERY":["two",null]}'

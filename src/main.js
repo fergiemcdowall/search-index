@@ -34,7 +34,9 @@ const makeASearchIndex = ops => {
     DELETE: ids => c.flush().then(() => w.DELETE(ids)),
     DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
     DISTINCT: r.DISTINCT,
-    DOCUMENTS: docs => c.cache({ DOCUMENTS: docs || null }, r.DOCUMENTS(docs)),
+    DOCUMENTS: (...docs) => c.cache({
+      DOCUMENTS: docs
+    }, r.DOCUMENTS(...docs)),
     DOCUMENT_COUNT: r.DOCUMENT_COUNT,
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,

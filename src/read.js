@@ -11,13 +11,11 @@ module.exports = fii => {
     })).on('end', () => resolve(result))
   })
 
-  const DOCUMENTS = requestedDocs => Array.isArray(requestedDocs)
+  const DOCUMENTS = (...requestedDocs) => requestedDocs.length
     ? Promise.all(
-        requestedDocs.map(_id =>
-          fii.STORE.get(
-            '￮DOC_RAW￮' + _id + '￮'
-          ).catch(e => null)
-        )
+        requestedDocs.map(_id => fii.STORE.get(
+          '￮DOC_RAW￮' + _id + '￮'
+        ).catch(e => null))
       )
     : ALL_DOCUMENTS()
 
@@ -171,7 +169,7 @@ module.exports = fii => {
 
       // else:
       if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
-      if (cmd.DOCUMENTS) return DOCUMENTS(cmd.DOCUMENTS)
+      if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
       if (cmd.GET) return fii.GET(cmd.GET)
       if (cmd.NOT) {
         return fii.SET_SUBTRACTION(
@@ -194,7 +192,7 @@ module.exports = fii => {
 
     // APPEND DOCUMENTS IF SPECIFIED
     const appendDocuments = result => options.DOCUMENTS
-      ? DOCUMENTS(result.RESULT.map(doc => doc._id)).then(
+      ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(
           documents => Object.assign(result, {
             RESULT: result.RESULT.map((doc, i) => Object.assign(doc, {
               _doc: documents[i]

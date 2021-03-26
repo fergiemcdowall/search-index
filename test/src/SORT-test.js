@@ -191,7 +191,7 @@ test('_SORT NUMERIC DESCENDING', t => {
 test('SORT NUMERIC DESCENDING (JSON)', t => {
   t.plan(1)
   global[indexName].QUERY({
-    DOCUMENTS: true
+    DOCUMENTS: []
   }, {
     SORT: {
       TYPE: 'NUMERIC',
