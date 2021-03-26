@@ -84,7 +84,7 @@ module.exports = (fii, ops) => {
     : doc
 
   const _PUT = (docs, putOptions) => {
-    // console.log(putOptions)
+    putOptions = Object.assign(ops, putOptions)
 
     const rawDocs = docs
       .map(parseStringAsDoc)
@@ -93,8 +93,8 @@ module.exports = (fii, ops) => {
     return fii.PUT(
       createDocumentVector(
         rawDocs,
-        Object.assign(ops, putOptions)),
-      Object.assign(ops, putOptions)
+        putOptions),
+      putOptions
     ).then(
       result => Promise.all([
         _PUT_RAW(rawDocs, !ops.storeRawDocs),

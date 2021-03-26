@@ -1,9 +1,12 @@
 const tv = require('term-vector')
 const ngraminator = require('ngraminator')
 
+module.exports.DONT_INDEX_FIELD = (tokens, field, ops) => {
+  return ops.doNotIndexField.includes(field.toLowerCase()) ? [] : tokens
+}
+
 module.exports.SPLIT = tokens => tokens.match(/[\p{L}\d]+/ug)
 
-// TODO: caseSensitive option should be removed from fii
 module.exports.LOWCASE = (tokens, field, ops) => tokens.map(
   t => ops.caseSensitive ? t : t.toLowerCase()
 )
@@ -28,10 +31,8 @@ module.exports.SCORE_TFIDF = tokens => {
   ).sort()
 }
 
-// TODO: fix!
-// TODO: should be CASE INSENSITIVE
 module.exports.STOPWORDS = (tokens, field, ops) => tokens.filter(
-  t => !ops.stopwords.includes(t)
+  t => !ops.stopwords.includes(t.toLowerCase())
 )
 
 module.exports.SPY = (tokens, field, ops) => {
