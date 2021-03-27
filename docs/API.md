@@ -219,9 +219,7 @@ See also [FLUSH](#flush)
 
 ```javascript
 // Delete documents from the index
-const result = await DELETE(documentIds)
-// "documentIds" is an Array of IDs
-// "result" is the status of the deletion
+const result = await DELETE(id1, id2, id3 /*...*/)
 ```
 
 

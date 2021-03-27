@@ -129,7 +129,7 @@ test('simple DOCUMENT_COUNT', t => {
 
 test('can DELETE data', t => {
   t.plan(1)
-  global[indexName].DELETE(['3', '4', '7']).then(res => t.deepEquals(res, [
+  global[indexName].DELETE('3', '4', '7').then(res => t.deepEquals(res, [
     { _id: '3', operation: 'DELETE', status: 'DELETED' },
     { _id: '4', operation: 'DELETE', status: 'DELETED' },
     { _id: '7', operation: 'DELETE', status: 'FAILED' }

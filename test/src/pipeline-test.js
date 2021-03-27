@@ -53,7 +53,7 @@ test('can alter order of tokenization pipeline', async function (t) {
     'sage rosemary', 'thyme'
   ])
 
-  t.deepEquals(await DELETE([0, 1]), [
+  t.deepEquals(await DELETE(0, 1), [
     { _id: '0', operation: 'DELETE', status: 'DELETED' },
     { _id: '1', operation: 'DELETE', status: 'DELETED' }
   ])

@@ -31,7 +31,7 @@ const makeASearchIndex = ops => {
     ALL_DOCUMENTS: r.ALL_DOCUMENTS,
     BUCKETS: ops.fii.BUCKETS,
     CREATED: ops.fii.CREATED,
-    DELETE: ids => c.flush().then(() => w.DELETE(ids)),
+    DELETE: (...ids) => c.flush().then(() => w.DELETE(ids)),
     DICTIONARY: token => c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
     DISTINCT: r.DISTINCT,
     DOCUMENTS: (...docs) => c.cache({
