@@ -4,6 +4,7 @@ const Cache = require('./cache.js')
 const reader = require('./read.js')
 const writer = require('./write.js')
 const tp = require('./tokenizerPipeline.js')
+const packageJSON = require('../package.json')
 
 const makeASearchIndex = ops => {
   // ".flush" clears the cache ".cache" creates/promotes a cache entry
@@ -87,4 +88,20 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   )
 })
 
-module.exports = ops => initIndex(ops).then(makeASearchIndex)
+const validateVersion = si => new Promise((resolve, reject) => {
+  const key = '￮￮CREATED_WITH'
+  const version = 'search-index@' + packageJSON.version
+  return si.INDEX.STORE.get(key).then(v =>
+    // throw a rejection if versions do not match
+    (version === v)
+      ? resolve()
+      : reject(new Error(
+        'This index was created with ' + v +
+          ', you are running ' + version
+      ))
+  ).catch(e => si.INDEX.STORE.put(key, version).then(resolve))
+})
+
+module.exports = ops => initIndex(ops).then(makeASearchIndex).then(si =>
+  validateVersion(si).then(() => si)
+)
