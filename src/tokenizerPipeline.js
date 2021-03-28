@@ -21,6 +21,19 @@ module.exports.NGRAMS = (tokens, field, ops) => {
   return tokens
 }
 
+module.exports.REPLACE = (tokens, field, ops) => {
+  const { fields, values } = ops.replace
+
+  const replace = () => tokens.reduce((acc, cur) =>
+    [cur, ...acc, ...(values[cur] || [])], []
+  )
+
+  if (!values) return tokens
+  if (!fields) return replace()
+  if (fields.includes(field)) return replace()
+  return tokens
+}
+
 module.exports.SCORE_TFIDF = tokens => {
   const v = tv(tokens)
   const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)

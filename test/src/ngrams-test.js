@@ -17,7 +17,7 @@ const docs = [
     line3: '(Tracing of sparrow on snow-crested ground)'
   }
 ]
-
+// TODO: can test with no fields
 test('create a search index with ngrams', async function (t) {
   t.plan(9)
 

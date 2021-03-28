@@ -67,11 +67,14 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
     docExistsSpace: 'DOC_RAW',
     doNotIndexField: [],
     ngrams: {},
+    replace: {},
     storeRawDocs: true,
     tokenizerPipeline: [
+      // TODO: each option should be field specific
       tp.SPLIT,
       tp.DONT_INDEX_FIELD,
       tp.LOWCASE,
+      tp.REPLACE,
       tp.NGRAMS,
       tp.STOPWORDS,
       tp.SCORE_TFIDF
