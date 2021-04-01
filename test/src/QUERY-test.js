@@ -274,25 +274,25 @@ test('simple OR with 2 clauses', t => {
   })
 })
 
-// SEARCH
-test('simple SEARCH', t => {
-  const { QUERY } = global[indexName]
-  t.plan(1)
-  QUERY({
-    SEARCH: ['tesla'] // TODO: should be able to search without a normal string?
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-        { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
-        { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
-        { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
-        { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
-        { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
-      ],
-      RESULT_LENGTH: 8
-    })
-  })
-})
+// // SEARCH
+// test('simple SEARCH', t => {
+//   const { QUERY } = global[indexName]
+//   t.plan(1)
+//   QUERY({
+//     SEARCH: ['tesla'] // TODO: should be able to search without a normal string?
+//   }).then(res => {
+//     t.deepEqual(res, {
+//       RESULT: [
+//         { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//         { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//         { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//         { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
+//         { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
+//         { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
+//         { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
+//         { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
+//       ],
+//       RESULT_LENGTH: 8
+//     })
+//   })
+// })

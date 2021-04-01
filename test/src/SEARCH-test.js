@@ -66,96 +66,46 @@ test('can add data', t => {
 
 test('simple _SEARCH with 1 clause', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
+  global[indexName].SEARCH(
     'paul'
   ).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['text:paul#0.50'], _score: 0.39 },
-      { _id: '4', _match: ['text:paul#0.50'], _score: 0.39 },
-      { _id: '9', _match: ['text:paul#0.50'], _score: 0.39 },
-      { _id: '3', _match: ['text:paul#0.33'], _score: 0.26 },
-      { _id: '8', _match: ['text:paul#0.25'], _score: 0.2 }
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '0', _match: ['text:paul#0.50'], _score: 0.39 },
+        { _id: '4', _match: ['text:paul#0.50'], _score: 0.39 },
+        { _id: '9', _match: ['text:paul#0.50'], _score: 0.39 },
+        { _id: '3', _match: ['text:paul#0.33'], _score: 0.26 },
+        { _id: '8', _match: ['text:paul#0.25'], _score: 0.2 }
+      ],
+      RESULT_LENGTH: 5
+    })
   })
 })
 
 test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
-    'paul', 'musical'
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '9', _match: ['text:paul#0.50', 'text:musical#0.50'], _score: 2.4 }
-    ])
-  })
-})
-
-test('simple _SEARCH with 2 clauses', t => {
-  t.plan(1)
-  global[indexName]._SEARCH(
-    'paul', 'and'
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3 },
-      { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3 },
-      { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97 }
-    ])
-  })
-})
-
-// test('simple _SEARCH with 2 clauses and documents', t => {
-//   t.plan(1)
-//   global[indexName]._SEARCH(
-//     'paul', 'and'
-//   )
-//     .then(global[indexName].DOCUMENTS)
-//     .then(res => {
-//       t.deepEqual(res, [
-//         {
-//           _id: '0',
-//           _match: ['text:paul#0.50', 'text:and#0.50'],
-//           _score: 1.3,
-//           _doc: data[0]
-//         }, {
-//           _id: '3',
-//           _match: ['text:paul#0.33', 'text:and#0.67'],
-//           _score: 1.3,
-//           _doc: data[3]
-//         }, {
-//           _id: '8',
-//           _match: ['text:paul#0.25', 'text:and#0.50'],
-//           _score: 0.97,
-//           _doc: data[8]
-//         }
-//       ])
-//     })
-// })
-
-test('simple _SEARCH with 2 clauses and documents', t => {
-  t.plan(1)
-  global[indexName].QUERY({
-    SEARCH: ['paul', 'and']
-  }, {
-    DOCUMENTS: true
+  global[indexName].SEARCH({
+    AND: ['paul', 'musical']
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        {
-          _id: '0',
-          _match: ['text:paul#0.50', 'text:and#0.50'],
-          _score: 1.3,
-          _doc: data[0]
-        }, {
-          _id: '3',
-          _match: ['text:paul#0.33', 'text:and#0.67'],
-          _score: 1.3,
-          _doc: data[3]
-        }, {
-          _id: '8',
-          _match: ['text:paul#0.25', 'text:and#0.50'],
-          _score: 0.97,
-          _doc: data[8]
-        }
+        { _id: '9', _match: ['text:paul#0.50', 'text:musical#0.50'], _score: 2.4 }
+      ],
+      RESULT_LENGTH: 1
+    })
+  })
+})
+
+test('simple _SEARCH with 2 clauses', t => {
+  t.plan(1)
+  global[indexName].SEARCH({
+    AND: ['paul', 'and']
+  }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
+        { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3 },
+        { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3 },
+        { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97 }
       ],
       RESULT_LENGTH: 3
     })

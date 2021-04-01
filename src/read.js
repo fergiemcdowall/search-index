@@ -112,7 +112,7 @@ module.exports = fii => {
     SCORE: 'TFIDF',
     SORT: true
   }, qops))
-  
+
   const SORT = (results, options) => {
     options = Object.assign({
       DIRECTION: 'DESCENDING',
@@ -163,25 +163,22 @@ module.exports = fii => {
   // TODO: WEIGHT should take an array of tokens
   const WEIGHT = (results, weights) => results.map(r => {
     r._match = r._match.map(m => {
-      for (weight in weights) {
-        if (new RegExp('^' + (weights[weight].FIELD || '[\\w]+')
-                       + ':' + (weights[weight].VALUE || '[\\w]+')).test(m)) {
-          [ tokenSpace, tsWeight ] = m.split('#');
-          m = tokenSpace + '#' + (tsWeight*weights[weight].WEIGHT).toFixed(2)
+      for (const weight in weights) {
+        if (new RegExp('^' + (weights[weight].FIELD || '[\\w]+') +
+                       ':' + (weights[weight].VALUE || '[\\w]+')).test(m)) {
+          const [tokenSpace, tsWeight] = m.split('#')
+          m = tokenSpace + '#' + (tsWeight * weights[weight].WEIGHT).toFixed(2)
         }
       }
       return m
     })
-      
+
     return r
   })
-  
 
-  
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (q, options = {}) => {
-
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -270,18 +267,15 @@ module.exports = fii => {
     )
 
     const weight = result => options.WEIGHT
-          ? Object.assign(
-            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
-            result
-          )
-          : result
-    
+      ? Object.assign(
+          { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+          result
+        )
+      : result
 
-    
-    
     return runQuery(q)
       .then(formatResults)
-      .then(appendDocuments)  // TODO: this should be at the end surely?
+      .then(appendDocuments) // TODO: this should be at the end surely?
       .then(weight)
       .then(score)
       .then(sort)

@@ -48,18 +48,23 @@ test('create a fii with memdown', t => {
     ])
     return idx
   })).then(idx => {
-    idx._SEARCH(
-      'body.text:cool',
-      'body.text:really',
-      'body.text:bananas'
-    ).then(res => t.deepEquals(res, [{
-      _id: 'b',
-      _match: [
-        'body.text:cool#1.00',
-        'body.text:really#1.00',
-        'body.text:bananas#1.00'
-      ],
-      _score: 4.16
-    }]))
+    idx.SEARCH({
+      AND: [
+        'body.text:cool',
+        'body.text:really',
+        'body.text:bananas'
+      ]
+    }).then(res => t.deepEquals(res, {
+      RESULT: [{
+        _id: 'b',
+        _match: [
+          'body.text:cool#1.00',
+          'body.text:really#1.00',
+          'body.text:bananas#1.00'
+        ],
+        _score: 4.16
+      }],
+      RESULT_LENGTH: 1
+    }))
   })
 })

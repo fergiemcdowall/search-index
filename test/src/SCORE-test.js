@@ -90,30 +90,31 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('_SCORE TFIDF', t => {
-  t.plan(1)
-  global[indexName]._SEARCH('tesla').then(
-    docs => global[indexName]._SCORE(docs, 'TFIDF')
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
-      { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
-      { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
-      { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
-      { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
-    ])
-  })
-})
+// test('_SCORE TFIDF', t => {
+//   t.plan(1)
+//   global[indexName]._SEARCH('tesla').then(
+//     docs => global[indexName]._SCORE(docs, 'TFIDF')
+//   ).then(res => {
+//     t.deepEqual(res, [
+//       { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//       { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//       { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 0.64 },
+//       { _id: '0', _match: ['make:tesla#1.00'], _score: 0.32 },
+//       { _id: '3', _match: ['make:tesla#1.00'], _score: 0.32 },
+//       { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 0.32 },
+//       { _id: '8', _match: ['brand:tesla#1.00'], _score: 0.32 },
+//       { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 0.32 }
+//     ])
+//   })
+// })
 
 test('SCORE TFIDF JSON', t => {
   t.plan(1)
   global[indexName].QUERY({
-    SEARCH: ['tesla']
+    AND: ['tesla']
   }, {
-    SCORE: 'TFIDF'
+    SCORE: 'TFIDF',
+    SORT: true
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
@@ -134,9 +135,10 @@ test('SCORE TFIDF JSON', t => {
 test('SCORE SUM JSON', t => {
   t.plan(1)
   global[indexName].QUERY({
-    SEARCH: ['tesla']
+    AND: ['tesla']
   }, {
-    SCORE: 'SUM'
+    SCORE: 'SUM',
+    SORT: true
   }).then(({ RESULT }) => {
     t.deepEqual(RESULT, [
       { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 2 },
@@ -154,18 +156,19 @@ test('SCORE SUM JSON', t => {
 test('SCORE PRODUCT JSON', t => {
   t.plan(1)
   global[indexName].QUERY({
-    SEARCH: ['tesla']
+    AND: ['tesla']
   }, {
-    SCORE: 'PRODUCT'
+    SCORE: 'PRODUCT',
+    SORT: true
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
-        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
-        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
         { _id: '0', _match: ['make:tesla#1.00'], _score: 1 },
+        { _id: '2', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
         { _id: '3', _match: ['make:tesla#1.00'], _score: 1 },
         { _id: '5', _match: ['manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '6', _match: ['make:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
+        { _id: '7', _match: ['brand:tesla#1.00', 'manufacturer:tesla#1.00'], _score: 1 },
         { _id: '8', _match: ['brand:tesla#1.00'], _score: 1 },
         { _id: '9', _match: ['manufacturer:tesla#1.00'], _score: 1 }
       ],
@@ -179,7 +182,8 @@ test('SCORE CONCAT JSON', t => {
   global[indexName].QUERY({
     AND: ['tesla']
   }, {
-    SCORE: 'CONCAT'
+    SCORE: 'CONCAT',
+    SORT: true
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [

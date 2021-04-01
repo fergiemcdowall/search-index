@@ -219,8 +219,8 @@ test('SORT NUMERIC DESCENDING (JSON)', t => {
 
 test('SORT on _match.price without fetching documents', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    SEARCH: [{
+  global[indexName].SEARCH({
+    AND: [{
       FIELD: 'price'
     }]
   }, {
@@ -247,8 +247,8 @@ test('SORT on _match.price without fetching documents', t => {
 
 test('gracefully handle SORT on field that doesnt exist', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    SEARCH: [{
+  global[indexName].SEARCH({
+    AND: [{
       FIELD: 'price'
     }]
   }, {

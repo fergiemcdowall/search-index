@@ -67,9 +67,10 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
   t.plan(1)
   global[indexName].QUERY(
     {
-      SEARCH: ['paul', 'and']
+      AND: ['paul', 'and']
     }, {
-      DOCUMENTS: true
+      DOCUMENTS: true,
+      SCORE: 'TFIDF'
     }
   )
     .then(res => {
