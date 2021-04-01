@@ -38,15 +38,16 @@
       - [PAGE](#page)
       - [SCORE](#score)
       - [SORT](#sort)
+      - [WEIGHT](#weight)
     - [Query verbs](#query-verbs)
       - [AND](#and)
       - [NOT](#not)
       - [OR](#or)
-      - [SEARCH](#search)
   - [MAX](#max)
   - [MIN](#min)
   - [PUT](#put)
   - [PUT_RAW](#put_raw)
+  - [SEARCH](#search)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -327,6 +328,7 @@ const results = await QUERY(query, options)
 | [`PAGE`](#page) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
 | [`SCORE`](#score) | `String` | `'TFIDF'` | Calculate a value per document |
 | [`SORT`](#sort) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
+| [`WEIGHT`](#weight) | `object` | `{}` | Weight fields and/or values |
 
 #### Returning references or documents
 
@@ -451,6 +453,20 @@ See also [FACETS](#facets)
 }
 ```
 
+#### WEIGHT
+
+```javascript
+// Weights fields and/or values
+{
+  WEIGHT: {
+    FIELD: fieldName,     // Name of field (matches all field if not present)
+    VALUE: fieldValue,    // Value of field (matches all values if not present)
+    WEIGHT: weight        // A numeric factor that weights the field/value
+  }
+}
+```
+
+
 
 ### Query verbs
 
@@ -480,16 +496,6 @@ See also [FACETS](#facets)
 // Boolean OR: Return results that contain one or more tokens
 {
   OR: [ token1, token2, ... ]
-}
-```
-
-
-#### SEARCH
-
-```javascript
-// Return search results sorted by relevance to query tokens
-{
-  SEARCH: [ token1, token2, ... ]
 }
 ```
 
@@ -557,3 +563,13 @@ the corresponding documents that are indexed, it may make sense to set
 and instead add them with `PUT_RAW` afterwards.
 
 
+## SEARCH
+
+```javascript
+// equivalent to
+// QUERY(q, {
+//   SCORE: 'TFIDF',
+//   SORT: true
+// })
+const results = await SEARCH(q)
+```
