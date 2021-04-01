@@ -78,7 +78,8 @@ module.exports = fii => {
         results.map(r => {
           r._score = +r._match.reduce(
             (acc, cur) => acc * +cur.split('#')[1], 1
-          ).toFixed(2) // TODO: make precision an option
+          ).toFixed(2)
+          // TODO: make precision an option
           return r
         })
       ))
@@ -105,11 +106,13 @@ module.exports = fii => {
     }
   }
 
-  const SEARCH = (...q) => fii
-    .AND(...q)
-    .then(SCORE)
-    .then(SORT)
-
+  // TODO: update all the tests
+  // TODO: maybe add a default page size?
+  const SEARCH = (q, qops) => parseJsonQuery(q, Object.assign({
+    SCORE: 'TFIDF',
+    SORT: true
+  }, qops))
+  
   const SORT = (results, options) => {
     options = Object.assign({
       DIRECTION: 'DESCENDING',
@@ -157,9 +160,28 @@ module.exports = fii => {
 
   const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮')
 
+  // TODO: WEIGHT should take an array of tokens
+  const WEIGHT = (results, weights) => results.map(r => {
+    r._match = r._match.map(m => {
+      for (weight in weights) {
+        if (new RegExp('^' + (weights[weight].FIELD || '[\\w]+')
+                       + ':' + (weights[weight].VALUE || '[\\w]+')).test(m)) {
+          [ tokenSpace, tsWeight ] = m.split('#');
+          m = tokenSpace + '#' + (tsWeight*weights[weight].WEIGHT).toFixed(2)
+        }
+      }
+      return m
+    })
+      
+    return r
+  })
+  
+
+  
   // This function reads queries in a JSON format and then translates them to
   // Promises
   const parseJsonQuery = (q, options = {}) => {
+
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -178,6 +200,8 @@ module.exports = fii => {
         )
       }
       if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
+      // TODO: SEARCH should be a top-level function that points to
+      // QUERY({SCORE ..., SORT ...})
       if (cmd.SEARCH) return SEARCH(...cmd.SEARCH.map(runQuery))
     }
 
@@ -245,9 +269,21 @@ module.exports = fii => {
         : {}
     )
 
+    const weight = result => options.WEIGHT
+          ? Object.assign(
+            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+            result
+          )
+          : result
+    
+
+    
+    
     return runQuery(q)
       .then(formatResults)
-      .then(appendDocuments).then(score)
+      .then(appendDocuments)  // TODO: this should be at the end surely?
+      .then(weight)
+      .then(score)
       .then(sort)
       .then(buckets)
       .then(facets)
@@ -262,9 +298,9 @@ module.exports = fii => {
     DOCUMENT_COUNT: DOCUMENT_COUNT,
     FACETS: FACETS,
     PAGE: PAGE,
+    QUERY: parseJsonQuery,
     SCORE: SCORE,
     SEARCH: SEARCH,
-    SORT: SORT,
-    QUERY: parseJsonQuery
+    SORT: SORT
   }
 }

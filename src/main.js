@@ -51,6 +51,7 @@ const makeASearchIndex = ops => {
     PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
     PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
     QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops)),
+    SEARCH: (q, qops) => c.cache({ SEARCH: [q, qops] }, r.SEARCH(q, qops)),
 
     // pipeline stages
     ...tp
