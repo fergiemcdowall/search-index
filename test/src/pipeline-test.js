@@ -38,7 +38,7 @@ test('can alter order of tokenization pipeline', async function (t) {
       TOKENIZATION_PIPELINE_STAGES.LOWCASE,
       TOKENIZATION_PIPELINE_STAGES.NGRAMS,
       TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
     ]
   }), [
     { _id: '0', status: 'CREATED', operation: 'PUT' },
@@ -69,7 +69,7 @@ test('can alter order of tokenization pipeline', async function (t) {
       TOKENIZATION_PIPELINE_STAGES.LOWCASE,
       TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
       TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
     ]
   }), [
     { _id: '0', status: 'CREATED', operation: 'PUT' },
@@ -85,16 +85,14 @@ test('can alter order of tokenization pipeline', async function (t) {
     'rosemary thyme', 'sage', 'sage rosemary',
     'thyme'
   ])
-
 })
-
 
 // TODO: add custom pipeline stage
 
 test('can add custom pipeline stage', async function (t) {
   t.plan(4)
 
-  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
+  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
     name: sandbox + 'pipeline2'
   })
   t.ok(PUT)
@@ -104,9 +102,9 @@ test('can add custom pipeline stage', async function (t) {
       TOKENIZATION_PIPELINE_STAGES.SPLIT,
       TOKENIZATION_PIPELINE_STAGES.LOWCASE,
       TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      (tokens, field, ops) => [ ...tokens, field.split('').reverse().join('') ],
+      (tokens, field, ops) => [...tokens, field.split('').reverse().join('')],
       TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
     ]
   }), [
     { _id: '0', status: 'CREATED', operation: 'PUT' },

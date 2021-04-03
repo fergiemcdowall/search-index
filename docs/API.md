@@ -542,7 +542,7 @@ generated and assigned
 |`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
 |`ngrams`|`object`|`{ lengths: [ 1 ], join: ' ', fields: undefined }`| An object that describes ngrams |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  TOKENIZATION_PIPELINE_STAGES.SPLIT,<br>  TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,<br>  TOKENIZATION_PIPELINE_STAGES.LOWCASE,<br>  TOKENIZATION_PIPELINE_STAGES.REPLACE,<br>  TOKENIZATION_PIPELINE_STAGES.NGRAMS,<br>  TOKENIZATION_PIPELINE_STAGES.STOPWORDS,<br>  TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  TOKENIZATION_PIPELINE_STAGES.SPLIT,<br>  TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,<br>  TOKENIZATION_PIPELINE_STAGES.LOWCASE,<br>  TOKENIZATION_PIPELINE_STAGES.REPLACE,<br>  TOKENIZATION_PIPELINE_STAGES.NGRAMS,<br>  TOKENIZATION_PIPELINE_STAGES.STOPWORDS,<br>  TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 
 ### Tokenization pipeline
 
@@ -562,7 +562,7 @@ tokenizationPipeline: [
   REPLACE,
   NGRAMS,
   STOPWORDS,
-  SCORE_TFIDF
+  SCORE_TERM_FREQUENCY
 ]
 ```
 
@@ -583,7 +583,7 @@ await PUT(docs, {
     TOKENIZATION_PIPELINE_STAGES.REPLACE,
     TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
     TOKENIZATION_PIPELINE_STAGES.NGRAMS,    // <-- order switched
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
   ]
 })
 ```
@@ -615,7 +615,7 @@ await PUT(docs, {
     TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
     // add 🚀 to targetField (so that target field is retrievable by 🚀 )
     (tokens, field, ops) => (field === targetField) ? [ ...tokens, 🚀 ] : tokens
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
   ]
 })
 ```
