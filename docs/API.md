@@ -46,8 +46,12 @@
   - [MAX](#max)
   - [MIN](#min)
   - [PUT](#put)
+    - [Tokenization pipeline](#tokenization-pipeline)
+      - [Reorder pipeline](#reorder-pipeline)
+      - [Create custom pipeline stages](#create-custom-pipeline-stages)
   - [PUT_RAW](#put_raw)
   - [SEARCH](#search)
+  - [TOKENIZATION_PIPELINE_STAGES](#tokenization_pipeline_stages)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -389,7 +393,6 @@ See also [BUCKETS](#buckets)
 ```javascript
 // Return the IDs of documents for each given token filtered by the
 // query result
-  
 {
   BUCKETS: [ token1, token2, ... ]
 }
@@ -424,7 +427,8 @@ See also [FACETS](#facets)
 // show a single page of the result set
 {
   PAGE: {
-    NUMBER: pageNumber, // to count from the end of the result set use negative numbers
+    NUMBER: pageNumber, // to count from the end of the result set
+                        // use negative numbers
     SIZE: pageSize
   }
 }
@@ -536,7 +540,86 @@ generated and assigned
 |---|---|---|---|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+|`ngrams`|`object`|`{ lengths: [ 1 ], join: ' ', fields: undefined }`| An object that describes ngrams |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  TOKENIZATION_PIPELINE_STAGES.SPLIT,<br>  TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,<br>  TOKENIZATION_PIPELINE_STAGES.LOWCASE,<br>  TOKENIZATION_PIPELINE_STAGES.REPLACE,<br>  TOKENIZATION_PIPELINE_STAGES.NGRAMS,<br>  TOKENIZATION_PIPELINE_STAGES.STOPWORDS,<br>  TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+
+### Tokenization pipeline
+
+Every field of every document that is indexed is passed through the
+tokenization pipeline. The tokenization pipeline consists of a
+sequence of stages that are applied to the field with the result of
+the preceding stage providing the input for the result of the
+following stage.
+
+The default tokenization pipeline looks like this:
+
+```javascript
+tokenizationPipeline: [
+  SPLIT,
+  DONT_INDEX_FIELD,
+  LOWCASE,
+  REPLACE,
+  NGRAMS,
+  STOPWORDS,
+  SCORE_TFIDF
+]
+```
+
+#### Reorder pipeline
+
+Example: reorder the pipeline to remove stopwords _before_ creating
+ngrams:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,    // <-- order switched
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+  ]
+})
+```
+
+#### Create custom pipeline stages
+
+A custom pipeline stage must be in the following form:
+
+```javascript
+// take tokens (Array of tokens), field (the field name), and options,
+// and then return then return the Array of tokens
+(tokens, field, ops) => tokens
+```
+
+Example: add custom pipeline stage that adds a rocket emoji to a
+predetermined field:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+    // add 🚀 to targetField (so that target field is retrievable by 🚀 )
+    (tokens, field, ops) => (field === targetField) ? [ ...tokens, 🚀 ] : tokens
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+  ]
+})
+```
+
 
 
 ## PUT_RAW
@@ -573,3 +656,26 @@ and instead add them with `PUT_RAW` afterwards.
 // })
 const results = await SEARCH(q)
 ```
+
+## TOKENIZATION_PIPELINE_STAGES
+
+Tokenization pipeline stages can be added, removed or reordered when
+`PUT`ing by passing them to the `tokenizationPipeline` option.
+
+Use this functionality when processing text on the way into the
+index. Typical tasks would be to add stemming, synonym replacement,
+character normalisation, or phone number normalisation.
+
+It is possible to create your own tokenization pipeline stage. See the
+[PUT section](#tokenization-pipeline) for more info
+
+| Name | Description |
+|---|---|
+| DONT_INDEX_FIELD | Skip these fields |
+| LOWCASE | Bump all tokens to lower case |
+| NGRAMS | create ngrams |
+| SCORE_TERM_FREQUENCY | Score frequency of terms |
+| REPLACE | Replace terms with other terms |
+| SPLIT | Splits string into tokens (note: this is always the first stage, and `tokens` is a string rather than an array)|
+| SPY | print output from precending stage to `console.log` |
+| STOPWORDS | remove stopwords |

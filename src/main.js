@@ -54,7 +54,7 @@ const makeASearchIndex = ops => {
     SEARCH: (q, qops) => c.cache({ SEARCH: [q, qops] }, r.SEARCH(q, qops)),
 
     // pipeline stages
-    ...tp
+    TOKENIZATION_PIPELINE_STAGES: tp
   }
 }
 
@@ -70,7 +70,7 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
     ngrams: {},
     replace: {},
     storeRawDocs: true,
-    tokenizerPipeline: [
+    tokenizationPipeline: [
       // TODO: each option should be field specific
       tp.SPLIT,
       tp.DONT_INDEX_FIELD,
@@ -78,7 +78,7 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
       tp.REPLACE,
       tp.NGRAMS,
       tp.STOPWORDS,
-      tp.SCORE_TFIDF
+      tp.SCORE_TERM_FREQUENCY
     ],
     stopwords: [],
     storeVectors: true, // TODO: make a test for this being false

@@ -17,7 +17,9 @@ const docs = [
     line3: '(Tracing of sparrow on snow-crested ground)'
   }
 ]
+
 // TODO: can test with no fields
+// TODO: can join with other characters than space
 test('create a search index with ngrams', async function (t) {
   t.plan(9)
 
@@ -50,6 +52,73 @@ test('create a search index with ngrams', async function (t) {
   t.deepEquals(await QUERY('lives there'), {
     RESULT: [
       { _id: '0', _match: ['line3:lives there#1.00'] }
+    ],
+    RESULT_LENGTH: 1
+  })
+})
+
+test('create a search index with ngrams (no fields specified)', async function (t) {
+  t.plan(8)
+
+  const { PUT, DICTIONARY, QUERY } = await si({
+    name: sandbox + 'ngrams2',
+    ngrams: {
+      lengths: [1, 2, 3]
+    }
+  })
+  t.ok(PUT)
+
+  t.deepEquals(await PUT(docs), [
+    { _id: '0', status: 'CREATED', operation: 'PUT' },
+    { _id: '1', status: 'CREATED', operation: 'PUT' }
+  ])
+
+  t.deepEquals(await DICTIONARY('who'), [
+    'who', 'who lives', 'who lives there'
+  ])
+  t.deepEquals(await DICTIONARY('are'), ['are', 'are you', 'are you going'])
+  t.deepEquals(await DICTIONARY('xxx'), [])
+  t.deepEquals(await DICTIONARY('parsley'), [
+    'parsley', 'parsley sage', 'parsley sage rosemary'
+  ])
+  t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives there'])
+  t.deepEquals(await QUERY('lives there'), {
+    RESULT: [
+      { _id: '0', _match: ['line3:lives there#1.00'] }
+    ],
+    RESULT_LENGTH: 1
+  })
+})
+
+test('create a search index with ngrams (no fields specified, custom join)', async function (t) {
+  t.plan(8)
+
+  const { PUT, DICTIONARY, QUERY } = await si({
+    name: sandbox + 'ngrams3',
+    ngrams: {
+      lengths: [1, 2, 3],
+      join: '$'
+    }
+  })
+  t.ok(PUT)
+
+  t.deepEquals(await PUT(docs), [
+    { _id: '0', status: 'CREATED', operation: 'PUT' },
+    { _id: '1', status: 'CREATED', operation: 'PUT' }
+  ])
+
+  t.deepEquals(await DICTIONARY('who'), [
+    'who', 'who$lives', 'who$lives$there'
+  ])
+  t.deepEquals(await DICTIONARY('are'), ['are', 'are$you', 'are$you$going'])
+  t.deepEquals(await DICTIONARY('xxx'), [])
+  t.deepEquals(await DICTIONARY('parsley'), [
+    'parsley', 'parsley$sage', 'parsley$sage$rosemary'
+  ])
+  t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives$there'])
+  t.deepEquals(await QUERY('lives$there'), {
+    RESULT: [
+      { _id: '0', _match: ['line3:lives$there#1.00'] }
     ],
     RESULT_LENGTH: 1
   })

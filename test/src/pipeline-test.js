@@ -22,7 +22,7 @@ const docs = [
 test('can alter order of tokenization pipeline', async function (t) {
   t.plan(6)
 
-  const { PUT, DELETE, DICTIONARY, SPLIT, LOWCASE, NGRAMS, STOPWORDS, SCORE_TFIDF } = await si({
+  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
     name: sandbox + 'pipeline'
   })
   t.ok(PUT)
@@ -33,12 +33,12 @@ test('can alter order of tokenization pipeline', async function (t) {
       fields: ['line2'],
       lengths: [1, 2]
     },
-    tokenizerPipeline: [
-      SPLIT,
-      LOWCASE,
-      NGRAMS,
-      STOPWORDS,
-      SCORE_TFIDF
+    tokenizationPipeline: [
+      TOKENIZATION_PIPELINE_STAGES.SPLIT,
+      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
     ]
   }), [
     { _id: '0', status: 'CREATED', operation: 'PUT' },
@@ -64,12 +64,12 @@ test('can alter order of tokenization pipeline', async function (t) {
       fields: ['line2'],
       lengths: [1, 2]
     },
-    tokenizerPipeline: [
-      SPLIT,
-      LOWCASE,
-      STOPWORDS,
-      NGRAMS,
-      SCORE_TFIDF
+    tokenizationPipeline: [
+      TOKENIZATION_PIPELINE_STAGES.SPLIT,
+      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
     ]
   }), [
     { _id: '0', status: 'CREATED', operation: 'PUT' },
@@ -84,5 +84,43 @@ test('can alter order of tokenization pipeline', async function (t) {
     'parsley', 'parsley sage', 'rosemary',
     'rosemary thyme', 'sage', 'sage rosemary',
     'thyme'
+  ])
+
+})
+
+
+// TODO: add custom pipeline stage
+
+test('can add custom pipeline stage', async function (t) {
+  t.plan(4)
+
+  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
+    name: sandbox + 'pipeline2'
+  })
+  t.ok(PUT)
+
+  t.deepEquals(await PUT(docs, {
+    tokenizationPipeline: [
+      TOKENIZATION_PIPELINE_STAGES.SPLIT,
+      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+      (tokens, field, ops) => [ ...tokens, field.split('').reverse().join('') ],
+      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TFIDF
+    ]
+  }), [
+    { _id: '0', status: 'CREATED', operation: 'PUT' },
+    { _id: '1', status: 'CREATED', operation: 'PUT' }
+  ])
+
+  t.deepEquals(await DICTIONARY({
+    FIELD: 'line1'
+  }), [
+    '1enil', 'a', 'are', 'cambric', 'deep', 'fair', 'forest', 'going', 'green', 'her', 'in', 'make', 'me', 'scarborough', 'shirt', 'tell', 'the', 'to', 'you'
+  ])
+  t.deepEquals(await DICTIONARY({
+    FIELD: 'line2'
+  }), [
+    '2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme'
   ])
 })

@@ -12,7 +12,9 @@ module.exports.LOWCASE = (tokens, field, ops) => tokens.map(
 )
 
 module.exports.NGRAMS = (tokens, field, ops) => {
-  const { fields, lengths, join = ' ' } = ops.ngrams
+  let { fields, lengths, join = ' ' } = ops.ngrams
+  // if no fields are specified then ngramify all fields
+  if (!fields) fields = [field]
   if (lengths) {
     if (fields.includes(field)) {
       return ngraminator(tokens, lengths).map(t => t.join(join))
@@ -34,7 +36,7 @@ module.exports.REPLACE = (tokens, field, ops) => {
   return tokens
 }
 
-module.exports.SCORE_TFIDF = tokens => {
+module.exports.SCORE_TERM_FREQUENCY = tokens => {
   const v = tv(tokens)
   const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)
   return v.map(

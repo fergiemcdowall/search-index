@@ -7,8 +7,8 @@ module.exports = (fii, ops) => {
     // stopwords
     // synonyms
     // score
-    const runTokenizerPipeline = (fieldName, str) =>
-      putOptions.tokenizerPipeline.reduce(
+    const runTokenizationPipeline = (fieldName, str) =>
+      putOptions.tokenizationPipeline.reduce(
         (acc, cur) => cur(acc, fieldName, putOptions), str
       )
 
@@ -35,7 +35,7 @@ module.exports = (fii, ops) => {
         const strings = fieldValue.filter(item => typeof item === 'string')
         const notStrings = fieldValue.filter(item => typeof item !== 'string')
         acc[fieldName] = [
-          ...strings.map(str => runTokenizerPipeline(fieldName, str)),
+          ...strings.map(str => runTokenizationPipeline(fieldName, str)),
           ...notStrings.map(traverseObject)
         ].sort()
         return acc
@@ -48,7 +48,7 @@ module.exports = (fii, ops) => {
       }
 
       // else fieldvalue is Number or String
-      acc[fieldName] = runTokenizerPipeline(fieldName, fieldValue.toString())
+      acc[fieldName] = runTokenizationPipeline(fieldName, fieldValue.toString())
       return acc
     }, {})
 
