@@ -157,10 +157,10 @@ test('create another search index', t => {
   })
 })
 
-test('can add data', t => {
+test('can add data with skipFields specified', t => {
   t.plan(1)
   global[indexName2].PUT(carData, {
-    doNotIndexField: ['make']
+    skipFields: ['make']
   }).then(response =>
     t.deepEquals(response, [
       { _id: '0', status: 'CREATED', operation: 'PUT' },
@@ -179,9 +179,9 @@ test('Verify that PUT has created an appropriate index (_PUT_2)', t => {
     { key: '￮DOC_RAW￮0￮', value: { _id: 0, manufacturer: 'Volvo', make: 'Tesla', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮1￮', value: { _id: 1, manufacturer: 'Volvo', make: 'BMW', brand: 'Volvo' } },
     { key: '￮DOC_RAW￮2￮', value: { _id: 2, manufacturer: 'Tesla', make: 'Tesla', brand: 'Volvo' } },
-    { key: '￮DOC￮0￮', value: { _id: '0', make: [], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮1￮', value: { _id: '1', make: [], manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
-    { key: '￮DOC￮2￮', value: { _id: '2', make: [], manufacturer: ['tesla#1.00'], brand: ['volvo#1.00'] } },
+    { key: '￮DOC￮0￮', value: { _id: '0', manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
+    { key: '￮DOC￮1￮', value: { _id: '1', manufacturer: ['volvo#1.00'], brand: ['volvo#1.00'] } },
+    { key: '￮DOC￮2￮', value: { _id: '2', manufacturer: ['tesla#1.00'], brand: ['volvo#1.00'] } },
     { key: '￮FIELD￮brand￮', value: 'brand' },
     { key: '￮FIELD￮manufacturer￮', value: 'manufacturer' }
   ]

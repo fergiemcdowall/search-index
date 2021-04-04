@@ -52,7 +52,20 @@ module.exports = (fii, ops) => {
       return acc
     }, {})
 
-    return docs.map(traverseObject)
+    // remove fields who's value is []
+    // (matching empty arrays in js is messier than you might think...)
+    const removeEmptyFields = doc => {
+      Object.keys(doc).forEach(fieldName => {
+        if (Array.isArray(doc[fieldName])) {
+          if (doc[fieldName].length === 0) { delete doc[fieldName] }
+        }
+      })
+      return doc
+    }
+
+    return docs
+      .map(traverseObject)
+      .map(removeEmptyFields)
   }
 
   const incrementDocCount = increment => fii.STORE.get(

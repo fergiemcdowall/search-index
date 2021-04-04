@@ -539,10 +539,10 @@ generated and assigned
 | Name | Type | Default | Description |
 |---|---|---|---|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
-|`doNotIndexField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
 |`ngrams`|`object`|`{ lengths: [ 1 ], join: ' ', fields: undefined }`| An object that describes ngrams |
+|`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  TOKENIZATION_PIPELINE_STAGES.SPLIT,<br>  TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,<br>  TOKENIZATION_PIPELINE_STAGES.LOWCASE,<br>  TOKENIZATION_PIPELINE_STAGES.REPLACE,<br>  TOKENIZATION_PIPELINE_STAGES.NGRAMS,<br>  TOKENIZATION_PIPELINE_STAGES.STOPWORDS,<br>  TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  DONT_INDEX_FIELD,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 
 ### Tokenization pipeline
 

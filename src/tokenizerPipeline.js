@@ -1,9 +1,10 @@
 const tv = require('term-vector')
 const ngraminator = require('ngraminator')
 
-module.exports.DONT_INDEX_FIELD = (tokens, field, ops) => {
-  return ops.doNotIndexField.includes(field.toLowerCase()) ? [] : tokens
-}
+module.exports.SKIP = (tokens, field, ops) =>
+  ops.skipFields.includes(field.toLowerCase())
+    ? []
+    : tokens
 
 module.exports.SPLIT = tokens => tokens.match(/[\p{L}\d]+/ug)
 
