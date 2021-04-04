@@ -3,7 +3,7 @@ const fii = require('fergies-inverted-index')
 const Cache = require('./cache.js')
 const reader = require('./read.js')
 const writer = require('./write.js')
-const tp = require('./tokenizerPipeline.js')
+const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
 
 const makeASearchIndex = ops => {
@@ -71,7 +71,6 @@ const initIndex = (ops = {}) => new Promise((resolve, reject) => {
     replace: {},
     storeRawDocs: true,
     tokenizationPipeline: [
-      // TODO: each option should be field specific
       tp.SPLIT,
       tp.SKIP,
       tp.LOWCASE,

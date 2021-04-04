@@ -92,9 +92,9 @@ const idx = await si(options)
 
 | Name | Type | Default | Description |
 |---|---|---|---|
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 | `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [`abstract-leveldown`](https://github.com/Level/awesome/#stores) compatible store |
 | `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
-| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 | `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
 | `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
@@ -538,11 +538,13 @@ generated and assigned
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
-|`ngrams`|`object`|`{ lengths: [ 1 ], join: ' ', fields: undefined }`| An object that describes ngrams |
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams |
 |`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  DONT_INDEX_FIELD,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 
 ### Tokenization pipeline
 
@@ -557,7 +559,7 @@ The default tokenization pipeline looks like this:
 ```javascript
 tokenizationPipeline: [
   SPLIT,
-  DONT_INDEX_FIELD,
+  SKIP,
   LOWCASE,
   REPLACE,
   NGRAMS,
@@ -578,7 +580,7 @@ const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
 await PUT(docs, {
   tokenizationPipeline: [
     TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
     TOKENIZATION_PIPELINE_STAGES.LOWCASE,
     TOKENIZATION_PIPELINE_STAGES.REPLACE,
     TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
@@ -608,7 +610,7 @@ const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
 await PUT(docs, {
   tokenizationPipeline: [
     TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.DONT_INDEX_FIELD,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
     TOKENIZATION_PIPELINE_STAGES.LOWCASE,
     TOKENIZATION_PIPELINE_STAGES.REPLACE,
     TOKENIZATION_PIPELINE_STAGES.NGRAMS,
@@ -671,7 +673,7 @@ It is possible to create your own tokenization pipeline stage. See the
 
 | Name | Description |
 |---|---|
-| DONT_INDEX_FIELD | Skip these fields |
+| SKIP | Skip these fields |
 | LOWCASE | Bump all tokens to lower case |
 | NGRAMS | create ngrams |
 | SCORE_TERM_FREQUENCY | Score frequency of terms |
