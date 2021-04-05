@@ -2,6 +2,15 @@
   "name": "search-index",
   "version": "3.0.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
+  "keywords": [
+    "search",
+    "elasticsearch",
+    "elastic",
+    "lunr.js",
+    "flexsearch",
+    "norch",
+    "solr"
+  ],
   "engines": {
     "node": ">=12"
   },
@@ -50,6 +59,7 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "standard": "^16.0.2",
+    "stemmer": "^1.0.5",
     "stopword": "^1.0.6",
     "stream-browserify": "^3.0.0",
     "tape": "^5.1.0",

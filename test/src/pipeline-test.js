@@ -1,6 +1,7 @@
 const si = require('../../')
 const test = require('tape')
 const sw = require('stopword')
+const stemmer = require('stemmer')
 
 const sandbox = 'test/sandbox/'
 
@@ -120,5 +121,36 @@ test('can add custom pipeline stage', async function (t) {
     FIELD: 'line2'
   }), [
     '2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme'
+  ])
+})
+
+
+test('can add custom pipeline stage (stemmer)', async function (t) {
+  t.plan(3)
+
+  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
+    name: sandbox + 'pipeline3'
+  })
+  t.ok(PUT)
+
+  t.deepEquals(await PUT(docs, {
+    stopwords: sw.en,
+    tokenizationPipeline: [
+      TOKENIZATION_PIPELINE_STAGES.SPLIT,
+      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+      (tokens, field, ops) => tokens.map(stemmer),
+      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+    ]
+  }), [
+    { _id: '0', status: 'CREATED', operation: 'PUT' },
+    { _id: '1', status: 'CREATED', operation: 'PUT' }
+  ])
+
+  t.deepEquals(await DICTIONARY({
+    FIELD: 'line3'
+  }), [
+    'crest', 'ground', 'live', 'rememb', 'snow', 'sparrow', 'trace'
   ])
 })

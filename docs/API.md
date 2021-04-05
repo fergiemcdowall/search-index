@@ -600,8 +600,8 @@ A custom pipeline stage must be in the following form:
 (tokens, field, ops) => tokens
 ```
 
-Example: add custom pipeline stage that adds a rocket emoji to a
-predetermined field:
+
+Example: Normalize text characters:
 
 ```javascript
 const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
@@ -615,13 +615,34 @@ await PUT(docs, {
     TOKENIZATION_PIPELINE_STAGES.REPLACE,
     TOKENIZATION_PIPELINE_STAGES.NGRAMS,
     TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-    // add 🚀 to targetField (so that target field is retrievable by 🚀 )
-    (tokens, field, ops) => (field === targetField) ? [ ...tokens, 🚀 ] : tokens
+    // björn -> bjorn, allé -> alle, etc.
+    (tokens, field, ops) => tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
     TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
   ]
 })
 ```
 
+Example: stemmer:
+
+```javascript
+const stemmer = require('stemmer')
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+    // stemmer
+    (tokens, field, ops) => tokens.map(stemmer)
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  ]
+})
+```
 
 
 ## PUT_RAW
