@@ -160,7 +160,6 @@ module.exports = fii => {
 
   const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮')
 
-  // TODO: WEIGHT should take an array of tokens
   const WEIGHT = (results, weights) => results.map(r => {
     r._match = r._match.map(m => {
       for (const weight in weights) {
@@ -266,6 +265,7 @@ module.exports = fii => {
         : {}
     )
 
+    // WEIGHT IF SPECIFIED
     const weight = result => options.WEIGHT
       ? Object.assign(
           { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
