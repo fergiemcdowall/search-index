@@ -124,7 +124,6 @@ test('can add custom pipeline stage', async function (t) {
   ])
 })
 
-
 test('can add custom pipeline stage (stemmer)', async function (t) {
   t.plan(3)
 

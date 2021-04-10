@@ -332,7 +332,7 @@ const results = await QUERY(query, options)
 | [`PAGE`](#page) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
 | [`SCORE`](#score) | `String` | `'TFIDF'` | Calculate a value per document |
 | [`SORT`](#sort) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
-| [`WEIGHT`](#weight) | `object` | `{}` | Weight fields and/or values |
+| [`WEIGHT`](#weight) | `Array` | `[]` | Weight fields and/or values |
 
 #### Returning references or documents
 
@@ -394,7 +394,7 @@ See also [BUCKETS](#buckets)
 // Return the IDs of documents for each given token filtered by the
 // query result
 {
-  BUCKETS: [ token1, token2, ... ]
+  BUCKETS: [ token1, token2, /* ... */ ]
 }
 ```
 
@@ -462,15 +462,13 @@ See also [FACETS](#facets)
 ```javascript
 // Weights fields and/or values
 {
-  WEIGHT: {
+  WEIGHT: [{
     FIELD: fieldName,     // Name of field (matches all field if not present)
     VALUE: fieldValue,    // Value of field (matches all values if not present)
     WEIGHT: weight        // A numeric factor that weights the field/value
-  }
+  }, /* ... more weights here if required... */ ]
 }
 ```
-
-
 
 ### Query verbs
 
@@ -479,7 +477,7 @@ See also [FACETS](#facets)
 ```javascript
 // Boolean AND: Return results that contain all tokens
 {
-  AND: [ token1, token2, ... ]
+  AND: [ token1, token2, /* ... */ ]
 }
 ```
 
@@ -499,7 +497,7 @@ See also [FACETS](#facets)
 ```javascript
 // Boolean OR: Return results that contain one or more tokens
 {
-  OR: [ token1, token2, ... ]
+  OR: [ token1, token2, /* ... */ ]
 }
 ```
 

@@ -106,7 +106,6 @@ module.exports = fii => {
     }
   }
 
-  // TODO: update all the tests
   // TODO: maybe add a default page size?
   const SEARCH = (q, qops) => parseJsonQuery(q, Object.assign({
     SCORE: 'TFIDF',
@@ -185,9 +184,12 @@ module.exports = fii => {
       if (cmd.FIELD) return fii.GET(cmd)
       if (cmd.VALUE) return fii.GET(cmd)
 
+      // TODO: Find a clever way to pass options to AND, GET, NOT and OR
+      // Probably something along the lines of- if e.g. AND, and if
+      // one condition is an object, then that condition is an options object
+      
       // else:
       if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
-      if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
       if (cmd.GET) return fii.GET(cmd.GET)
       if (cmd.NOT) {
         return fii.SET_SUBTRACTION(
@@ -196,9 +198,8 @@ module.exports = fii => {
         )
       }
       if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
-      // TODO: SEARCH should be a top-level function that points to
-      // QUERY({SCORE ..., SORT ...})
-      if (cmd.SEARCH) return SEARCH(...cmd.SEARCH.map(runQuery))
+
+      if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }
 
     const formatResults = result => result.RESULT
@@ -275,13 +276,13 @@ module.exports = fii => {
 
     return runQuery(q)
       .then(formatResults)
-      .then(appendDocuments) // TODO: this should be at the end surely?
+      .then(buckets)
+      .then(facets)
       .then(weight)
       .then(score)
       .then(sort)
-      .then(buckets)
-      .then(facets)
       .then(page)
+      .then(appendDocuments) // TODO: this should be at the end surely?
   }
 
   return {
