@@ -6,14 +6,14 @@ const writer = require('./write.js')
 const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
 
-const makeASearchIndex = ops => {
+const makeASearchIndex = ops => new Promise((resolve) => {
   // ".flush" clears the cache ".cache" creates/promotes a cache entry
   const c = new Cache(ops.cacheLength)
 
   const w = writer(ops.fii, ops) // TODO: should be just ops?
   const r = reader(ops.fii)
 
-  return {
+  return w._INCREMENT_DOC_COUNT(0).then(() => resolve({
     // internal functions inherited from fergies-inverted-index
     _AND: ops.fii.AND,
     _BUCKET: ops.fii.BUCKET,
@@ -42,7 +42,7 @@ const makeASearchIndex = ops => {
     EXPORT: ops.fii.EXPORT,
     FACETS: r.FACETS,
     FIELDS: ops.fii.FIELDS,
-    FLUSH: () => ops.fii.STORE.clear(),
+    FLUSH: () => c.flush().then(w.FLUSH),
     IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
     INDEX: ops.fii,
     LAST_UPDATED: ops.fii.LAST_UPDATED,
@@ -55,8 +55,9 @@ const makeASearchIndex = ops => {
 
     // pipeline stages
     TOKENIZATION_PIPELINE_STAGES: tp
-  }
-}
+
+  }))
+})
 
 const initIndex = (ops = {}) => new Promise((resolve, reject) => {
   // TODO: dont pass tokenization ops through to fii. Use the

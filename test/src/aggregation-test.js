@@ -39,9 +39,7 @@ test('can add some worldbank data', t => {
 test('can aggregate totalamt using underlying index', t => {
   const { SEARCH } = global[indexName]
   t.plan(1)
-  SEARCH({
-    AND: ['board_approval_month:october']
-  }, {
+  SEARCH(['board_approval_month:october'], {
     FACETS: [{
       FIELD: 'totalamt'
     }]
@@ -148,10 +146,8 @@ test('can aggregate totalamt using custom buckets', t => {
       VALUE: { GTE: '200000000', LTE: '200000000' }
     }
   ]
-  const q = ['board_approval_month:october']
-  global[indexName].SEARCH({
-    AND: q
-  }, {
+
+  global[indexName].SEARCH(['board_approval_month:october'], {
     BUCKETS: b
   }).then(result => t.deepEqual(
     result, {
@@ -326,9 +322,7 @@ test('can aggregate totalamt', t => {
 
 test('can run a query and create facets on impagency', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: ['board_approval_month:october']
-  }, {
+  global[indexName].SEARCH(['board_approval_month:october'], {
     FACETS: [{
       FIELD: 'impagency'
     }]
@@ -401,9 +395,7 @@ test('JSON BUCKET', t => {
 
 test('JSON AGGREGATE', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: ['board_approval_month:october']
-  }, {
+  global[indexName].SEARCH(['board_approval_month:october'], {
     BUCKETS: [
       {
         FIELD: 'impagency',

@@ -87,12 +87,14 @@ module.exports = (fii, ops) => {
     ? ({ body: doc })
     : doc
 
-  // TODO: generated IDs are derived from timestamps. Possibly there
-  // should be some sort of timer here that makes sure that this
-  // function uses at least 1 millisecond in order to avoid id collisions
+  let counter = 0
   const generateId = (doc, i) => (typeof doc._id === 'undefined')
     ? Object.assign(doc, {
-        _id: Date.now() + '-' + i
+      // counter is needed because if this function is called in quick
+      // succession, Date.now() is not guaranteed to be unique. This could
+      // still conflict if the DB is closed, clock is reset to the past, then
+      // DB reopened. That's a bit of a corner case though.
+        _id: `${Date.now()}-${i}-${counter++}`
       })
     : doc
 
@@ -139,13 +141,26 @@ module.exports = (fii, ops) => {
     ]).then(() => result)
   })
 
+  const _FLUSH = () => ops.fii.STORE.clear()
+    .then(() => {
+      const timestamp = Date.now()
+      return ops.fii.STORE.batch([
+        { type: 'put', key: '￮￮CREATED', value: timestamp },
+        { type: 'put', key: '￮￮LAST_UPDATED', value: timestamp },
+        { type: 'put', key: '￮DOCUMENT_COUNT￮', value: 0 }
+      ])
+    })
+    .then(() => true)
+
   return {
     // TODO: DELETE should be able to handle errors (_id not found etc.)
     DELETE: docIds => _DELETE(docIds), // for external use
+    FLUSH: _FLUSH,
     IMPORT: fii.IMPORT,
     PUT: _PUT,
     PUT_RAW: _PUT_RAW,
-    _DELETE: _DELETE, // for internal use
+    _DELETE: _DELETE,
+    _INCREMENT_DOC_COUNT: incrementDocCount,
     _PUT: _PUT,
     _PUT_RAW: _PUT_RAW
   }

@@ -48,13 +48,11 @@ test('create a fii with memdown', t => {
     ])
     return idx
   })).then(idx => {
-    idx.SEARCH({
-      AND: [
-        'body.text:cool',
-        'body.text:really',
-        'body.text:bananas'
-      ]
-    }).then(res => t.deepEquals(res, {
+    idx.SEARCH([
+      'body.text:cool',
+      'body.text:really',
+      'body.text:bananas'
+    ]).then(res => t.deepEquals(res, {
       RESULT: [{
         _id: 'b',
         _match: [

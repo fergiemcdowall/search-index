@@ -83,14 +83,19 @@ test('verify index structure', t => {
   t.plan(expectedIndexStructure.length)
   global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' })
     .on('data', d => t.deepEquals(
-      d, expectedIndexStructure.shift())
-    )
+      d, expectedIndexStructure.shift()
+    ))
 })
 
 test('FLUSH index and verify', t => {
-  t.plan(1)
+  t.plan(2)
+  const expectedIndexStructure = [
+    { key: '￮DOCUMENT_COUNT￮', value: 0 }
+  ]
   global[indexName].FLUSH().then(
     () => global[indexName].INDEX.STORE.createReadStream({ lt: '￮￮' })
-      .on('data', d => t.fail('there shouldnt be anything here'))
+      .on('data', d => t.deepEquals(
+        d, expectedIndexStructure.shift()
+      ))
   ).then(() => t.pass('index appears empty'))
 })

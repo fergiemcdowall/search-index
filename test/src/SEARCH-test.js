@@ -66,9 +66,9 @@ test('can add data', t => {
 
 test('simple _SEARCH with 1 clause', t => {
   t.plan(1)
-  global[indexName].SEARCH(
+  global[indexName].SEARCH([
     'paul'
-  ).then(res => {
+  ]).then(res => {
     t.deepEqual(res, {
       RESULT: [
         { _id: '0', _match: ['text:paul#0.50'], _score: 0.39 },
@@ -84,9 +84,7 @@ test('simple _SEARCH with 1 clause', t => {
 
 test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: ['paul', 'musical']
-  }).then(res => {
+  global[indexName].SEARCH(['paul', 'musical']).then(res => {
     t.deepEqual(res, {
       RESULT: [
         { _id: '9', _match: ['text:paul#0.50', 'text:musical#0.50'], _score: 2.4 }
@@ -98,9 +96,7 @@ test('simple _SEARCH with 2 clauses', t => {
 
 test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: ['paul', 'and']
-  }).then(res => {
+  global[indexName].SEARCH(['paul', 'and']).then(res => {
     t.deepEqual(res, {
       RESULT: [
         { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3 },

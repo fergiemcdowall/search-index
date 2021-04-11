@@ -76,7 +76,7 @@ const docs = [
   }
 ]
 
-test('create a search index with synonyms (can be in all fields)', async function (t) {
+test('create a search index to test WEIGHT', async function (t) {
   t.plan(7)
 
   const { PUT, QUERY, SEARCH } = await si({
@@ -109,9 +109,7 @@ test('create a search index with synonyms (can be in all fields)', async functio
   })
 
   // as above but with SEARCH
-  t.deepEquals(await SEARCH({
-    AND: ['bmw']
-  }, {
+  t.deepEquals(await SEARCH(['bmw'], {
     WEIGHT: [{
       FIELD: 'make',
       WEIGHT: 2

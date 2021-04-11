@@ -52,13 +52,11 @@ test('can add some data', t => {
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: [
-      'body.text:cool',
-      'body.text:really',
-      'body.text:bananas'
-    ]
-  }).then(res => {
+  global[indexName].SEARCH([
+    'body.text:cool',
+    'body.text:really',
+    'body.text:bananas'
+  ]).then(res => {
     t.deepEqual(res, {
       RESULT: [
         {
@@ -107,13 +105,11 @@ test('can search with QUERY', t => {
 
 test('can search in any field', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: [
-      'cool',
-      'really',
-      'bananas'
-    ]
-  }).then(res => {
+  global[indexName].SEARCH([
+    'cool',
+    'really',
+    'bananas'
+  ]).then(res => {
     t.deepEqual(res, {
       RESULT: [
         {
@@ -133,26 +129,22 @@ test('can search in any field', t => {
 
 test('can do 0-hit', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: [
-      'cool',
-      'really',
-      'sdasdadsasd',
-      'bananas'
-    ]
-  }).then(res => {
+  global[indexName].SEARCH([
+    'cool',
+    'really',
+    'sdasdadsasd',
+    'bananas'
+  ]).then(res => {
     t.deepEqual(res, { RESULT: [], RESULT_LENGTH: 0 })
   })
 })
 
 test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: [
-      'title:cool',
-      'documentness'
-    ]
-  }).then(res => {
+  global[indexName].SEARCH([
+    'title:cool',
+    'documentness'
+  ]).then(res => {
     t.deepEqual(res, {
       RESULT: [
         {
@@ -173,9 +165,7 @@ test('can do a mixture of fielded search and any-field search', t => {
 
 test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: ['500']
-  }, {
+  global[indexName].SEARCH(['500'], {
     DOCUMENTS: true
   }).then(res => {
     t.deepEqual(res, {
@@ -553,12 +543,10 @@ test('can _GET range with a range of values', t => {
 // TODO: FIX. This test seems to be giving inconsistent results between browser and node
 test('_SEARCH with embedded _OR', t => {
   t.plan(1)
-  global[indexName].SEARCH({
-    AND: [
-      { OR: ['bananas', 'different'] },
-      'coolness'
-    ]
-  }).then(res => {
+  global[indexName].SEARCH([
+    { OR: ['bananas', 'different'] },
+    'coolness'
+  ]).then(res => {
     t.deepEqual(res, {
       RESULT: [
         { _id: 'c', _match: ['body.text:different#1.00', 'title:different#1.00', 'body.metadata:coolness#1.00'], _score: 2.08 },

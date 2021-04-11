@@ -107,7 +107,9 @@ module.exports = fii => {
   }
 
   // TODO: maybe add a default page size?
-  const SEARCH = (q, qops) => parseJsonQuery(q, Object.assign({
+  const SEARCH = (q, qops) => parseJsonQuery({
+    AND: q
+  }, Object.assign({
     SCORE: 'TFIDF',
     SORT: true
   }, qops))
@@ -187,7 +189,7 @@ module.exports = fii => {
       // TODO: Find a clever way to pass options to AND, GET, NOT and OR
       // Probably something along the lines of- if e.g. AND, and if
       // one condition is an object, then that condition is an options object
-      
+
       // else:
       if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
       if (cmd.GET) return fii.GET(cmd.GET)
