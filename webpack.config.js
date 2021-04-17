@@ -5,6 +5,10 @@ const pkg = require('./package.json')
 
 const config = {
   plugins: [
+    // deal with the funky invokation of p-queue using "await import"
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    }),
     // Webpack 5 no longer polyfills 'process'
     new webpack.ProvidePlugin({
       process: 'process/browser',

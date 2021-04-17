@@ -6,9 +6,13 @@ const writer = require('./write.js')
 const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
 
-const makeASearchIndex = ops => new Promise((resolve) => {
+// eslint-disable-next-line
+const makeASearchIndex = ops => new Promise(async resolve => {
   // ".flush" clears the cache ".cache" creates/promotes a cache entry
   const c = new Cache(ops.cacheLength)
+
+  // eslint-disable-next-line
+  const q = new (await import('p-queue')).default({ concurrency: 1 })
 
   const w = writer(ops.fii, ops) // TODO: should be just ops?
   const r = reader(ops.fii)
@@ -48,7 +52,10 @@ const makeASearchIndex = ops => new Promise((resolve) => {
     LAST_UPDATED: ops.fii.LAST_UPDATED,
     MAX: ops.fii.MAX,
     MIN: ops.fii.MIN,
-    PUT: (docs, pops) => c.flush().then(() => w.PUT(docs, pops)),
+    PUT: (docs, pops) => c.flush().then(
+      // PUTs must be run in sequence and are therefore enqueued
+      () => q.add(() => w.PUT(docs, pops))
+    ),
     PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
     QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops)),
     SEARCH: (q, qops) => c.cache({ SEARCH: [q, qops] }, r.SEARCH(q, qops)),

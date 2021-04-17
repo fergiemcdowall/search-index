@@ -58,19 +58,20 @@
     "path": "^0.12.7",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
-    "standard": "^16.0.2",
+    "standard": "^16.0.3",
     "stemmer": "^1.0.5",
     "stopword": "^1.0.6",
     "stream-browserify": "^3.0.0",
-    "tape": "^5.1.0",
-    "tape-run": "^8.0.0",
-    "webpack": "^5.11.1",
-    "webpack-cli": "^4.3.1",
+    "tape": "^5.2.2",
+    "tape-run": "^9.0.0",
+    "webpack": "^5.33.2",
+    "webpack-cli": "^4.6.0",
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
     "fergies-inverted-index": "9.3.1",
     "ngraminator": "^2.0.6",
+    "p-queue": "^7.1.0",
     "term-vector": "^1.0.0"
   }
 }
