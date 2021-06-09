@@ -66,16 +66,34 @@ test('can add data', t => {
 
 test('simple _SEARCH with 1 clause', t => {
   t.plan(1)
-  global[indexName].SEARCH([
-    'paul'
-  ]).then(res => {
+  global[indexName].SEARCH(['paul']).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '0', _match: ['text:paul#0.50'], _score: 0.39 },
-        { _id: '4', _match: ['text:paul#0.50'], _score: 0.39 },
-        { _id: '9', _match: ['text:paul#0.50'], _score: 0.39 },
-        { _id: '3', _match: ['text:paul#0.33'], _score: 0.26 },
-        { _id: '8', _match: ['text:paul#0.25'], _score: 0.2 }
+        {
+          _id: '0',
+          _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
+          _score: 0.39
+        },
+        {
+          _id: '4',
+          _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
+          _score: 0.39
+        },
+        {
+          _id: '9',
+          _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
+          _score: 0.39
+        },
+        {
+          _id: '3',
+          _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.33' }],
+          _score: 0.26
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.25' }],
+          _score: 0.2
+        }
       ],
       RESULT_LENGTH: 5
     })
@@ -87,7 +105,14 @@ test('simple _SEARCH with 2 clauses', t => {
   global[indexName].SEARCH(['paul', 'musical']).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '9', _match: ['text:paul#0.50', 'text:musical#0.50'], _score: 2.4 }
+        {
+          _id: '9',
+          _match: [
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
+            { FIELD: 'text', VALUE: 'musical', SCORE: '0.50' }
+          ],
+          _score: 2.4
+        }
       ],
       RESULT_LENGTH: 1
     })
@@ -99,9 +124,30 @@ test('simple _SEARCH with 2 clauses', t => {
   global[indexName].SEARCH(['paul', 'and']).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3 },
-        { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3 },
-        { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97 }
+        {
+          _id: '0',
+          _match: [
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+          ],
+          _score: 1.3
+        },
+        {
+          _id: '3',
+          _match: [
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' },
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.67' }
+          ],
+          _score: 1.3
+        },
+        {
+          _id: '8',
+          _match: [
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' },
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+          ],
+          _score: 0.97
+        }
       ],
       RESULT_LENGTH: 3
     })

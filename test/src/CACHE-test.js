@@ -102,20 +102,34 @@ test('can inspect cache', t => {
 test('query', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY({
-    GET: 'brand:tesla'
-  }, {
-    BUCKETS: [{
-      FIELD: 'make',
-      VALUE: 'volvo'
-    }]
-  }).then(res => {
+  QUERY(
+    {
+      GET: 'brand:tesla'
+    },
+    {
+      BUCKETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'volvo'
+        }
+      ]
+    }
+  ).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }],
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }
+      ],
       RESULT: [
-        { _id: '7', _match: ['brand:tesla#1.00'] },
-        { _id: '8', _match: ['brand:tesla#1.00'] }
+        {
+          _id: '7',
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        }
+        // { _id: '7', _match: ['brand:tesla#1.00'] },
+        // { _id: '8', _match: ['brand:tesla#1.00'] }
       ],
       RESULT_LENGTH: 2
     })
@@ -126,35 +140,30 @@ test('inspect cache', t => {
   const { _CACHE } = global[indexName]
   t.plan(2)
   for (const [key, value] of _CACHE.LRUStore) {
-    t.equals(key, '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}')
+    t.equals(
+      key,
+      '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
+    )
     t.deepEquals(value, {
       RESULT: [
         {
           _id: '7',
-          _match: [
-            'brand:tesla#1.00'
-          ]
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         },
         {
           _id: '8',
-          _match: [
-            'brand:tesla#1.00'
-          ]
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         }
       ],
       RESULT_LENGTH: 2,
       BUCKETS: [
         {
-          FIELD: [
-            'make'
-          ],
+          FIELD: ['make'],
           VALUE: {
             GTE: 'volvo',
             LTE: 'volvo'
           },
-          _id: [
-            '8'
-          ]
+          _id: ['8']
         }
       ]
     })
@@ -164,20 +173,32 @@ test('inspect cache', t => {
 test('run a duplicate query', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY({
-    GET: 'brand:tesla'
-  }, {
-    BUCKETS: [{
-      FIELD: 'make',
-      VALUE: 'volvo'
-    }]
-  }).then(res => {
+  QUERY(
+    {
+      GET: 'brand:tesla'
+    },
+    {
+      BUCKETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'volvo'
+        }
+      ]
+    }
+  ).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }],
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }
+      ],
       RESULT: [
-        { _id: '7', _match: ['brand:tesla#1.00'] },
-        { _id: '8', _match: ['brand:tesla#1.00'] }
+        {
+          _id: '7',
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        }
       ],
       RESULT_LENGTH: 2
     })
@@ -241,15 +262,17 @@ test('oldest cache entry is now newest', t => {
 
 test('adding a new document clears the cache', t => {
   t.plan(1)
-  global[indexName].PUT([
-    {
-      _id: 10,
-      make: 'Tesla',
-      manufacturer: 'Volvo',
-      brand: 'Volvo',
-      colour: 'Gold'
-    }
-  ]).then(t.pass)
+  global[indexName]
+    .PUT([
+      {
+        _id: 10,
+        make: 'Tesla',
+        manufacturer: 'Volvo',
+        brand: 'Volvo',
+        colour: 'Gold'
+      }
+    ])
+    .then(t.pass)
 })
 
 test('cache is now cleared', t => {

@@ -2,15 +2,12 @@ const tv = require('term-vector')
 const ngraminator = require('ngraminator')
 
 module.exports.SKIP = (tokens, field, ops) =>
-  ops.skipFields.includes(field.toLowerCase())
-    ? []
-    : tokens
+  ops.skipFields.includes(field.toLowerCase()) ? [] : tokens
 
-module.exports.SPLIT = tokens => tokens.match(/[\p{L}\d]+/ug)
+module.exports.SPLIT = tokens => tokens.match(/[\p{L}\d]+/gu)
 
-module.exports.LOWCASE = (tokens, field, ops) => tokens.map(
-  t => ops.caseSensitive ? t : t.toLowerCase()
-)
+module.exports.LOWCASE = (tokens, field, ops) =>
+  tokens.map(t => (ops.caseSensitive ? t : t.toLowerCase()))
 
 module.exports.NGRAMS = (tokens, field, ops) => {
   let { fields, lengths, join = ' ' } = ops.ngrams
@@ -27,9 +24,8 @@ module.exports.NGRAMS = (tokens, field, ops) => {
 module.exports.REPLACE = (tokens, field, ops) => {
   const { fields, values } = ops.replace
 
-  const replace = () => tokens.reduce((acc, cur) =>
-    [cur, ...acc, ...(values[cur] || [])], []
-  )
+  const replace = () =>
+    tokens.reduce((acc, cur) => [cur, ...acc, ...(values[cur] || [])], [])
 
   if (!values) return tokens
   if (!fields) return replace()
@@ -39,17 +35,22 @@ module.exports.REPLACE = (tokens, field, ops) => {
 
 module.exports.SCORE_TERM_FREQUENCY = tokens => {
   const v = tv(tokens)
-  const mostTokenOccurances = v.reduce((acc, cur) => Math.max(cur.positions.length, acc), 0)
-  return v.map(
-    item => item.term[0] + '#' + (
-      ((item.positions.length / mostTokenOccurances)).toFixed(2)
+  const mostTokenOccurances = v.reduce(
+    (acc, cur) => Math.max(cur.positions.length, acc),
+    0
+  )
+  return v
+    .map(item =>
+      JSON.stringify([
+        item.term[0],
+        (item.positions.length / mostTokenOccurances).toFixed(2)
+      ])
     )
-  ).sort()
+    .sort() // TODO: is this working on Arrays?
 }
 
-module.exports.STOPWORDS = (tokens, field, ops) => tokens.filter(
-  t => !ops.stopwords.includes(t.toLowerCase())
-)
+module.exports.STOPWORDS = (tokens, field, ops) =>
+  tokens.filter(t => !ops.stopwords.includes(t.toLowerCase()))
 
 module.exports.SPY = (tokens, field, ops) => {
   console.log('----------------')

@@ -82,96 +82,171 @@ test('can add data', t => {
 
 test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'make:volvo'
-  ).then(res => {
+  global[indexName]._AND('make:volvo').then(res => {
     t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] }
+      { _id: '4', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: '5', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
   })
 })
 
 test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'manufacturer:bmw'
-  ).then(res => {
+  global[indexName]._AND('manufacturer:bmw').then(res => {
     t.deepEqual(res, [
-      { _id: '8', _match: ['manufacturer:bmw#1.00'] }
+      {
+        _id: '8',
+        _match: [{ FIELD: 'manufacturer', VALUE: 'bmw', SCORE: '1.00' }]
+      }
     ])
   })
 })
 
 test('simple _AND with 2 clauses', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'make:volvo', 'manufacturer:bmw'
-  ).then(res => {
+  global[indexName]._AND('make:volvo', 'manufacturer:bmw').then(res => {
     t.deepEqual(res, [
-      { _id: '8', _match: ['make:volvo#1.00', 'manufacturer:bmw#1.00'] }
+      {
+        _id: '8',
+        _match: [
+          { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' },
+          { FIELD: 'manufacturer', VALUE: 'bmw', SCORE: '1.00' }
+        ]
+      }
     ])
   })
 })
 
 test('simple AND with 2 clauses (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    AND: ['make:volvo', 'manufacturer:bmw']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '8', _match: ['make:volvo#1.00', 'manufacturer:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 1
+  global[indexName]
+    .QUERY({
+      AND: ['make:volvo', 'manufacturer:bmw']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '8',
+            _match: [
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'bmw', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
 })
 
 test('_AND with no VALUE', t => {
   t.plan(1)
-  global[indexName]._AND({
-    FIELD: ['make']
-  }).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['make:tesla#1.00'] },
-      { _id: '1', _match: ['make:bmw#1.00'] },
-      { _id: '2', _match: ['make:tesla#1.00'] },
-      { _id: '3', _match: ['make:tesla#1.00'] },
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '6', _match: ['make:tesla#1.00'] },
-      { _id: '7', _match: ['make:bmw#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] },
-      { _id: '9', _match: ['make:bmw#1.00'] }
-    ])
-  })
+  global[indexName]
+    ._AND({
+      FIELD: ['make']
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '1',
+          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+        },
+        {
+          _id: '7',
+          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+        },
+        {
+          _id: '9',
+          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+        },
+        {
+          _id: '0',
+          _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '2',
+          _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '3',
+          _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '6',
+          _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: '4',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '5',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        }
+      ])
+    })
 })
 
 test('AND with no VALUE (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    AND: [
-      {
-        FIELD: ['make']
-      }
-    ]
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '0', _match: ['make:tesla#1.00'] },
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '2', _match: ['make:tesla#1.00'] },
-        { _id: '3', _match: ['make:tesla#1.00'] },
-        { _id: '4', _match: ['make:volvo#1.00'] },
-        { _id: '5', _match: ['make:volvo#1.00'] },
-        { _id: '6', _match: ['make:tesla#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '8', _match: ['make:volvo#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 10
+  global[indexName]
+    .QUERY({
+      AND: [
+        {
+          FIELD: ['make']
+        }
+      ]
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '9',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '0',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '2',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '3',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '6',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '4',
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '5',
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '8',
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 10
+      })
+    })
 })

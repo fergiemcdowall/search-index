@@ -1,61 +1,89 @@
+// TODO: remove all '￮' and '#'
+
 module.exports = fii => {
-  const ALL_DOCUMENTS = limit => new Promise((resolve, reject) => {
-    const result = []
-    fii.STORE.createReadStream({
-      gte: '￮DOC_RAW￮',
-      lte: '￮DOC_RAW￮￮',
-      limit: limit
-    }).on('data', d => result.push({
-      _id: d.value._id,
-      _doc: d.value
-    })).on('end', () => resolve(result))
-  })
-
-  const DOCUMENTS = (...requestedDocs) => requestedDocs.length
-    ? Promise.all(
-        requestedDocs.map(_id => fii.STORE.get(
-          '￮DOC_RAW￮' + _id + '￮'
-        ).catch(e => null))
-      )
-    : ALL_DOCUMENTS()
-
-  const DICTIONARY = token => DISTINCT(token).then(results =>
-    Array.from(results.reduce(
-      (acc, cur) => acc.add(cur.VALUE), new Set())
-    ).sort()
-  )
-
-  const DISTINCT = (...tokens) => fii.DISTINCT(
-    ...tokens
-  ).then(result => [
-    // Stringify Set entries so that Set can determine duplicates
-    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
-      Object.assign(cur, {
-        VALUE: cur.VALUE.split('#')[0]
+  const ALL_DOCUMENTS = limit =>
+    new Promise((resolve, reject) => {
+      const result = []
+      fii.STORE.createReadStream({
+        // gte: '￮DOC_RAW￮',
+        // lte: '￮DOC_RAW￮￮',
+        gte: ['DOC_RAW', null],
+        lte: ['DOC_RAW', undefined],
+        limit: limit
       })
-    )), new Set())
-  ].map(JSON.parse)) // un-stringify
+        .on('data', d =>
+          result.push({
+            _id: d.value._id,
+            _doc: d.value
+          })
+        )
+        .on('end', () => resolve(result))
+    })
 
-  const FACETS = (...tokens) => fii.FACETS(
-    ...tokens
-  ).then(result => [
-    // Stringify Set entries so that Set can determine duplicates
-    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
-      Object.assign(cur, {
-        VALUE: cur.VALUE.split('#')[0]
-      })
-    )), new Set())
-  ].map(JSON.parse)) // un-stringify
+  const DOCUMENTS = (...requestedDocs) =>
+    requestedDocs.length
+      ? Promise.all(
+          requestedDocs.map(_id =>
+            fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
+          )
+        )
+      : ALL_DOCUMENTS()
+
+  const DICTIONARY = token =>
+    DISTINCT(token).then(results =>
+      Array.from(
+        results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
+      ).sort()
+    )
+
+  const DISTINCT = (...tokens) =>
+    fii.DISTINCT(...tokens).then(result =>
+      [
+        // Stringify Set entries so that Set can determine duplicates
+        ...result.reduce(
+          (acc, cur) =>
+            acc.add(
+              JSON.stringify(
+                Object.assign(cur, {
+                  VALUE: cur.VALUE.split('#')[0]
+                })
+              )
+            ),
+          new Set()
+        )
+      ].map(JSON.parse)
+    ) // un-stringify
+
+  const FACETS = (...tokens) =>
+    fii.FACETS(...tokens).then(result =>
+      [
+        // Stringify Set entries so that Set can determine duplicates
+        ...result.reduce(
+          (acc, cur) =>
+            acc.add(
+              JSON.stringify(
+                Object.assign(cur, {
+                  VALUE: cur.VALUE.split('#')[0]
+                })
+              )
+            ),
+          new Set()
+        )
+      ].map(JSON.parse)
+    ) // un-stringify
 
   const PAGE = (results, options) => {
-    options = Object.assign({
-      NUMBER: 0,
-      SIZE: 20
-    }, options || {})
+    options = Object.assign(
+      {
+        NUMBER: 0,
+        SIZE: 20
+      },
+      options || {}
+    )
     const start = options.NUMBER * options.SIZE
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.SIZE) || undefined
+    const end = start + options.SIZE || undefined
     return results.slice(start, end)
   }
 
@@ -63,63 +91,77 @@ module.exports = fii => {
   // TODO: Total hits (length of _match)
   const SCORE = (results, type = 'TFIDF') => {
     if (type === 'TFIDF') {
-      return DOCUMENT_COUNT().then(
-        docCount => results.map((x, _, resultSet) => {
+      return DOCUMENT_COUNT().then(docCount =>
+        results.map((result, _, resultSet) => {
           const idf = Math.log((docCount + 1) / resultSet.length)
-          x._score = +x._match.reduce(
-            (acc, cur) => acc + idf * +cur.split('#')[1], 0
-          ).toFixed(2) // TODO: make precision an option
-          return x
+          result._score = +result._match
+            .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
+            .toFixed(2) // TODO: make precision an option
+          return result
         })
       )
     }
     if (type === 'PRODUCT') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = +r._match.reduce(
-            (acc, cur) => acc * +cur.split('#')[1], 1
-          ).toFixed(2)
-          // TODO: make precision an option
-          return r
-        })
-      ))
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = +r._match
+              .reduce((acc, cur) => acc * +cur.SCORE, 1)
+              .toFixed(2)
+            // TODO: make precision an option
+            return r
+          })
+        )
+      )
     }
     if (type === 'CONCAT') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = r._match.reduce(
-            (acc, cur) => acc + cur.split('#')[1], ''
-          )
-          return r
-        })
-      ))
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = r._match.reduce((acc, cur) => acc + cur.SCORE, '')
+            return r
+          })
+        )
+      )
     }
     if (type === 'SUM') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = +r._match.reduce(
-            (acc, cur) => acc + +cur.split('#')[1], 0
-          ).toFixed(2) // TODO: make precision an option
-          return r
-        })
-      ))
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = +r._match
+              .reduce((acc, cur) => acc + +cur.SCORE, 0)
+              .toFixed(2) // TODO: make precision an option
+            return r
+          })
+        )
+      )
     }
   }
 
   // TODO: maybe add a default page size?
-  const SEARCH = (q, qops) => parseJsonQuery({
-    AND: q
-  }, Object.assign({
-    SCORE: 'TFIDF',
-    SORT: true
-  }, qops))
+  const SEARCH = (q, qops) =>
+    parseJsonQuery(
+      {
+        AND: q
+      },
+      Object.assign(
+        {
+          SCORE: 'TFIDF',
+          SORT: true
+        },
+        qops
+      )
+    )
 
   const SORT = (results, options) => {
-    options = Object.assign({
-      DIRECTION: 'DESCENDING',
-      FIELD: '_score',
-      TYPE: 'NUMERIC'
-    }, options || {})
+    options = Object.assign(
+      {
+        DIRECTION: 'DESCENDING',
+        FIELD: '_score',
+        TYPE: 'NUMERIC'
+      },
+      options || {}
+    )
     const deepRef = obj => {
       const path = options.FIELD.split('.')
       // TODO: dont like doing it this way- there should probably be a
@@ -131,11 +173,15 @@ module.exports = fii => {
       //
       // special case: sorting on _match so that you dont have to
       // fetch all the documents before doing a sort
-      return (path[0] === '_match')
-        ? (obj._match.find(
-            _match => (path.slice(1).join('.') === _match.split(':')[0])
-          // gracefully fail if field name not found
-          ) || ':#').split(':')[1].split('#')[0]
+      return path[0] === '_match'
+        ? (
+            obj._match.find(
+              _match => path.slice(1).join('.') === _match.split(':')[0]
+              // gracefully fail if field name not found
+            ) || ':#'
+          )
+            .split(':')[1]
+            .split('#')[0]
         : path.reduce((o, i) => o[i], obj)
     }
     const sortFunction = {
@@ -156,25 +202,40 @@ module.exports = fii => {
         }
       }
     }
-    return results.sort(sortFunction[options.TYPE][options.DIRECTION])
+
+    return results
+      .sort((a, b) => {
+        if (a._id < b._id) return -1
+        if (a._id > b._id) return 1
+        return 0
+      })
+      .sort(sortFunction[options.TYPE][options.DIRECTION])
   }
 
-  const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮')
+  const DOCUMENT_COUNT = () => fii.STORE.get(['DOCUMENT_COUNT'])
 
-  const WEIGHT = (results, weights) => results.map(r => {
-    r._match = r._match.map(m => {
-      for (const weight in weights) {
-        if (new RegExp('^' + (weights[weight].FIELD || '[\\w]+') +
-                       ':' + (weights[weight].VALUE || '[\\w]+')).test(m)) {
-          const [tokenSpace, tsWeight] = m.split('#')
-          m = tokenSpace + '#' + (tsWeight * weights[weight].WEIGHT).toFixed(2)
+  const WEIGHT = (results, weights) =>
+    results.map(r => {
+      r._match = r._match.map(m => {
+        for (const weight in weights) {
+          if (
+            new RegExp(
+              '^' +
+                (weights[weight].FIELD || '[\\w]+') +
+                ':' +
+                (weights[weight].VALUE || '[\\w]+')
+            ).test(m)
+          ) {
+            const [tokenSpace, tsWeight] = m.split('#')
+            m =
+              tokenSpace + '#' + (tsWeight * weights[weight].WEIGHT).toFixed(2)
+          }
         }
-      }
-      return m
-    })
+        return m
+      })
 
-    return r
-  })
+      return r
+    })
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
@@ -204,77 +265,87 @@ module.exports = fii => {
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }
 
-    const formatResults = result => result.RESULT
-      ? Object.assign(result, {
-          RESULT_LENGTH: result.RESULT.length
-        })
-      : ({
-          RESULT: result,
-          RESULT_LENGTH: result.length
-        })
+    const formatResults = result =>
+      result.RESULT
+        ? Object.assign(result, {
+            RESULT_LENGTH: result.RESULT.length
+          })
+        : {
+            RESULT: result,
+            RESULT_LENGTH: result.length
+          }
 
     // APPEND DOCUMENTS IF SPECIFIED
-    const appendDocuments = result => options.DOCUMENTS
-      ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(
-          documents => Object.assign(result, {
-            RESULT: result.RESULT.map((doc, i) => Object.assign(doc, {
-              _doc: documents[i]
-            }))
-          })
-        )
-      : result
+    const appendDocuments = result =>
+      options.DOCUMENTS
+        ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(documents =>
+            Object.assign(result, {
+              RESULT: result.RESULT.map((doc, i) =>
+                Object.assign(doc, {
+                  _doc: documents[i]
+                })
+              )
+            })
+          )
+        : result
 
     // SCORE IF SPECIFIED
-    const score = result => options.SCORE
-      ? SCORE(result.RESULT, options.SCORE).then(
-          scoredResult => Object.assign(result, {
-            RESULT: scoredResult
-          }))
-      : result
+    const score = result =>
+      options.SCORE
+        ? SCORE(result.RESULT, options.SCORE).then(scoredResult =>
+            Object.assign(result, {
+              RESULT: scoredResult
+            })
+          )
+        : result
 
     // SORT IF SPECIFIED
-    const sort = result => Object.assign(
-      result, options.SORT
-        ? { RESULT: SORT(result.RESULT, options.SORT) }
-        : {}
-    )
+    const sort = result =>
+      Object.assign(
+        result,
+        options.SORT ? { RESULT: SORT(result.RESULT, options.SORT) } : {}
+      )
 
     // BUCKETS IF SPECIFIED
-    const buckets = result => options.BUCKETS
-      ? fii.BUCKETS(...options.BUCKETS).then(bkts => Object.assign(
-          result, {
-            BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
-          }))
-      : result
+    const buckets = result =>
+      options.BUCKETS
+        ? fii.BUCKETS(...options.BUCKETS).then(bkts =>
+            Object.assign(result, {
+              BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
+            })
+          )
+        : result
 
     // FACETS IF SPECIFIED
-    const facets = result => options.FACETS
-      ? (result.RESULT.length)
-          ? FACETS(...options.FACETS).then(fcts => Object.assign(
-              result, {
+    const facets = result =>
+      options.FACETS
+        ? result.RESULT.length
+          ? FACETS(...options.FACETS).then(fcts =>
+              Object.assign(result, {
                 FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
-              }))
-        // if empty result set then just return empty facets
-          : Object.assign(
-            result, {
+              })
+            )
+          : // if empty result set then just return empty facets
+            Object.assign(result, {
               FACETS: []
             })
-      : result
+        : result
 
     // PAGE IF SPECIFIED
-    const page = result => Object.assign(
-      result, options.PAGE
-        ? { RESULT: PAGE(result.RESULT, options.PAGE) }
-        : {}
-    )
+    const page = result =>
+      Object.assign(
+        result,
+        options.PAGE ? { RESULT: PAGE(result.RESULT, options.PAGE) } : {}
+      )
 
     // WEIGHT IF SPECIFIED
-    const weight = result => options.WEIGHT
-      ? Object.assign(
-          { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
-          result
-        )
-      : result
+    const weight = result =>
+      options.WEIGHT
+        ? Object.assign(
+            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+            result
+          )
+        : result
 
     return runQuery(q)
       .then(formatResults)

@@ -65,20 +65,47 @@ test('can add data', t => {
 
 test('simple SEARCH with 2 clauses and documents (JSON)', t => {
   t.plan(1)
-  global[indexName].QUERY(
-    {
-      AND: ['paul', 'and']
-    }, {
-      DOCUMENTS: true,
-      SCORE: 'TFIDF'
-    }
-  )
+  global[indexName]
+    .QUERY(
+      {
+        AND: ['paul', 'and']
+      },
+      {
+        DOCUMENTS: true,
+        SCORE: 'TFIDF',
+        SORT: true
+      }
+    )
     .then(res => {
       t.deepEqual(res, {
         RESULT: [
-          { _id: '0', _match: ['text:paul#0.50', 'text:and#0.50'], _score: 1.3, _doc: data[0] },
-          { _id: '3', _match: ['text:paul#0.33', 'text:and#0.67'], _score: 1.3, _doc: data[3] },
-          { _id: '8', _match: ['text:paul#0.25', 'text:and#0.50'], _score: 0.97, _doc: data[8] }
+          {
+            _id: '0',
+            _match: [
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+            ],
+            _score: 1.3,
+            _doc: data[0]
+          },
+          {
+            _id: '3',
+            _match: [
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' },
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.67' }
+            ],
+            _score: 1.3,
+            _doc: data[3]
+          },
+          {
+            _id: '8',
+            _match: [
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' },
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+            ],
+            _score: 0.97,
+            _doc: data[8]
+          }
         ],
         RESULT_LENGTH: 3
       })
@@ -88,54 +115,59 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
 test('DOCUMENTS() returns all documents', t => {
   t.plan(1)
   global[indexName].DOCUMENTS().then(documents => {
-    t.deepEqual(documents, data.map(d => ({
-      _id: d._id,
-      _doc: d
-    })))
+    t.deepEqual(
+      documents,
+      data.map(d => ({
+        _id: d._id,
+        _doc: d
+      }))
+    )
   })
 })
 
 test('ALL_DOCUMENTS() returns all documents', t => {
   t.plan(1)
   global[indexName].ALL_DOCUMENTS().then(documents => {
-    t.deepEqual(documents, data.map(d => ({
-      _id: d._id,
-      _doc: d
-    })))
+    t.deepEqual(
+      documents,
+      data.map(d => ({
+        _id: d._id,
+        _doc: d
+      }))
+    )
   })
 })
 
 test('ALL_DOCUMENTS(5) returns 5 documents', t => {
   t.plan(1)
   global[indexName].ALL_DOCUMENTS(5).then(documents => {
-    t.deepEqual(documents, data.slice(0, 5).map(d => ({
-      _id: d._id,
-      _doc: d
-    })))
+    t.deepEqual(
+      documents,
+      data.slice(0, 5).map(d => ({
+        _id: d._id,
+        _doc: d
+      }))
+    )
   })
 })
 
 test('DOCUMENTS() can return named documents', t => {
   t.plan(1)
   global[indexName].DOCUMENTS('8', '9').then(documents => {
-    t.deepEqual(documents, [
-      data[8],
-      data[9]
-    ])
+    t.deepEqual(documents, [data[8], data[9]])
   })
 })
 
 test('access DOCUMENTS() through QUERY()', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    DOCUMENTS: ['8', '9']
-  }).then(documents => {
-    t.deepEqual(documents, {
-      RESULT: [
-        data[8],
-        data[9]
-      ],
-      RESULT_LENGTH: 2
+  global[indexName]
+    .QUERY({
+      DOCUMENTS: ['8', '9']
     })
-  })
+    .then(documents => {
+      t.deepEqual(documents, {
+        RESULT: [data[8], data[9]],
+        RESULT_LENGTH: 2
+      })
+    })
 })

@@ -85,145 +85,244 @@ test('can add data', t => {
 
 test('simple _GET', t => {
   t.plan(1)
-  global[indexName]._GET(
-    'make:volvo'
-  ).then(res => {
+  global[indexName]._GET('make:volvo').then(res => {
     t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] }
+      {
+        _id: '4',
+        _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+      },
+      {
+        _id: '5',
+        _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+      },
+      { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
   })
 })
 
 test('simple _GET', t => {
   t.plan(1)
-  global[indexName]._GET(
-    {
+  global[indexName]
+    ._GET({
       FIELD: 'make',
       VALUE: 'volvo'
-    }
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '4',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '5',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
+      ])
+    })
 })
 
 test('_GET over 2 fields', t => {
   t.plan(1)
-  global[indexName]._GET(
-    {
+  global[indexName]
+    ._GET({
       FIELD: ['make', 'brand'],
       VALUE: 'volvo'
-    }
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['brand:volvo#1.00'] },
-      { _id: '1', _match: ['brand:volvo#1.00'] },
-      { _id: '2', _match: ['brand:volvo#1.00'] },
-      { _id: '4', _match: ['brand:volvo#1.00', 'make:volvo#1.00'] },
-      { _id: '5', _match: ['brand:volvo#1.00', 'make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] },
-      { _id: '9', _match: ['brand:volvo#1.00'] }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '4',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '5',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '0',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '1',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '2',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '9',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        }
+      ])
+    })
 })
 
 test('_GET over all fields', t => {
   t.plan(1)
-  global[indexName]._GET(
-    {
+  global[indexName]
+    ._GET({
       VALUE: 'volvo'
-    }
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '0', _match: ['brand:volvo#1.00', 'manufacturer:volvo#1.00'] },
-      { _id: '1', _match: ['brand:volvo#1.00', 'manufacturer:volvo#1.00'] },
-      { _id: '2', _match: ['brand:volvo#1.00'] },
-      { _id: '3', _match: ['manufacturer:volvo#1.00'] },
-      { _id: '4', _match: ['brand:volvo#1.00', 'make:volvo#1.00', 'manufacturer:volvo#1.00'] },
-      { _id: '5', _match: ['brand:volvo#1.00', 'make:volvo#1.00'] },
-      { _id: '8', _match: ['make:volvo#1.00'] },
-      { _id: '9', _match: ['brand:volvo#1.00'] }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '0',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '1',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '2',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '4',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '5',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '9',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '8',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
+          _id: '3',
+          _match: [{ FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }]
+        }
+      ])
+    })
 })
 
 test('simple _GET', t => {
   t.plan(1)
-  global[indexName]._GET(
-    {
+  global[indexName]
+    ._GET({
       FIELD: 'make',
       VALUE: {
         GTE: 'a',
         LTE: 'c'
       }
-    }
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '1', _match: ['make:bmw#1.00'] },
-      { _id: '7', _match: ['make:bmw#1.00'] },
-      { _id: '9', _match: ['make:bmw#1.00'] }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { _id: '1', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+        { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+        { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+      ])
+    })
 })
 
 test('simple QUERY using json with QUERY', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    GET: {
-      FIELD: 'make',
-      VALUE: {
-        GTE: 'a',
-        LTE: 'c'
+  global[indexName]
+    .QUERY({
+      GET: {
+        FIELD: 'make',
+        VALUE: {
+          GTE: 'a',
+          LTE: 'c'
+        }
       }
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
+    })
 })
 
 test('QUERY by specifying a FIELD but no VALUE', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    GET: {
-      FIELD: 'extrafield'
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        {
-          _id: '0',
-          _match: [
-            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-          ]
-        },
-        {
-          _id: '3',
-          _match: [
-            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-          ]
-        },
-        {
-          _id: '6',
-          _match: [
-            'extrafield:extra#1.00', 'extrafield:field#1.00', 'extrafield:w00t#1.00'
-          ]
+  global[indexName]
+    .QUERY(
+      {
+        GET: {
+          FIELD: 'extrafield'
         }
-      ],
-      RESULT_LENGTH: 3
+      },
+      {
+        SCORE: 'SUM',
+        SORT: true
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '0',
+            _match: [
+              { FIELD: 'extrafield', VALUE: 'extra', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'field', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'w00t', SCORE: '1.00' }
+            ],
+            _score: 3
+          },
+          {
+            _id: '3',
+            _match: [
+              { FIELD: 'extrafield', VALUE: 'extra', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'field', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'w00t', SCORE: '1.00' }
+            ],
+            _score: 3
+          },
+          {
+            _id: '6',
+            _match: [
+              { FIELD: 'extrafield', VALUE: 'extra', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'field', SCORE: '1.00' },
+              { FIELD: 'extrafield', VALUE: 'w00t', SCORE: '1.00' }
+            ],
+            _score: 3
+          }
+        ],
+        RESULT_LENGTH: 3
+      })
     })
-  })
 })
 
 // TODO: an example of QUERY that shows more than one hit in _match
