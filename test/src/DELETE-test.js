@@ -100,7 +100,7 @@ test('verify DELETE', t => {
           ],
           metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
         },
-        importantNumber: ['["5000","1.00"]']
+        importantNumber: '[5000,5000]'
       }
     },
     {
@@ -116,7 +116,7 @@ test('verify DELETE', t => {
           ],
           metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
         },
-        importantNumber: ['["200","1.00"]']
+        importantNumber: '[200,200]'
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 2 },
@@ -171,11 +171,11 @@ test('verify DELETE', t => {
     { key: ['IDX', 'body.text', ['this', '0.33']], value: ['a'] },
     { key: ['IDX', 'body.text', ['totally', '1.00']], value: ['c'] },
     {
-      key: ['IDX', 'importantnumber', ['200', '1.00']],
+      key: ['IDX', 'importantnumber', [200, 200]],
       value: ['c']
     },
     {
-      key: ['IDX', 'importantnumber', ['5000', '1.00']],
+      key: ['IDX', 'importantnumber', [5000, 5000]],
       value: ['a']
     },
     { key: ['IDX', 'title', ['a', '1.00']], value: ['a'] },
@@ -261,7 +261,7 @@ test('verify DELETE', t => {
           ],
           metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
         },
-        importantNumber: ['["5000","1.00"]']
+        importantNumber: '[5000,5000]'
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 1 },
@@ -295,7 +295,7 @@ test('verify DELETE', t => {
     { key: ['IDX', 'body.text', ['really', '0.33']], value: ['a'] },
     { key: ['IDX', 'body.text', ['this', '0.33']], value: ['a'] },
     {
-      key: ['IDX', 'importantnumber', ['5000', '1.00']],
+      key: ['IDX', 'importantnumber', [5000, 5000]],
       value: ['a']
     },
     { key: ['IDX', 'title', ['a', '1.00']], value: ['a'] },

@@ -25,7 +25,7 @@ const makeASearchIndex = ops =>
         _BUCKET: ops.fii.BUCKET,
         _CACHE: c,
         _GET: ops.fii.GET,
-        _NOT: ops.fii.SET_SUBTRACTION,
+        _NOT: ops.fii.NOT,
         _OR: ops.fii.OR,
 
         // search-index read

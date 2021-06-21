@@ -33,25 +33,34 @@ test('create a search index with ngrams', async function (t) {
   t.ok(PUT)
   t.ok(DICTIONARY)
 
-  t.deepEquals(await PUT(docs, {
-    storeRawDocs: false
-  }), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
-  ])
+  t.deepEquals(
+    await PUT(docs, {
+      storeRawDocs: false
+    }),
+    [
+      { _id: 0, status: 'CREATED', operation: 'PUT' },
+      { _id: 1, status: 'CREATED', operation: 'PUT' }
+    ]
+  )
 
-  t.deepEquals(await DICTIONARY('who'), [
-    'who', 'who lives', 'who lives there'
-  ])
+  t.deepEquals(await DICTIONARY('who'), ['who', 'who lives', 'who lives there'])
   t.deepEquals(await DICTIONARY('are'), ['are'])
   t.deepEquals(await DICTIONARY('xxx'), [])
   t.deepEquals(await DICTIONARY('parsley'), [
-    'parsley', 'parsley sage', 'parsley sage rosemary'
+    'parsley',
+    'parsley sage',
+    'parsley sage rosemary'
   ])
   t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives there'])
   t.deepEquals(await QUERY('lives there'), {
     RESULT: [
-      { _id: '0', _match: ['line3:lives there#1.00'] }
+      {
+        _id: 0,
+        _match: [
+          { FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }
+          // 'line3:lives there#1.00'
+        ]
+      }
     ],
     RESULT_LENGTH: 1
   })
@@ -69,22 +78,25 @@ test('create a search index with ngrams (no fields specified)', async function (
   t.ok(PUT)
 
   t.deepEquals(await PUT(docs), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
+    { _id: 0, status: 'CREATED', operation: 'PUT' },
+    { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('who'), [
-    'who', 'who lives', 'who lives there'
-  ])
+  t.deepEquals(await DICTIONARY('who'), ['who', 'who lives', 'who lives there'])
   t.deepEquals(await DICTIONARY('are'), ['are', 'are you', 'are you going'])
   t.deepEquals(await DICTIONARY('xxx'), [])
   t.deepEquals(await DICTIONARY('parsley'), [
-    'parsley', 'parsley sage', 'parsley sage rosemary'
+    'parsley',
+    'parsley sage',
+    'parsley sage rosemary'
   ])
   t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives there'])
   t.deepEquals(await QUERY('lives there'), {
     RESULT: [
-      { _id: '0', _match: ['line3:lives there#1.00'] }
+      {
+        _id: 0,
+        _match: [{ FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }]
+      }
     ],
     RESULT_LENGTH: 1
   })
@@ -103,22 +115,25 @@ test('create a search index with ngrams (no fields specified, custom join)', asy
   t.ok(PUT)
 
   t.deepEquals(await PUT(docs), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
+    { _id: 0, status: 'CREATED', operation: 'PUT' },
+    { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('who'), [
-    'who', 'who$lives', 'who$lives$there'
-  ])
+  t.deepEquals(await DICTIONARY('who'), ['who', 'who$lives', 'who$lives$there'])
   t.deepEquals(await DICTIONARY('are'), ['are', 'are$you', 'are$you$going'])
   t.deepEquals(await DICTIONARY('xxx'), [])
   t.deepEquals(await DICTIONARY('parsley'), [
-    'parsley', 'parsley$sage', 'parsley$sage$rosemary'
+    'parsley',
+    'parsley$sage',
+    'parsley$sage$rosemary'
   ])
   t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives$there'])
   t.deepEquals(await QUERY('lives$there'), {
     RESULT: [
-      { _id: '0', _match: ['line3:lives$there#1.00'] }
+      {
+        _id: 0,
+        _match: [{ FIELD: 'line3', VALUE: 'lives$there', SCORE: '1.00' }]
+      }
     ],
     RESULT_LENGTH: 1
   })

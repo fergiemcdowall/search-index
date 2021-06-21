@@ -86,43 +86,49 @@ test('can add data to case sensitive index', t => {
 
 test('Match maKE:BMW', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
-    AND: ['maKE:BMW']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '9', _match: ['maKE:BMW#1.00'] }
-      ],
-      RESULT_LENGTH: 1
+  global[caseSensitivityTest]
+    .QUERY({
+      AND: ['maKE:BMW']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          { _id: 9, _match: [{ FIELD: 'maKE', VALUE: 'BMW', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
 })
 
 test('Match make:bmw', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
-    AND: ['make:bmw']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [],
-      RESULT_LENGTH: 0
+  global[caseSensitivityTest]
+    .QUERY({
+      AND: ['make:bmw']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [],
+        RESULT_LENGTH: 0
+      })
+    })
 })
 
 test('Match make:BMW', t => {
   t.plan(1)
-  global[caseSensitivityTest].QUERY({
-    AND: ['make:BMW']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: ['make:BMW#1.00'] },
-        { _id: '7', _match: ['make:BMW#1.00'] }
-      ],
-      RESULT_LENGTH: 2
+  global[caseSensitivityTest]
+    .QUERY({
+      AND: ['make:BMW']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          { _id: 1, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] },
+          { _id: 7, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 2
+      })
+    })
 })
 
 test('create a case insensitive search index', t => {
@@ -143,48 +149,72 @@ test('can add data to case insensitive index', t => {
 
 test('Match maKE:BMW', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
-    AND: ['maKE:BMW']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
+  global[caseInsensitivityTest]
+    .QUERY({
+      AND: ['maKE:BMW']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 1,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: 7,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
+    })
 })
 
 test('Match make:bmw', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
-    AND: ['make:bmw']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
+  global[caseInsensitivityTest]
+    .QUERY({
+      AND: ['make:bmw']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 1,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: 7,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
+    })
 })
 
 test('Match make:BMW', t => {
   t.plan(1)
-  global[caseInsensitivityTest].QUERY({
-    AND: ['make:BMW']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: ['make:bmw#1.00'] },
-        { _id: '7', _match: ['make:bmw#1.00'] },
-        { _id: '9', _match: ['make:bmw#1.00'] }
-      ],
-      RESULT_LENGTH: 3
+  global[caseInsensitivityTest]
+    .QUERY({
+      AND: ['make:BMW']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 1,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: 7,
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
+    })
 })

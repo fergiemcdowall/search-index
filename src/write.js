@@ -23,7 +23,8 @@ module.exports = (fii, ops) => {
 
         // if fieldName is '_id', return _id "as is" and stringify
         if (fieldName === '_id') {
-          acc[fieldName] = fieldValue + ''
+          // acc[fieldName] = fieldValue + ''
+          acc[fieldName] = fieldValue
           return acc
         }
 
@@ -47,11 +48,22 @@ module.exports = (fii, ops) => {
           return acc
         }
 
+        // TODO: own tokenization pipeline for numbers
+
         // else fieldvalue is Number or String
-        acc[fieldName] = runTokenizationPipeline(
-          fieldName,
-          fieldValue.toString()
-        )
+        if (typeof fieldValue === 'string') {
+          acc[fieldName] = runTokenizationPipeline(
+            fieldName,
+            fieldValue.toString()
+            // fieldValue
+          )
+        }
+
+        // else fieldvalue is Number or String
+        if (typeof fieldValue === 'number') {
+          acc[fieldName] = JSON.stringify([fieldValue, fieldValue])
+        }
+
         return acc
       }, {})
 
@@ -67,6 +79,8 @@ module.exports = (fii, ops) => {
       })
       return doc
     }
+
+    //   console.log(docs.map(traverseObject).map(removeEmptyFields))
 
     return docs.map(traverseObject).map(removeEmptyFields)
   }
@@ -103,8 +117,6 @@ module.exports = (fii, ops) => {
     putOptions = Object.assign(ops, putOptions)
 
     const rawDocs = docs.map(parseStringAsDoc).map(generateId)
-
-    //    console.log(createDocumentVector(rawDocs, putOptions))
 
     return fii
       .PUT(createDocumentVector(rawDocs, putOptions), putOptions)

@@ -20,39 +20,48 @@ module.exports = fii => {
         .on('end', () => resolve(result))
     })
 
-  const DOCUMENTS = (...requestedDocs) =>
-    requestedDocs.length
+  const DOCUMENTS = (...requestedDocs) => {
+    return requestedDocs.length
       ? Promise.all(
           requestedDocs.map(_id =>
             fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
           )
         )
       : ALL_DOCUMENTS()
+  }
 
   const DICTIONARY = token =>
     DISTINCT(token).then(results =>
       Array.from(
         results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
-      ).sort()
+      ).sort((a, b) =>
+        // This should sort an array of strings and
+        // numbers in an intuitive way (numbers numerically, strings
+        // alphabetically)
+        (a + '').localeCompare(b + '', undefined, {
+          numeric: true,
+          sensitivity: 'base'
+        })
+      )
     )
 
   const DISTINCT = (...tokens) =>
-    fii.DISTINCT(...tokens).then(result =>
-      [
+    fii.DISTINCT(...tokens).then(result => {
+      return [
         // Stringify Set entries so that Set can determine duplicates
         ...result.reduce(
           (acc, cur) =>
             acc.add(
               JSON.stringify(
                 Object.assign(cur, {
-                  VALUE: cur.VALUE.split('#')[0]
+                  VALUE: cur.VALUE
                 })
               )
             ),
           new Set()
         )
       ].map(JSON.parse)
-    ) // un-stringify
+    }) // un-stringify
 
   const FACETS = (...tokens) =>
     fii.FACETS(...tokens).then(result =>
@@ -63,7 +72,8 @@ module.exports = fii => {
             acc.add(
               JSON.stringify(
                 Object.assign(cur, {
-                  VALUE: cur.VALUE.split('#')[0]
+                  // VALUE: cur.VALUE.split('#')[0] // TODO: this is wrong
+                  VALUE: cur.VALUE
                 })
               )
             ),
@@ -89,23 +99,38 @@ module.exports = fii => {
 
   // score by tfidf by default
   // TODO: Total hits (length of _match)
-  const SCORE = (results, type = 'TFIDF') => {
-    if (type === 'TFIDF') {
+  // TODO: better error handling: what if TYPE is 'XXXXX'
+  const SCORE = (results, scoreOps = {}) => {
+    const filterFields = item => {
+      if (!scoreOps.FIELDS) return true
+      return scoreOps.FIELDS.includes(item.FIELD)
+    }
+
+    scoreOps = Object.assign(
+      {
+        TYPE: 'TFIDF'
+      },
+      scoreOps
+    )
+
+    if (scoreOps.TYPE === 'TFIDF') {
       return DOCUMENT_COUNT().then(docCount =>
         results.map((result, _, resultSet) => {
           const idf = Math.log((docCount + 1) / resultSet.length)
           result._score = +result._match
+            .filter(filterFields)
             .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
             .toFixed(2) // TODO: make precision an option
           return result
         })
       )
     }
-    if (type === 'PRODUCT') {
+    if (scoreOps.TYPE === 'PRODUCT') {
       return new Promise(resolve =>
         resolve(
           results.map(r => {
             r._score = +r._match
+              .filter(filterFields)
               .reduce((acc, cur) => acc * +cur.SCORE, 1)
               .toFixed(2)
             // TODO: make precision an option
@@ -114,23 +139,38 @@ module.exports = fii => {
         )
       )
     }
-    if (type === 'CONCAT') {
+    if (scoreOps.TYPE === 'CONCAT') {
       return new Promise(resolve =>
         resolve(
           results.map(r => {
-            r._score = r._match.reduce((acc, cur) => acc + cur.SCORE, '')
+            r._score = r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc + cur.SCORE, '')
             return r
           })
         )
       )
     }
-    if (type === 'SUM') {
+    if (scoreOps.TYPE === 'SUM') {
       return new Promise(resolve =>
         resolve(
           results.map(r => {
             r._score = +r._match
+              .filter(filterFields)
               .reduce((acc, cur) => acc + +cur.SCORE, 0)
               .toFixed(2) // TODO: make precision an option
+            return r
+          })
+        )
+      )
+    }
+    if (scoreOps.TYPE === 'VALUE') {
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc + cur.VALUE, '')
             return r
           })
         )
@@ -139,70 +179,49 @@ module.exports = fii => {
   }
 
   // TODO: maybe add a default page size?
-  const SEARCH = (q, qops) =>
-    parseJsonQuery(
+  const SEARCH = (q, qops) => {
+    return parseJsonQuery(
       {
         AND: q
       },
       Object.assign(
         {
-          SCORE: 'TFIDF',
+          SCORE: {
+            TYPE: 'TFIDF'
+          },
           SORT: true
         },
         qops
       )
     )
+  }
 
   const SORT = (results, options) => {
     options = Object.assign(
       {
         DIRECTION: 'DESCENDING',
-        FIELD: '_score',
         TYPE: 'NUMERIC'
       },
       options || {}
     )
-    const deepRef = obj => {
-      const path = options.FIELD.split('.')
-      // TODO: dont like doing it this way- there should probably be a
-      // way to dump the literal field value into _score, and always
-      // sort on _score
-      //
-      // That said, it should be possible to score without fetching
-      // the whole document for each _id
-      //
-      // special case: sorting on _match so that you dont have to
-      // fetch all the documents before doing a sort
-      return path[0] === '_match'
-        ? (
-            obj._match.find(
-              _match => path.slice(1).join('.') === _match.split(':')[0]
-              // gracefully fail if field name not found
-            ) || ':#'
-          )
-            .split(':')[1]
-            .split('#')[0]
-        : path.reduce((o, i) => o[i], obj)
-    }
     const sortFunction = {
       NUMERIC: {
-        DESCENDING: (a, b) => +deepRef(b) - +deepRef(a),
-        ASCENDING: (a, b) => +deepRef(a) - +deepRef(b)
+        DESCENDING: (a, b) => +b._score - +a._score,
+        ASCENDING: (a, b) => +a._score - +b._score
       },
       ALPHABETIC: {
         DESCENDING: (a, b) => {
-          if (deepRef(a) < deepRef(b)) return 1
-          if (deepRef(a) > deepRef(b)) return -1
+          if (a._score < b._score) return 1
+          if (a._score > b._score) return -1
           return 0
         },
         ASCENDING: (a, b) => {
-          if (deepRef(a) < deepRef(b)) return -1
-          if (deepRef(a) > deepRef(b)) return 1
+          if (a._score < b._score) return -1
+          if (a._score > b._score) return 1
           return 0
         }
       }
     }
-
     return results
       .sort((a, b) => {
         if (a._id < b._id) return -1
@@ -217,20 +236,24 @@ module.exports = fii => {
   const WEIGHT = (results, weights) =>
     results.map(r => {
       r._match = r._match.map(m => {
-        for (const weight in weights) {
-          if (
-            new RegExp(
-              '^' +
-                (weights[weight].FIELD || '[\\w]+') +
-                ':' +
-                (weights[weight].VALUE || '[\\w]+')
-            ).test(m)
-          ) {
-            const [tokenSpace, tsWeight] = m.split('#')
-            m =
-              tokenSpace + '#' + (tsWeight * weights[weight].WEIGHT).toFixed(2)
+        weights.forEach(w => {
+          let doWeighting = false
+          // TODO: possible bug / edge case- does this work when weighting a field with value 0?
+          if (w.FIELD && w.VALUE) {
+            if (w.FIELD === m.FIELD && w.VALUE === m.VALUE) {
+              doWeighting = true
+            }
+          } else if (w.FIELD) {
+            if (w.FIELD === m.FIELD) {
+              doWeighting = true
+            }
+          } else if (w.VALUE) {
+            if (w.VALUE === m.VALUE) {
+              doWeighting = true
+            }
           }
-        }
+          if (doWeighting) m.SCORE = (w.WEIGHT * +m.SCORE).toFixed(2)
+        })
         return m
       })
 
@@ -243,7 +266,8 @@ module.exports = fii => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof cmd === 'string') return fii.GET(cmd)
+      if (typeof cmd === 'string' || typeof cmd === 'number')
+        return fii.GET(cmd)
       if (cmd.FIELD) return fii.GET(cmd)
       if (cmd.VALUE) return fii.GET(cmd)
 
@@ -255,10 +279,7 @@ module.exports = fii => {
       if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
       if (cmd.GET) return fii.GET(cmd.GET)
       if (cmd.NOT) {
-        return fii.SET_SUBTRACTION(
-          runQuery(cmd.NOT.INCLUDE),
-          runQuery(cmd.NOT.EXCLUDE)
-        )
+        return fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
       if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
 
@@ -303,7 +324,11 @@ module.exports = fii => {
     const sort = result =>
       Object.assign(
         result,
-        options.SORT ? { RESULT: SORT(result.RESULT, options.SORT) } : {}
+        options.SORT
+          ? {
+              RESULT: SORT(result.RESULT, options.SORT)
+            }
+          : {}
       )
 
     // BUCKETS IF SPECIFIED

@@ -28,67 +28,86 @@ test('can alter order of tokenization pipeline', async function (t) {
   })
   t.ok(PUT)
 
-  t.deepEquals(await PUT(docs, {
-    stopwords: sw.en,
-    ngrams: {
-      fields: ['line2'],
-      lengths: [1, 2]
-    },
-    tokenizationPipeline: [
-      TOKENIZATION_PIPELINE_STAGES.SPLIT,
-      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  t.deepEquals(
+    await PUT(docs, {
+      stopwords: sw.en,
+      ngrams: {
+        fields: ['line2'],
+        lengths: [1, 2]
+      },
+      tokenizationPipeline: [
+        TOKENIZATION_PIPELINE_STAGES.SPLIT,
+        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+        TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+        TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+      ]
+    }),
+    [
+      { _id: 0, status: 'CREATED', operation: 'PUT' },
+      { _id: 1, status: 'CREATED', operation: 'PUT' }
     ]
-  }), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
-  ])
+  )
 
-  t.deepEquals(await DICTIONARY({
-    FIELD: 'line2'
-  }), [
-    'and thyme', 'parsley', 'parsley sage',
-    'rosemary', 'rosemary and', 'sage',
-    'sage rosemary', 'thyme'
-  ])
+  t.deepEquals(
+    await DICTIONARY({
+      FIELD: 'line2'
+    }),
+    [
+      'and thyme',
+      'parsley',
+      'parsley sage',
+      'rosemary',
+      'rosemary and',
+      'sage',
+      'sage rosemary',
+      'thyme'
+    ]
+  )
 
   t.deepEquals(await DELETE(0, 1), [
-    { _id: '0', operation: 'DELETE', status: 'DELETED' },
-    { _id: '1', operation: 'DELETE', status: 'DELETED' }
+    { _id: 0, operation: 'DELETE', status: 'DELETED' },
+    { _id: 1, operation: 'DELETE', status: 'DELETED' }
   ])
 
-  t.deepEquals(await PUT(docs, {
-    stopwords: sw.en,
-    ngrams: {
-      fields: ['line2'],
-      lengths: [1, 2]
-    },
-    tokenizationPipeline: [
-      TOKENIZATION_PIPELINE_STAGES.SPLIT,
-      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  t.deepEquals(
+    await PUT(docs, {
+      stopwords: sw.en,
+      ngrams: {
+        fields: ['line2'],
+        lengths: [1, 2]
+      },
+      tokenizationPipeline: [
+        TOKENIZATION_PIPELINE_STAGES.SPLIT,
+        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+        TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+        TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+      ]
+    }),
+    [
+      { _id: 0, status: 'CREATED', operation: 'PUT' },
+      { _id: 1, status: 'CREATED', operation: 'PUT' }
     ]
-  }), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
-  ])
+  )
 
   // because STOPWORDS came before NGRAMS in pipeline, ngrams do not
   // contain stopwords (no 'and thyme' for example)
-  t.deepEquals(await DICTIONARY({
-    FIELD: 'line2'
-  }), [
-    'parsley', 'parsley sage', 'rosemary',
-    'rosemary thyme', 'sage', 'sage rosemary',
-    'thyme'
-  ])
+  t.deepEquals(
+    await DICTIONARY({
+      FIELD: 'line2'
+    }),
+    [
+      'parsley',
+      'parsley sage',
+      'rosemary',
+      'rosemary thyme',
+      'sage',
+      'sage rosemary',
+      'thyme'
+    ]
+  )
 })
-
-// TODO: add custom pipeline stage
 
 test('can add custom pipeline stage', async function (t) {
   t.plan(4)
@@ -98,30 +117,55 @@ test('can add custom pipeline stage', async function (t) {
   })
   t.ok(PUT)
 
-  t.deepEquals(await PUT(docs, {
-    tokenizationPipeline: [
-      TOKENIZATION_PIPELINE_STAGES.SPLIT,
-      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      (tokens, field, ops) => [...tokens, field.split('').reverse().join('')],
-      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  t.deepEquals(
+    await PUT(docs, {
+      tokenizationPipeline: [
+        TOKENIZATION_PIPELINE_STAGES.SPLIT,
+        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+        TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+        (tokens, field, ops) => [...tokens, field.split('').reverse().join('')],
+        TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+      ]
+    }),
+    [
+      { _id: 0, status: 'CREATED', operation: 'PUT' },
+      { _id: 1, status: 'CREATED', operation: 'PUT' }
     ]
-  }), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
-  ])
+  )
 
-  t.deepEquals(await DICTIONARY({
-    FIELD: 'line1'
-  }), [
-    '1enil', 'a', 'are', 'cambric', 'deep', 'fair', 'forest', 'going', 'green', 'her', 'in', 'make', 'me', 'scarborough', 'shirt', 'tell', 'the', 'to', 'you'
-  ])
-  t.deepEquals(await DICTIONARY({
-    FIELD: 'line2'
-  }), [
-    '2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme'
-  ])
+  t.deepEquals(
+    await DICTIONARY({
+      FIELD: 'line1'
+    }),
+    [
+      '1enil',
+      'a',
+      'are',
+      'cambric',
+      'deep',
+      'fair',
+      'forest',
+      'going',
+      'green',
+      'her',
+      'in',
+      'make',
+      'me',
+      'scarborough',
+      'shirt',
+      'tell',
+      'the',
+      'to',
+      'you'
+    ]
+  )
+  t.deepEquals(
+    await DICTIONARY({
+      FIELD: 'line2'
+    }),
+    ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme']
+  )
 })
 
 test('can add custom pipeline stage (stemmer)', async function (t) {
@@ -132,24 +176,28 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
   })
   t.ok(PUT)
 
-  t.deepEquals(await PUT(docs, {
-    stopwords: sw.en,
-    tokenizationPipeline: [
-      TOKENIZATION_PIPELINE_STAGES.SPLIT,
-      TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-      TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-      TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-      (tokens, field, ops) => tokens.map(stemmer),
-      TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  t.deepEquals(
+    await PUT(docs, {
+      stopwords: sw.en,
+      tokenizationPipeline: [
+        TOKENIZATION_PIPELINE_STAGES.SPLIT,
+        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+        TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+        TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+        (tokens, field, ops) => tokens.map(stemmer),
+        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+      ]
+    }),
+    [
+      { _id: 0, status: 'CREATED', operation: 'PUT' },
+      { _id: 1, status: 'CREATED', operation: 'PUT' }
     ]
-  }), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
-  ])
+  )
 
-  t.deepEquals(await DICTIONARY({
-    FIELD: 'line3'
-  }), [
-    'crest', 'ground', 'live', 'rememb', 'snow', 'sparrow', 'trace'
-  ])
+  t.deepEquals(
+    await DICTIONARY({
+      FIELD: 'line3'
+    }),
+    ['crest', 'ground', 'live', 'rememb', 'snow', 'sparrow', 'trace']
+  )
 })

@@ -82,8 +82,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
           {
             _id: '0',
             _match: [
-              { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
-              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' },
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }
             ],
             _score: 1.3,
             _doc: data[0]
@@ -91,8 +91,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
           {
             _id: '3',
             _match: [
-              { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' },
-              { FIELD: 'text', VALUE: 'and', SCORE: '0.67' }
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.67' },
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' }
             ],
             _score: 1.3,
             _doc: data[3]
@@ -100,8 +100,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
           {
             _id: '8',
             _match: [
-              { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' },
-              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+              { FIELD: 'text', VALUE: 'and', SCORE: '0.50' },
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' }
             ],
             _score: 0.97,
             _doc: data[8]

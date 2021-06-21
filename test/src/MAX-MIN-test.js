@@ -94,7 +94,7 @@ test('simple _MAX', t => {
   const { MAX } = global[indexName]
   t.plan(1)
   MAX({ FIELD: 'price' }).then(count => {
-    t.equals(count, '5000')
+    t.equals(count, 140000)
   })
 })
 
@@ -104,10 +104,10 @@ test('MAX with GTE', t => {
   MAX({
     FIELD: 'price',
     VALUE: {
-      LTE: '4'
+      LTE: 4000
     }
   }).then(count => {
-    t.equals(count, '3000')
+    t.equals(count, 3000)
   })
 })
 
@@ -115,7 +115,7 @@ test('simple MIN', t => {
   const { MIN } = global[indexName]
   t.plan(1)
   MIN({ FIELD: 'price' }).then(count => {
-    t.equals(count, '100')
+    t.equals(count, 100)
   })
 })
 

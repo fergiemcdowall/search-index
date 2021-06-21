@@ -117,19 +117,17 @@ test('query', t => {
   ).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
       ],
       RESULT: [
         {
-          _id: '7',
+          _id: 7,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         }
-        // { _id: '7', _match: ['brand:tesla#1.00'] },
-        // { _id: '8', _match: ['brand:tesla#1.00'] }
       ],
       RESULT_LENGTH: 2
     })
@@ -147,11 +145,11 @@ test('inspect cache', t => {
     t.deepEquals(value, {
       RESULT: [
         {
-          _id: '7',
+          _id: 7,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         }
       ],
@@ -163,7 +161,7 @@ test('inspect cache', t => {
             GTE: 'volvo',
             LTE: 'volvo'
           },
-          _id: ['8']
+          _id: [8]
         }
       ]
     })
@@ -188,15 +186,15 @@ test('run a duplicate query', t => {
   ).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
       ],
       RESULT: [
         {
-          _id: '7',
+          _id: 7,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
         }
       ],

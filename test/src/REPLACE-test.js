@@ -37,8 +37,8 @@ test('create a search index with synonyms (can be in all fields)', async functio
   t.ok(DICTIONARY)
 
   t.deepEquals(await PUT(docs), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
+    { _id: 0, status: 'CREATED', operation: 'PUT' },
+    { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
   t.deepEquals(await DICTIONARY('animal'), ['animal'])
@@ -47,14 +47,14 @@ test('create a search index with synonyms (can be in all fields)', async functio
 
   t.deepEquals(await QUERY('sparrow'), {
     RESULT: [
-      { _id: '1', _match: ['line3:sparrow#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'sparrow', SCORE: '1.00' }] }
     ],
     RESULT_LENGTH: 1
   })
 
   t.deepEquals(await QUERY('bird'), {
     RESULT: [
-      { _id: '1', _match: ['line3:bird#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'bird', SCORE: '1.00' }] }
     ],
     RESULT_LENGTH: 1
   })
@@ -76,23 +76,23 @@ test('create a search index with synonyms (specific fields)', async function (t)
   t.ok(DICTIONARY)
 
   t.deepEquals(await PUT(docs), [
-    { _id: '0', status: 'CREATED', operation: 'PUT' },
-    { _id: '1', status: 'CREATED', operation: 'PUT' }
+    { _id: 0, status: 'CREATED', operation: 'PUT' },
+    { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
   t.deepEquals(await DICTIONARY('myself'), ['myself'])
 
   t.deepEquals(await QUERY('me'), {
     RESULT: [
-      { _id: '0', _match: ['line3:me#1.00'] },
-      { _id: '1', _match: ['line1:me#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
+      { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
     ],
     RESULT_LENGTH: 2
   })
 
   t.deepEquals(await QUERY('myself'), {
     RESULT: [
-      { _id: '1', _match: ['line1:myself#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'myself', SCORE: '1.00' }] }
     ],
     RESULT_LENGTH: 1
   })

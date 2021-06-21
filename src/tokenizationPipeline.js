@@ -41,6 +41,7 @@ module.exports.SCORE_TERM_FREQUENCY = tokens => {
   )
   return v
     .map(item =>
+      // TODO: maybe stringify should be its own pipeline stage
       JSON.stringify([
         item.term[0],
         (item.positions.length / mostTokenOccurances).toFixed(2)

@@ -23,7 +23,11 @@ test('set up as per issue #535', async function (t) {
 
   t.deepEquals(await SEARCH(['q']), {
     RESULT: [
-      { _id: 'qwertyu', _match: ['idx:q#1.00'], _score: 1.1 }
+      {
+        _id: 'qwertyu',
+        _match: [{ FIELD: 'idx', VALUE: 'q', SCORE: '1.00' }],
+        _score: 1.1
+      }
     ],
     RESULT_LENGTH: 1
   })
@@ -42,7 +46,11 @@ test('set up as per issue #535', async function (t) {
 
   t.deepEquals(await SEARCH(['q']), {
     RESULT: [
-      { _id: 'qwertyu', _match: ['idx:q#1.00'], _score: 1.1 }
+      {
+        _id: 'qwertyu',
+        _match: [{ FIELD: 'idx', VALUE: 'q', SCORE: '1.00' }],
+        _score: 1.1
+      }
     ],
     RESULT_LENGTH: 1
   })

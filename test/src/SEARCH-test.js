@@ -70,27 +70,27 @@ test('simple _SEARCH with 1 clause', t => {
     t.deepEqual(res, {
       RESULT: [
         {
-          _id: '0',
+          _id: 0,
           _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
           _score: 0.39
         },
         {
-          _id: '4',
+          _id: 4,
           _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
           _score: 0.39
         },
         {
-          _id: '9',
+          _id: 9,
           _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }],
           _score: 0.39
         },
         {
-          _id: '3',
+          _id: 3,
           _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.33' }],
           _score: 0.26
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [{ FIELD: 'text', VALUE: 'paul', SCORE: '0.25' }],
           _score: 0.2
         }
@@ -106,10 +106,10 @@ test('simple _SEARCH with 2 clauses', t => {
     t.deepEqual(res, {
       RESULT: [
         {
-          _id: '9',
+          _id: 9,
           _match: [
-            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
-            { FIELD: 'text', VALUE: 'musical', SCORE: '0.50' }
+            { FIELD: 'text', VALUE: 'musical', SCORE: '0.50' },
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }
           ],
           _score: 2.4
         }
@@ -125,26 +125,26 @@ test('simple _SEARCH with 2 clauses', t => {
     t.deepEqual(res, {
       RESULT: [
         {
-          _id: '0',
+          _id: 0,
           _match: [
-            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' },
-            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' },
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }
           ],
           _score: 1.3
         },
         {
-          _id: '3',
+          _id: 3,
           _match: [
-            { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' },
-            { FIELD: 'text', VALUE: 'and', SCORE: '0.67' }
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.67' },
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.33' }
           ],
           _score: 1.3
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [
-            { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' },
-            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' }
+            { FIELD: 'text', VALUE: 'and', SCORE: '0.50' },
+            { FIELD: 'text', VALUE: 'paul', SCORE: '0.25' }
           ],
           _score: 0.97
         }
