@@ -1,10 +1,10 @@
 // TODO: remove all '￮' and '#'
 
-module.exports = fii => {
+module.exports = (ops, cache) => {
   const ALL_DOCUMENTS = limit =>
     new Promise((resolve, reject) => {
       const result = []
-      fii.STORE.createReadStream({
+      ops.fii.STORE.createReadStream({
         // gte: '￮DOC_RAW￮',
         // lte: '￮DOC_RAW￮￮',
         gte: ['DOC_RAW', null],
@@ -24,7 +24,7 @@ module.exports = fii => {
     return requestedDocs.length
       ? Promise.all(
           requestedDocs.map(_id =>
-            fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
+            ops.fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
           )
         )
       : ALL_DOCUMENTS()
@@ -46,7 +46,7 @@ module.exports = fii => {
     )
 
   const DISTINCT = (...tokens) =>
-    fii.DISTINCT(...tokens).then(result => {
+    ops.fii.DISTINCT(...tokens).then(result => {
       return [
         // Stringify Set entries so that Set can determine duplicates
         ...result.reduce(
@@ -64,7 +64,7 @@ module.exports = fii => {
     }) // un-stringify
 
   const FACETS = (...tokens) =>
-    fii.FACETS(...tokens).then(result =>
+    ops.fii.FACETS(...tokens).then(result =>
       [
         // Stringify Set entries so that Set can determine duplicates
         ...result.reduce(
@@ -231,7 +231,7 @@ module.exports = fii => {
       .sort(sortFunction[options.TYPE][options.DIRECTION])
   }
 
-  const DOCUMENT_COUNT = () => fii.STORE.get(['DOCUMENT_COUNT'])
+  const DOCUMENT_COUNT = () => ops.fii.STORE.get(['DOCUMENT_COUNT'])
 
   const WEIGHT = (results, weights) =>
     results.map(r => {
@@ -266,22 +266,23 @@ module.exports = fii => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof cmd === 'string' || typeof cmd === 'number')
-        return fii.GET(cmd)
-      if (cmd.FIELD) return fii.GET(cmd)
-      if (cmd.VALUE) return fii.GET(cmd)
+      if (typeof cmd === 'string' || typeof cmd === 'number') {
+        return ops.fii.GET(cmd)
+      }
+      if (cmd.FIELD) return ops.fii.GET(cmd)
+      if (cmd.VALUE) return ops.fii.GET(cmd)
 
       // TODO: Find a clever way to pass options to AND, GET, NOT and OR
       // Probably something along the lines of- if e.g. AND, and if
       // one condition is an object, then that condition is an options object
 
       // else:
-      if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
-      if (cmd.GET) return fii.GET(cmd.GET)
+      if (cmd.AND) return ops.fii.AND(...cmd.AND.map(runQuery))
+      if (cmd.GET) return ops.fii.GET(cmd.GET)
       if (cmd.NOT) {
-        return fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
+        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
-      if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
+      if (cmd.OR) return ops.fii.OR(...cmd.OR.map(runQuery))
 
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }
@@ -334,9 +335,9 @@ module.exports = fii => {
     // BUCKETS IF SPECIFIED
     const buckets = result =>
       options.BUCKETS
-        ? fii.BUCKETS(...options.BUCKETS).then(bkts =>
+        ? ops.fii.BUCKETS(...options.BUCKETS).then(bkts =>
             Object.assign(result, {
-              BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
+              BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
             })
           )
         : result
@@ -345,14 +346,13 @@ module.exports = fii => {
     const facets = result =>
       options.FACETS
         ? result.RESULT.length
-          ? FACETS(...options.FACETS).then(fcts =>
-              Object.assign(result, {
-                FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
-              })
-            )
-          : // if empty result set then just return empty facets
-            Object.assign(result, {
-              FACETS: []
+            ? FACETS(...options.FACETS).then(fcts =>
+                Object.assign(result, {
+                  FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+                })
+              )
+            : Object.assign(result, {
+              FACETS: [] // if empty result set then just return empty facets
             })
         : result
 
@@ -385,15 +385,23 @@ module.exports = fii => {
 
   return {
     ALL_DOCUMENTS: ALL_DOCUMENTS,
-    DICTIONARY: DICTIONARY,
+    DICTIONARY: token =>
+      cache.cache({ DICTIONARY: token || null }, DICTIONARY(token)),
     DISTINCT: DISTINCT,
-    DOCUMENTS: DOCUMENTS,
+    DOCUMENTS: (...docs) =>
+      cache.cache(
+        {
+          DOCUMENTS: docs
+        },
+        DOCUMENTS(...docs)
+      ),
     DOCUMENT_COUNT: DOCUMENT_COUNT,
     FACETS: FACETS,
     PAGE: PAGE,
-    QUERY: parseJsonQuery,
+    QUERY: (q, qops) =>
+      cache.cache({ QUERY: [q, qops] }, parseJsonQuery(q, qops)),
     SCORE: SCORE,
-    SEARCH: SEARCH,
+    SEARCH: (q, qops) => cache.cache({ SEARCH: [q, qops] }, SEARCH(q, qops)),
     SORT: SORT
   }
 }

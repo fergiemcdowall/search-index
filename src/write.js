@@ -1,5 +1,5 @@
 // export default function (fii, ops) {
-module.exports = (fii, ops) => {
+module.exports = (ops, cache, queue) => {
   const createDocumentVector = (docs, putOptions) => {
     // tokenize
     // lowcase
@@ -86,16 +86,16 @@ module.exports = (fii, ops) => {
   }
 
   const incrementDocCount = increment =>
-    fii.STORE.get(['DOCUMENT_COUNT'])
-      .then(count => fii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
+    ops.fii.STORE.get(['DOCUMENT_COUNT'])
+      .then(count => ops.fii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
       .catch(
         // if not found assume value to be 0
-        e => fii.STORE.put(['DOCUMENT_COUNT'], increment)
+        e => ops.fii.STORE.put(['DOCUMENT_COUNT'], increment)
       )
 
   const decrementDocCount = increment =>
-    fii.STORE.get(['DOCUMENT_COUNT']).then(count =>
-      fii.STORE.put(['DOCUMENT_COUNT'], +count - increment)
+    ops.fii.STORE.get(['DOCUMENT_COUNT']).then(count =>
+      ops.fii.STORE.put(['DOCUMENT_COUNT'], +count - increment)
     )
 
   const parseStringAsDoc = doc =>
@@ -118,7 +118,7 @@ module.exports = (fii, ops) => {
 
     const rawDocs = docs.map(parseStringAsDoc).map(generateId)
 
-    return fii
+    return ops.fii
       .PUT(createDocumentVector(rawDocs, putOptions), putOptions)
       .then(result =>
         Promise.all([
@@ -131,7 +131,7 @@ module.exports = (fii, ops) => {
   const _PUT_RAW = (docs, dontStoreValue) =>
     Promise.all(
       docs.map(doc =>
-        fii.STORE.put(['DOC_RAW', doc._id], dontStoreValue ? {} : doc)
+        ops.fii.STORE.put(['DOC_RAW', doc._id], dontStoreValue ? {} : doc)
       )
     ).then(
       // TODO: make this actually deal with errors
@@ -144,10 +144,10 @@ module.exports = (fii, ops) => {
     )
 
   const _DELETE = _ids =>
-    fii.DELETE(_ids).then(result => {
+    ops.fii.DELETE(_ids).then(result => {
       const deleted = result.filter(d => d.status === 'DELETED')
       return Promise.all([
-        Promise.all(deleted.map(r => fii.STORE.del(['DOC_RAW', r._id]))),
+        Promise.all(deleted.map(r => ops.fii.STORE.del(['DOC_RAW', r._id]))),
         decrementDocCount(deleted.length)
       ]).then(() => result)
     })
@@ -165,15 +165,15 @@ module.exports = (fii, ops) => {
       .then(() => true)
 
   return {
-    // TODO: DELETE should be able to handle errors (_id not found etc.)
-    DELETE: docIds => _DELETE(docIds), // for external use
-    FLUSH: _FLUSH,
-    IMPORT: fii.IMPORT,
-    PUT: _PUT,
-    PUT_RAW: _PUT_RAW,
-    _DELETE: _DELETE,
-    _INCREMENT_DOC_COUNT: incrementDocCount,
-    _PUT: _PUT,
-    _PUT_RAW: _PUT_RAW
+    DELETE: (...docIds) => cache.flush().then(() => _DELETE(docIds)), // for external use
+    FLUSH: () => cache.flush().then(_FLUSH),
+    IMPORT: () => cache.flush().then(ops.fii.IMPORT),
+    PUT: (docs, pops) =>
+      cache.flush().then(
+        // PUTs must be run in sequence and are therefore enqueued
+        () => queue.add(() => _PUT(docs, pops))
+      ),
+    PUT_RAW: docs => cache.flush().then(() => _PUT_RAW(docs)),
+    _INCREMENT_DOC_COUNT: incrementDocCount
   }
 }

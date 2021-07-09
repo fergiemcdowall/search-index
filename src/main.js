@@ -5,71 +5,65 @@ const reader = require('./read.js')
 const writer = require('./write.js')
 const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
+// const tokenParser = require('./tokenParser.js')
 
 // eslint-disable-next-line
 const makeASearchIndex = ops =>
+  // eslint-disable-next-line
   new Promise(async resolve => {
+    // TODO: change to https://www.npmjs.com/package/lru-cache
     // ".flush" clears the cache ".cache" creates/promotes a cache entry
-    const c = new Cache(ops.cacheLength)
+    const cache = new Cache(ops.cacheLength)
 
     // eslint-disable-next-line
-    const q = new (await import('p-queue')).default({ concurrency: 1 })
+    const queue = new (await import('p-queue')).default({ concurrency: 1 })
 
-    const w = writer(ops.fii, ops) // TODO: should be just ops?
-    const r = reader(ops.fii)
+    // TODO: should be just ops?
+    const w = writer(ops, cache, queue)
+    const r = reader(ops, cache)
 
+    // TODO: more caching
     return w._INCREMENT_DOC_COUNT(0).then(() =>
       resolve({
         // internal functions inherited from fergies-inverted-index
         _AND: ops.fii.AND,
         _BUCKET: ops.fii.BUCKET,
-        _CACHE: c,
         _GET: ops.fii.GET,
         _NOT: ops.fii.NOT,
         _OR: ops.fii.OR,
-
+        // TODO: should cache be at the fii level?
+        _CACHE: cache,
         // search-index read
         _PAGE: r.PAGE,
         _SCORE: r.SCORE,
         _SEARCH: r.SEARCH,
         _SORT: r.SORT,
 
-        // public API
+        // public API (write)
+        DELETE: w.DELETE,
+        FLUSH: w.FLUSH,
+        IMPORT: ops.fii.IMPORT,
+        PUT: w.PUT,
+        PUT_RAW: w.PUT_RAW,
+        TOKENIZATION_PIPELINE_STAGES: tp,
+
+        // public API (read)
         ALL_DOCUMENTS: r.ALL_DOCUMENTS,
         BUCKETS: ops.fii.BUCKETS,
         CREATED: ops.fii.CREATED,
-        DELETE: (...ids) => c.flush().then(() => w.DELETE(ids)),
-        DICTIONARY: token =>
-          c.cache({ DICTIONARY: token || null }, r.DICTIONARY(token)),
+        DICTIONARY: r.DICTIONARY,
         DISTINCT: r.DISTINCT,
-        DOCUMENTS: (...docs) =>
-          c.cache(
-            {
-              DOCUMENTS: docs
-            },
-            r.DOCUMENTS(...docs)
-          ),
+        DOCUMENTS: r.DOCUMENTS,
         DOCUMENT_COUNT: r.DOCUMENT_COUNT,
         EXPORT: ops.fii.EXPORT,
         FACETS: r.FACETS,
         FIELDS: ops.fii.FIELDS,
-        FLUSH: () => c.flush().then(w.FLUSH),
-        IMPORT: idx => c.flush().then(() => ops.fii.IMPORT(idx)),
         INDEX: ops.fii,
         LAST_UPDATED: ops.fii.LAST_UPDATED,
         MAX: ops.fii.MAX,
         MIN: ops.fii.MIN,
-        PUT: (docs, pops) =>
-          c.flush().then(
-            // PUTs must be run in sequence and are therefore enqueued
-            () => q.add(() => w.PUT(docs, pops))
-          ),
-        PUT_RAW: docs => c.flush().then(() => w.PUT_RAW(docs)),
-        QUERY: (q, qops) => c.cache({ QUERY: [q, qops] }, r.QUERY(q, qops)),
-        SEARCH: (q, qops) => c.cache({ SEARCH: [q, qops] }, r.SEARCH(q, qops)),
-
-        // pipeline stages
-        TOKENIZATION_PIPELINE_STAGES: tp
+        QUERY: r.QUERY,
+        SEARCH: r.SEARCH
       })
     )
   })
@@ -126,13 +120,13 @@ const validateVersion = si =>
         version === v
           ? resolve()
           : reject(
-              new Error(
-                'This index was created with ' +
+            new Error(
+              'This index was created with ' +
                   v +
                   ', you are running ' +
                   version
-              )
             )
+          )
       )
       .catch(e => si.INDEX.STORE.put(key, version).then(resolve))
   })

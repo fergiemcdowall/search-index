@@ -185,6 +185,7 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
         TOKENIZATION_PIPELINE_STAGES.NGRAMS,
         TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
         (tokens, field, ops) => tokens.map(stemmer),
+        //        TOKENIZATION_PIPELINE_STAGES.SPY,
         TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
       ]
     }),
@@ -198,6 +199,6 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
     await DICTIONARY({
       FIELD: 'line3'
     }),
-    ['crest', 'ground', 'live', 'rememb', 'snow', 'sparrow', 'trace']
+    ['crest', 'ground', 'live', 'on', 'rememb', 'snow', 'sparrow', 'trace']
   )
 })
