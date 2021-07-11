@@ -64,6 +64,8 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
+// TODO: can do SEARCH('paul') (single param is not array)
+
 test('simple _SEARCH with 1 clause', t => {
   t.plan(1)
   global[indexName].SEARCH(['paul']).then(res => {

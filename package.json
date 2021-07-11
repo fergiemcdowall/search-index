@@ -70,6 +70,7 @@
   },
   "dependencies": {
     "fergies-inverted-index": "9.3.1",
+    "lru-cache": "^6.0.0",
     "ngraminator": "^2.0.6",
     "p-queue": "^7.1.0",
     "term-vector": "^1.0.0"

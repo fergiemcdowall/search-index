@@ -1,11 +1,10 @@
 const fii = require('fergies-inverted-index')
 
-const Cache = require('./cache.js')
+const LRU = require('lru-cache')
 const reader = require('./read.js')
 const writer = require('./write.js')
 const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
-// const tokenParser = require('./tokenParser.js')
 
 // eslint-disable-next-line
 const makeASearchIndex = ops =>
@@ -13,7 +12,10 @@ const makeASearchIndex = ops =>
   new Promise(async resolve => {
     // TODO: change to https://www.npmjs.com/package/lru-cache
     // ".flush" clears the cache ".cache" creates/promotes a cache entry
-    const cache = new Cache(ops.cacheLength)
+    // const cache = new Cache(ops.cacheLength)
+
+    // TODO: the cache size should be an option
+    const cache = new LRU(1000)
 
     // eslint-disable-next-line
     const queue = new (await import('p-queue')).default({ concurrency: 1 })
@@ -42,7 +44,7 @@ const makeASearchIndex = ops =>
         // public API (write)
         DELETE: w.DELETE,
         FLUSH: w.FLUSH,
-        IMPORT: ops.fii.IMPORT,
+        IMPORT: w.IMPORT,
         PUT: w.PUT,
         PUT_RAW: w.PUT_RAW,
         TOKENIZATION_PIPELINE_STAGES: tp,

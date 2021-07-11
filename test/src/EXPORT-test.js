@@ -114,6 +114,7 @@ test('can add data that will be overwritten', t => {
 
 test('can import data', t => {
   t.plan(1)
+  // console.log(exportedIndex)
   global[importingIndexName].IMPORT(exportedIndex).then(() => t.ok('imported'))
 })
 
@@ -124,3 +125,5 @@ test('verify structure of imported data', t => {
     t.deepEqual(index, expectedIndex)
   })
 })
+
+// TODO: test IMPORT

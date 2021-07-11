@@ -114,6 +114,8 @@ module.exports = (ops, cache, queue) => {
       : doc
 
   const _PUT = (docs, putOptions) => {
+    cache.reset()
+
     putOptions = Object.assign(ops, putOptions)
 
     const rawDocs = docs.map(parseStringAsDoc).map(generateId)
@@ -128,8 +130,9 @@ module.exports = (ops, cache, queue) => {
       )
   }
 
-  const _PUT_RAW = (docs, dontStoreValue) =>
-    Promise.all(
+  const _PUT_RAW = (docs, dontStoreValue) => {
+    cache.reset()
+    return Promise.all(
       docs.map(doc =>
         ops.fii.STORE.put(['DOC_RAW', doc._id], dontStoreValue ? {} : doc)
       )
@@ -142,9 +145,11 @@ module.exports = (ops, cache, queue) => {
           operation: '_PUT_RAW'
         }))
     )
+  }
 
   const _DELETE = _ids =>
     ops.fii.DELETE(_ids).then(result => {
+      cache.reset()
       const deleted = result.filter(d => d.status === 'DELETED')
       return Promise.all([
         Promise.all(deleted.map(r => ops.fii.STORE.del(['DOC_RAW', r._id]))),
@@ -155,6 +160,7 @@ module.exports = (ops, cache, queue) => {
   const _FLUSH = () =>
     ops.fii.STORE.clear()
       .then(() => {
+        cache.reset()
         const timestamp = Date.now()
         return ops.fii.STORE.batch([
           { type: 'put', key: ['~CREATED'], value: timestamp },
@@ -165,15 +171,16 @@ module.exports = (ops, cache, queue) => {
       .then(() => true)
 
   return {
-    DELETE: (...docIds) => cache.flush().then(() => _DELETE(docIds)), // for external use
-    FLUSH: () => cache.flush().then(_FLUSH),
-    IMPORT: () => cache.flush().then(ops.fii.IMPORT),
-    PUT: (docs, pops) =>
-      cache.flush().then(
-        // PUTs must be run in sequence and are therefore enqueued
-        () => queue.add(() => _PUT(docs, pops))
-      ),
-    PUT_RAW: docs => cache.flush().then(() => _PUT_RAW(docs)),
+    DELETE: (...docIds) => _DELETE(docIds), // for external use
+    FLUSH: _FLUSH,
+    // TODO: IMPORT needs a test
+    // IMPORT: () => cache.flush().then(ops.fii.IMPORT),
+    IMPORT: index => {
+      cache.reset()
+      return Promise.resolve(ops.fii.IMPORT(index))
+    },
+    PUT: (docs, pops) => queue.add(() => _PUT(docs, pops)),
+    PUT_RAW: _PUT_RAW,
     _INCREMENT_DOC_COUNT: incrementDocCount
   }
 }

@@ -1,6 +1,11 @@
 // TODO: remove all '￮' and '#'
 
+// const tokenParser = require('./tokenParser.js')
+
 module.exports = (ops, cache) => {
+  // const parseToken = async token =>
+  //   tokenParser(token, await ops.fii.AVAILABLE_FIELDS())
+
   const ALL_DOCUMENTS = limit =>
     new Promise((resolve, reject) => {
       const result = []
@@ -182,7 +187,7 @@ module.exports = (ops, cache) => {
   const SEARCH = (q, qops) => {
     return parseJsonQuery(
       {
-        AND: q
+        AND: [...q]
       },
       Object.assign(
         {
@@ -380,28 +385,34 @@ module.exports = (ops, cache) => {
       .then(score)
       .then(sort)
       .then(page)
-      .then(appendDocuments) // TODO: this should be at the end surely?
+      .then(appendDocuments)
   }
+
+  const tryCache = (q, cacheKey) =>
+    new Promise(resolve => {
+      cacheKey = JSON.stringify(cacheKey)
+      return cache.has(cacheKey)
+        ? resolve(cache.get(cacheKey))
+        : q
+          .then(res => cache.set(cacheKey, res))
+          .then(() => resolve(cache.get(cacheKey)))
+    })
 
   return {
     ALL_DOCUMENTS: ALL_DOCUMENTS,
     DICTIONARY: token =>
-      cache.cache({ DICTIONARY: token || null }, DICTIONARY(token)),
+      tryCache(DICTIONARY(token), { DICTIONARY: token || null }),
     DISTINCT: DISTINCT,
     DOCUMENTS: (...docs) =>
-      cache.cache(
-        {
-          DOCUMENTS: docs
-        },
-        DOCUMENTS(...docs)
-      ),
+      tryCache(DOCUMENTS(...docs), {
+        DOCUMENTS: docs
+      }),
     DOCUMENT_COUNT: DOCUMENT_COUNT,
     FACETS: FACETS,
     PAGE: PAGE,
-    QUERY: (q, qops) =>
-      cache.cache({ QUERY: [q, qops] }, parseJsonQuery(q, qops)),
+    QUERY: (q, qops) => tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
     SCORE: SCORE,
-    SEARCH: (q, qops) => cache.cache({ SEARCH: [q, qops] }, SEARCH(q, qops)),
+    SEARCH: (q, qops) => tryCache(SEARCH(q, qops), { SEARCH: [q, qops] }),
     SORT: SORT
   }
 }
