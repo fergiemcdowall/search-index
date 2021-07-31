@@ -8,7 +8,7 @@ test('create a search index', t => {
   t.plan(1)
   si({
     name: indexName,
-    cacheLength: 5
+    cacheLength: 5 // TODO: this needs to be updated
   }).then(db => {
     global[indexName] = db
     t.pass('ok')

@@ -82,7 +82,7 @@ test('can add data', t => {
 
 test('simple _OR with 1 clause', t => {
   t.plan(1)
-  global[indexName]._OR('make:volvo').then(res => {
+  global[indexName]._OR(['make:volvo']).then(res => {
     t.deepEqual(res, [
       { _id: '4', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: '5', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
@@ -93,7 +93,7 @@ test('simple _OR with 1 clause', t => {
 
 test('simple _OR with 2 clauses', t => {
   t.plan(1)
-  global[indexName]._OR('brand:volvo', 'brand:tesla').then(res => {
+  global[indexName]._OR(['brand:volvo', 'brand:tesla']).then(res => {
     t.deepEqual(res, [
       { _id: '0', _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: '1', _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
@@ -109,7 +109,7 @@ test('simple _OR with 2 clauses', t => {
 
 test('simple _OR with 2 clauses', t => {
   t.plan(1)
-  global[indexName]._OR('brand:volvo', 'manufacturer:tesla').then(res => {
+  global[indexName]._OR(['brand:volvo', 'manufacturer:tesla']).then(res => {
     t.deepEqual(res, [
       { _id: '0', _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: '1', _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
@@ -215,7 +215,7 @@ test('simple _OR with 2 clauses', t => {
 test('simple _OR with 2 clauses (embedded _AND)', t => {
   const { _OR, _AND } = global[indexName]
   t.plan(1)
-  _OR(_AND('brand:volvo', 'manufacturer:tesla'), 'make:bmw').then(res => {
+  _OR([_AND(['brand:volvo', 'manufacturer:tesla']), 'make:bmw']).then(res => {
     t.deepEqual(res, [
       {
         _id: '2',

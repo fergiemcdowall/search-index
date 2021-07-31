@@ -37,7 +37,7 @@ test('can add some worldbank data', t => {
 
 test('_AND', t => {
   t.plan(1)
-  global[indexName]._AND('sectorcode:bz', 'sectorcode:bc').then(res => {
+  global[indexName]._AND(['sectorcode:bz', 'sectorcode:bc']).then(res => {
     t.deepEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',

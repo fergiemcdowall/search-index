@@ -107,7 +107,7 @@ test('simple _NOT', t => {
 test('simple _NOT with OR clause', t => {
   const { _OR, _NOT } = global[indexName]
   t.plan(1)
-  _NOT(_OR('make:bmw', 'make:volvo'), 'brand:tesla').then(res => {
+  _NOT(_OR(['make:bmw', 'make:volvo']), 'brand:tesla').then(res => {
     t.deepEqual(res, [
       { _id: 1, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
       { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },

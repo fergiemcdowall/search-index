@@ -191,7 +191,7 @@ test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
 test('can _OR by numeric value and _SORT by numeric value', t => {
   t.plan(1)
   global[indexName]
-    ._OR(500, 200)
+    ._OR([500, 200])
     .then(resultSet =>
       global[indexName]._SORT(resultSet, {
         FIELD: '_match.importantnumber',
@@ -217,7 +217,7 @@ test('can _OR by numeric value and _SORT by numeric value', t => {
 test('can search by numeric value and _OR with one term on any field', t => {
   t.plan(1)
   global[indexName]
-    ._OR(200, { FIELD: 'importantnumber', VALUE: 5000 })
+    ._OR([200, { FIELD: 'importantnumber', VALUE: 5000 }])
     .then(res =>
       t.deepEqual(res, [
         {
@@ -273,7 +273,7 @@ test('can _GET with no field specified', t => {
 test('can _AND', t => {
   t.plan(1)
   global[indexName]
-    ._AND('body.text:really', 'body.metadata:coolness')
+    ._AND(['body.text:really', 'body.metadata:coolness'])
     .then(res => {
       t.deepEqual(res, [
         {
@@ -297,10 +297,10 @@ test('can _AND', t => {
 test('can _AND with embedded _OR', t => {
   t.plan(1)
   global[indexName]
-    ._AND(
-      global[indexName]._OR('title:quite', 'body.text:different'),
+    ._AND([
+      global[indexName]._OR(['title:quite', 'body.text:different']),
       'body.metadata:coolness'
-    )
+    ])
     .then(res => {
       t.deepEqual(res, [
         {
@@ -331,13 +331,13 @@ test('can _AND with embedded _OR', t => {
 test('can _AND with embedded _OR and embedded _AND', t => {
   t.plan(1)
   global[indexName]
-    ._AND(
-      global[indexName]._OR(
+    ._AND([
+      global[indexName]._OR([
         'title:quite',
-        global[indexName]._AND('body.text:totally', 'body.text:different')
-      ),
+        global[indexName]._AND(['body.text:totally', 'body.text:different'])
+      ]),
       'body.metadata:coolness'
-    )
+    ])
     .then(res => {
       t.deepEqual(res, [
         {
@@ -384,7 +384,7 @@ test('can _NOT', t => {
 test('can _OR', t => {
   t.plan(1)
   global[indexName]
-    ._OR('body.text:bananas', 'body.text:different')
+    ._OR(['body.text:bananas', 'body.text:different'])
     .then(res => {
       t.deepEqual(res, [
         {
@@ -402,10 +402,10 @@ test('can _OR', t => {
 test('_AND with embedded _OR', t => {
   t.plan(1)
   global[indexName]
-    ._AND(
+    ._AND([
       'bananas',
-      global[indexName]._OR('body.text:cool', 'body.text:coolness')
-    )
+      global[indexName]._OR(['body.text:cool', 'body.text:coolness'])
+    ])
     .then(res => {
       t.deepEqual(res, [
         {
@@ -522,10 +522,10 @@ test('QUERY with a string and then connect documents', t => {
 test('_AND with embedded _OR', t => {
   t.plan(1)
   global[indexName]
-    ._AND(
-      global[indexName]._OR('bananas', 'different'),
-      global[indexName]._OR('cool', 'coolness')
-    )
+    ._AND([
+      global[indexName]._OR(['bananas', 'different']),
+      global[indexName]._OR(['cool', 'coolness'])
+    ])
     .then(res => {
       t.deepEqual(res, [
         {

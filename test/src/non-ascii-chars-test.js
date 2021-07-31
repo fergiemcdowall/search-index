@@ -42,7 +42,7 @@ test('can add data', t => {
 
 test('match brønnøysundregisterene', t => {
   t.plan(1)
-  global[indexName]._AND('brønnøysundregisterene').then(res => {
+  global[indexName]._AND(['brønnøysundregisterene']).then(res => {
     t.deepEqual(res, [
       {
         _id: 0,
@@ -56,7 +56,7 @@ test('match brønnøysundregisterene', t => {
 
 test('match blåtind', t => {
   t.plan(1)
-  global[indexName]._AND('blåtind').then(res => {
+  global[indexName]._AND(['blåtind']).then(res => {
     t.deepEqual(res, [
       { _id: 1, _match: [{ FIELD: 'text', VALUE: 'blåtind', SCORE: '1.00' }] }
     ])
@@ -65,7 +65,7 @@ test('match blåtind', t => {
 
 test('match gjæret øl', t => {
   t.plan(1)
-  global[indexName]._AND('gjæret', 'øl').then(res => {
+  global[indexName]._AND(['gjæret', 'øl']).then(res => {
     t.deepEqual(res, [
       {
         _id: 2,
@@ -80,7 +80,7 @@ test('match gjæret øl', t => {
 
 test('match 大阪 costs 2000', t => {
   t.plan(1)
-  global[indexName]._AND('大阪', 'costs', '2000').then(res => {
+  global[indexName]._AND(['大阪', 'costs', '2000']).then(res => {
     t.deepEqual(res, [
       {
         _id: 3,
@@ -96,7 +96,7 @@ test('match 大阪 costs 2000', t => {
 
 test('Приключения Алисы в стране чудес', t => {
   t.plan(1)
-  global[indexName]._AND('стране', 'чудес').then(res => {
+  global[indexName]._AND(['стране', 'чудес']).then(res => {
     t.deepEqual(res, [
       {
         _id: 4,

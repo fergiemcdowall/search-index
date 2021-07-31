@@ -282,12 +282,12 @@ module.exports = (ops, cache) => {
       // one condition is an object, then that condition is an options object
 
       // else:
-      if (cmd.AND) return ops.fii.AND(...cmd.AND.map(runQuery))
+      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery))
       if (cmd.GET) return ops.fii.GET(cmd.GET)
       if (cmd.NOT) {
         return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
-      if (cmd.OR) return ops.fii.OR(...cmd.OR.map(runQuery))
+      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery))
 
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }

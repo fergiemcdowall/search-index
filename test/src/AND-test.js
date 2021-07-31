@@ -82,7 +82,7 @@ test('can add data', t => {
 
 test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName]._AND('make:volvo').then(res => {
+  global[indexName]._AND(['make:volvo']).then(res => {
     t.deepEqual(res, [
       { _id: '4', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: '5', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
@@ -93,7 +93,7 @@ test('simple _AND with 1 clause', t => {
 
 test('simple _AND with 1 clause', t => {
   t.plan(1)
-  global[indexName]._AND('manufacturer:bmw').then(res => {
+  global[indexName]._AND(['manufacturer:bmw']).then(res => {
     t.deepEqual(res, [
       {
         _id: '8',
@@ -105,7 +105,7 @@ test('simple _AND with 1 clause', t => {
 
 test('simple _AND with 2 clauses', t => {
   t.plan(1)
-  global[indexName]._AND('make:volvo', 'manufacturer:bmw').then(res => {
+  global[indexName]._AND(['make:volvo', 'manufacturer:bmw']).then(res => {
     t.deepEqual(res, [
       {
         _id: '8',
@@ -187,9 +187,11 @@ test('simple AND with 2 clauses (JSON)', t => {
 test('_AND with no VALUE', t => {
   t.plan(1)
   global[indexName]
-    ._AND({
-      FIELD: ['make']
-    })
+    ._AND([
+      {
+        FIELD: ['make']
+      }
+    ])
     .then(res => {
       t.deepEqual(res, [
         {

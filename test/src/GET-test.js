@@ -327,4 +327,48 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
     })
 })
 
+test('create a search index with query and index side character normalisation', async t => {
+  const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
+  const { PUT, _GET, INDEX, TOKENIZATION_PIPELINE_STAGES } = await si({
+    name: sandbox + 'GET-2'
+  })
+  const ids = (
+    await PUT(data, {
+      tokenizationPipeline: [
+        TOKENIZATION_PIPELINE_STAGES.SPLIT,
+        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+        // swap out all 'ø' with 'o'
+        (tokens, field, ops) => tokens.map(t => t.replace(/ø/g, 'o')),
+        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+      ]
+    })
+  ).map(status => status._id)
+
+  t.deepEquals(await INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']]), ids)
+  try {
+    await INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']])
+    t.fail('that key should not be in the database')
+  } catch (e) {
+    t.ok(e instanceof Error)
+  }
+
+  const swapØtoO = token =>
+    new Promise(resolve => {
+      token.VALUE.GTE = token.VALUE.GTE.replace(/ø/g, 'o')
+      token.VALUE.LTE = token.VALUE.LTE.replace(/ø/g, 'o')
+      return resolve(token)
+    })
+
+  t.deepEquals(await _GET('bør', swapØtoO), [
+    {
+      _id: ids[0],
+      _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
+    },
+    {
+      _id: ids[1],
+      _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
+    }
+  ])
+})
+
 // TODO: an example of QUERY that shows more than one hit in _match
