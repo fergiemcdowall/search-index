@@ -296,3 +296,53 @@ test('AND with no VALUE (JSON)', t => {
       })
     })
 })
+
+// TODO: AND with nested OR
+
+test('AND with no VALUE (JSON)', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY({
+      AND: [
+        'brand:volvo',
+        {
+          OR: ['make:bmw', 'make:volvo']
+        }
+      ]
+    })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '1',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '4',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '5',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '9',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 4
+      })
+    })
+})

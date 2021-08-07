@@ -1,11 +1,6 @@
 // TODO: remove all '￮' and '#'
 
-// const tokenParser = require('./tokenParser.js')
-
 module.exports = (ops, cache) => {
-  // const parseToken = async token =>
-  //   tokenParser(token, await ops.fii.AVAILABLE_FIELDS())
-
   const ALL_DOCUMENTS = limit =>
     new Promise((resolve, reject) => {
       const result = []
@@ -271,9 +266,7 @@ module.exports = (ops, cache) => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof cmd === 'string' || typeof cmd === 'number') {
-        return ops.fii.GET(cmd)
-      }
+      if (typeof cmd === 'string' || typeof cmd === 'number') { return ops.fii.GET(cmd, options.pipeline) }
       if (cmd.FIELD) return ops.fii.GET(cmd)
       if (cmd.VALUE) return ops.fii.GET(cmd)
 
@@ -282,12 +275,10 @@ module.exports = (ops, cache) => {
       // one condition is an object, then that condition is an options object
 
       // else:
-      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery))
-      if (cmd.GET) return ops.fii.GET(cmd.GET)
-      if (cmd.NOT) {
-        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
-      }
-      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery))
+      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.pipeline)
+      if (cmd.GET) return ops.fii.GET(cmd.GET, options.pipeline)
+      if (cmd.NOT) { return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE)) }
+      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.pipeline)
 
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }
