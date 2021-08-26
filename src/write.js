@@ -20,8 +20,9 @@ module.exports = (fii, ops) => {
   const createDocumentVector = obj => Object.entries(obj).reduce((acc, [
     fieldName, fieldValue
   ]) => {
-    // if fieldname is undefined, ignore and procede to next
+    // if fieldname is undefined or null, ignore and procede to next
     if (fieldValue === undefined) return acc
+    if (fieldValue === null) return acc
     if (fieldName === '_id') {
       acc[fieldName] = fieldValue + '' // return _id "as is" and stringify
     } else if (Array.isArray(fieldValue)) {
