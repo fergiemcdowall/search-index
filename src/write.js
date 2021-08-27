@@ -1,12 +1,6 @@
 // export default function (fii, ops) {
 module.exports = (ops, cache, queue) => {
-  const createDocumentVector = (docs, putOptions) => {
-    // tokenize
-    // lowcase
-    // ngrams
-    // stopwords
-    // synonyms
-    // score
+  const createDocumentVectors = (docs, putOptions) => {
     const runTokenizationPipeline = (fieldName, fieldValue) => {
       if (typeof fieldValue !== 'string') {
         return JSON.stringify([fieldValue, fieldValue])
@@ -116,7 +110,7 @@ module.exports = (ops, cache, queue) => {
     const rawDocs = docs.map(parseStringAsDoc).map(generateId)
 
     return ops.fii
-      .PUT(createDocumentVector(rawDocs, putOptions), putOptions)
+      .PUT(createDocumentVectors(rawDocs, putOptions), putOptions)
       .then(result =>
         Promise.all([
           _PUT_RAW(rawDocs, !ops.storeRawDocs),
