@@ -7,19 +7,27 @@ module.exports = (ops, cache, queue) => {
     // stopwords
     // synonyms
     // score
-    const runTokenizationPipeline = (fieldName, str) =>
-      putOptions.tokenizationPipeline.reduce(
+    const runTokenizationPipeline = (fieldName, fieldValue) => {
+      if (typeof fieldValue !== 'string') {
+        return JSON.stringify([fieldValue, fieldValue])
+      }
+      return putOptions.tokenizationPipeline.reduce(
         (acc, cur) => cur(acc, fieldName, putOptions),
-        str
+        fieldValue
       )
+    }
 
     // traverse object, tokenising all leaves (strings to array) and then
     // scoring them
     // `ops` is a collection of indexing pipeline options
     const traverseObject = obj =>
       Object.entries(obj).reduce((acc, [fieldName, fieldValue]) => {
-        // if fieldname is undefined, ignore and procede to next
+        const isObject = item =>
+          typeof item === 'object' && item !== null && !Array.isArray(item)
+
+        // if fieldname is undefined or null, ignore and procede to next
         if (fieldValue === undefined) return acc
+        //        if (fieldValue === null) return acc
 
         // if fieldName is '_id', return _id "as is" and stringify
         if (fieldName === '_id') {
@@ -28,46 +36,35 @@ module.exports = (ops, cache, queue) => {
           return acc
         }
 
-        // If fieldValue is an Array
-        if (Array.isArray(fieldValue)) {
-          // split up fieldValue into an array of strings and an array of
-          // other things. Then tokenize strings and recursively process
-          // other things.
-          const strings = fieldValue.filter(item => typeof item === 'string')
-          const notStrings = fieldValue.filter(item => typeof item !== 'string')
-          acc[fieldName] = [
-            ...strings.map(str => runTokenizationPipeline(fieldName, str)),
-            ...notStrings.map(traverseObject)
-          ].sort()
-          return acc
-        }
-
         // If fieldValue is an Object
-        if (typeof fieldValue === 'object') {
+        if (isObject(fieldValue)) {
           acc[fieldName] = traverseObject(fieldValue)
           return acc
         }
 
-        // TODO: own tokenization pipeline for numbers
+        // If fieldValue is an Array
+        if (Array.isArray(fieldValue)) {
+          // TODO: should be objects or not objects?
 
-        // else fieldvalue is Number or String
-        if (typeof fieldValue === 'string') {
-          acc[fieldName] = runTokenizationPipeline(
-            fieldName,
-            fieldValue.toString()
-            // fieldValue
-          )
+          // split up fieldValue into an array of objects and an array of
+          // other things. Then tokenize other things and recursively process
+          // objects.
+          const notObjects = fieldValue.filter(item => !isObject(item))
+          const objects = fieldValue.filter(isObject)
+          acc[fieldName] = [
+            ...notObjects.map(str => runTokenizationPipeline(fieldName, str)),
+            ...objects.map(traverseObject)
+          ].sort()
+
+          return acc
         }
 
-        // else fieldvalue is Number or String
-        if (typeof fieldValue === 'number') {
-          acc[fieldName] = JSON.stringify([fieldValue, fieldValue])
-        }
+        acc[fieldName] = runTokenizationPipeline(fieldName, fieldValue)
 
         return acc
       }, {})
 
-    // remove fields who's value is []
+    // remove fields who's value is [] (empty array)
     // (matching empty arrays in js is messier than you might think...)
     const removeEmptyFields = doc => {
       Object.keys(doc).forEach(fieldName => {
@@ -79,8 +76,6 @@ module.exports = (ops, cache, queue) => {
       })
       return doc
     }
-
-    //   console.log(docs.map(traverseObject).map(removeEmptyFields))
 
     return docs.map(traverseObject).map(removeEmptyFields)
   }
