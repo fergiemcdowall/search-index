@@ -1,78 +1,7 @@
-// export default function (fii, ops) {
+const DocumentProcessor = require('./DocumentProcessor')
+
 module.exports = (ops, cache, queue) => {
-  const createDocumentVectors = (docs, putOptions) => {
-    const runTokenizationPipeline = (fieldName, fieldValue) => {
-      if (typeof fieldValue !== 'string') {
-        return JSON.stringify([fieldValue, fieldValue])
-      }
-      return putOptions.tokenizationPipeline.reduce(
-        (acc, cur) => cur(acc, fieldName, putOptions),
-        fieldValue
-      )
-    }
-
-    // traverse object, tokenising all leaves (strings to array) and then
-    // scoring them
-    // `ops` is a collection of indexing pipeline options
-    const traverseObject = obj =>
-      Object.entries(obj).reduce((acc, [fieldName, fieldValue]) => {
-        const isObject = item =>
-          typeof item === 'object' && item !== null && !Array.isArray(item)
-
-        // if fieldname is undefined or null, ignore and procede to next
-        if (fieldValue === undefined) return acc
-        //        if (fieldValue === null) return acc
-
-        // if fieldName is '_id', return _id "as is" and stringify
-        if (fieldName === '_id') {
-          // acc[fieldName] = fieldValue + ''
-          acc[fieldName] = fieldValue
-          return acc
-        }
-
-        // If fieldValue is an Object
-        if (isObject(fieldValue)) {
-          acc[fieldName] = traverseObject(fieldValue)
-          return acc
-        }
-
-        // If fieldValue is an Array
-        if (Array.isArray(fieldValue)) {
-          // TODO: should be objects or not objects?
-
-          // split up fieldValue into an array of objects and an array of
-          // other things. Then tokenize other things and recursively process
-          // objects.
-          const notObjects = fieldValue.filter(item => !isObject(item))
-          const objects = fieldValue.filter(isObject)
-          acc[fieldName] = [
-            ...notObjects.map(str => runTokenizationPipeline(fieldName, str)),
-            ...objects.map(traverseObject)
-          ].sort()
-
-          return acc
-        }
-
-        acc[fieldName] = runTokenizationPipeline(fieldName, fieldValue)
-
-        return acc
-      }, {})
-
-    // remove fields who's value is [] (empty array)
-    // (matching empty arrays in js is messier than you might think...)
-    const removeEmptyFields = doc => {
-      Object.keys(doc).forEach(fieldName => {
-        if (Array.isArray(doc[fieldName])) {
-          if (doc[fieldName].length === 0) {
-            delete doc[fieldName]
-          }
-        }
-      })
-      return doc
-    }
-
-    return docs.map(traverseObject).map(removeEmptyFields)
-  }
+  const createDocumentVectors = (docs, putOptions) => ops.processDocuments(docs)
 
   const incrementDocCount = increment =>
     ops.fii.STORE.get(['DOCUMENT_COUNT'])
@@ -107,16 +36,16 @@ module.exports = (ops, cache, queue) => {
 
     putOptions = Object.assign(ops, putOptions)
 
-    const rawDocs = docs.map(parseStringAsDoc).map(generateId)
-
-    return ops.fii
-      .PUT(createDocumentVectors(rawDocs, putOptions), putOptions)
-      .then(result =>
-        Promise.all([
-          _PUT_RAW(rawDocs, !ops.storeRawDocs),
-          incrementDocCount(result.filter(r => r.status === 'CREATED').length)
-        ]).then(() => result)
-      )
+    return new DocumentProcessor(ops).processDocuments(docs).then(vectors => {
+      return ops.fii
+        .PUT(vectors, putOptions)
+        .then(result =>
+          Promise.all([
+            _PUT_RAW(docs, !ops.storeRawDocs),
+            incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+          ]).then(() => result)
+        )
+    })
   }
 
   const _PUT_RAW = (docs, dontStoreValue) => {

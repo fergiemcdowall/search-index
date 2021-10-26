@@ -5,8 +5,8 @@ module.exports = (ops, cache) => {
     new Promise((resolve, reject) => {
       const result = []
       ops.fii.STORE.createReadStream({
-        // gte: '￮DOC_RAW￮',
-        // lte: '￮DOC_RAW￮￮',
+        // gte: null,
+        // lte: undefined,
         gte: ['DOC_RAW', null],
         lte: ['DOC_RAW', undefined],
         limit: limit
@@ -20,15 +20,14 @@ module.exports = (ops, cache) => {
         .on('end', () => resolve(result))
     })
 
-  const DOCUMENTS = (...requestedDocs) => {
-    return requestedDocs.length
+  const DOCUMENTS = (...requestedDocs) =>
+    requestedDocs.length
       ? Promise.all(
           requestedDocs.map(_id =>
             ops.fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
           )
         )
       : ALL_DOCUMENTS()
-  }
 
   const DICTIONARY = token =>
     DISTINCT(token).then(results =>
@@ -266,7 +265,9 @@ module.exports = (ops, cache) => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof cmd === 'string' || typeof cmd === 'number') { return ops.fii.GET(cmd, options.pipeline) }
+      if (typeof cmd === 'string' || typeof cmd === 'number') {
+        return ops.fii.GET(cmd, options.pipeline)
+      }
       if (cmd.FIELD) return ops.fii.GET(cmd)
       if (cmd.VALUE) return ops.fii.GET(cmd)
 
@@ -277,7 +278,9 @@ module.exports = (ops, cache) => {
       // else:
       if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.pipeline)
       if (cmd.GET) return ops.fii.GET(cmd.GET, options.pipeline)
-      if (cmd.NOT) { return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE)) }
+      if (cmd.NOT) {
+        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
+      }
       if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.pipeline)
 
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
@@ -342,12 +345,12 @@ module.exports = (ops, cache) => {
     const facets = result =>
       options.FACETS
         ? result.RESULT.length
-            ? FACETS(...options.FACETS).then(fcts =>
-                Object.assign(result, {
-                  FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
-                })
-              )
-            : Object.assign(result, {
+          ? FACETS(...options.FACETS).then(fcts =>
+              Object.assign(result, {
+                FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+              })
+            )
+          : Object.assign(result, {
               FACETS: [] // if empty result set then just return empty facets
             })
         : result
@@ -385,8 +388,8 @@ module.exports = (ops, cache) => {
       return cache.has(cacheKey)
         ? resolve(cache.get(cacheKey))
         : q
-          .then(res => cache.set(cacheKey, res))
-          .then(() => resolve(cache.get(cacheKey)))
+            .then(res => cache.set(cacheKey, res))
+            .then(() => resolve(cache.get(cacheKey)))
     })
 
   return {

@@ -1,4 +1,6 @@
 const fii = require('fergies-inverted-index')
+const NewTokenisationPipeline = require('./NewTokenisationPipeline')
+// const DocumentProcessor = require('./DocumentProcessor')
 
 const LRU = require('lru-cache')
 const reader = require('./read.js')
@@ -47,7 +49,7 @@ const makeASearchIndex = ops =>
         IMPORT: w.IMPORT,
         PUT: w.PUT,
         PUT_RAW: w.PUT_RAW,
-        TOKENIZATION_PIPELINE_STAGES: tp,
+        TOKENIZATION_PIPELINE_STAGES: new NewTokenisationPipeline(),
 
         // public API (read)
         ALL_DOCUMENTS: r.ALL_DOCUMENTS,
@@ -84,15 +86,18 @@ const initIndex = (ops = {}) =>
         ngrams: {},
         replace: {},
         storeRawDocs: true,
-        tokenizationPipeline: [
-          tp.SPLIT,
-          tp.SKIP,
-          tp.LOWCASE,
-          tp.REPLACE,
-          tp.NGRAMS,
-          tp.STOPWORDS,
-          tp.SCORE_TERM_FREQUENCY
-        ],
+        // TODO: processDocuments probably shouldn't be an option?
+
+        tokenizer: new NewTokenisationPipeline().tokenizer,
+        // tokenizationPipeline: [
+        //   tp.SPLIT,
+        //   tp.SKIP,
+        //   tp.LOWCASE,
+        //   tp.REPLACE,
+        //   tp.NGRAMS,
+        //   tp.STOPWORDS,
+        //   tp.SCORE_TERM_FREQUENCY
+        // ],
         stopwords: [],
         storeVectors: true, // TODO: make a test for this being false
         tokenAppend: '#'
@@ -122,13 +127,13 @@ const validateVersion = si =>
         version === v
           ? resolve()
           : reject(
-            new Error(
-              'This index was created with ' +
+              new Error(
+                'This index was created with ' +
                   v +
                   ', you are running ' +
                   version
+              )
             )
-          )
       )
       .catch(e => si.INDEX.STORE.put(key, version).then(resolve))
   })
