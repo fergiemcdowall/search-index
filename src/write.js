@@ -37,28 +37,30 @@ module.exports = (ops, cache, queue) => {
     putOptions = Object.assign(ops, putOptions)
 
     return new DocumentProcessor(ops).processDocuments(docs).then(vectors => {
-      return ops.fii
-        .PUT(vectors, putOptions)
-        .then(result =>
-          Promise.all([
-            _PUT_RAW(docs, !ops.storeRawDocs),
-            incrementDocCount(result.filter(r => r.status === 'CREATED').length)
-          ]).then(() => result)
-        )
+      return ops.fii.PUT(vectors, putOptions).then(result => {
+        return Promise.all([
+          _PUT_RAW(
+            docs,
+            result.map(r => r._id),
+            !ops.storeRawDocs
+          ),
+          incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+        ]).then(() => result)
+      })
     })
   }
 
-  const _PUT_RAW = (docs, dontStoreValue) => {
+  const _PUT_RAW = (docs, ids, dontStoreValue) => {
     cache.reset()
     return Promise.all(
-      docs.map(doc =>
-        ops.fii.STORE.put(['DOC_RAW', doc._id], dontStoreValue ? {} : doc)
+      docs.map((doc, i) =>
+        ops.fii.STORE.put(['DOC_RAW', ids[i]], dontStoreValue ? {} : doc)
       )
     ).then(
       // TODO: make this actually deal with errors
       result =>
-        docs.map(doc => ({
-          _id: doc._id,
+        docs.map((doc, i) => ({
+          _id: ids[i],
           status: 'OK',
           operation: '_PUT_RAW'
         }))

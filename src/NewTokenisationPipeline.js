@@ -5,8 +5,11 @@ class NewTokenisationPipeline {
   SPLIT = ([tokens, field, ops]) =>
     Promise.resolve([tokens.match(/[\p{L}\d]+/gu), field, ops])
 
-  SKIP = ([tokens, field, ops]) =>
-    Promise.resolve([ops.skipFields.includes(field) ? [] : tokens, field, ops])
+  SKIP = ([tokens, field, ops]) => [
+    ops.skipFields.includes(field) ? [] : tokens,
+    field,
+    ops
+  ]
 
   LOWCASE = ([tokens, field, ops]) =>
     Promise.resolve([
@@ -31,16 +34,27 @@ class NewTokenisationPipeline {
     if (!fields) fields = [field]
     if (lengths) {
       if (fields.includes(field)) {
-        return ngraminator(tokens, lengths).map(t => t.join(join))
+        // filter tokens to remove undefined, null, etc
+        return [
+          ngraminator(
+            tokens.filter(t => t !== null),
+            lengths
+          ).map(t => t.join(join)),
+          field,
+          ops
+        ]
       }
     }
     return Promise.resolve([tokens, field, ops])
   }
 
-  STOPWORDS = ([tokens, field, ops]) =>
-    Promise.resolve([
-      tokens.filter(t => !ops.stopwords.includes(t.toLowerCase()))
-    ])
+  STOPWORDS = ([tokens, field, ops]) => {
+    return [
+      tokens.filter(t => !ops.stopwords.includes(t.toLowerCase())),
+      field,
+      ops
+    ]
+  }
 
   SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
     const v = tv(tokens)

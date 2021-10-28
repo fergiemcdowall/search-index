@@ -78,8 +78,8 @@ test('GET all docs with null values', t => {
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '0', _match: [{ FIELD: 'brand', VALUE: null, SCORE: null }] },
-        { _id: '1', _match: [{ FIELD: 'brand', VALUE: null, SCORE: null }] },
+        { _id: '0', _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }] },
+        { _id: '1', _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }] },
         {
           _id: '2',
           _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]

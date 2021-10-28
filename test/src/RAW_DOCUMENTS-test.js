@@ -71,12 +71,14 @@ test('DOC_RAWs are inserted as expected', t => {
 test('can add raw document', t => {
   t.plan(1)
   global[indexName]
-    .PUT_RAW([
-      {
-        _id: 1,
-        text: 'this is an altered raw doc'
-      }
-    ])
+    .PUT_RAW(
+      [
+        {
+          text: 'this is an altered raw doc'
+        }
+      ],
+      [1]
+    )
     .then(response =>
       t.deepEquals(response, [{ _id: 1, status: 'OK', operation: '_PUT_RAW' }])
     )
@@ -90,7 +92,7 @@ test('Verify that PUT_RAW has updated the raw document', t => {
     },
     {
       key: ['DOC_RAW', 1],
-      value: { _id: 1, text: 'this is an altered raw doc' }
+      value: { text: 'this is an altered raw doc' }
     },
     {
       key: ['DOC_RAW', 2],
@@ -109,12 +111,14 @@ test('Verify that PUT_RAW has updated the raw document', t => {
 test('can add raw document with external API (no underscore)', t => {
   t.plan(1)
   global[indexName]
-    .PUT_RAW([
-      {
-        _id: 2,
-        text: 'this is an altered raw doc for 2'
-      }
-    ])
+    .PUT_RAW(
+      [
+        {
+          text: 'this is an altered raw doc for 2'
+        }
+      ],
+      [2]
+    )
     .then(response =>
       t.deepEquals(response, [{ _id: 2, status: 'OK', operation: '_PUT_RAW' }])
     )
@@ -128,11 +132,11 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
     },
     {
       key: ['DOC_RAW', 1],
-      value: { _id: 1, text: 'this is an altered raw doc' }
+      value: { text: 'this is an altered raw doc' }
     },
     {
       key: ['DOC_RAW', 2],
-      value: { _id: 2, text: 'this is an altered raw doc for 2' }
+      value: { text: 'this is an altered raw doc for 2' }
     }
   ]
   t.plan(indexEntries.length)

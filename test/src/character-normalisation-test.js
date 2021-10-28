@@ -144,13 +144,16 @@ test('create a search index with query and index side character normalisation', 
   })
   const ids = (
     await PUT(data, {
-      tokenizationPipeline: [
-        TOKENIZATION_PIPELINE_STAGES.SPLIT,
-        TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-        // swap out all 'ø' with 'o'
-        (tokens, field, ops) => tokens.map(t => t.replace(/ø/g, 'o')),
-        TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-      ]
+      tokenizer: (tokens, field, ops) =>
+        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+          .then(([tokens, field, ops]) => [
+            tokens.map(t => t.replace(/ø/g, 'o')),
+            field,
+            ops
+          ])
+          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(([tokens]) => tokens)
     })
   ).map(status => status._id)
   t.deepEquals(await SEARCH(['bor'], swapØtoO), {

@@ -3,12 +3,16 @@ class DocumentProcessor {
     this.ops = ops
   }
 
-  isArray = item => Array.isArray(item)
+  // isObject = item =>
+  //   typeof item === 'object' && item !== null && !Array.isArray(item)
 
-  isObject = item =>
-    typeof item === 'object' && item !== null && !Array.isArray(item)
+  isObject(item) {
+    return typeof item === 'object' && item !== null && !Array.isArray(item)
+  }
 
   isString = item => typeof item === 'string' || item instanceof String
+
+  isArray = item => Array.isArray(item)
 
   processValueArray = arr => Promise.all(arr.map(this.processValueUnknownType))
 
@@ -30,6 +34,7 @@ class DocumentProcessor {
       if (this.isObject(unknown))
         return resolve(this.processValueObject(unknown))
       if (this.isArray(unknown)) return resolve(this.processValueArray(unknown))
+      if (unknown === null) return resolve(JSON.stringify([null, '1.00']))
       return resolve(unknown)
     })
   }
@@ -38,6 +43,10 @@ class DocumentProcessor {
     new Promise(async resolve => {
       // Documents that are Strings are converted into { body: ... }
       if (this.isString(doc)) doc = { body: doc }
+
+      // Docs with no _id are auto-assigned an ID
+      if (!doc.hasOwnProperty('_id'))
+        doc._id = this.ops.idGenerator.next().value
 
       const acc = {}
       for (const key in doc) {
@@ -51,10 +60,6 @@ class DocumentProcessor {
     })
 
   processDocuments = docs => Promise.all(docs.map(this.processDocument))
-  // .then(docs => {
-  //   console.log(docs)
-  //   return docs
-  // })
 }
 
 module.exports = DocumentProcessor

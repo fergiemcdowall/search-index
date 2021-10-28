@@ -82,6 +82,12 @@ const initIndex = (ops = {}) =>
         cacheLength: 1000,
         caseSensitive: false,
         docExistsSpace: 'DOC_RAW',
+        idGenerator: (function* generateId() {
+          let i = 0
+          while (true) {
+            yield Date.now() + '-' + i++
+          }
+        })(),
         skipFields: [],
         ngrams: {},
         replace: {},
@@ -89,15 +95,6 @@ const initIndex = (ops = {}) =>
         // TODO: processDocuments probably shouldn't be an option?
 
         tokenizer: new NewTokenisationPipeline().tokenizer,
-        // tokenizationPipeline: [
-        //   tp.SPLIT,
-        //   tp.SKIP,
-        //   tp.LOWCASE,
-        //   tp.REPLACE,
-        //   tp.NGRAMS,
-        //   tp.STOPWORDS,
-        //   tp.SCORE_TERM_FREQUENCY
-        // ],
         stopwords: [],
         storeVectors: true, // TODO: make a test for this being false
         tokenAppend: '#'
