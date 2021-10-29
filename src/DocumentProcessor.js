@@ -1,52 +1,45 @@
-class DocumentProcessor {
-  constructor(ops) {
-    this.ops = ops
-  }
+module.exports = ops => {
+  const isObject = item =>
+    typeof item === 'object' && item !== null && !Array.isArray(item)
 
-  // isObject = item =>
-  //   typeof item === 'object' && item !== null && !Array.isArray(item)
+  const isString = item => typeof item === 'string' || item instanceof String
 
-  isObject(item) {
-    return typeof item === 'object' && item !== null && !Array.isArray(item)
-  }
+  const isArray = item => Array.isArray(item)
 
-  isString = item => typeof item === 'string' || item instanceof String
+  const processValueArray = arr => Promise.all(arr.map(processValueUnknownType))
 
-  isArray = item => Array.isArray(item)
-
-  processValueArray = arr => Promise.all(arr.map(this.processValueUnknownType))
-
-  processValueObject = obj =>
+  const processValueObject = obj =>
+    // eslint-disable-next-line
     new Promise(async resolve => {
       const acc = {}
       for (const key in obj) {
-        acc[key] = await this.processValueUnknownType(obj[key], key, this.ops)
+        acc[key] = await processValueUnknownType(obj[key], key, ops)
       }
       return resolve(acc)
     })
 
-  processValueUnknownType = (unknown, key) => {
-    return new Promise(async resolve => {
-      if (Number.isInteger(unknown))
+  const processValueUnknownType = (unknown, key) =>
+    // eslint-disable-next-line
+    new Promise(async resolve => {
+      if (Number.isInteger(unknown)) {
         return resolve(JSON.stringify([unknown, unknown]))
-      if (this.isString(unknown))
-        return resolve(this.ops.tokenizer(unknown, key, this.ops))
-      if (this.isObject(unknown))
-        return resolve(this.processValueObject(unknown))
-      if (this.isArray(unknown)) return resolve(this.processValueArray(unknown))
+      }
+      if (isString(unknown)) return resolve(ops.tokenizer(unknown, key, ops))
+      if (isObject(unknown)) return resolve(processValueObject(unknown))
+      if (isArray(unknown)) return resolve(processValueArray(unknown))
       if (unknown === null) return resolve(JSON.stringify([null, '1.00']))
       return resolve(unknown)
     })
-  }
 
-  processDocument = async doc =>
+  const processDocument = async doc =>
+    // eslint-disable-next-line
     new Promise(async resolve => {
       // Documents that are Strings are converted into { body: ... }
-      if (this.isString(doc)) doc = { body: doc }
+      if (isString(doc)) doc = { body: doc }
 
       // Docs with no _id are auto-assigned an ID
-      if (!doc.hasOwnProperty('_id'))
-        doc._id = this.ops.idGenerator.next().value
+      // if (!doc.hasOwnProperty('_id')) doc._id = ops.idGenerator.next().value
+      if (!Object.prototype.hasOwnProperty.call(doc, '_id')) { doc._id = ops.idGenerator.next().value }
 
       const acc = {}
       for (const key in doc) {
@@ -54,12 +47,12 @@ class DocumentProcessor {
           acc[key] = doc[key]
           continue
         }
-        acc[key] = await this.processValueUnknownType(doc[key], key)
+        acc[key] = await processValueUnknownType(doc[key], key)
       }
       return resolve(acc)
     })
 
-  processDocuments = docs => Promise.all(docs.map(this.processDocument))
+  return {
+    processDocuments: docs => Promise.all(docs.map(processDocument))
+  }
 }
-
-module.exports = DocumentProcessor

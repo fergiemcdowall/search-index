@@ -1,11 +1,11 @@
 const fii = require('fergies-inverted-index')
-const NewTokenisationPipeline = require('./NewTokenisationPipeline')
+const tp = require('./NewTokenisationPipeline')
 // const DocumentProcessor = require('./DocumentProcessor')
 
 const LRU = require('lru-cache')
 const reader = require('./read.js')
 const writer = require('./write.js')
-const tp = require('./tokenizationPipeline.js')
+// const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
 
 // eslint-disable-next-line
@@ -49,7 +49,7 @@ const makeASearchIndex = ops =>
         IMPORT: w.IMPORT,
         PUT: w.PUT,
         PUT_RAW: w.PUT_RAW,
-        TOKENIZATION_PIPELINE_STAGES: new NewTokenisationPipeline(),
+        TOKENIZATION_PIPELINE_STAGES: tp,
 
         // public API (read)
         ALL_DOCUMENTS: r.ALL_DOCUMENTS,
@@ -82,7 +82,7 @@ const initIndex = (ops = {}) =>
         cacheLength: 1000,
         caseSensitive: false,
         docExistsSpace: 'DOC_RAW',
-        idGenerator: (function* generateId() {
+        idGenerator: (function * generateId () {
           let i = 0
           while (true) {
             yield Date.now() + '-' + i++
@@ -94,7 +94,7 @@ const initIndex = (ops = {}) =>
         storeRawDocs: true,
         // TODO: processDocuments probably shouldn't be an option?
 
-        tokenizer: new NewTokenisationPipeline().tokenizer,
+        tokenizer: tp.tokenizer,
         stopwords: [],
         storeVectors: true, // TODO: make a test for this being false
         tokenAppend: '#'
@@ -124,13 +124,13 @@ const validateVersion = si =>
         version === v
           ? resolve()
           : reject(
-              new Error(
-                'This index was created with ' +
+            new Error(
+              'This index was created with ' +
                   v +
                   ', you are running ' +
                   version
-              )
             )
+          )
       )
       .catch(e => si.INDEX.STORE.put(key, version).then(resolve))
   })

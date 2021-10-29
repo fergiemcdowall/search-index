@@ -345,12 +345,12 @@ module.exports = (ops, cache) => {
     const facets = result =>
       options.FACETS
         ? result.RESULT.length
-          ? FACETS(...options.FACETS).then(fcts =>
-              Object.assign(result, {
-                FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
-              })
-            )
-          : Object.assign(result, {
+            ? FACETS(...options.FACETS).then(fcts =>
+                Object.assign(result, {
+                  FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+                })
+              )
+            : Object.assign(result, {
               FACETS: [] // if empty result set then just return empty facets
             })
         : result
@@ -388,8 +388,8 @@ module.exports = (ops, cache) => {
       return cache.has(cacheKey)
         ? resolve(cache.get(cacheKey))
         : q
-            .then(res => cache.set(cacheKey, res))
-            .then(() => resolve(cache.get(cacheKey)))
+          .then(res => cache.set(cacheKey, res))
+          .then(() => resolve(cache.get(cacheKey)))
     })
 
   return {

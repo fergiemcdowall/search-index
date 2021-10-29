@@ -1,4 +1,4 @@
-function* generateId() {
+function * generateId () {
   let i = 0
   while (true) {
     yield Date.now() + '-' + i++

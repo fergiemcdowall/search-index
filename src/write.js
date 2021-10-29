@@ -1,8 +1,6 @@
 const DocumentProcessor = require('./DocumentProcessor')
 
 module.exports = (ops, cache, queue) => {
-  const createDocumentVectors = (docs, putOptions) => ops.processDocuments(docs)
-
   const incrementDocCount = increment =>
     ops.fii.STORE.get(['DOCUMENT_COUNT'])
       .then(count => ops.fii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
@@ -16,38 +14,25 @@ module.exports = (ops, cache, queue) => {
       ops.fii.STORE.put(['DOCUMENT_COUNT'], +count - increment)
     )
 
-  const parseStringAsDoc = doc =>
-    typeof doc === 'string' ? { body: doc } : doc
-
-  let counter = 0
-  const generateId = (doc, i) =>
-    typeof doc._id === 'undefined'
-      ? Object.assign(doc, {
-          // counter is needed because if this function is called in quick
-          // succession, Date.now() is not guaranteed to be unique. This could
-          // still conflict if the DB is closed, clock is reset to the past, then
-          // DB reopened. That's a bit of a corner case though.
-          _id: `${Date.now()}-${i}-${counter++}`
-        })
-      : doc
-
   const _PUT = (docs, putOptions) => {
     cache.reset()
 
     putOptions = Object.assign(ops, putOptions)
 
-    return new DocumentProcessor(ops).processDocuments(docs).then(vectors => {
-      return ops.fii.PUT(vectors, putOptions).then(result => {
-        return Promise.all([
-          _PUT_RAW(
-            docs,
-            result.map(r => r._id),
-            !ops.storeRawDocs
-          ),
-          incrementDocCount(result.filter(r => r.status === 'CREATED').length)
-        ]).then(() => result)
+    return DocumentProcessor(ops)
+      .processDocuments(docs)
+      .then(vectors => {
+        return ops.fii.PUT(vectors, putOptions).then(result => {
+          return Promise.all([
+            _PUT_RAW(
+              docs,
+              result.map(r => r._id),
+              !ops.storeRawDocs
+            ),
+            incrementDocCount(result.filter(r => r.status === 'CREATED').length)
+          ]).then(() => result)
+        })
       })
-    })
   }
 
   const _PUT_RAW = (docs, ids, dontStoreValue) => {
@@ -94,7 +79,6 @@ module.exports = (ops, cache, queue) => {
     DELETE: (...docIds) => _DELETE(docIds), // for external use
     FLUSH: _FLUSH,
     // TODO: IMPORT needs a test
-    // IMPORT: () => cache.flush().then(ops.fii.IMPORT),
     IMPORT: index => {
       cache.reset()
       return Promise.resolve(ops.fii.IMPORT(index))
