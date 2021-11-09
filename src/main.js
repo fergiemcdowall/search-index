@@ -1,11 +1,9 @@
 const fii = require('fergies-inverted-index')
-const tp = require('./NewTokenisationPipeline')
-// const DocumentProcessor = require('./DocumentProcessor')
+const tp = require('./tokenisationPipeline')
 
 const LRU = require('lru-cache')
 const reader = require('./read.js')
 const writer = require('./write.js')
-// const tp = require('./tokenizationPipeline.js')
 const packageJSON = require('../package.json')
 
 // eslint-disable-next-line

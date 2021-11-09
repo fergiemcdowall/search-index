@@ -171,12 +171,13 @@ test('_GET over 2 fields', t => {
 
 test('_GET over all fields', t => {
   t.plan(1)
+  const sort = (a, b) => (a._id < b._id ? -1 : a._id > b._id ? 1 : 0)
   global[indexName]
     ._GET({
       VALUE: 'volvo'
     })
     .then(res => {
-      t.deepEqual(res, [
+      t.deepEqual(res.sort(sort), [
         {
           _id: '0',
           _match: [
@@ -196,6 +197,10 @@ test('_GET over all fields', t => {
           _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
         },
         {
+          _id: '3',
+          _match: [{ FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        {
           _id: '4',
           _match: [
             { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
@@ -211,16 +216,12 @@ test('_GET over all fields', t => {
           ]
         },
         {
-          _id: '9',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
           _id: '8',
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         },
         {
-          _id: '3',
-          _match: [{ FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }]
+          _id: '9',
+          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
         }
       ])
     })
