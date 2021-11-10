@@ -17,8 +17,8 @@
   - [CREATED](#created)
   - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
-  - [DOCUMENTS](#documents)
   - [DISTINCT](#distinct)
+  - [DOCUMENTS](#documents)
   - [DOCUMENT_COUNT](#document_count)
   - [EXPORT](#export)
   - [FACETS](#facets)
@@ -26,6 +26,13 @@
   - [FLUSH](#flush)
   - [IMPORT](#import)
   - [INDEX](#index)
+  - [MAX](#max)
+  - [MIN](#min)
+  - [PUT](#put)
+    - [Tokenization pipeline](#tokenization-pipeline)
+      - [Reorder pipeline](#reorder-pipeline)
+      - [Create custom pipeline stages](#create-custom-pipeline-stages)
+  - [PUT_RAW](#put_raw)
   - [QUERY](#query)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
@@ -43,13 +50,6 @@
       - [AND](#and)
       - [NOT](#not)
       - [OR](#or)
-  - [MAX](#max)
-  - [MIN](#min)
-  - [PUT](#put)
-    - [Tokenization pipeline](#tokenization-pipeline)
-      - [Reorder pipeline](#reorder-pipeline)
-      - [Create custom pipeline stages](#create-custom-pipeline-stages)
-  - [PUT_RAW](#put_raw)
   - [SEARCH](#search)
   - [TOKENIZATION_PIPELINE_STAGES](#tokenization_pipeline_stages)
 
@@ -237,6 +237,15 @@ See also [DISTINCT](#distinct)
 const dictionary = await DICTIONARY(token)
 ```
 
+## DISTINCT
+
+See also [DICTIONARY](#dictionary)
+
+```javascript
+// Return distinct field values from index
+const distinct = await DISTINCT(token)
+```
+
 
 ## DOCUMENTS
 
@@ -245,16 +254,6 @@ See also [ALL_DOCUMENTS](#all_documents)
 ```javascript
 // Return named documents from index.
 const documents = await DOCUMENTS(id1, id2, id3 /* ... */)
-```
-
-
-## DISTINCT
-
-See also [DICTIONARY](#dictionary)
-
-```javascript
-// Return distinct field values from index
-const distinct = await DISTINCT(token)
 ```
 
 
@@ -309,6 +308,171 @@ await IMPORT(index)
 ## INDEX
 
 `INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
+## MAX
+
+```javascript
+// get the _alphabetically_ maxiumum/last value of the given token space
+const max = await MAX(token)
+```
+
+
+## MIN
+
+```javascript
+// get the _alphabetically_ minimum/first value of the given token space
+const min = await MIN(token)
+```
+
+
+## PUT
+
+```javascript
+// Put documents into the index
+const result = await PUT(documents, options)
+// "result" shows the success or otherwise of the insertion
+// "documents" is an Array of javascript Objects.
+// "options" is an Object that contains indexing options
+```
+
+If any document does not contain an `_id` field, then one will be
+generated and assigned
+
+
+`options` is an optional object that can contain the following values:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams |
+|`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing |
+|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+
+### Tokenization pipeline
+
+Every field of every document that is indexed is passed through the
+tokenization pipeline. The tokenization pipeline consists of a
+sequence of stages that are applied to the field with the result of
+the preceding stage providing the input for the result of the
+following stage.
+
+The default tokenization pipeline looks like this:
+
+```javascript
+tokenizationPipeline: [
+  SPLIT,
+  SKIP,
+  LOWCASE,
+  REPLACE,
+  NGRAMS,
+  STOPWORDS,
+  SCORE_TERM_FREQUENCY
+]
+```
+
+#### Reorder pipeline
+
+Example: reorder the pipeline to remove stopwords _before_ creating
+ngrams:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,    // <-- order switched
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  ]
+})
+```
+
+#### Create custom pipeline stages
+
+A custom pipeline stage must be in the following form:
+
+```javascript
+// take tokens (Array of tokens), field (the field name), and options,
+// and then return then return the Array of tokens
+(tokens, field, ops) => tokens
+```
+
+
+Example: Normalize text characters:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+    // björn -> bjorn, allé -> alle, etc.
+    (tokens, field, ops) => tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  ]
+})
+```
+
+Example: stemmer:
+
+```javascript
+const stemmer = require('stemmer')
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizationPipeline: [
+    TOKENIZATION_PIPELINE_STAGES.SPLIT,
+    TOKENIZATION_PIPELINE_STAGES.SKIP,
+    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
+    TOKENIZATION_PIPELINE_STAGES.REPLACE,
+    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
+    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
+    // stemmer
+    (tokens, field, ops) => tokens.map(stemmer)
+    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
+  ]
+})
+```
+
+
+## PUT_RAW
+
+```javascript
+// Put raw documents into the index
+const result = await PUT_RAW(rawDocuments)
+// "result" shows the success or otherwise of the insertion
+// "rawDocuments" is an Array of javascript Objects that must
+// contain an _id field
+```
+
+`PUT_RAW` writes raw documents to the index. Raw documents are the
+documents that the index returns. Use raw documents when the documents
+that are indexed are not the same as the ones that you want the index
+to return. This can be useful if you want documents to be retrievable
+for terms that dont appear in the actual document. It can also be
+useful if you want to store stripped down versions of the document in
+the index in order to save space.
+
+NOTE: if the documents that the index returns are very different to
+the corresponding documents that are indexed, it may make sense to set
+`storeRawDocs: false` when indexing (making indexing slightly faster),
+and instead add them with `PUT_RAW` afterwards.
 
 
 ## QUERY
@@ -500,171 +664,6 @@ See also [FACETS](#facets)
   OR: [ token1, token2, /* ... */ ]
 }
 ```
-
-
-## MAX
-
-```javascript
-// get the _alphabetically_ maxiumum/last value of the given token space
-const max = await MAX(token)
-```
-
-
-## MIN
-
-```javascript
-// get the _alphabetically_ minimum/first value of the given token space
-const min = await MIN(token)
-```
-
-
-## PUT
-
-```javascript
-// Put documents into the index
-const result = await PUT(documents, options)
-// "result" shows the success or otherwise of the insertion
-// "documents" is an Array of javascript Objects.
-// "options" is an Object that contains indexing options
-```
-
-If any document does not contain an `_id` field, then one will be
-generated and assigned
-
-
-`options` is an optional object that can contain the following values:
-
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams |
-|`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing |
-|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
-|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
-
-### Tokenization pipeline
-
-Every field of every document that is indexed is passed through the
-tokenization pipeline. The tokenization pipeline consists of a
-sequence of stages that are applied to the field with the result of
-the preceding stage providing the input for the result of the
-following stage.
-
-The default tokenization pipeline looks like this:
-
-```javascript
-tokenizationPipeline: [
-  SPLIT,
-  SKIP,
-  LOWCASE,
-  REPLACE,
-  NGRAMS,
-  STOPWORDS,
-  SCORE_TERM_FREQUENCY
-]
-```
-
-#### Reorder pipeline
-
-Example: reorder the pipeline to remove stopwords _before_ creating
-ngrams:
-
-```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,    // <-- order switched
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
-})
-```
-
-#### Create custom pipeline stages
-
-A custom pipeline stage must be in the following form:
-
-```javascript
-// take tokens (Array of tokens), field (the field name), and options,
-// and then return then return the Array of tokens
-(tokens, field, ops) => tokens
-```
-
-
-Example: Normalize text characters:
-
-```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-    // björn -> bjorn, allé -> alle, etc.
-    (tokens, field, ops) => tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
-})
-```
-
-Example: stemmer:
-
-```javascript
-const stemmer = require('stemmer')
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-    // stemmer
-    (tokens, field, ops) => tokens.map(stemmer)
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
-})
-```
-
-
-## PUT_RAW
-
-```javascript
-// Put raw documents into the index
-const result = await PUT_RAW(rawDocuments)
-// "result" shows the success or otherwise of the insertion
-// "rawDocuments" is an Array of javascript Objects that must
-// contain an _id field
-```
-
-`PUT_RAW` writes raw documents to the index. Raw documents are the
-documents that the index returns. Use raw documents when the documents
-that are indexed are not the same as the ones that you want the index
-to return. This can be useful if you want documents to be retrievable
-for terms that dont appear in the actual document. It can also be
-useful if you want to store stripped down versions of the document in
-the index in order to save space.
-
-NOTE: if the documents that the index returns are very different to
-the corresponding documents that are indexed, it may make sense to set
-`storeRawDocs: false` when indexing (making indexing slightly faster),
-and instead add them with `PUT_RAW` afterwards.
 
 
 ## SEARCH
