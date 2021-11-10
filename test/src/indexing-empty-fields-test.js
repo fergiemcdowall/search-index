@@ -43,7 +43,10 @@ test('should give no results for AND: [""]', t => {
 
 test('index looks good', t => {
   const expectedIndex = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', '6'],
       value: {

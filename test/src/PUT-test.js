@@ -46,7 +46,10 @@ test('can add data', t => {
 
 test('Verify that PUT has created an appropriate index (_PUT_1)', t => {
   const indexEntries = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', '0'],
       value: {
@@ -134,7 +137,10 @@ test('can add data', t => {
 
 test('Verify that PUT has created an appropriate index (_PUT_1 again)', t => {
   const indexEntries = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', '0'],
       value: {
@@ -343,7 +349,10 @@ test('can add data with skipFields specified', t => {
 
 test('Verify that PUT has created an appropriate index (_PUT_2)', t => {
   const indexEntries = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', '0'],
       value: {
@@ -408,409 +417,418 @@ test('Verify that PUT has created an appropriate index (_PUT_2)', t => {
   )
 })
 
-// const indexName3 = sandbox + '_PUT-3'
+const indexName3 = sandbox + '_PUT-3'
 
-// test('create another search index', t => {
-//   t.plan(1)
-//   si({ name: indexName3 }).then(db => {
-//     global[indexName3] = db
-//     t.pass('ok')
-//   })
-// })
+test('create another search index', t => {
+  t.plan(1)
+  si({ name: indexName3 }).then(db => {
+    global[indexName3] = db
+    t.pass('ok')
+  })
+})
 
-// test('can add data', t => {
-//   t.plan(1)
-//   global[indexName3]
-//     .PUT(
-//       [
-//         {
-//           _id: '0',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: 'Volvo',
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '1',
-//           make: 'BMW',
-//           info: {
-//             manufacturer: 'Volvo',
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '2',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: 'Tesla',
-//             brand: 'Volvo'
-//           }
-//         }
-//       ],
-//       {
-//         doNotIndexField: ['info.manufacturer']
-//       }
-//     )
-//     .then(response =>
-//       t.deepEquals(response, [
-//         { _id: '0', status: 'CREATED', operation: 'PUT' },
-//         { _id: '1', status: 'CREATED', operation: 'PUT' },
-//         { _id: '2', status: 'CREATED', operation: 'PUT' }
-//       ])
-//     )
-// })
+test('can add data', t => {
+  t.plan(1)
+  global[indexName3]
+    .PUT(
+      [
+        {
+          _id: '0',
+          make: 'Tesla',
+          info: {
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '1',
+          make: 'BMW',
+          info: {
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '2',
+          make: 'Tesla',
+          info: {
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        }
+      ],
+      {
+        doNotIndexField: ['info.manufacturer']
+      }
+    )
+    .then(response =>
+      t.deepEquals(response, [
+        { _id: '0', status: 'CREATED', operation: 'PUT' },
+        { _id: '1', status: 'CREATED', operation: 'PUT' },
+        { _id: '2', status: 'CREATED', operation: 'PUT' }
+      ])
+    )
+})
 
-// test('Verify that PUT has created an appropriate index (_PUT_3)', t => {
-//   const indexEntries = [
-//     { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
-//     {
-//       key: ['DOC', '0'],
-//       value: {
-//         _id: '0',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: ['["volvo","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '1'],
-//       value: {
-//         _id: '1',
-//         make: ['["bmw","1.00"]'],
-//         info: {
-//           manufacturer: ['["volvo","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '2'],
-//       value: {
-//         _id: '2',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: ['["tesla","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     { key: ['DOCUMENT_COUNT'], value: 3 },
-//     {
-//       key: ['DOC_RAW', '0'],
-//       value: {
-//         _id: '0',
-//         make: 'Tesla',
-//         info: { manufacturer: 'Volvo', brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '1'],
-//       value: {
-//         _id: '1',
-//         make: 'BMW',
-//         info: { manufacturer: 'Volvo', brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '2'],
-//       value: {
-//         _id: '2',
-//         make: 'Tesla',
-//         info: { manufacturer: 'Tesla', brand: 'Volvo' }
-//       }
-//     },
-//     { key: ['FIELD', 'info.brand'], value: 'info.brand' },
-//     { key: ['FIELD', 'make'], value: 'make' },
-//     {
-//       key: ['IDX', 'info.brand', ['volvo', '1.00']],
-//       value: ['0', '1', '2']
-//     },
-//     { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
-//     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
-//   ]
-//   t.plan(indexEntries.length)
-//   global[indexName3].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
-//     'data',
-//     d => {
-//       t.deepEquals(d, indexEntries.shift())
-//     }
-//   )
-// })
+test('Verify that PUT has created an appropriate index (_PUT_3)', t => {
+  const indexEntries = [
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
+    {
+      key: ['DOC', '0'],
+      value: {
+        _id: '0',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: ['["volvo","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '1'],
+      value: {
+        _id: '1',
+        make: ['["bmw","1.00"]'],
+        info: {
+          manufacturer: ['["volvo","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '2'],
+      value: {
+        _id: '2',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: ['["tesla","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    { key: ['DOCUMENT_COUNT'], value: 3 },
+    {
+      key: ['DOC_RAW', '0'],
+      value: {
+        _id: '0',
+        make: 'Tesla',
+        info: { manufacturer: 'Volvo', brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '1'],
+      value: {
+        _id: '1',
+        make: 'BMW',
+        info: { manufacturer: 'Volvo', brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '2'],
+      value: {
+        _id: '2',
+        make: 'Tesla',
+        info: { manufacturer: 'Tesla', brand: 'Volvo' }
+      }
+    },
+    { key: ['FIELD', 'info.brand'], value: 'info.brand' },
+    { key: ['FIELD', 'make'], value: 'make' },
+    {
+      key: ['IDX', 'info.brand', ['volvo', '1.00']],
+      value: ['0', '1', '2']
+    },
+    { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
+    { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
+  ]
+  t.plan(indexEntries.length)
+  global[indexName3].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
+    'data',
+    d => {
+      t.deepEquals(d, indexEntries.shift())
+    }
+  )
+})
 
-// const indexName4 = sandbox + '_PUT-4'
+const indexName4 = sandbox + '_PUT-4'
 
-// test('create another search index', t => {
-//   t.plan(1)
-//   si({ name: indexName4 }).then(db => {
-//     global[indexName4] = db
-//     t.pass('ok')
-//   })
-// })
+test('create another search index', t => {
+  t.plan(1)
+  si({ name: indexName4 }).then(db => {
+    global[indexName4] = db
+    t.pass('ok')
+  })
+})
 
-// test('can add data JSON', t => {
-//   t.plan(1)
-//   global[indexName4]
-//     .PUT(
-//       [
-//         {
-//           _id: '0',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: 'Volvo',
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '1',
-//           make: 'BMW',
-//           info: {
-//             manufacturer: 'Volvo',
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '2',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: 'Tesla',
-//             brand: 'Volvo'
-//           }
-//         }
-//       ],
-//       {
-//         doNotIndexField: ['info.manufacturer']
-//       }
-//     )
-//     .then(response =>
-//       t.deepEquals(response, [
-//         { _id: '0', status: 'CREATED', operation: 'PUT' },
-//         { _id: '1', status: 'CREATED', operation: 'PUT' },
-//         { _id: '2', status: 'CREATED', operation: 'PUT' }
-//       ])
-//     )
-// })
+test('can add data JSON', t => {
+  t.plan(1)
+  global[indexName4]
+    .PUT(
+      [
+        {
+          _id: '0',
+          make: 'Tesla',
+          info: {
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '1',
+          make: 'BMW',
+          info: {
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '2',
+          make: 'Tesla',
+          info: {
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        }
+      ],
+      {
+        doNotIndexField: ['info.manufacturer']
+      }
+    )
+    .then(response =>
+      t.deepEquals(response, [
+        { _id: '0', status: 'CREATED', operation: 'PUT' },
+        { _id: '1', status: 'CREATED', operation: 'PUT' },
+        { _id: '2', status: 'CREATED', operation: 'PUT' }
+      ])
+    )
+})
 
-// test('Verify that PUT has created an appropriate index (_PUT_4)', t => {
-//   const indexEntries = [
-//     { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
-//     {
-//       key: ['DOC', '0'],
-//       value: {
-//         _id: '0',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: ['["volvo","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '1'],
-//       value: {
-//         _id: '1',
-//         make: ['["bmw","1.00"]'],
-//         info: {
-//           manufacturer: ['["volvo","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '2'],
-//       value: {
-//         _id: '2',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: ['["tesla","1.00"]'],
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     { key: ['DOCUMENT_COUNT'], value: 3 },
-//     {
-//       key: ['DOC_RAW', '0'],
-//       value: {
-//         _id: '0',
-//         make: 'Tesla',
-//         info: { manufacturer: 'Volvo', brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '1'],
-//       value: {
-//         _id: '1',
-//         make: 'BMW',
-//         info: { manufacturer: 'Volvo', brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '2'],
-//       value: {
-//         _id: '2',
-//         make: 'Tesla',
-//         info: { manufacturer: 'Tesla', brand: 'Volvo' }
-//       }
-//     },
-//     { key: ['FIELD', 'info.brand'], value: 'info.brand' },
-//     { key: ['FIELD', 'make'], value: 'make' },
-//     {
-//       key: ['IDX', 'info.brand', ['volvo', '1.00']],
-//       value: ['0', '1', '2']
-//     },
-//     { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
-//     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
-//   ]
-//   t.plan(indexEntries.length)
-//   global[indexName4].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
-//     'data',
-//     d => {
-//       //      console.log(d)
-//       t.deepEquals(d, indexEntries.shift())
-//     }
-//   )
-// })
+test('Verify that PUT has created an appropriate index (_PUT_4)', t => {
+  const indexEntries = [
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
+    {
+      key: ['DOC', '0'],
+      value: {
+        _id: '0',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: ['["volvo","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '1'],
+      value: {
+        _id: '1',
+        make: ['["bmw","1.00"]'],
+        info: {
+          manufacturer: ['["volvo","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '2'],
+      value: {
+        _id: '2',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: ['["tesla","1.00"]'],
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    { key: ['DOCUMENT_COUNT'], value: 3 },
+    {
+      key: ['DOC_RAW', '0'],
+      value: {
+        _id: '0',
+        make: 'Tesla',
+        info: { manufacturer: 'Volvo', brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '1'],
+      value: {
+        _id: '1',
+        make: 'BMW',
+        info: { manufacturer: 'Volvo', brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '2'],
+      value: {
+        _id: '2',
+        make: 'Tesla',
+        info: { manufacturer: 'Tesla', brand: 'Volvo' }
+      }
+    },
+    { key: ['FIELD', 'info.brand'], value: 'info.brand' },
+    { key: ['FIELD', 'make'], value: 'make' },
+    {
+      key: ['IDX', 'info.brand', ['volvo', '1.00']],
+      value: ['0', '1', '2']
+    },
+    { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
+    { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
+  ]
+  t.plan(indexEntries.length)
+  global[indexName4].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
+    'data',
+    d => {
+      //      console.log(d)
+      t.deepEquals(d, indexEntries.shift())
+    }
+  )
+})
 
-// const indexName5 = sandbox + '_PUT-5'
+const indexName5 = sandbox + '_PUT-5'
 
-// test('create another search index', t => {
-//   t.plan(1)
-//   si({ name: indexName5 }).then(db => {
-//     global[indexName5] = db
-//     t.pass('ok')
-//   })
-// })
+test('create another search index', t => {
+  t.plan(1)
+  si({ name: indexName5 }).then(db => {
+    global[indexName5] = db
+    t.pass('ok')
+  })
+})
 
-// test('can add data JSON', t => {
-//   t.plan(1)
-//   global[indexName5]
-//     .PUT(
-//       [
-//         {
-//           _id: '0',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: {
-//               foo: 'XXX',
-//               bar: 'XXX'
-//             },
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '1',
-//           make: 'BMW',
-//           info: {
-//             manufacturer: {
-//               foo: 'XXX',
-//               bar: 'XXX'
-//             },
-//             brand: 'Volvo'
-//           }
-//         },
-//         {
-//           _id: '2',
-//           make: 'Tesla',
-//           info: {
-//             manufacturer: {
-//               foo: 'XXX',
-//               bar: 'XXX'
-//             },
-//             brand: 'Volvo'
-//           }
-//         }
-//       ],
-//       {
-//         doNotIndexField: ['info.manufacturer']
-//       }
-//     )
-//     .then(response =>
-//       t.deepEquals(response, [
-//         { _id: '0', status: 'CREATED', operation: 'PUT' },
-//         { _id: '1', status: 'CREATED', operation: 'PUT' },
-//         { _id: '2', status: 'CREATED', operation: 'PUT' }
-//       ])
-//     )
-// })
+test('can add data JSON', t => {
+  t.plan(1)
+  global[indexName5]
+    .PUT(
+      [
+        {
+          _id: '0',
+          make: 'Tesla',
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '1',
+          make: 'BMW',
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: '2',
+          make: 'Tesla',
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: 'Volvo'
+          }
+        }
+      ],
+      {
+        doNotIndexField: ['info.manufacturer']
+      }
+    )
+    .then(response =>
+      t.deepEquals(response, [
+        { _id: '0', status: 'CREATED', operation: 'PUT' },
+        { _id: '1', status: 'CREATED', operation: 'PUT' },
+        { _id: '2', status: 'CREATED', operation: 'PUT' }
+      ])
+    )
+})
 
-// test('Verify that PUT has created an appropriate index (doesnt index children of DO_NOT_INDEX_FIELD)', t => {
-//   const indexEntries = [
-//     { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
-//     {
-//       key: ['DOC', '0'],
-//       value: {
-//         _id: '0',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '1'],
-//       value: {
-//         _id: '1',
-//         make: ['["bmw","1.00"]'],
-//         info: {
-//           manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     {
-//       key: ['DOC', '2'],
-//       value: {
-//         _id: '2',
-//         make: ['["tesla","1.00"]'],
-//         info: {
-//           manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
-//           brand: ['["volvo","1.00"]']
-//         }
-//       }
-//     },
-//     { key: ['DOCUMENT_COUNT'], value: 3 },
-//     {
-//       key: ['DOC_RAW', '0'],
-//       value: {
-//         _id: '0',
-//         make: 'Tesla',
-//         info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '1'],
-//       value: {
-//         _id: '1',
-//         make: 'BMW',
-//         info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
-//       }
-//     },
-//     {
-//       key: ['DOC_RAW', '2'],
-//       value: {
-//         _id: '2',
-//         make: 'Tesla',
-//         info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
-//       }
-//     },
-//     { key: ['FIELD', 'info.brand'], value: 'info.brand' },
-//     { key: ['FIELD', 'make'], value: 'make' },
-//     {
-//       key: ['IDX', 'info.brand', ['volvo', '1.00']],
-//       value: ['0', '1', '2']
-//     },
-//     { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
-//     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
-//   ]
-//   t.plan(indexEntries.length)
-//   global[indexName5].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
-//     'data',
-//     d => {
-//       // console.log(d)
-//       t.deepEquals(d, indexEntries.shift())
-//     }
-//   )
-// })
+test('Verify that PUT has created an appropriate index (doesnt index children of DO_NOT_INDEX_FIELD)', t => {
+  const indexEntries = [
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
+    {
+      key: ['DOC', '0'],
+      value: {
+        _id: '0',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '1'],
+      value: {
+        _id: '1',
+        make: ['["bmw","1.00"]'],
+        info: {
+          manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    {
+      key: ['DOC', '2'],
+      value: {
+        _id: '2',
+        make: ['["tesla","1.00"]'],
+        info: {
+          manufacturer: { foo: ['["xxx","1.00"]'], bar: ['["xxx","1.00"]'] },
+          brand: ['["volvo","1.00"]']
+        }
+      }
+    },
+    { key: ['DOCUMENT_COUNT'], value: 3 },
+    {
+      key: ['DOC_RAW', '0'],
+      value: {
+        _id: '0',
+        make: 'Tesla',
+        info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '1'],
+      value: {
+        _id: '1',
+        make: 'BMW',
+        info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
+      }
+    },
+    {
+      key: ['DOC_RAW', '2'],
+      value: {
+        _id: '2',
+        make: 'Tesla',
+        info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
+      }
+    },
+    { key: ['FIELD', 'info.brand'], value: 'info.brand' },
+    { key: ['FIELD', 'make'], value: 'make' },
+    {
+      key: ['IDX', 'info.brand', ['volvo', '1.00']],
+      value: ['0', '1', '2']
+    },
+    { key: ['IDX', 'make', ['bmw', '1.00']], value: ['1'] },
+    { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
+  ]
+  t.plan(indexEntries.length)
+  global[indexName5].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
+    'data',
+    d => {
+      // console.log(d)
+      t.deepEquals(d, indexEntries.shift())
+    }
+  )
+})

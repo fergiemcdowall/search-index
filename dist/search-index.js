@@ -1,1 +1,1 @@
-search-index-3.0.0.js
+search-index-3.0.1-rc.1.js

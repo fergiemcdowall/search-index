@@ -23,7 +23,10 @@ const carData = [
 ]
 
 const expectedIndex = [
-  { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+  {
+    key: ['CREATED_WITH'],
+    value: 'search-index@' + require('../../package.json').version
+  },
   {
     key: ['DOC', 0],
     value: {

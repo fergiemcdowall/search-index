@@ -36,7 +36,10 @@ test('can add some data', t => {
 
 test('verify index structure', t => {
   const expectedIndexStructure = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', 'a'],
       value: {

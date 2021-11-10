@@ -22,7 +22,10 @@ test('create a search index', async function (t) {
     [{ _id: '0', status: 'CREATED', operation: 'PUT' }]
   )
 
-  t.equals(await INDEX.STORE.get(['CREATED_WITH']), 'search-index@3.0.0')
+  t.equals(
+    await INDEX.STORE.get(['CREATED_WITH']),
+    'search-index@' + require('../../package.json').version
+  )
 
   // TODO: test rejections when trying to open with an incorrect
   // version of search-index

@@ -79,7 +79,10 @@ test('DOCUMENT_COUNT is 2', t => {
 
 test('verify DELETE', t => {
   const expectedIndexStructure = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', 'a'],
       value: {
@@ -240,7 +243,10 @@ test('DOCUMENT_COUNT is 1', t => {
 
 test('verify DELETE', t => {
   const expectedIndexStructure = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.0.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', 'a'],
       value: {
