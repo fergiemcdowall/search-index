@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.0.1-rc.1",
+  "version": "3.0.1-rc.3",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -15,6 +15,7 @@
     "node": ">=12"
   },
   "main": "src/main.js",
+  "browser": "dist/search-index.js",
   "files": [
     "dist",
     "src"
