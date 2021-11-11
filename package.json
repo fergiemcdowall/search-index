@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.0.1-rc.3",
+  "version": "3.0.1-rc.4",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -24,7 +24,7 @@
     "lib": "src"
   },
   "scripts": {
-    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cd dist && ln -s search-index-*.js search-index.js && cd ..",
+    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
     "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",
