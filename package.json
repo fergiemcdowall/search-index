@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.0.1-rc.5",
+  "version": "3.0.1-rc.6",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -71,6 +71,8 @@
   },
   "dependencies": {
     "fergies-inverted-index": "10.0.5",
+    "level-js": "^6.1.0",
+    "leveldown": "^6.1.0",
     "lru-cache": "^6.0.0",
     "ngraminator": "^2.0.6",
     "p-queue": "^7.1.0",
