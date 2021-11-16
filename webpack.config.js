@@ -47,6 +47,21 @@ module.exports = [
   },
   {
     ...config,
+    mode: 'production',
+    entry: './src/main.js',
+    experiments: {
+      outputModule: true
+    },
+    output: {
+      path: path.resolve('dist'),
+      filename: 'search-index-esm-' + pkg.version + '.js',
+      library: {
+        type: 'module'
+      }
+    }
+  },
+  {
+    ...config,
     // Use "mode: 'production" to keep bundle size low(ish- around 3mb)
     // possibly it would be good to have some kind of code splitting
     // instead

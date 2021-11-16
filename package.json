@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.0.1-rc.4",
+  "version": "3.0.1-rc.5",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -14,8 +14,8 @@
   "engines": {
     "node": ">=12"
   },
-  "main": "src/main.js",
-  "browser": "dist/search-index.js",
+  "main": "src/node.js",
+  "browser": "src/browser.js",
   "files": [
     "dist",
     "src"
@@ -70,7 +70,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "10.0.0",
+    "fergies-inverted-index": "10.0.5",
     "lru-cache": "^6.0.0",
     "ngraminator": "^2.0.6",
     "p-queue": "^7.1.0",

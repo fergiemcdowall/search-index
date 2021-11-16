@@ -39,7 +39,8 @@ const data = [
 test('create a fii with memdown', t => {
   t.plan(2)
   si({
-    db: memdown(indexName)
+    db: memdown,
+    name: indexName
   })
     .then(idx =>
       idx.PUT(data).then(res => {
