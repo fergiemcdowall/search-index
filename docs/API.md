@@ -363,15 +363,15 @@ following stage.
 The default tokenization pipeline looks like this:
 
 ```javascript
-tokenizationPipeline: [
-  SPLIT,
-  SKIP,
-  LOWCASE,
-  REPLACE,
-  NGRAMS,
-  STOPWORDS,
-  SCORE_TERM_FREQUENCY
-]
+tokenizer: (tokens, field, ops) =>
+  SPLIT([tokens, field, ops])
+    .then(SKIP)
+    .then(LOWCASE)
+    .then(REPLACE)
+    .then(NGRAMS)
+    .then(STOPWORDS)
+    .then(SCORE_TERM_FREQUENCY)
+    .then(([tokens, field, ops]) => tokens)
 ```
 
 #### Reorder pipeline
@@ -384,15 +384,15 @@ const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
   name: 'pipeline-test'
 })
 await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS, // <-- order switched
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,    // <-- order switched
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
+  tokenizer: (tokens, field, ops) =>
+  TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+    .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+    .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+    .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+    .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS) // <-- order switched
+    .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)    // <-- order switched
+    .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+    .then(([tokens, field, ops]) => tokens)
 })
 ```
 
@@ -403,7 +403,10 @@ A custom pipeline stage must be in the following form:
 ```javascript
 // take tokens (Array of tokens), field (the field name), and options,
 // and then return then return the Array of tokens
-(tokens, field, ops) => tokens
+([ tokens, field, ops ]) => {
+  // some processing here...
+  return [ tokens, field, ops ]
+}
 ```
 
 
@@ -414,17 +417,21 @@ const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
   name: 'pipeline-test'
 })
 await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-    // björn -> bjorn, allé -> alle, etc.
-    (tokens, field, ops) => tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
+  tokenizer: (tokens, field, ops) =>
+    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+      // björn -> bjorn, allé -> alle, etc.
+      .then(([tokens, field, ops]) => [
+        tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+        field,
+        ops
+      ])
+      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
 })
 ```
 
@@ -436,17 +443,21 @@ const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
   name: 'pipeline-test'
 })
 await PUT(docs, {
-  tokenizationPipeline: [
-    TOKENIZATION_PIPELINE_STAGES.SPLIT,
-    TOKENIZATION_PIPELINE_STAGES.SKIP,
-    TOKENIZATION_PIPELINE_STAGES.LOWCASE,
-    TOKENIZATION_PIPELINE_STAGES.REPLACE,
-    TOKENIZATION_PIPELINE_STAGES.NGRAMS,
-    TOKENIZATION_PIPELINE_STAGES.STOPWORDS,
-    // stemmer
-    (tokens, field, ops) => tokens.map(stemmer)
-    TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY
-  ]
+  tokenizer: (tokens, field, ops) =>
+    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+      // björn -> bjorn, allé -> alle, etc.
+      .then(([tokens, field, ops]) => [
+        tokens.map(stemmer),
+        field,
+        ops
+      ])
+      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
 })
 ```
 
