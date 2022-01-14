@@ -266,7 +266,7 @@ module.exports = (ops, cache) => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
       if (typeof cmd === 'string' || typeof cmd === 'number') {
-        return ops.fii.GET(cmd, options.pipeline)
+        return ops.fii.GET(cmd, options.PIPELINE)
       }
       if (cmd.FIELD) return ops.fii.GET(cmd)
       if (cmd.VALUE) return ops.fii.GET(cmd)
@@ -276,12 +276,16 @@ module.exports = (ops, cache) => {
       // one condition is an object, then that condition is an options object
 
       // else:
-      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.pipeline)
-      if (cmd.GET) return ops.fii.GET(cmd.GET, options.pipeline)
+      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      if (cmd.GET) return ops.fii.GET(cmd.GET, options.PIPELINE)
       if (cmd.NOT) {
         return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
-      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.pipeline)
+      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
+      if (cmd.NOT) {
+        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
+      }
+      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
 
       if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
     }

@@ -410,7 +410,7 @@ test('create a search index with query and index side character normalisation (Q
     await QUERY(
       { GET: 'bør' },
       {
-        pipeline: swapØtoO
+        PIPELINE: swapØtoO
       }
     ),
     {

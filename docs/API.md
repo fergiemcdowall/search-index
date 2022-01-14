@@ -313,7 +313,7 @@ await IMPORT(index)
 ## MAX
 
 ```javascript
-// get the _alphabetically_ maxiumum/last value of the given token space
+// get the maxiumum/last value of the given token space
 const max = await MAX(token)
 ```
 
@@ -321,7 +321,7 @@ const max = await MAX(token)
 ## MIN
 
 ```javascript
-// get the _alphabetically_ minimum/first value of the given token space
+// get the minimum/first value of the given token space
 const min = await MIN(token)
 ```
 
@@ -494,6 +494,7 @@ const results = await QUERY(query, options)
 | [`DOCUMENTS`](#documents) | `boolean` | `false` | If `true` return entire document, if not `true` return reference to document|
 | [`FACETS`](#facets-1) | `Array` | `[]` | Aggregate on fields in the index |
 | [`PAGE`](#page) | `object` | `{ NUMBER: 0, SIZE: 20 }` | Pagination |
+| [`PIPELINE`](#pipeline) | `object` | `token => new Promise(resolve => resolve(token))` | Query tokenization pipeline |
 | [`SCORE`](#score) | `String` | `'TFIDF'` | Calculate a value per document |
 | [`SORT`](#sort) | `object` | `{ TYPE: 'NUMERIC', DIRECTION: 'DESCENDING', FIELD: '_score' }` | Sort documents |
 | [`WEIGHT`](#weight) | `Array` | `[]` | Weight fields and/or values |
@@ -597,6 +598,23 @@ See also [FACETS](#facets)
   }
 }
 ```
+
+
+#### PIPELINE
+
+```javascript
+// Alter a token on the way into a query
+{
+  PIPELINE: token =>
+    new Promise(resolve => {
+      // swap out all "ø" with "o"
+      token.VALUE.GTE = token.VALUE.GTE.replace(/ø/g, 'o')
+      token.VALUE.LTE = token.VALUE.LTE.replace(/ø/g, 'o')
+      return resolve(token)
+    })
+}
+```
+
 
 #### SCORE
 

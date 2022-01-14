@@ -85,7 +85,7 @@ test('create a search index with query side character normalisation (QUERY)', as
         AND: ['bør']
       },
       {
-        pipeline: swapØtoO
+        PIPELINE: swapØtoO
       }
     ),
     {
@@ -115,7 +115,7 @@ test('create a search index with query side character normalisation (SEARCH)', a
   const ids = (await PUT(data)).map(status => status._id)
   t.deepEquals(
     await SEARCH(['bør'], {
-      pipeline: swapØtoO
+      PIPELINE: swapØtoO
     }),
     {
       RESULT: [
