@@ -158,16 +158,17 @@ test('DOCUMENTS() can return named documents', t => {
   })
 })
 
-test('access DOCUMENTS() through QUERY()', t => {
-  t.plan(1)
-  global[indexName]
-    .QUERY({
-      DOCUMENTS: ['8', '9']
-    })
-    .then(documents => {
-      t.deepEqual(documents, {
-        RESULT: [data[8], data[9]],
-        RESULT_LENGTH: 2
-      })
-    })
-})
+// This is not currently supported, but should it be? ->
+// test('access DOCUMENTS() through QUERY()', t => {
+//   t.plan(1)
+//   global[indexName]
+//     .QUERY({
+//       DOCUMENTS: ['8', '9']
+//     })
+//     .then(documents => {
+//       t.deepEqual(documents, {
+//         RESULT: [data[8], data[9]],
+//         RESULT_LENGTH: 2
+//       })
+//     })
+// })

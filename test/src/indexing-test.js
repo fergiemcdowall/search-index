@@ -460,38 +460,39 @@ test('AND with embedded OR (JSON API)', t => {
     })
 })
 
-test('DOCUMENT (JSON API)', t => {
-  t.plan(1)
-  global[indexName]
-    .QUERY({
-      DOCUMENTS: ['b', 'a']
-    })
-    .then(res => {
-      t.deepEqual(res, {
-        RESULT: [
-          {
-            _id: 'b',
-            title: 'quite a cool document',
-            body: {
-              text: 'this document is really cool bananas',
-              metadata: 'coolness documentness'
-            },
-            importantNumber: 500
-          },
-          {
-            _id: 'a',
-            title: 'quite a cool document',
-            body: {
-              text: 'this document is really cool cool cool',
-              metadata: 'coolness documentness'
-            },
-            importantNumber: 5000
-          }
-        ],
-        RESULT_LENGTH: 2
-      })
-    })
-})
+// This is not currently supported, but should it be? ->
+// test('DOCUMENT (JSON API)', t => {
+//   t.plan(1)
+//   global[indexName]
+//     .QUERY({
+//       DOCUMENTS: ['b', 'a']
+//     })
+//     .then(res => {
+//       t.deepEqual(res, {
+//         RESULT: [
+//           {
+//             _id: 'b',
+//             title: 'quite a cool document',
+//             body: {
+//               text: 'this document is really cool bananas',
+//               metadata: 'coolness documentness'
+//             },
+//             importantNumber: 500
+//           },
+//           {
+//             _id: 'a',
+//             title: 'quite a cool document',
+//             body: {
+//               text: 'this document is really cool cool cool',
+//               metadata: 'coolness documentness'
+//             },
+//             importantNumber: 5000
+//           }
+//         ],
+//         RESULT_LENGTH: 2
+//       })
+//     })
+// })
 
 // TODO: I think DOCUMENT should behave differently here
 // this should be a SEARCH should it not?
