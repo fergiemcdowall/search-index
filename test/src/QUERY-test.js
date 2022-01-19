@@ -395,3 +395,206 @@ test('simple SEARCH', t => {
     })
   })
 })
+
+// get ALL_DOCUMENTS
+test('get all documents', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY(
+    {
+      ALL_DOCUMENTS: -1
+    },
+    {
+      FACETS: [
+        {
+          FIELD: 'make'
+        }
+      ]
+    }
+  ).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: 0,
+          _doc: {
+            _id: 0,
+            make: 'Tesla',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 1,
+          _doc: {
+            _id: 1,
+            make: 'BMW',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 2,
+          _doc: {
+            _id: 2,
+            make: 'Tesla',
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 3,
+          _doc: {
+            _id: 3,
+            make: 'Tesla',
+            manufacturer: 'Volvo',
+            brand: 'BMW'
+          }
+        },
+        {
+          _id: 4,
+          _doc: {
+            _id: 4,
+            make: 'Volvo',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 5,
+          _doc: {
+            _id: 5,
+            make: 'Volvo',
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 6,
+          _doc: {
+            _id: 6,
+            make: 'Tesla',
+            manufacturer: 'Tesla',
+            brand: 'BMW'
+          }
+        },
+        {
+          _id: 7,
+          _doc: {
+            _id: 7,
+            make: 'BMW',
+            manufacturer: 'Tesla',
+            brand: 'Tesla'
+          }
+        },
+        {
+          _id: 8,
+          _doc: {
+            _id: 8,
+            make: 'Volvo',
+            manufacturer: 'BMW',
+            brand: 'Tesla'
+          }
+        },
+        {
+          _id: 9,
+          _doc: {
+            _id: 9,
+            make: 'BMW',
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        }
+      ],
+      RESULT_LENGTH: 10,
+      FACETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'bmw',
+          _id: [1, 7, 9]
+        },
+        {
+          FIELD: 'make',
+          VALUE: 'tesla',
+          _id: [0, 2, 3, 6]
+        },
+        {
+          FIELD: 'make',
+          VALUE: 'volvo',
+          _id: [4, 5, 8]
+        }
+      ]
+    })
+  })
+})
+
+// get ALL_DOCUMENTS
+test('get all documents', t => {
+  const { QUERY } = global[indexName]
+  t.plan(1)
+  QUERY(
+    {
+      ALL_DOCUMENTS: -1
+    },
+    {
+      FACETS: [
+        {
+          FIELD: 'make'
+        }
+      ],
+      PAGE: {
+        NUMBER: 0,
+        SIZE: 3
+      }
+    }
+  ).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: 0,
+          _doc: {
+            _id: 0,
+            make: 'Tesla',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 1,
+          _doc: {
+            _id: 1,
+            make: 'BMW',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
+        },
+        {
+          _id: 2,
+          _doc: {
+            _id: 2,
+            make: 'Tesla',
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
+        }
+      ],
+      RESULT_LENGTH: 10,
+      FACETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'bmw',
+          _id: [1, 7, 9]
+        },
+        {
+          FIELD: 'make',
+          VALUE: 'tesla',
+          _id: [0, 2, 3, 6]
+        },
+        {
+          FIELD: 'make',
+          VALUE: 'volvo',
+          _id: [4, 5, 8]
+        }
+      ]
+    })
+  })
+})

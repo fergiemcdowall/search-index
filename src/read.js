@@ -1,6 +1,7 @@
 // TODO: remove all '￮' and '#'
 
 module.exports = (ops, cache) => {
+  // TODO add aggregation to ALL_DOCUMENTS
   const ALL_DOCUMENTS = limit =>
     new Promise((resolve, reject) => {
       const result = []
@@ -271,10 +272,6 @@ module.exports = (ops, cache) => {
       if (cmd.FIELD) return ops.fii.GET(cmd)
       if (cmd.VALUE) return ops.fii.GET(cmd)
 
-      // TODO: Find a clever way to pass options to AND, GET, NOT and OR
-      // Probably something along the lines of- if e.g. AND, and if
-      // one condition is an object, then that condition is an options object
-
       // else:
       if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.PIPELINE)
       if (cmd.GET) return ops.fii.GET(cmd.GET, options.PIPELINE)
@@ -282,12 +279,12 @@ module.exports = (ops, cache) => {
         return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
       if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
-      if (cmd.NOT) {
-        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
-      }
-      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
 
-      if (cmd.DOCUMENTS) return DOCUMENTS(...cmd.DOCUMENTS)
+      // TODO this should be ALL_DOCUMENTS, such that
+      // ALL_DOCUMENTS=true returns everything (needs test)
+      // It should be possible to combine ALL_DOCUMENTS with FACETS
+      // and other aggregations
+      if (cmd.ALL_DOCUMENTS) return ALL_DOCUMENTS(cmd.ALL_DOCUMENTS)
     }
 
     const formatResults = result =>
@@ -346,18 +343,36 @@ module.exports = (ops, cache) => {
         : result
 
     // FACETS IF SPECIFIED
-    const facets = result =>
-      options.FACETS
-        ? result.RESULT.length
-            ? FACETS(...options.FACETS).then(fcts =>
-                Object.assign(result, {
-                  FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
-                })
-              )
-            : Object.assign(result, {
-              FACETS: [] // if empty result set then just return empty facets
-            })
-        : result
+    // TODO: FAST OPTION FOR WHEN ALL_DOCUMENTS IS SPECIFIED
+    // TODO: This should be 3 cases: 1. needs filter, 2. no results,
+    // 3. no need for filter
+    const facets = result => {
+      // no FACETS are specified
+      if (!options.FACETS) return result
+
+      // QUERY returned no results, and facets will therefore be empty
+      if (!result.RESULT.length) {
+        return Object.assign(result, {
+          FACETS: [] // if empty result set then just return empty facets
+        })
+      }
+
+      // ALL_DOCUMENTS so no need to filter the facets
+      if (q.ALL_DOCUMENTS) {
+        return FACETS(...options.FACETS).then(fcts =>
+          Object.assign(result, {
+            FACETS: fcts
+          })
+        )
+      }
+
+      //else
+      return FACETS(...options.FACETS).then(fcts =>
+        Object.assign(result, {
+          FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+        })
+      )
+    }
 
     // PAGE IF SPECIFIED
     const page = result =>
@@ -392,8 +407,8 @@ module.exports = (ops, cache) => {
       return cache.has(cacheKey)
         ? resolve(cache.get(cacheKey))
         : q
-          .then(res => cache.set(cacheKey, res))
-          .then(() => resolve(cache.get(cacheKey)))
+            .then(res => cache.set(cacheKey, res))
+            .then(() => resolve(cache.get(cacheKey)))
     })
 
   return {

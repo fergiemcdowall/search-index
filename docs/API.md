@@ -43,10 +43,12 @@
       - [DOCUMENTS](#documents-1)
       - [FACETS](#facets-1)
       - [PAGE](#page)
+      - [PIPELINE](#pipeline)
       - [SCORE](#score)
       - [SORT](#sort)
       - [WEIGHT](#weight)
     - [Query verbs](#query-verbs)
+      - [ALL_DOCUMENTS](#all_documents-1)
       - [AND](#and)
       - [NOT](#not)
       - [OR](#or)
@@ -665,6 +667,16 @@ See also [FACETS](#facets)
 
 ### Query verbs
 
+#### ALL_DOCUMENTS
+
+```javascript
+// returns all documents. Use PAGE to limit how many you see
+{
+  ALL_DOCUMENTS: true
+}
+```
+
+
 #### AND
 
 ```javascript
@@ -705,6 +717,7 @@ See also [FACETS](#facets)
 // })
 const results = await SEARCH(q)
 ```
+
 
 ## TOKENIZATION_PIPELINE_STAGES
 
