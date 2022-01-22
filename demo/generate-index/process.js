@@ -13,11 +13,13 @@ fs.writeFileSync(
         created_utc: r.data.created_utc,
         month: d.toLocaleString('default', { month: 'long' }),
         permalink: r.data.permalink,
-        year: d.getFullYear(),
+        year: d.getFullYear() + '',
         title: r.data.title,
         thumbnail: r.data.thumbnail,
         url_overridden_by_dest: r.data.url_overridden_by_dest
       }
-    }), null, 2
+    }),
+    null,
+    2
   )
 )

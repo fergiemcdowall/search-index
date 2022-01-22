@@ -11,9 +11,6 @@ const el = name => document.getElementById(name)
 
 // render page
 const renderResults = (q, { RESULT, FACETS, RESULT_LENGTH }) => {
-  console.log('HEEEEELLLLOOOo')
-  console.log(q)
-
   const getFacet = name =>
     FACETS.filter(f => f.FIELD === name).filter(f => f._id.length)
   const yearFacet = getFacet('year')
@@ -43,24 +40,13 @@ const searchQuery = q => [
     ],
     DOCUMENTS: true
   }
-  // {
-  //   SEARCH: q.concat(getFilters())
-  // },
-  // {
-  //   FACETS: [
-  //     {
-  //       FIELD: ['month', 'year']
-  //     }
-  //   ],
-  //   DOCUMENTS: true
-  // }
 ]
 
 // treat empty search as a special case: instead of showing nothing,
 // show everything.
 const emptySearchQuery = () => [
   {
-    DOCUMENTS: true
+    ALL_DOCUMENTS: true
   },
   {
     FACETS: [
@@ -72,19 +58,20 @@ const emptySearchQuery = () => [
 ]
 
 const search = (q = '') => {
-  console.log(q)
   queryState = q
   const queryTokens = q.split(/\s+/).filter(item => item)
-  console.log(queryTokens)
+  const formatResult = result => ({
+    query: q,
+    result: result
+  })
   return (
-    (
-      queryTokens.length + getFilters().length
-        ? si.SEARCH(...searchQuery(queryTokens))
-        : si.ALL_DOCUMENTS()
-    )
-      // ? si.QUERY(...searchQuery(queryTokens))
-      // : si.QUERY(...emptySearchQuery())
-      .then(result => renderResults(queryTokens, result))
+    queryTokens.length + getFilters().length
+      ? si.SEARCH(...searchQuery(queryTokens)).then(formatResult)
+      : si.QUERY(...emptySearchQuery()).then(formatResult)
+  ).then(result =>
+    el('query').value == result.query // only display if the results are for the terms in the search box
+      ? renderResults(queryTokens, result.result)
+      : null
   )
 }
 
@@ -131,6 +118,7 @@ autocomplete('#query', { hint: false }, [
 
 /* INITIALIZE */
 
+// TODO: put in logic here to see if index is imported or not...
 Promise.all([
   SearchIndex({
     name: 'mySearchIndex',
@@ -144,16 +132,6 @@ Promise.all([
     // set global variable (in practice you might not want to do this)
     si = thisSi
     // replicate pregenerated index
-    si.IMPORT(dump)
-      .then(boom => {
-        console.log('counting...')
-        return si
-          .SEARCH(['ireland'])
-          .then(console.log)
-          .then(() => boom)
-      })
-      .then(search)
-
-    //test
+    si.IMPORT(dump).then(search)
   })
   .catch(console.log)
