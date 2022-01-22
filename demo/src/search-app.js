@@ -69,7 +69,7 @@ const search = (q = '') => {
       ? si.SEARCH(...searchQuery(queryTokens)).then(formatResult)
       : si.QUERY(...emptySearchQuery()).then(formatResult)
   ).then(result =>
-    el('query').value == result.query // only display if the results are for the terms in the search box
+    el('query').value === result.query // only display if the results are for the terms in the search box
       ? renderResults(queryTokens, result.result)
       : null
   )
@@ -106,10 +106,8 @@ el('query').addEventListener('input', function (e) {
 autocomplete('#query', { hint: false }, [
   {
     source: (query, cb) =>
-      query.length >= 2
-        ? si.DICTIONARY(query).then(cb)
-        : // eslint-disable-next-line
-          cb([]),
+      // eslint-disable-next-line
+      query.length >= 2 ? si.DICTIONARY(query).then(cb) : cb([]),
     templates: { suggestion: suggestion => suggestion }
   }
 ]).on('autocomplete:selected', function (event, suggestion) {
