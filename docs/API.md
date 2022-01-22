@@ -12,6 +12,7 @@
     - [Find in named field or fields](#find-in-named-field-or-fields)
     - [Find within a range](#find-within-a-range)
     - [Find where a field exists](#find-where-a-field-exists)
+    - [Create a tokenization pipeline when querying](#create-a-tokenization-pipeline-when-querying)
   - [ALL_DOCUMENTS](#all_documents)
   - [BUCKETS](#buckets)
   - [CREATED](#created)
@@ -29,7 +30,7 @@
   - [MAX](#max)
   - [MIN](#min)
   - [PUT](#put)
-    - [Tokenization pipeline](#tokenization-pipeline)
+    - [Tokenization pipeline when indexing](#tokenization-pipeline-when-indexing)
       - [Reorder pipeline](#reorder-pipeline)
       - [Create custom pipeline stages](#create-custom-pipeline-stages)
   - [PUT_RAW](#put_raw)
@@ -85,6 +86,12 @@ instantiate an index by invoking the module variable as a Promise:
 ```javascript
 const idx = await si(options)
 ```
+
+When intantiated in a browser `search-index` will use `indexedDB`
+as a keystore by default, when intantiated in node.js it will use
+`levelDB`. `search-index` can also use other keystores via the `db`
+parameter.
+
 
 ### `si(options)`
 
@@ -188,6 +195,11 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
   FIELD: 'price'
 }
 ```
+
+### Create a tokenization pipeline when querying
+
+TODO
+
 
 
 ## ALL_DOCUMENTS
@@ -354,7 +366,7 @@ generated and assigned
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 
-### Tokenization pipeline
+### Tokenization pipeline when indexing
 
 Every field of every document that is indexed is passed through the
 tokenization pipeline. The tokenization pipeline consists of a
