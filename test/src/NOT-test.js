@@ -83,13 +83,10 @@ test('can add data', t => {
 test('simple _NOT', t => {
   const { _NOT } = global[indexName]
   t.plan(1)
-  _NOT(
-    'make:volvo',
-    'brand:tesla'
-  ).then(res => {
+  _NOT('make:volvo', 'brand:tesla').then(res => {
     t.deepEqual(res, [
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] }
+      { _id: 4, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
   })
 })
@@ -97,15 +94,12 @@ test('simple _NOT', t => {
 test('simple _NOT', t => {
   const { _NOT } = global[indexName]
   t.plan(1)
-  _NOT(
-    'brand:volvo',
-    'make:bmw'
-  ).then(res => {
+  _NOT('brand:volvo', 'make:bmw').then(res => {
     t.deepEqual(res, [
-      { _id: '0', _match: ['brand:volvo#1.00'] },
-      { _id: '2', _match: ['brand:volvo#1.00'] },
-      { _id: '4', _match: ['brand:volvo#1.00'] },
-      { _id: '5', _match: ['brand:volvo#1.00'] }
+      { _id: 0, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: 2, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: 4, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: 5, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
   })
 })
@@ -113,15 +107,12 @@ test('simple _NOT', t => {
 test('simple _NOT with OR clause', t => {
   const { _OR, _NOT } = global[indexName]
   t.plan(1)
-  _NOT(
-    _OR('make:bmw', 'make:volvo'),
-    'brand:tesla'
-  ).then(res => {
+  _NOT(_OR(['make:bmw', 'make:volvo']), 'brand:tesla').then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: ['make:bmw#1.00'] },
-      { _id: '4', _match: ['make:volvo#1.00'] },
-      { _id: '5', _match: ['make:volvo#1.00'] },
-      { _id: '9', _match: ['make:bmw#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+      { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+      { _id: 4, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
+      { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
   })
 })
@@ -137,8 +128,11 @@ test('simple NOT', t => {
   }).then(res => {
     t.deepEqual(res, {
       RESULT: [
-        { _id: '4', _match: ['make:volvo#1.00'] },
-        { _id: '5', _match: ['make:volvo#1.00'] }
+        {
+          _id: 4,
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        },
+        { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
       ],
       RESULT_LENGTH: 2
     })

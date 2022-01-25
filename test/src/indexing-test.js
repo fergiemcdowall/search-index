@@ -52,45 +52,70 @@ test('can add some data', t => {
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
-    'body.text:cool',
-    'body.text:really',
-    'body.text:bananas'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _match: [
-          'body.text:cool#1.00',
-          'body.text:really#1.00',
-          'body.text:bananas#1.00'
+  global[indexName]
+    .SEARCH(['body.text:cool', 'body.text:really', 'body.text:bananas'])
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'b',
+            _match: [
+              { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' }
+            ],
+            _score: 4.16
+          }
         ],
-        _score: 4.16
-      }
-    ])
-  })
+        RESULT_LENGTH: 1
+      })
+    })
 })
 
 // should be able to get non-tokenised (readable) version of object out of index
 test('can search with QUERY', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    SEARCH: [
-      'body.text:cool',
-      'body.text:really',
-      'body.text:bananas'
-    ]
-  }).then(res => {
+  global[indexName]
+    .QUERY(
+      {
+        AND: ['body.text:cool', 'body.text:really', 'body.text:bananas']
+      },
+      {
+        SCORE: 'TFIDF'
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'b',
+            _match: [
+              { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' }
+            ],
+            _score: 4.16
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
+
+test('can search in any field', t => {
+  t.plan(1)
+  global[indexName].SEARCH(['cool', 'really', 'bananas']).then(res => {
     t.deepEqual(res, {
       RESULT: [
         {
           _id: 'b',
           _match: [
-            'body.text:cool#1.00',
-            'body.text:really#1.00',
-            'body.text:bananas#1.00'
+            { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
           ],
-          _score: 4.16
+          _score: 5.55
         }
       ],
       RESULT_LENGTH: 1
@@ -98,141 +123,147 @@ test('can search with QUERY', t => {
   })
 })
 
-test('can search in any field', t => {
-  t.plan(1)
-  global[indexName]._SEARCH(
-    'cool',
-    'really',
-    'bananas'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _match: [
-          'body.text:cool#1.00',
-          'title:cool#1.00',
-          'body.text:really#1.00',
-          'body.text:bananas#1.00'],
-        _score: 5.55
-      }
-    ])
-  })
-})
-
 test('can do 0-hit', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
-    'cool',
-    'really',
-    'sdasdadsasd',
-    'bananas'
-  ).then(res => {
-    t.deepEqual(res, [])
-  })
+  global[indexName]
+    .SEARCH(['cool', 'really', 'sdasdadsasd', 'bananas'])
+    .then(res => {
+      t.deepEqual(res, { RESULT: [], RESULT_LENGTH: 0 })
+    })
 })
 
 test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
-    'title:cool',
-    'documentness'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'a',
-        _match: ['title:cool#1.00', 'body.metadata:documentness#1.00'],
-        _score: 1.39
-      },
-      {
-        _id: 'b',
-        _match: ['title:cool#1.00', 'body.metadata:documentness#1.00'],
-        _score: 1.39
-      }
-    ])
+  global[indexName].SEARCH(['title:cool', 'documentness']).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'documentness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ],
+          _score: 1.39
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'documentness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ],
+          _score: 1.39
+        }
+      ],
+      RESULT_LENGTH: 2
+    })
   })
 })
 
-// test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
-//   t.plan(1)
-//   global[indexName]._SEARCH(
-//     '500'
-//   ).then(global[indexName].DOCUMENTS)
-//     .then(res => {
-//       t.deepEqual(res, [
-//         { _id: 'b', _match: ['importantnumber:500#1.00'], _score: 1.39, _doc: { _id: 'b', title: 'quite a cool document', body: { text: 'this document is really cool bananas', metadata: 'coolness documentness' }, importantNumber: 500 } }
-//       ])
-//     })
-// })
+test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
+  t.plan(1)
+  global[indexName]
+    .SEARCH([500], {
+      DOCUMENTS: true
+    })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'b',
+            _match: [{ FIELD: 'importantnumber', VALUE: 500, SCORE: 500 }],
+            _score: 693.15,
+            _doc: {
+              _id: 'b',
+              title: 'quite a cool document',
+              body: {
+                text: 'this document is really cool bananas',
+                metadata: 'coolness documentness'
+              },
+              importantNumber: 500
+            }
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
 
 test('can _OR by numeric value and _SORT by numeric value', t => {
   t.plan(1)
-  global[indexName]._OR(
-    '500',
-    '200'
-  ).then(
-    resultSet => global[indexName]._SORT(resultSet, {
-      FIELD: '_match.importantnumber',
-      TYPE: 'NUMERIC',
-      DIRECTION: 'ASCENDING'
+  global[indexName]
+    ._OR([500, 200])
+    .then(resultSet =>
+      global[indexName]._SORT(resultSet, {
+        FIELD: '_match.importantnumber',
+        TYPE: 'NUMERIC',
+        DIRECTION: 'ASCENDING'
+      })
+    )
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: 'b',
+          _match: [{ FIELD: 'importantnumber', VALUE: 500, SCORE: 500 }]
+        },
+        {
+          _id: 'c',
+          _match: [{ FIELD: 'importantnumber', VALUE: 200, SCORE: 200 }]
+        }
+      ])
     })
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: 'c', _match: ['importantnumber:200#1.00'] },
-      { _id: 'b', _match: ['importantnumber:500#1.00'] }
-    ])
-  })
 })
 
 // _OR-ing
 test('can search by numeric value and _OR with one term on any field', t => {
   t.plan(1)
-  global[indexName]._OR(
-    '200',
-    'importantnumber:5000'
-  ).then(res => t.deepEqual(res, [
-    {
-      _id: 'c',
-      _match: ['importantnumber:200#1.00']
-    },
-    {
-      _id: 'a',
-      _match: ['importantnumber:5000#1.00']
-    }
-  ]))
+  global[indexName]
+    ._OR([200, { FIELD: 'importantnumber', VALUE: 5000 }])
+    .then(res =>
+      t.deepEqual(res, [
+        {
+          _id: 'c',
+          _match: [{ FIELD: 'importantnumber', VALUE: 200, SCORE: 200 }]
+        },
+        {
+          _id: 'a',
+          _match: [{ FIELD: 'importantnumber', VALUE: 5000, SCORE: 5000 }]
+        }
+      ])
+    )
 })
 
 test('can _GET', t => {
   t.plan(1)
-  global[indexName]._GET(
-    'body.text:cool'
-  ).then(res => t.deepEqual(res, [
-    {
-      _id: 'a', _match: ['body.text:cool#1.00']
-    },
-    {
-      _id: 'b', _match: ['body.text:cool#1.00']
-    }
-  ]))
+  global[indexName]._GET('body.text:cool').then(res =>
+    t.deepEqual(res, [
+      {
+        _id: 'a',
+        _match: [{ FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' }]
+      },
+      {
+        _id: 'b',
+        _match: [{ FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' }]
+      }
+    ])
+  )
 })
 
 test('can _GET with no field specified', t => {
   t.plan(1)
-  global[indexName]._GET(
-    'cool'
-  ).then(res => {
+  global[indexName]._GET('cool').then(res => {
     t.deepEqual(res, [
       {
         _id: 'a',
         _match: [
-          'body.text:cool#1.00',
-          'title:cool#1.00'
+          { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+          { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
         ]
       },
       {
         _id: 'b',
         _match: [
-          'body.text:cool#1.00',
-          'title:cool#1.00'
+          { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+          { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
         ]
       }
     ])
@@ -241,105 +272,109 @@ test('can _GET with no field specified', t => {
 
 test('can _AND', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'body.text:really',
-    'body.metadata:coolness'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'a',
-        _match: [
-          'body.text:really#0.33',
-          'body.metadata:coolness#1.00'
-        ]
-      },
-      {
-        _id: 'b',
-        _match: [
-          'body.text:really#1.00',
-          'body.metadata:coolness#1.00'
-        ]
-      }
-    ])
-  })
+  global[indexName]
+    ._AND(['body.text:really', 'body.metadata:coolness'])
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'really', SCORE: '0.33' }
+          ]
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' }
+          ]
+        }
+      ])
+    })
 })
 
 test('can _AND with embedded _OR', t => {
   t.plan(1)
-  global[indexName]._AND(
-    global[indexName]._OR('title:quite', 'body.text:different'),
-    'body.metadata:coolness'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'a',
-        _match: [
-          'title:quite#1.00',
-          'body.metadata:coolness#1.00'
-        ]
-      },
-      {
-        _id: 'b',
-        _match: [
-          'title:quite#1.00',
-          'body.metadata:coolness#1.00'
-        ]
-      },
-      {
-        _id: 'c',
-        _match: [
-          'body.text:different#1.00',
-          'body.metadata:coolness#1.00'
-        ]
-      }
+  global[indexName]
+    ._AND([
+      global[indexName]._OR(['title:quite', 'body.text:different']),
+      'body.metadata:coolness'
     ])
-  })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'quite', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'quite', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'c',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'different', SCORE: '1.00' }
+          ]
+        }
+      ])
+    })
 })
 
 test('can _AND with embedded _OR and embedded _AND', t => {
   t.plan(1)
-  global[indexName]._AND(
-    global[indexName]._OR(
-      'title:quite',
-      global[indexName]._AND(
-        'body.text:totally',
-        'body.text:different'
-      )
-    ),
-    'body.metadata:coolness'
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'a',
-        _match: ['title:quite#1.00', 'body.metadata:coolness#1.00']
-      },
-      {
-        _id: 'b',
-        _match: ['title:quite#1.00', 'body.metadata:coolness#1.00']
-      },
-      {
-        _id: 'c',
-        _match: [
-          'body.text:totally#1.00',
-          'body.text:different#1.00',
-          'body.metadata:coolness#1.00']
-      }
+  global[indexName]
+    ._AND([
+      global[indexName]._OR([
+        'title:quite',
+        global[indexName]._AND(['body.text:totally', 'body.text:different'])
+      ]),
+      'body.metadata:coolness'
     ])
-  })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'quite', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'quite', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'c',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'different', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'totally', SCORE: '1.00' }
+          ]
+        }
+      ])
+    })
 })
 
 test('can _NOT', t => {
   t.plan(1)
-  global[indexName]._NOT(
-    'cool',
-    'bananas'
-  ).then(res => {
+  global[indexName]._NOT('cool', 'bananas').then(res => {
     t.deepEqual(res, [
       {
         _id: 'a',
         _match: [
-          'body.text:cool#1.00',
-          'title:cool#1.00'
+          { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+          { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
         ]
       }
     ])
@@ -348,19 +383,17 @@ test('can _NOT', t => {
 
 test('can _OR', t => {
   t.plan(1)
-  global[indexName]._OR('body.text:bananas', 'body.text:different')
+  global[indexName]
+    ._OR(['body.text:bananas', 'body.text:different'])
     .then(res => {
       t.deepEqual(res, [
         {
           _id: 'b',
-          _match: [
-            'body.text:bananas#1.00'
-          ]
-        }, {
+          _match: [{ FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }]
+        },
+        {
           _id: 'c',
-          _match: [
-            'body.text:different#1.00'
-          ]
+          _match: [{ FIELD: 'body.text', VALUE: 'different', SCORE: '1.00' }]
         }
       ])
     })
@@ -368,73 +401,98 @@ test('can _OR', t => {
 
 test('_AND with embedded _OR', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'bananas',
-    global[indexName]._OR('body.text:cool', 'body.text:coolness')
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: 'b', _match: ['body.text:bananas#1.00', 'body.text:cool#1.00'] }
+  global[indexName]
+    ._AND([
+      'bananas',
+      global[indexName]._OR(['body.text:cool', 'body.text:coolness'])
     ])
-  })
-})
-
-test('AND with embedded OR (JSON API)', t => {
-  t.plan(1)
-  global[indexName].QUERY({
-    AND: ['bananas']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: 'b', _match: ['body.text:bananas#1.00'] }
-      ],
-      RESULT_LENGTH: 1
-    })
-  })
-})
-
-test('AND with embedded OR (JSON API)', t => {
-  t.plan(1)
-  global[indexName].QUERY({
-    AND: ['bananas', { OR: ['body.text:cool', 'body.text:coolness'] }]
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: 'b', _match: ['body.text:bananas#1.00', 'body.text:cool#1.00'] }
-      ],
-      RESULT_LENGTH: 1
-    })
-  })
-})
-
-test('DOCUMENT (JSON API)', t => {
-  t.plan(1)
-  global[indexName].QUERY({
-    DOCUMENTS: ['b', 'a']
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
+    .then(res => {
+      t.deepEqual(res, [
         {
           _id: 'b',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool bananas',
-            metadata: 'coolness documentness'
-          },
-          importantNumber: 500
-        }, {
-          _id: 'a',
-          title: 'quite a cool document',
-          body: {
-            text: 'this document is really cool cool cool',
-            metadata: 'coolness documentness'
-          },
-          importantNumber: 5000
+          _match: [
+            { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' }
+          ]
         }
-      ],
-      RESULT_LENGTH: 2
+      ])
     })
-  })
 })
+
+test('AND with embedded OR (JSON API)', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY({
+      AND: ['bananas']
+    })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'b',
+            _match: [{ FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
+
+test('AND with embedded OR (JSON API)', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY({
+      AND: ['bananas', { OR: ['body.text:cool', 'body.text:coolness'] }]
+    })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'b',
+            _match: [
+              { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
+
+// This is not currently supported, but should it be? ->
+// test('DOCUMENT (JSON API)', t => {
+//   t.plan(1)
+//   global[indexName]
+//     .QUERY({
+//       DOCUMENTS: ['b', 'a']
+//     })
+//     .then(res => {
+//       t.deepEqual(res, {
+//         RESULT: [
+//           {
+//             _id: 'b',
+//             title: 'quite a cool document',
+//             body: {
+//               text: 'this document is really cool bananas',
+//               metadata: 'coolness documentness'
+//             },
+//             importantNumber: 500
+//           },
+//           {
+//             _id: 'a',
+//             title: 'quite a cool document',
+//             body: {
+//               text: 'this document is really cool cool cool',
+//               metadata: 'coolness documentness'
+//             },
+//             importantNumber: 5000
+//           }
+//         ],
+//         RESULT_LENGTH: 2
+//       })
+//     })
+// })
 
 // TODO: I think DOCUMENT should behave differently here
 // this should be a SEARCH should it not?
@@ -445,7 +503,7 @@ test('QUERY with a string and then connect documents', t => {
       RESULT: [
         {
           _id: 'b',
-          _match: ['body.text:bananas#1.00'],
+          _match: [{ FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }],
           _doc: {
             _id: 'b',
             title: 'quite a cool document',
@@ -464,81 +522,127 @@ test('QUERY with a string and then connect documents', t => {
 
 test('_AND with embedded _OR', t => {
   t.plan(1)
-  global[indexName]._AND(
-    global[indexName]._OR('bananas', 'different'),
-    global[indexName]._OR('cool', 'coolness')
-  ).then(res => {
-    t.deepEqual(res, [
-      {
-        _id: 'b',
-        _match: [
-          'body.text:bananas#1.00',
-          'body.text:cool#1.00',
-          'title:cool#1.00',
-          'body.metadata:coolness#1.00']
-      },
-      {
-        _id: 'c',
-        _match: [
-          'body.text:different#1.00',
-          'title:different#1.00',
-          'body.metadata:coolness#1.00']
-      }
+  global[indexName]
+    ._AND([
+      global[indexName]._OR(['bananas', 'different']),
+      global[indexName]._OR(['cool', 'coolness'])
     ])
-  })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'c',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'different', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'different', SCORE: '1.00' }
+          ]
+        }
+      ])
+    })
 })
 
 test('can _GET range with one value', t => {
   t.plan(1)
-  global[indexName]._GET({
-    VALUE: {
-      GTE: 'cool',
-      LTE: 'cool'
-    }
-  }).then(res => t.deepEqual(res, [
-    {
-      _id: 'a', _match: ['body.text:cool#1.00', 'title:cool#1.00']
-    },
-    {
-      _id: 'b', _match: ['body.text:cool#1.00', 'title:cool#1.00']
-    }
-  ]))
+  global[indexName]
+    ._GET({
+      VALUE: {
+        GTE: 'cool',
+        LTE: 'cool'
+      }
+    })
+    .then(res =>
+      t.deepEqual(res, [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ]
+        }
+      ])
+    )
 })
 
 test('can _GET range with a range of values', t => {
   t.plan(1)
-  global[indexName]._GET({
-    VALUE: {
-      GTE: 'cool',
-      LTE: 'coolness'
-    }
-  }).then(res => t.deepEqual(res, [
-    {
-      _id: 'a',
-      _match: ['body.metadata:coolness#1.00',
-        'body.text:cool#1.00', 'title:cool#1.00']
-    },
-    {
-      _id: 'b',
-      _match: ['body.metadata:coolness#1.00',
-        'body.text:cool#1.00', 'title:cool#1.00']
-    },
-    { _id: 'c', _match: ['body.metadata:coolness#1.00'] }
-  ]))
+  global[indexName]
+    ._GET({
+      VALUE: {
+        GTE: 'cool',
+        LTE: 'coolness'
+      }
+    })
+    .then(res =>
+      t.deepEqual(res, [
+        {
+          _id: 'a',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'b',
+          _match: [
+            { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+            { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+            { FIELD: 'title', VALUE: 'cool', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: 'c',
+          _match: [{ FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' }]
+        }
+      ])
+    )
 })
 
 // TODO: FIX. This test seems to be giving inconsistent results between browser and node
 test('_SEARCH with embedded _OR', t => {
   t.plan(1)
-  global[indexName]._SEARCH(
-    global[indexName]._OR('bananas', 'different'),
-    'coolness'
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: 'c', _match: ['body.text:different#1.00', 'title:different#1.00', 'body.metadata:coolness#1.00'], _score: 2.08 },
-      { _id: 'b', _match: ['body.text:bananas#1.00', 'body.metadata:coolness#1.00'], _score: 1.39 }
-    ])
-  })
+  global[indexName]
+    .SEARCH([{ OR: ['bananas', 'different'] }, 'coolness'])
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 'c',
+            _match: [
+              { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'different', SCORE: '1.00' },
+              { FIELD: 'title', VALUE: 'different', SCORE: '1.00' }
+            ],
+            _score: 2.08
+          },
+          {
+            _id: 'b',
+            _match: [
+              { FIELD: 'body.metadata', VALUE: 'coolness', SCORE: '1.00' },
+              { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }
+            ],
+            _score: 1.39
+          }
+        ],
+        RESULT_LENGTH: 2
+      })
+    })
 })
 
 test('DICTIONARY with specified field', t => {
@@ -579,29 +683,26 @@ test('DICTIONARY with specified field (JSON API)', t => {
 
 test('DICTIONARY with gte lte', t => {
   t.plan(1)
-  global[indexName].DICTIONARY({
-    FIELD: ['body.text'],
-    VALUE: {
-      GTE: 'd',
-      LTE: 'r'
-    }
-  }).then(res => {
-    t.deepEqual(res, [
-      'different',
-      'document',
-      'is',
-      'really'
-    ])
-  })
+  global[indexName]
+    .DICTIONARY({
+      FIELD: ['body.text'],
+      VALUE: {
+        GTE: 'd',
+        LTE: 'r'
+      }
+    })
+    .then(res => {
+      t.deepEqual(res, ['different', 'document', 'is', 'really'])
+    })
 })
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
     t.deepEqual(res, [
-      '200',
-      '500',
-      '5000',
+      200,
+      500,
+      5000,
       'a',
       'bananas',
       'cool',
@@ -624,9 +725,9 @@ test('DICTIONARY without specified field', t => {
   const { DICTIONARY } = global[indexName]
   DICTIONARY().then(res => {
     t.deepEqual(res, [
-      '200',
-      '500',
-      '5000',
+      200,
+      500,
+      5000,
       'a',
       'bananas',
       'cool',

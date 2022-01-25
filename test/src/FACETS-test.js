@@ -15,70 +15,70 @@ test('create a search index', t => {
 test('can add data', t => {
   const data = [
     {
-      _id: 0,
+      _id: '0',
       make: 'Tesla',
       manufacturer: 'Volvo',
       brand: 'Volvo',
       colour: 'yellow'
     },
     {
-      _id: 1,
+      _id: '1',
       make: 'BMW',
       manufacturer: 'Volvo',
       brand: 'Volvo',
       colour: 'red'
     },
     {
-      _id: 2,
+      _id: '2',
       make: 'Tesla',
       manufacturer: 'Tesla',
       brand: 'Volvo',
       colour: 'blue'
     },
     {
-      _id: 3,
+      _id: '3',
       make: 'Tesla',
       manufacturer: 'Volvo',
       brand: 'BMW',
       colour: 'red'
     },
     {
-      _id: 4,
+      _id: '4',
       make: 'Volvo',
       manufacturer: 'Volvo',
       brand: 'Volvo',
       colour: 'red'
     },
     {
-      _id: 5,
+      _id: '5',
       make: 'Volvo',
       manufacturer: 'Tesla',
       brand: 'Volvo',
       colour: 'blue'
     },
     {
-      _id: 6,
+      _id: '6',
       make: 'Tesla',
       manufacturer: 'Tesla',
       brand: 'BMW',
       colour: 'yellow'
     },
     {
-      _id: 7,
+      _id: '7',
       make: 'BMW',
       manufacturer: 'Tesla',
       brand: 'Tesla',
       colour: 'yellow'
     },
     {
-      _id: 8,
+      _id: '8',
       make: 'Volvo',
       manufacturer: 'BMW',
       brand: 'Tesla',
       colour: 'blue'
     },
     {
-      _id: 9,
+      _id: '9',
       make: 'BMW',
       manufacturer: 'Tesla',
       brand: 'Volvo',
@@ -114,9 +114,7 @@ test('simple FACETS with range', t => {
       LTE: 'c'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }
-    ])
+    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }])
   })
 })
 
@@ -145,9 +143,7 @@ test('simple FACETS with range', t => {
       LTE: 'c'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }
-    ])
+    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue', _id: ['2', '5', '8'] }])
   })
 })
 
@@ -172,7 +168,8 @@ test('simple FACETS', t => {
     VALUE: 'red'
   }).then(res => {
     t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] }])
+      { FIELD: 'colour', VALUE: 'red', _id: ['1', '3', '4', '9'] }
+    ])
   })
 })
 
@@ -224,17 +221,20 @@ test('FACETS on 2 fields', t => {
 test('FACETS on 2 fields with GTE/LTE', t => {
   const { FACETS } = global[indexName]
   t.plan(1)
-  FACETS({
-    FIELD: ['brand'],
-    VALUE: {
-      GTE: 'f'
+  FACETS(
+    {
+      FIELD: ['brand'],
+      VALUE: {
+        GTE: 'f'
+      }
+    },
+    {
+      FIELD: ['colour'],
+      VALUE: {
+        LTE: 'x'
+      }
     }
-  }, {
-    FIELD: ['colour'],
-    VALUE: {
-      LTE: 'x'
-    }
-  }).then(res => {
+  ).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'tesla', _id: ['7', '8'] },
       { FIELD: 'brand', VALUE: 'volvo', _id: ['0', '1', '2', '4', '5', '9'] },

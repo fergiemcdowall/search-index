@@ -1,163 +1,264 @@
-module.exports = fii => {
-  const ALL_DOCUMENTS = limit => new Promise((resolve, reject) => {
-    const result = []
-    fii.STORE.createReadStream({
-      gte: '￮DOC_RAW￮',
-      lte: '￮DOC_RAW￮￮',
-      limit: limit
-    }).on('data', d => result.push({
-      _id: d.value._id,
-      _doc: d.value
-    })).on('end', () => resolve(result))
-  })
+// TODO: remove all '￮' and '#'
 
-  const DOCUMENTS = requestedDocs => Array.isArray(requestedDocs)
-    ? Promise.all(
-        requestedDocs.map(_id =>
-          fii.STORE.get(
-            '￮DOC_RAW￮' + _id + '￮'
-          ).catch(e => null)
+module.exports = (ops, cache) => {
+  // TODO add aggregation to ALL_DOCUMENTS
+  const ALL_DOCUMENTS = limit =>
+    new Promise((resolve, reject) => {
+      const result = []
+      ops.fii.STORE.createReadStream({
+        // gte: null,
+        // lte: undefined,
+        gte: ['DOC_RAW', null],
+        lte: ['DOC_RAW', undefined],
+        limit: limit
+      })
+        .on('data', d =>
+          result.push({
+            _id: d.value._id,
+            _doc: d.value
+          })
         )
+        .on('end', () => resolve(result))
+    })
+
+  const DOCUMENTS = (...requestedDocs) =>
+    requestedDocs.length
+      ? Promise.all(
+          requestedDocs.map(_id =>
+            ops.fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
+          )
+        )
+      : ALL_DOCUMENTS()
+
+  const DICTIONARY = token =>
+    DISTINCT(token).then(results =>
+      Array.from(
+        results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
+      ).sort((a, b) =>
+        // This should sort an array of strings and
+        // numbers in an intuitive way (numbers numerically, strings
+        // alphabetically)
+        (a + '').localeCompare(b + '', undefined, {
+          numeric: true,
+          sensitivity: 'base'
+        })
       )
-    : ALL_DOCUMENTS()
+    )
 
-  const DICTIONARY = token => DISTINCT(token).then(results =>
-    Array.from(results.reduce(
-      (acc, cur) => acc.add(cur.VALUE), new Set())
-    ).sort()
-  )
+  const DISTINCT = (...tokens) =>
+    ops.fii.DISTINCT(...tokens).then(result => {
+      return [
+        // Stringify Set entries so that Set can determine duplicates
+        ...result.reduce(
+          (acc, cur) =>
+            acc.add(
+              JSON.stringify(
+                Object.assign(cur, {
+                  VALUE: cur.VALUE
+                })
+              )
+            ),
+          new Set()
+        )
+      ].map(JSON.parse)
+    }) // un-stringify
 
-  const DISTINCT = (...tokens) => fii.DISTINCT(
-    ...tokens
-  ).then(result => [
-    // Stringify Set entries so that Set can determine duplicates
-    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
-      Object.assign(cur, {
-        VALUE: cur.VALUE.split('#')[0]
-      })
-    )), new Set())
-  ].map(JSON.parse)) // un-stringify
-
-  const FACETS = (...tokens) => fii.FACETS(
-    ...tokens
-  ).then(result => [
-    // Stringify Set entries so that Set can determine duplicates
-    ...result.reduce((acc, cur) => acc.add(JSON.stringify(
-      Object.assign(cur, {
-        VALUE: cur.VALUE.split('#')[0]
-      })
-    )), new Set())
-  ].map(JSON.parse)) // un-stringify
+  const FACETS = (...tokens) =>
+    ops.fii.FACETS(...tokens).then(result =>
+      [
+        // Stringify Set entries so that Set can determine duplicates
+        ...result.reduce(
+          (acc, cur) =>
+            acc.add(
+              JSON.stringify(
+                Object.assign(cur, {
+                  // VALUE: cur.VALUE.split('#')[0] // TODO: this is wrong
+                  VALUE: cur.VALUE
+                })
+              )
+            ),
+          new Set()
+        )
+      ].map(JSON.parse)
+    ) // un-stringify
 
   const PAGE = (results, options) => {
-    options = Object.assign({
-      NUMBER: 0,
-      SIZE: 20
-    }, options || {})
+    options = Object.assign(
+      {
+        NUMBER: 0,
+        SIZE: 20
+      },
+      options || {}
+    )
     const start = options.NUMBER * options.SIZE
     // handle end index correctly when (start + size) == 0
     // (when paging from the end with a negative page number)
-    const end = (start + options.SIZE) || undefined
+    const end = start + options.SIZE || undefined
     return results.slice(start, end)
   }
 
   // score by tfidf by default
   // TODO: Total hits (length of _match)
-  const SCORE = (results, type = 'TFIDF') => {
-    if (type === 'TFIDF') {
-      return DOCUMENT_COUNT().then(
-        docCount => results.map((x, _, resultSet) => {
+  // TODO: better error handling: what if TYPE is 'XXXXX'
+  const SCORE = (results, scoreOps = {}) => {
+    const filterFields = item => {
+      if (!scoreOps.FIELDS) return true
+      return scoreOps.FIELDS.includes(item.FIELD)
+    }
+
+    scoreOps = Object.assign(
+      {
+        TYPE: 'TFIDF'
+      },
+      scoreOps
+    )
+
+    if (scoreOps.TYPE === 'TFIDF') {
+      return DOCUMENT_COUNT().then(docCount =>
+        results.map((result, _, resultSet) => {
           const idf = Math.log((docCount + 1) / resultSet.length)
-          x._score = +x._match.reduce(
-            (acc, cur) => acc + idf * +cur.split('#')[1], 0
-          ).toFixed(2) // TODO: make precision an option
-          return x
+          result._score = +result._match
+            .filter(filterFields)
+            .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
+            .toFixed(2) // TODO: make precision an option
+          return result
         })
       )
     }
-    if (type === 'PRODUCT') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = +r._match.reduce(
-            (acc, cur) => acc * +cur.split('#')[1], 1
-          ).toFixed(2) // TODO: make precision an option
-          return r
-        })
-      ))
+    if (scoreOps.TYPE === 'PRODUCT') {
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = +r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc * +cur.SCORE, 1)
+              .toFixed(2)
+            // TODO: make precision an option
+            return r
+          })
+        )
+      )
     }
-    if (type === 'CONCAT') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = r._match.reduce(
-            (acc, cur) => acc + cur.split('#')[1], ''
-          )
-          return r
-        })
-      ))
+    if (scoreOps.TYPE === 'CONCAT') {
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc + cur.SCORE, '')
+            return r
+          })
+        )
+      )
     }
-    if (type === 'SUM') {
-      return new Promise(resolve => resolve(
-        results.map(r => {
-          r._score = +r._match.reduce(
-            (acc, cur) => acc + +cur.split('#')[1], 0
-          ).toFixed(2) // TODO: make precision an option
-          return r
-        })
-      ))
+    if (scoreOps.TYPE === 'SUM') {
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = +r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc + +cur.SCORE, 0)
+              .toFixed(2) // TODO: make precision an option
+            return r
+          })
+        )
+      )
+    }
+    if (scoreOps.TYPE === 'VALUE') {
+      return new Promise(resolve =>
+        resolve(
+          results.map(r => {
+            r._score = r._match
+              .filter(filterFields)
+              .reduce((acc, cur) => acc + cur.VALUE, '')
+            return r
+          })
+        )
+      )
     }
   }
 
-  const SEARCH = (...q) => fii
-    .AND(...q)
-    .then(SCORE)
-    .then(SORT)
+  // TODO: maybe add a default page size?
+  const SEARCH = (q, qops) => {
+    return parseJsonQuery(
+      {
+        AND: [...q]
+      },
+      Object.assign(
+        {
+          SCORE: {
+            TYPE: 'TFIDF'
+          },
+          SORT: true
+        },
+        qops
+      )
+    )
+  }
 
   const SORT = (results, options) => {
-    options = Object.assign({
-      DIRECTION: 'DESCENDING',
-      FIELD: '_score',
-      TYPE: 'NUMERIC'
-    }, options || {})
-    const deepRef = obj => {
-      const path = options.FIELD.split('.')
-      // TODO: dont like doing it this way- there should probably be a
-      // way to dump the literal field value into _score, and always
-      // sort on _score
-      //
-      // That said, it should be possible to score without fetching
-      // the whole document for each _id
-      //
-      // special case: sorting on _match so that you dont have to
-      // fetch all the documents before doing a sort
-      return (path[0] === '_match')
-        ? (obj._match.find(
-            _match => (path.slice(1).join('.') === _match.split(':')[0])
-          // gracefully fail if field name not found
-          ) || ':#').split(':')[1].split('#')[0]
-        : path.reduce((o, i) => o[i], obj)
-    }
+    options = Object.assign(
+      {
+        DIRECTION: 'DESCENDING',
+        TYPE: 'NUMERIC'
+      },
+      options || {}
+    )
     const sortFunction = {
       NUMERIC: {
-        DESCENDING: (a, b) => +deepRef(b) - +deepRef(a),
-        ASCENDING: (a, b) => +deepRef(a) - +deepRef(b)
+        DESCENDING: (a, b) => +b._score - +a._score,
+        ASCENDING: (a, b) => +a._score - +b._score
       },
       ALPHABETIC: {
         DESCENDING: (a, b) => {
-          if (deepRef(a) < deepRef(b)) return 1
-          if (deepRef(a) > deepRef(b)) return -1
+          if (a._score < b._score) return 1
+          if (a._score > b._score) return -1
           return 0
         },
         ASCENDING: (a, b) => {
-          if (deepRef(a) < deepRef(b)) return -1
-          if (deepRef(a) > deepRef(b)) return 1
+          if (a._score < b._score) return -1
+          if (a._score > b._score) return 1
           return 0
         }
       }
     }
-    return results.sort(sortFunction[options.TYPE][options.DIRECTION])
+    return results
+      .sort((a, b) => {
+        if (a._id < b._id) return -1
+        if (a._id > b._id) return 1
+        return 0
+      })
+      .sort(sortFunction[options.TYPE][options.DIRECTION])
   }
 
-  const DOCUMENT_COUNT = () => fii.STORE.get('￮DOCUMENT_COUNT￮')
+  const DOCUMENT_COUNT = () => ops.fii.STORE.get(['DOCUMENT_COUNT'])
+
+  const WEIGHT = (results, weights) =>
+    results.map(r => {
+      r._match = r._match.map(m => {
+        weights.forEach(w => {
+          let doWeighting = false
+          // TODO: possible bug / edge case- does this work when weighting a field with value 0?
+          if (w.FIELD && w.VALUE) {
+            if (w.FIELD === m.FIELD && w.VALUE === m.VALUE) {
+              doWeighting = true
+            }
+          } else if (w.FIELD) {
+            if (w.FIELD === m.FIELD) {
+              doWeighting = true
+            }
+          } else if (w.VALUE) {
+            if (w.VALUE === m.VALUE) {
+              doWeighting = true
+            }
+          }
+          if (doWeighting) m.SCORE = (w.WEIGHT * +m.SCORE).toFixed(2)
+        })
+        return m
+      })
+
+      return r
+    })
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
@@ -165,108 +266,166 @@ module.exports = fii => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
-      if (typeof cmd === 'string') return fii.GET(cmd)
-      if (cmd.FIELD) return fii.GET(cmd)
-      if (cmd.VALUE) return fii.GET(cmd)
+      if (typeof cmd === 'string' || typeof cmd === 'number') {
+        return ops.fii.GET(cmd, options.PIPELINE)
+      }
+      if (cmd.FIELD) return ops.fii.GET(cmd)
+      if (cmd.VALUE) return ops.fii.GET(cmd)
 
       // else:
-      if (cmd.AND) return fii.AND(...cmd.AND.map(runQuery))
-      if (cmd.DOCUMENTS) return DOCUMENTS(cmd.DOCUMENTS)
-      if (cmd.GET) return fii.GET(cmd.GET)
+      if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      if (cmd.GET) return ops.fii.GET(cmd.GET, options.PIPELINE)
       if (cmd.NOT) {
-        return fii.SET_SUBTRACTION(
-          runQuery(cmd.NOT.INCLUDE),
-          runQuery(cmd.NOT.EXCLUDE)
-        )
+        return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
       }
-      if (cmd.OR) return fii.OR(...cmd.OR.map(runQuery))
-      if (cmd.SEARCH) return SEARCH(...cmd.SEARCH.map(runQuery))
+      if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
+
+      // TODO this should be ALL_DOCUMENTS, such that
+      // ALL_DOCUMENTS=true returns everything (needs test)
+      // It should be possible to combine ALL_DOCUMENTS with FACETS
+      // and other aggregations
+      if (cmd.ALL_DOCUMENTS) return ALL_DOCUMENTS(cmd.ALL_DOCUMENTS)
     }
 
-    const formatResults = result => result.RESULT
-      ? Object.assign(result, {
-          RESULT_LENGTH: result.RESULT.length
-        })
-      : ({
-          RESULT: result,
-          RESULT_LENGTH: result.length
-        })
+    const formatResults = result =>
+      result.RESULT
+        ? Object.assign(result, {
+            RESULT_LENGTH: result.RESULT.length
+          })
+        : {
+            RESULT: result,
+            RESULT_LENGTH: result.length
+          }
 
     // APPEND DOCUMENTS IF SPECIFIED
-    const appendDocuments = result => options.DOCUMENTS
-      ? DOCUMENTS(result.RESULT.map(doc => doc._id)).then(
-          documents => Object.assign(result, {
-            RESULT: result.RESULT.map((doc, i) => Object.assign(doc, {
-              _doc: documents[i]
-            }))
-          })
-        )
-      : result
+    const appendDocuments = result =>
+      options.DOCUMENTS
+        ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(documents =>
+            Object.assign(result, {
+              RESULT: result.RESULT.map((doc, i) =>
+                Object.assign(doc, {
+                  _doc: documents[i]
+                })
+              )
+            })
+          )
+        : result
 
     // SCORE IF SPECIFIED
-    const score = result => options.SCORE
-      ? SCORE(result.RESULT, options.SCORE).then(
-          scoredResult => Object.assign(result, {
-            RESULT: scoredResult
-          }))
-      : result
+    const score = result =>
+      options.SCORE
+        ? SCORE(result.RESULT, options.SCORE).then(scoredResult =>
+            Object.assign(result, {
+              RESULT: scoredResult
+            })
+          )
+        : result
 
     // SORT IF SPECIFIED
-    const sort = result => Object.assign(
-      result, options.SORT
-        ? { RESULT: SORT(result.RESULT, options.SORT) }
-        : {}
-    )
+    const sort = result =>
+      Object.assign(
+        result,
+        options.SORT
+          ? {
+              RESULT: SORT(result.RESULT, options.SORT)
+            }
+          : {}
+      )
 
     // BUCKETS IF SPECIFIED
-    const buckets = result => options.BUCKETS
-      ? fii.BUCKETS(...options.BUCKETS).then(bkts => Object.assign(
-          result, {
-            BUCKETS: fii.AGGREGATION_FILTER(bkts, result.RESULT)
-          }))
-      : result
+    const buckets = result =>
+      options.BUCKETS
+        ? ops.fii.BUCKETS(...options.BUCKETS).then(bkts =>
+            Object.assign(result, {
+              BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
+            })
+          )
+        : result
 
     // FACETS IF SPECIFIED
-    const facets = result => options.FACETS
-      ? (result.RESULT.length)
-          ? FACETS(...options.FACETS).then(fcts => Object.assign(
-              result, {
-                FACETS: fii.AGGREGATION_FILTER(fcts, result.RESULT)
-              }))
-        // if empty result set then just return empty facets
-          : Object.assign(
-            result, {
-              FACETS: []
-            })
-      : result
+    // TODO: FAST OPTION FOR WHEN ALL_DOCUMENTS IS SPECIFIED
+    // TODO: This should be 3 cases: 1. needs filter, 2. no results,
+    // 3. no need for filter
+    const facets = result => {
+      // no FACETS are specified
+      if (!options.FACETS) return result
+
+      // QUERY returned no results, and facets will therefore be empty
+      if (!result.RESULT.length) {
+        return Object.assign(result, {
+          FACETS: [] // if empty result set then just return empty facets
+        })
+      }
+
+      // ALL_DOCUMENTS so no need to filter the facets
+      if (q.ALL_DOCUMENTS) {
+        return FACETS(...options.FACETS).then(fcts =>
+          Object.assign(result, {
+            FACETS: fcts
+          })
+        )
+      }
+
+      // else
+      return FACETS(...options.FACETS).then(fcts =>
+        Object.assign(result, {
+          FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+        })
+      )
+    }
 
     // PAGE IF SPECIFIED
-    const page = result => Object.assign(
-      result, options.PAGE
-        ? { RESULT: PAGE(result.RESULT, options.PAGE) }
-        : {}
-    )
+    const page = result =>
+      Object.assign(
+        result,
+        options.PAGE ? { RESULT: PAGE(result.RESULT, options.PAGE) } : {}
+      )
+
+    // WEIGHT IF SPECIFIED
+    const weight = result =>
+      options.WEIGHT
+        ? Object.assign(
+            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+            result
+          )
+        : result
 
     return runQuery(q)
       .then(formatResults)
-      .then(appendDocuments).then(score)
-      .then(sort)
       .then(buckets)
       .then(facets)
+      .then(weight)
+      .then(score)
+      .then(sort)
       .then(page)
+      .then(appendDocuments)
   }
+
+  const tryCache = (q, cacheKey) =>
+    new Promise(resolve => {
+      cacheKey = JSON.stringify(cacheKey)
+      return cache.has(cacheKey)
+        ? resolve(cache.get(cacheKey))
+        : q
+          .then(res => cache.set(cacheKey, res))
+          .then(() => resolve(cache.get(cacheKey)))
+    })
 
   return {
     ALL_DOCUMENTS: ALL_DOCUMENTS,
-    DICTIONARY: DICTIONARY,
+    DICTIONARY: token =>
+      tryCache(DICTIONARY(token), { DICTIONARY: token || null }),
     DISTINCT: DISTINCT,
-    DOCUMENTS: DOCUMENTS,
+    DOCUMENTS: (...docs) =>
+      tryCache(DOCUMENTS(...docs), {
+        DOCUMENTS: docs
+      }),
     DOCUMENT_COUNT: DOCUMENT_COUNT,
     FACETS: FACETS,
     PAGE: PAGE,
+    QUERY: (q, qops) => tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
     SCORE: SCORE,
-    SEARCH: SEARCH,
-    SORT: SORT,
-    QUERY: parseJsonQuery
+    SEARCH: (q, qops) => tryCache(SEARCH(q, qops), { SEARCH: [q, qops] }),
+    SORT: SORT
   }
 }

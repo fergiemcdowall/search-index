@@ -42,39 +42,52 @@ test('can add data', t => {
 
 test('match brønnøysundregisterene', t => {
   t.plan(1)
-  global[indexName]._AND('brønnøysundregisterene').then(res => {
+  global[indexName]._AND(['brønnøysundregisterene']).then(res => {
     t.deepEqual(res, [
-      { _id: '0', _match: ['text:brønnøysundregisterene#1.00'] }
+      {
+        _id: 0,
+        _match: [
+          { FIELD: 'text', VALUE: 'brønnøysundregisterene', SCORE: '1.00' }
+        ]
+      }
     ])
   })
 })
 
 test('match blåtind', t => {
   t.plan(1)
-  global[indexName]._AND('blåtind').then(res => {
+  global[indexName]._AND(['blåtind']).then(res => {
     t.deepEqual(res, [
-      { _id: '1', _match: ['text:blåtind#1.00'] }
+      { _id: 1, _match: [{ FIELD: 'text', VALUE: 'blåtind', SCORE: '1.00' }] }
     ])
   })
 })
 
 test('match gjæret øl', t => {
   t.plan(1)
-  global[indexName]._AND('gjæret', 'øl').then(res => {
+  global[indexName]._AND(['gjæret', 'øl']).then(res => {
     t.deepEqual(res, [
-      { _id: '2', _match: ['text:gjæret#1.00', 'text:øl#1.00'] }
+      {
+        _id: 2,
+        _match: [
+          { FIELD: 'text', VALUE: 'gjæret', SCORE: '1.00' },
+          { FIELD: 'text', VALUE: 'øl', SCORE: '1.00' }
+        ]
+      }
     ])
   })
 })
 
 test('match 大阪 costs 2000', t => {
   t.plan(1)
-  global[indexName]._AND('大阪', 'costs', '2000').then(res => {
+  global[indexName]._AND(['大阪', 'costs', '2000']).then(res => {
     t.deepEqual(res, [
       {
-        _id: '3',
+        _id: 3,
         _match: [
-          'text:大阪#1.00', 'text:costs#1.00', 'text:2000#1.00'
+          { FIELD: 'text', VALUE: '2000', SCORE: '1.00' },
+          { FIELD: 'text', VALUE: 'costs', SCORE: '1.00' },
+          { FIELD: 'text', VALUE: '大阪', SCORE: '1.00' }
         ]
       }
     ])
@@ -83,9 +96,15 @@ test('match 大阪 costs 2000', t => {
 
 test('Приключения Алисы в стране чудес', t => {
   t.plan(1)
-  global[indexName]._AND('стране', 'чудес').then(res => {
+  global[indexName]._AND(['стране', 'чудес']).then(res => {
     t.deepEqual(res, [
-      { _id: '4', _match: ['text:стране#1.00', 'text:чудес#1.00'] }
+      {
+        _id: 4,
+        _match: [
+          { FIELD: 'text', VALUE: 'стране', SCORE: '1.00' },
+          { FIELD: 'text', VALUE: 'чудес', SCORE: '1.00' }
+        ]
+      }
     ])
   })
 })

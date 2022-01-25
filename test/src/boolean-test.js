@@ -37,14 +37,14 @@ test('can add some worldbank data', t => {
 
 test('_AND', t => {
   t.plan(1)
-  global[indexName]._AND(
-    'sectorcode:bz',
-    'sectorcode:bc'
-  ).then(res => {
+  global[indexName]._AND(['sectorcode:bz', 'sectorcode:bc']).then(res => {
     t.deepEqual(res, [
       {
         _id: '52b213b38594d8a2be17c789',
-        _match: ['sectorcode:bz#1.00', 'sectorcode:bc#1.00']
+        _match: [
+          { FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' },
+          { FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }
+        ]
       }
     ])
   })
@@ -52,133 +52,170 @@ test('_AND', t => {
 
 test('AND', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    AND: [
-      'sectorcode:bz',
-      'sectorcode:bc'
-    ]
-  }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        {
-          _id: '52b213b38594d8a2be17c789',
-          _match: ['sectorcode:bz#1.00', 'sectorcode:bc#1.00']
-        }
-      ],
-      RESULT_LENGTH: 1
+  global[indexName]
+    .QUERY({
+      AND: ['sectorcode:bz', 'sectorcode:bc']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c789',
+            _match: [
+              { FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' },
+              { FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
 })
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    OR: [
-      'sectorcode:ti',
-      'sectorcode:bz'
-    ]
-  }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c782', _match: ['sectorcode:ti#1.00'] },
-        { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
-        { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] },
-        { _id: '52b213b38594d8a2be17c781', _match: ['sectorcode:bz#1.00'] },
-        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bz#1.00'] }
-      ],
-      RESULT_LENGTH: 5
+  global[indexName]
+    .QUERY({
+      OR: ['sectorcode:ti', 'sectorcode:bz']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c782',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c786',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c788',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c781',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c789',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 5
+      })
+    })
 })
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    OR: [
-      'sectorcode:yz',
-      'sectorcode:bc'
-    ]
-  }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
-        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
-      ],
-      RESULT_LENGTH: 2
+  global[indexName]
+    .QUERY({
+      OR: ['sectorcode:yz', 'sectorcode:bc']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c784',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'yz', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c789',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 2
+      })
+    })
 })
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    OR: [
-      'sectorcode:yz',
-      'sectorcode:bc'
-    ]
-  }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:yz#1.00'] },
-        { _id: '52b213b38594d8a2be17c789', _match: ['sectorcode:bc#1.00'] }
-      ],
-      RESULT_LENGTH: 2
+  global[indexName]
+    .QUERY({
+      OR: ['sectorcode:yz', 'sectorcode:bc']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c784',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'yz', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c789',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 2
+      })
+    })
 })
 
 test('OR', t => {
   t.plan(1)
-  global[indexName].QUERY({
-    OR: [
-      'sectorcode:fh',
-      'sectorcode:yw',
-      'sectorcode:yz'
-    ]
-  }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c784', _match: ['sectorcode:fh#1.00', 'sectorcode:yw#1.00', 'sectorcode:yz#1.00'] }
-      ],
-      RESULT_LENGTH: 1
+  global[indexName]
+    .QUERY({
+      OR: ['sectorcode:fh', 'sectorcode:yw', 'sectorcode:yz']
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c784',
+            _match: [
+              { FIELD: 'sectorcode', VALUE: 'fh', SCORE: '1.00' },
+              { FIELD: 'sectorcode', VALUE: 'yw', SCORE: '1.00' },
+              { FIELD: 'sectorcode', VALUE: 'yz', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
 })
 
 test('can _NOT', t => {
   t.plan(1)
-  global[indexName]._NOT(
-    'sectorcode:ti',
-    'board_approval_month:november'
-  ).then(res => {
-    t.deepEqual(res, [
-      { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
-      { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] }
-    ])
-  })
+  global[indexName]
+    ._NOT('sectorcode:ti', 'board_approval_month:november')
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          _id: '52b213b38594d8a2be17c786',
+          _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+        },
+        {
+          _id: '52b213b38594d8a2be17c788',
+          _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+        }
+      ])
+    })
 })
 
 test('can NOT', t => {
   t.plan(1)
-  global[indexName].QUERY(
-    {
+  global[indexName]
+    .QUERY({
       NOT: {
         INCLUDE: 'sectorcode:ti',
         EXCLUDE: 'board_approval_month:november'
       }
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '52b213b38594d8a2be17c786', _match: ['sectorcode:ti#1.00'] },
-        { _id: '52b213b38594d8a2be17c788', _match: ['sectorcode:ti#1.00'] }
-      ],
-      RESULT_LENGTH: 2
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c786',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+          },
+          {
+            _id: '52b213b38594d8a2be17c788',
+            _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 2
+      })
+    })
 })

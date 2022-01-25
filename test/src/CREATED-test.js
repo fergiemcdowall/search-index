@@ -16,11 +16,10 @@ test('create index', t => {
 
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get('￮￮CREATED')
-    .then(created => {
-      timestamp = created
-      return t.pass('timestamp created')
-    })
+  global[indexName].INDEX.STORE.get(['~CREATED']).then(created => {
+    timestamp = created
+    return t.pass('timestamp created')
+  })
 })
 
 test('can read CREATED timestamp with API', t => {

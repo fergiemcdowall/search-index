@@ -8,7 +8,7 @@ test('create a search index', t => {
   t.plan(1)
   si({
     name: indexName,
-    cacheLength: 5
+    cacheLength: 5 // TODO: this needs to be updated
   }).then(db => {
     global[indexName] = db
     t.pass('ok')
@@ -96,26 +96,42 @@ test('can add data', t => {
 test('can inspect cache', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [])
+  // t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [])
+  t.deepEquals(Array.from(_CACHE.keys()), [])
 })
 
 test('query', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY({
-    GET: 'brand:tesla'
-  }, {
-    BUCKETS: [{
-      FIELD: 'make',
-      VALUE: 'volvo'
-    }]
-  }).then(res => {
+  QUERY(
+    {
+      GET: 'brand:tesla'
+    },
+    {
+      BUCKETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'volvo'
+        }
+      ]
+    }
+  ).then(res => {
+    console.log('res ->')
+    console.log(res)
+
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }],
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
+      ],
       RESULT: [
-        { _id: '7', _match: ['brand:tesla#1.00'] },
-        { _id: '8', _match: ['brand:tesla#1.00'] }
+        {
+          _id: 7,
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: 8,
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        }
       ],
       RESULT_LENGTH: 2
     })
@@ -125,59 +141,77 @@ test('query', t => {
 test('inspect cache', t => {
   const { _CACHE } = global[indexName]
   t.plan(2)
-  for (const [key, value] of _CACHE.LRUStore) {
-    t.equals(key, '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}')
-    t.deepEquals(value, {
+  t.deepEquals(_CACHE.keys(), [
+    '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
+  ])
+  t.deepEquals(_CACHE.values(), [
+    {
       RESULT: [
         {
-          _id: '7',
+          _id: 7,
           _match: [
-            'brand:tesla#1.00'
+            {
+              FIELD: 'brand',
+              VALUE: 'tesla',
+              SCORE: '1.00'
+            }
           ]
         },
         {
-          _id: '8',
+          _id: 8,
           _match: [
-            'brand:tesla#1.00'
+            {
+              FIELD: 'brand',
+              VALUE: 'tesla',
+              SCORE: '1.00'
+            }
           ]
         }
       ],
       RESULT_LENGTH: 2,
       BUCKETS: [
         {
-          FIELD: [
-            'make'
-          ],
+          FIELD: ['make'],
           VALUE: {
             GTE: 'volvo',
             LTE: 'volvo'
           },
-          _id: [
-            '8'
-          ]
+          _id: [8]
         }
       ]
-    })
-  }
+    }
+  ])
 })
 
 test('run a duplicate query', t => {
   const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY({
-    GET: 'brand:tesla'
-  }, {
-    BUCKETS: [{
-      FIELD: 'make',
-      VALUE: 'volvo'
-    }]
-  }).then(res => {
+  QUERY(
+    {
+      GET: 'brand:tesla'
+    },
+    {
+      BUCKETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'volvo'
+        }
+      ]
+    }
+  ).then(res => {
     t.deepEqual(res, {
       BUCKETS: [
-        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['8'] }],
+        { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
+      ],
       RESULT: [
-        { _id: '7', _match: ['brand:tesla#1.00'] },
-        { _id: '8', _match: ['brand:tesla#1.00'] }
+        {
+          _id: 7,
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        },
+        {
+          _id: 8,
+          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+        }
       ],
       RESULT_LENGTH: 2
     })
@@ -187,14 +221,15 @@ test('run a duplicate query', t => {
 test('cache still only contains 1 entry', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
+  t.deepEquals(_CACHE.keys(), [
     '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
   ])
 })
 
 test('run more queries', t => {
-  const { QUERY, DOCUMENTS, DICTIONARY } = global[indexName]
+  const { DOCUMENTS, DICTIONARY, QUERY, SEARCH, _CACHE } = global[indexName]
   t.plan(1)
+  _CACHE.reset()
   QUERY('one')
     .then(res => QUERY('two'))
     .then(res => QUERY('two'))
@@ -205,6 +240,11 @@ test('run more queries', t => {
     .then(res => DICTIONARY())
     .then(res => DOCUMENTS())
     .then(res => QUERY('three'))
+    .then(res => QUERY('three'))
+    .then(res => SEARCH('tesla'))
+    .then(res => SEARCH('tesla'))
+    .then(res => SEARCH(['tesla']))
+    .then(res => QUERY('three'))
     .then(res => QUERY('four'))
     .then(res => t.pass('done'))
 })
@@ -212,12 +252,15 @@ test('run more queries', t => {
 test('cache has stripped all duplicate entries', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
-    '{"QUERY":["two",null]}',
-    '{"DICTIONARY":null}',
-    '{"DOCUMENTS":null}',
+  t.deepEquals(_CACHE.keys(), [
+    '{"QUERY":["four",null]}',
     '{"QUERY":["three",null]}',
-    '{"QUERY":["four",null]}'
+    '{"SEARCH":[["tesla"],null]}',
+    '{"SEARCH":["tesla",null]}',
+    '{"DOCUMENTS":[]}',
+    '{"DICTIONARY":null}',
+    '{"QUERY":["two",null]}',
+    '{"QUERY":["one",null]}'
   ])
 })
 
@@ -230,32 +273,37 @@ test('bump oldest cache entry to newest', t => {
 test('oldest cache entry is now newest', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
-    '{"DICTIONARY":null}',
-    '{"DOCUMENTS":null}',
-    '{"QUERY":["three",null]}',
+  t.deepEquals(_CACHE.keys(), [
+    '{"QUERY":["two",null]}',
     '{"QUERY":["four",null]}',
-    '{"QUERY":["two",null]}'
+    '{"QUERY":["three",null]}',
+    '{"SEARCH":[["tesla"],null]}',
+    '{"SEARCH":["tesla",null]}',
+    '{"DOCUMENTS":[]}',
+    '{"DICTIONARY":null}',
+    '{"QUERY":["one",null]}'
   ])
 })
 
 test('adding a new document clears the cache', t => {
   t.plan(1)
-  global[indexName].PUT([
-    {
-      _id: 10,
-      make: 'Tesla',
-      manufacturer: 'Volvo',
-      brand: 'Volvo',
-      colour: 'Gold'
-    }
-  ]).then(t.pass)
+  global[indexName]
+    .PUT([
+      {
+        _id: 10,
+        make: 'Tesla',
+        manufacturer: 'Volvo',
+        brand: 'Volvo',
+        colour: 'Gold'
+      }
+    ])
+    .then(t.pass)
 })
 
 test('cache is now cleared', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [])
+  t.deepEquals(_CACHE.keys(), [])
 })
 
 test('bump oldest cache entry to newest', t => {
@@ -267,7 +315,5 @@ test('bump oldest cache entry to newest', t => {
 test('cache is filling up again', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(Array.from(_CACHE.LRUStore.keys()), [
-    '{"QUERY":["boooom",null]}'
-  ])
+  t.deepEquals(_CACHE.keys(), ['{"QUERY":["boooom",null]}'])
 })

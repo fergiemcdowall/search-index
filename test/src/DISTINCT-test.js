@@ -114,9 +114,7 @@ test('simple DISTINCT with range', t => {
       LTE: 'c'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue' }
-    ])
+    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
   })
 })
 
@@ -145,9 +143,7 @@ test('simple DISTINCT with range', t => {
       LTE: 'c'
     }
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue' }
-    ])
+    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
   })
 })
 
@@ -171,9 +167,7 @@ test('simple DISTINCT', t => {
   DISTINCT({
     VALUE: 'red'
   }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red' }
-    ])
+    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'red' }])
   })
 })
 
@@ -225,22 +219,37 @@ test('DISTINCT on 2 fields', t => {
 test('DISTINCT on 2 fields with GTE/LTE', t => {
   const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: ['brand'],
-    VALUE: {
-      GTE: 'f'
+  DISTINCT(
+    {
+      FIELD: ['brand'],
+      VALUE: {
+        GTE: 'f'
+      }
+    },
+    {
+      FIELD: ['colour'],
+      VALUE: {
+        LTE: 'x'
+      }
     }
-  }, {
-    FIELD: ['colour'],
-    VALUE: {
-      LTE: 'x'
-    }
-  }).then(res => {
+  ).then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'tesla' },
       { FIELD: 'brand', VALUE: 'volvo' },
       { FIELD: 'colour', VALUE: 'blue' },
       { FIELD: 'colour', VALUE: 'red' }
+    ])
+  })
+})
+
+test('DISTINCT from string', t => {
+  const { DISTINCT } = global[indexName]
+  t.plan(1)
+  DISTINCT('tes').then(res => {
+    t.deepEqual(res, [
+      { FIELD: 'brand', VALUE: 'tesla' },
+      { FIELD: 'make', VALUE: 'tesla' },
+      { FIELD: 'manufacturer', VALUE: 'tesla' }
     ])
   })
 })

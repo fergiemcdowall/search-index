@@ -83,11 +83,11 @@ test('can add data', t => {
 test('simple _BUCKET', t => {
   const { _BUCKET } = global[indexName]
   t.plan(1)
-  _BUCKET(
-    'make:volvo'
-  ).then(res => {
+  _BUCKET('make:volvo').then(res => {
     t.deepEqual(res, {
-      FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: ['4', '5', '8']
+      FIELD: ['make'],
+      VALUE: { GTE: 'volvo', LTE: 'volvo' },
+      _id: [4, 5, 8]
     })
   })
 })
@@ -103,7 +103,9 @@ test('simple _BUCKET with a range', t => {
     }
   }).then(res => {
     t.deepEqual(res, {
-      FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' }, _id: ['0', '1', '2', '3', '6', '7', '9']
+      FIELD: ['make'],
+      VALUE: { GTE: 'a', LTE: 'u' },
+      _id: [0, 1, 2, 3, 6, 7, 9]
     })
   })
 })
@@ -113,11 +115,13 @@ test('simple BUCKET (JSON)', t => {
   const { BUCKETS } = global[indexName]
   t.plan(1)
   BUCKETS('make:volvo').then(res => {
-    t.deepEqual(res, [{
-      FIELD: ['make'],
-      VALUE: { GTE: 'volvo', LTE: 'volvo' },
-      _id: ['4', '5', '8']
-    }])
+    t.deepEqual(res, [
+      {
+        FIELD: ['make'],
+        VALUE: { GTE: 'volvo', LTE: 'volvo' },
+        _id: [4, 5, 8]
+      }
+    ])
   })
 })
 
@@ -132,10 +136,12 @@ test('simple BUCKET with a range (JSON)', t => {
       LTE: 'u'
     }
   }).then(res => {
-    t.deepEqual(res, [{
-      FIELD: ['make'],
-      VALUE: { GTE: 'a', LTE: 'u' },
-      _id: ['0', '1', '2', '3', '6', '7', '9']
-    }])
+    t.deepEqual(res, [
+      {
+        FIELD: ['make'],
+        VALUE: { GTE: 'a', LTE: 'u' },
+        _id: [0, 1, 2, 3, 6, 7, 9]
+      }
+    ])
   })
 })

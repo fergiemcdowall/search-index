@@ -11,7 +11,7 @@ const docs = [
 test('set up as per issue #535', async function (t) {
   t.plan(7)
 
-  const { PUT, QUERY, FLUSH } = await si({
+  const { PUT, FLUSH, SEARCH } = await si({
     name: sandbox + '535'
   })
   t.ok(PUT)
@@ -21,20 +21,20 @@ test('set up as per issue #535', async function (t) {
     { _id: 'asdfgh', status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await QUERY({
-    SEARCH: ['q']
-  }), {
+  t.deepEquals(await SEARCH(['q']), {
     RESULT: [
-      { _id: 'qwertyu', _match: ['idx:q#1.00'], _score: 1.1 }
+      {
+        _id: 'qwertyu',
+        _match: [{ FIELD: 'idx', VALUE: 'q', SCORE: '1.00' }],
+        _score: 1.1
+      }
     ],
     RESULT_LENGTH: 1
   })
 
   t.ok(await FLUSH())
 
-  t.deepEquals(await QUERY({
-    SEARCH: ['q']
-  }), {
+  t.deepEquals(await SEARCH(['q']), {
     RESULT: [],
     RESULT_LENGTH: 0
   })
@@ -44,11 +44,13 @@ test('set up as per issue #535', async function (t) {
     { _id: 'asdfgh', status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await QUERY({
-    SEARCH: ['q']
-  }), {
+  t.deepEquals(await SEARCH(['q']), {
     RESULT: [
-      { _id: 'qwertyu', _match: ['idx:q#1.00'], _score: 1.1 }
+      {
+        _id: 'qwertyu',
+        _match: [{ FIELD: 'idx', VALUE: 'q', SCORE: '1.00' }],
+        _score: 1.1
+      }
     ],
     RESULT_LENGTH: 1
   })

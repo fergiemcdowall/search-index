@@ -1,11 +1,21 @@
 {
   "name": "search-index",
-  "version": "2.4.0",
+  "version": "3.0.1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
+  "keywords": [
+    "search",
+    "elasticsearch",
+    "elastic",
+    "lunr.js",
+    "flexsearch",
+    "norch",
+    "solr"
+  ],
   "engines": {
     "node": ">=12"
   },
-  "main": "src/main.js",
+  "main": "src/node.js",
+  "browser": "src/browser.js",
   "files": [
     "dist",
     "src"
@@ -14,7 +24,7 @@
     "lib": "src"
   },
   "scripts": {
-    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cd dist && ln -s search-index-*.js search-index.js && cd ..",
+    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
     "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",
@@ -40,26 +50,32 @@
   "homepage": "https://fergiemcdowall.github.io/search-index/",
   "devDependencies": {
     "assert": "^2.0.0",
-    "doctoc": "^1.4.0",
+    "doctoc": "^2.1.0",
     "fuzzyset": "1.0.5",
-    "http-server": "^0.12.3",
+    "http-server": "14.0.0",
     "level-out": "^1.0.1",
-    "memdown": "^5.1.0",
-    "open-cli": "^6.0.1",
+    "memdown": "^6.1.1",
+    "open-cli": "^7.0.1",
     "path": "^0.12.7",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
-    "standard": "^16.0.2",
-    "stopword": "^1.0.6",
+    "standard": "^16.0.4",
+    "stemmer": "^1.0.5",
+    "stopword": "^1.0.11",
     "stream-browserify": "^3.0.0",
-    "tape": "^5.1.0",
-    "tape-run": "^8.0.0",
-    "webpack": "^5.11.1",
-    "webpack-cli": "^4.3.1",
+    "tape": "^5.4.1",
+    "tape-run": "^9.0.0",
+    "webpack": "^5.67.0",
+    "webpack-cli": "^4.9.2",
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "9.3.1",
+    "fergies-inverted-index": "10.0.5",
+    "level-js": "^6.1.0",
+    "leveldown": "^6.1.0",
+    "lru-cache": "^6.0.0",
+    "ngraminator": "^2.0.6",
+    "p-queue": "^7.1.0",
     "term-vector": "^1.0.0"
   }
 }

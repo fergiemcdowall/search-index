@@ -27,6 +27,7 @@ test('can add data', t => {
 
 test('Can access the underlying fergies-inverted-index', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get('brand:volvo#1.00')
-    .then(result => t.deepEquals(result, ['0']))
+  global[indexName].INDEX.STORE.get(['IDX', 'brand', ['volvo', '1.00']]).then(
+    result => t.deepEquals(result, [0])
+  )
 })
