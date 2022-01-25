@@ -121,6 +121,33 @@ test('simple _SEARCH with 2 clauses', t => {
   })
 })
 
+test('simple _SEARCH with 2 clauses and documents', t => {
+  t.plan(1)
+  global[indexName]
+    .SEARCH(['paul', 'musical'], {
+      DOCUMENTS: true
+    })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 9,
+            _match: [
+              { FIELD: 'text', VALUE: 'musical', SCORE: '0.50' },
+              { FIELD: 'text', VALUE: 'paul', SCORE: '0.50' }
+            ],
+            _score: 2.4,
+            _doc: {
+              _id: 9,
+              text: 'Paul invites you on a musical journey to Egypt Station, estimated time of arrival Friday 7th September 7, 2018 by way of Capitol Records.'
+            }
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
+
 test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
   global[indexName].SEARCH(['paul', 'and']).then(res => {

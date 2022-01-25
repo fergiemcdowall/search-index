@@ -88,18 +88,12 @@ Use `{ DOCUMENTS: true }`.
 
 Query that returns document IDs:
 ```javascript
-QUERY({
-  SEARCH: [ 'search', 'terms' ]
-})
+SEARCH([ 'search', 'terms' ])
 ```
 
 Query that returns documents:
 ```javascript
-QUERY({
-  SEARCH: [ 'search', 'terms' ]
-}, {
-  DOCUMENTS: true
-})
+SEARCH([ 'search', 'terms' ], { DOCUMENTS: true })
 ```
 
 
@@ -110,12 +104,12 @@ the `title` field you would do something like this:
 
 ```javascript
 QUERY({
-  SEARCH: [ 'title:orange' ]
+  AND: [ 'title:orange' ]
 })
 
 // can also be expressed as:
 QUERY({
-  SEARCH: [{
+  AND: [{
     FIELD: [ 'title' ],
     VALUE: 'orange'
   }]
@@ -123,7 +117,7 @@ QUERY({
 
 // or even
 QUERY({
-  SEARCH: [{
+  AND: [{
     FIELD: [ 'title' ],
     VALUE: {
       GTE: 'orange',
