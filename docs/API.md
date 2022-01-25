@@ -198,7 +198,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 
 ### Create a tokenization pipeline when querying
 
-TODO
+Use the [`PIPELINE`](#pipeline) option when using [`QUERY`](#query)
 
 
 
