@@ -10,10 +10,6 @@ const packageJSON = require('../package.json')
 const makeASearchIndex = ops =>
   // eslint-disable-next-line
   new Promise(async resolve => {
-    // TODO: change to https://www.npmjs.com/package/lru-cache
-    // ".flush" clears the cache ".cache" creates/promotes a cache entry
-    // const cache = new Cache(ops.cacheLength)
-
     // TODO: the cache size should be an option
     const cache = new LRU(1000)
 
