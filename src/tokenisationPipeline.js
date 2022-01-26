@@ -2,7 +2,7 @@ const tv = require('term-vector')
 const ngraminator = require('ngraminator')
 
 const SPLIT = ([tokens, field, ops]) =>
-  Promise.resolve([tokens.match(/[\p{L}\d]+/gu), field, ops])
+  Promise.resolve([tokens.match(/[\p{L}\d]+/gu) || [], field, ops])
 
 const SKIP = ([tokens, field, ops]) => [
   ops.skipFields.includes(field) ? [] : tokens,

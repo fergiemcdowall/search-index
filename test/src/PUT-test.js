@@ -832,3 +832,97 @@ test('Verify that PUT has created an appropriate index (doesnt index children of
     }
   )
 })
+
+const indexName6 = sandbox + '_PUT-6'
+
+test('create another search index', t => {
+  t.plan(1)
+  si({ name: indexName6 }).then(db => {
+    global[indexName6] = db
+    t.pass('ok')
+  })
+})
+
+test('can handle empty fields', t => {
+  t.plan(1)
+  global[indexName6]
+    .PUT(
+      [
+        {
+          _id: '0',
+          make: 'Tesla',
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: ''
+          }
+        },
+        {
+          _id: '1',
+          make: null,
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: false
+          }
+        },
+        {
+          _id: '2',
+          make: 0,
+          info: {
+            manufacturer: {
+              foo: 'XXX',
+              bar: 'XXX'
+            },
+            brand: 'Volvo'
+          }
+        }
+      ],
+      {
+        doNotIndexField: ['info.manufacturer']
+      }
+    )
+    .then(response =>
+      t.deepEquals(response, [
+        { _id: '0', status: 'CREATED', operation: 'PUT' },
+        { _id: '1', status: 'CREATED', operation: 'PUT' },
+        { _id: '2', status: 'CREATED', operation: 'PUT' }
+      ])
+    )
+})
+
+test('docs look good', t => {
+  t.plan(1)
+  global[indexName6].ALL_DOCUMENTS().then(response =>
+    t.deepEquals(response, [
+      {
+        _id: '0',
+        _doc: {
+          _id: '0',
+          make: 'Tesla',
+          info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: '' }
+        }
+      },
+      {
+        _id: '1',
+        _doc: {
+          _id: '1',
+          make: null,
+          info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: false }
+        }
+      },
+      {
+        _id: '2',
+        _doc: {
+          _id: '2',
+          make: 0,
+          info: { manufacturer: { foo: 'XXX', bar: 'XXX' }, brand: 'Volvo' }
+        }
+      }
+    ])
+  )
+})
