@@ -35,8 +35,7 @@ const data = [
   }
 ]
 
-// TODO: there should probably be an api call for this
-test('create a fii with memdown', t => {
+test('create a search-index with memdown', t => {
   t.plan(2)
   si({
     db: memdown,
