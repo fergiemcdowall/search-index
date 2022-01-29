@@ -359,9 +359,10 @@ generated and assigned
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams |
+|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams. See [ngraminator](https://www.npmjs.com/package/ngraminator) for how to specify ngrams |
+|`replace`|`object`|`{ fields: [], values: {} }`|`fields` is an array that specifies the fields where replacements will happen, `values` is an array that specifies the tokens to be swapped in, for example: `{ values: { sheep: [ 'animal', 'livestock' ] } }`|
 |`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-| `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing |
+|`stopwords`| `Array` | `[]` | A list of words to be ignored when indexing |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
@@ -749,7 +750,7 @@ It is possible to create your own tokenization pipeline stage. See the
 | LOWCASE | Bump all tokens to lower case |
 | NGRAMS | create ngrams |
 | SCORE_TERM_FREQUENCY | Score frequency of terms |
-| REPLACE | Replace terms with other terms |
+| REPLACE | Replace terms with other terms (synonyms) |
 | SPLIT | Splits string into tokens (note: this is always the first stage, and `tokens` is a string rather than an array)|
 | SPY | print output from precending stage to `console.log` |
 | STOPWORDS | remove stopwords |
