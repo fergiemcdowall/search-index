@@ -754,6 +754,3 @@ It is possible to create your own tokenization pipeline stage. See the
 | SPLIT | Splits string into tokens (note: this is always the first stage, and `tokens` is a string rather than an array)|
 | SPY | print output from precending stage to `console.log` |
 | STOPWORDS | remove stopwords |
-
-
-test
