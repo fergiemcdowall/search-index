@@ -30,5 +30,4 @@ const results = await QUERY( /* query */ )
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
 * [Browser demo](https://fergiemcdowall.github.io/search-index/demo/index.html) ([source code](demo/))
-* [Code examples](https://replit.com/repls/folder/search-index%20examples)
-
+* [Code examples](docs/EXAMPLES.md)
