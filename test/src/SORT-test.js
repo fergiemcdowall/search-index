@@ -89,7 +89,7 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('_SORT ALPHABETIC DESCENDING', t => {
+test('SORT ALPHABETIC DESCENDING BY SCORE (default)', t => {
   t.plan(1)
   global[indexName]
     .QUERY(
@@ -163,7 +163,7 @@ test('_SORT ALPHABETIC DESCENDING', t => {
     })
 })
 
-test('_SORT ALPHABETIC ASCENDING', t => {
+test('SORT ALPHABETIC ASCENDING', t => {
   t.plan(1)
   global[indexName]
     .QUERY(
@@ -237,7 +237,7 @@ test('_SORT ALPHABETIC ASCENDING', t => {
     })
 })
 
-test('_SORT NUMERIC ASCENDING', t => {
+test('SORT NUMERIC ASCENDING', t => {
   t.plan(1)
   global[indexName]
     .QUERY(
@@ -311,13 +311,13 @@ test('_SORT NUMERIC ASCENDING', t => {
     })
 })
 
-test('SORT on _match.price without fetching documents', t => {
+test('SORT on price when other fields are also selected', t => {
   t.plan(1)
   global[indexName]
     .SEARCH(
       [
         {
-          FIELD: 'price'
+          FIELD: ['price', 'brand']
         }
       ],
       {
@@ -335,52 +335,82 @@ test('SORT on _match.price without fetching documents', t => {
       t.deepEqual(RESULT, [
         {
           _id: '3',
-          _match: [{ FIELD: 'price', VALUE: 140000, SCORE: 140000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'bmw', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 140000, SCORE: 140000 }
+          ],
           _score: '140000'
         },
         {
           _id: '2',
-          _match: [{ FIELD: 'price', VALUE: 14000, SCORE: 14000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 14000, SCORE: 14000 }
+          ],
           _score: '14000'
         },
         {
           _id: '1',
-          _match: [{ FIELD: 'price', VALUE: 12000, SCORE: 12000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 12000, SCORE: 12000 }
+          ],
           _score: '12000'
         },
         {
           _id: '7',
-          _match: [{ FIELD: 'price', VALUE: 5000, SCORE: 5000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 5000, SCORE: 5000 }
+          ],
           _score: '5000'
         },
         {
           _id: '0',
-          _match: [{ FIELD: 'price', VALUE: 3000, SCORE: 3000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 3000, SCORE: 3000 }
+          ],
           _score: '3000'
         },
         {
           _id: '5',
-          _match: [{ FIELD: 'price', VALUE: 2000, SCORE: 2000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 2000, SCORE: 2000 }
+          ],
           _score: '2000'
         },
         {
           _id: '9',
-          _match: [{ FIELD: 'price', VALUE: 1100, SCORE: 1100 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 1100, SCORE: 1100 }
+          ],
           _score: '1100'
         },
         {
           _id: '4',
-          _match: [{ FIELD: 'price', VALUE: 1000, SCORE: 1000 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 1000, SCORE: 1000 }
+          ],
           _score: '1000'
         },
         {
           _id: '6',
-          _match: [{ FIELD: 'price', VALUE: 500, SCORE: 500 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'bmw', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 500, SCORE: 500 }
+          ],
           _score: '500'
         },
         {
           _id: '8',
-          _match: [{ FIELD: 'price', VALUE: 100, SCORE: 100 }],
+          _match: [
+            { FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' },
+            { FIELD: 'price', VALUE: 100, SCORE: 100 }
+          ],
           _score: '100'
         }
       ])

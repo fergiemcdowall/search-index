@@ -565,6 +565,9 @@ QUERY({
   SORT: {
     TYPE: 'NUMERIC',       // sort numerically, not alphabetically
     DIRECTION: 'ASCENDING' // cheapest first
+                           // (SORT will sort on _score by default, but can
+                           // optionally sort on a field specified by FIELD
+                           // that is present in _match)
   },
   PAGE: {
     NUMBER: 1,             // '1' is the second page (pages counted from '0')
@@ -654,13 +657,25 @@ See also [FACETS](#facets)
 
 #### SORT
 
+`SORT` will sort on `_score` by default, or any field in `_match`
+(specified by the `FIELD` parameter). Therefore, if the `FIELD`
+parameter is specified, then that field must be present in the
+query. So, for example, if you want to sort on "price", you have to
+include "price" in the query in order for it to appear in `_match` and
+therefore be available to sort on.
+
+If performance is not your primary concern, it is also possible to use
+[`DOCUMENTS`](#documents) and then sort using Javascript's
+[`sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+function.
+
 ```javascript
-// Return search results sorted by relevance to query tokens
+// Sorts result by _score, or a field in _match
 {
   SORT: {
-    TYPE: type,              // can be 'NUMERIC' or 'ALPHABETIC'
-    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING'
-    FIELD: field             // field to sort on
+    TYPE: type,              // can be 'NUMERIC' (default) or 'ALPHABETIC'
+    DIRECTION: direction,    // can be 'ASCENDING' or 'DESCENDING' (default)
+    FIELD: field             // field to sort on (defaults to _score)
   }
 }
 ```
