@@ -68,7 +68,7 @@ This module can be invoked with `import` and/or `require`
 depending on your environment:
 
 ```javascript
-import si from search-index
+import si from 'search-index'
 ```
 
 or
