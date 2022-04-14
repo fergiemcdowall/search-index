@@ -6,6 +6,11 @@ module.exports = ops => {
 
   const isArray = item => Array.isArray(item)
 
+  const isEmptyObject = item =>
+    item &&
+    Object.keys(item).length === 0 &&
+    Object.getPrototypeOf(item) === Object.prototype
+
   const processValueArray = arr => Promise.all(arr.map(processValueUnknownType))
 
   const processValueObject = obj =>
@@ -21,13 +26,14 @@ module.exports = ops => {
   const processValueUnknownType = (unknown, key) =>
     // eslint-disable-next-line
     new Promise(async resolve => {
+      if (unknown === null) return resolve(JSON.stringify([null, '1.00']))
+      if (isEmptyObject(unknown)) return resolve(JSON.stringify([[], '1.00']))
       if (Number.isInteger(unknown)) {
         return resolve(JSON.stringify([unknown, unknown]))
       }
       if (isString(unknown)) return resolve(ops.tokenizer(unknown, key, ops))
       if (isObject(unknown)) return resolve(processValueObject(unknown))
       if (isArray(unknown)) return resolve(processValueArray(unknown))
-      if (unknown === null) return resolve(JSON.stringify([null, '1.00']))
       return resolve(unknown)
     })
 
@@ -39,7 +45,9 @@ module.exports = ops => {
 
       // Docs with no _id are auto-assigned an ID
       // if (!doc.hasOwnProperty('_id')) doc._id = ops.idGenerator.next().value
-      if (!Object.prototype.hasOwnProperty.call(doc, '_id')) { doc._id = ops.idGenerator.next().value }
+      if (!Object.prototype.hasOwnProperty.call(doc, '_id')) {
+        doc._id = ops.idGenerator.next().value
+      }
 
       const acc = {}
       for (const key in doc) {
