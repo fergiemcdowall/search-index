@@ -354,7 +354,7 @@ If any document does not contain an `_id` field, then one will be
 generated and assigned
 
 
-`options` is an optional object that can contain the following values:
+`options` is an optional object that can contain the following values. These values can also be set when initialising the index rather than in every `PUT`:
 
 | Name | Type | Default | Description |
 |---|---|---|---|
@@ -366,6 +366,7 @@ generated and assigned
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+|`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
 
 ### Tokenization pipeline when indexing
 

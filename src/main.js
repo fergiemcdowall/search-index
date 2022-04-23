@@ -86,12 +86,11 @@ const initIndex = (ops = {}) =>
         ngrams: {},
         replace: {},
         storeRawDocs: true,
-        // TODO: processDocuments probably shouldn't be an option?
-
-        tokenizer: tp.tokenizer,
         stopwords: [],
         storeVectors: true, // TODO: make a test for this being false
-        tokenAppend: '#'
+        tokenAppend: '#',
+        tokenSplitRegex: /[\p{L}\d]+/gu,
+        tokenizer: tp.tokenizer
       },
       ops
     )
