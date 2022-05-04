@@ -62,7 +62,7 @@ const search = (q = '') => {
   const queryTokens = q.split(/\s+/).filter(item => item)
   const formatResult = result => ({
     query: q,
-    result: result
+    result
   })
   return (
     queryTokens.length + getFilters().length
@@ -120,7 +120,7 @@ autocomplete('#query', { hint: false }, [
 Promise.all([
   SearchIndex({
     name: 'mySearchIndex',
-    stopwords: stopwords
+    stopwords
   }),
   fetch('generate-index/EarthPorn-top-search-index.json').then(res =>
     res.json()
