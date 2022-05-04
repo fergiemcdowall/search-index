@@ -18,7 +18,7 @@ const stopwords = [
 
 si({
   name: path.join(__dirname, '/earthporn'),
-  stopwords: stopwords
+  stopwords
 })
   .then(db => db.INDEX.STORE.clear().then(() => db))
   .then(db => db.PUT(data, {

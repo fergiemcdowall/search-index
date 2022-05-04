@@ -10,7 +10,7 @@ module.exports = (ops, cache) => {
         // lte: undefined,
         gte: ['DOC_RAW', null],
         lte: ['DOC_RAW', undefined],
-        limit: limit
+        limit
       })
         .on('data', d =>
           result.push({
@@ -24,10 +24,10 @@ module.exports = (ops, cache) => {
   const DOCUMENTS = (...requestedDocs) =>
     requestedDocs.length
       ? Promise.all(
-          requestedDocs.map(_id =>
-            ops.fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
-          )
+        requestedDocs.map(_id =>
+          ops.fii.STORE.get(['DOC_RAW', _id]).catch(e => null)
         )
+      )
       : ALL_DOCUMENTS()
 
   const DICTIONARY = token =>
@@ -290,8 +290,8 @@ module.exports = (ops, cache) => {
     const formatResults = result =>
       result.RESULT
         ? Object.assign(result, {
-            RESULT_LENGTH: result.RESULT.length
-          })
+          RESULT_LENGTH: result.RESULT.length
+        })
         : {
             RESULT: result,
             RESULT_LENGTH: result.length
@@ -301,24 +301,24 @@ module.exports = (ops, cache) => {
     const appendDocuments = result =>
       options.DOCUMENTS
         ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(documents =>
-            Object.assign(result, {
-              RESULT: result.RESULT.map((doc, i) =>
-                Object.assign(doc, {
-                  _doc: documents[i]
-                })
-              )
-            })
-          )
+          Object.assign(result, {
+            RESULT: result.RESULT.map((doc, i) =>
+              Object.assign(doc, {
+                _doc: documents[i]
+              })
+            )
+          })
+        )
         : result
 
     // SCORE IF SPECIFIED
     const score = result =>
       options.SCORE
         ? SCORE(result.RESULT, options.SCORE).then(scoredResult =>
-            Object.assign(result, {
-              RESULT: scoredResult
-            })
-          )
+          Object.assign(result, {
+            RESULT: scoredResult
+          })
+        )
         : result
 
     // SORT IF SPECIFIED
@@ -336,10 +336,10 @@ module.exports = (ops, cache) => {
     const buckets = result =>
       options.BUCKETS
         ? ops.fii.BUCKETS(...options.BUCKETS).then(bkts =>
-            Object.assign(result, {
-              BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
-            })
-          )
+          Object.assign(result, {
+            BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
+          })
+        )
         : result
 
     // FACETS IF SPECIFIED
@@ -385,9 +385,9 @@ module.exports = (ops, cache) => {
     const weight = result =>
       options.WEIGHT
         ? Object.assign(
-            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
-            result
-          )
+          { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+          result
+        )
         : result
 
     return runQuery(q)
@@ -412,20 +412,20 @@ module.exports = (ops, cache) => {
     })
 
   return {
-    ALL_DOCUMENTS: ALL_DOCUMENTS,
+    ALL_DOCUMENTS,
     DICTIONARY: token =>
       tryCache(DICTIONARY(token), { DICTIONARY: token || null }),
-    DISTINCT: DISTINCT,
+    DISTINCT,
     DOCUMENTS: (...docs) =>
       tryCache(DOCUMENTS(...docs), {
         DOCUMENTS: docs
       }),
-    DOCUMENT_COUNT: DOCUMENT_COUNT,
-    FACETS: FACETS,
-    PAGE: PAGE,
+    DOCUMENT_COUNT,
+    FACETS,
+    PAGE,
     QUERY: (q, qops) => tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
-    SCORE: SCORE,
+    SCORE,
     SEARCH: (q, qops) => tryCache(SEARCH(q, qops), { SEARCH: [q, qops] }),
-    SORT: SORT
+    SORT
   }
 }
