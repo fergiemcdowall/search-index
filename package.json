@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
