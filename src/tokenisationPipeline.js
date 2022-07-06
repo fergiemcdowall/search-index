@@ -1,5 +1,5 @@
 const tv = require('term-vector')
-const ngraminator = require('ngraminator')
+const { ngraminator } = require('ngraminator')
 
 const SPLIT = ([tokens, field, ops]) =>
   Promise.resolve([tokens.match(ops.tokenSplitRegex) || [], field, ops])

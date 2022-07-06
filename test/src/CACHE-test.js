@@ -116,9 +116,6 @@ test('query', t => {
       ]
     }
   ).then(res => {
-    console.log('res ->')
-    console.log(res)
-
     t.deepEqual(res, {
       BUCKETS: [
         { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
@@ -141,46 +138,45 @@ test('query', t => {
 test('inspect cache', t => {
   const { _CACHE } = global[indexName]
   t.plan(2)
-  t.deepEquals(_CACHE.keys(), [
+  t.deepEquals(
+    _CACHE.keys().next().value,
     '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
-  ])
-  t.deepEquals(_CACHE.values(), [
-    {
-      RESULT: [
-        {
-          _id: 7,
-          _match: [
-            {
-              FIELD: 'brand',
-              VALUE: 'tesla',
-              SCORE: '1.00'
-            }
-          ]
+  )
+  t.deepEquals(_CACHE.values().next().value, {
+    RESULT: [
+      {
+        _id: 7,
+        _match: [
+          {
+            FIELD: 'brand',
+            VALUE: 'tesla',
+            SCORE: '1.00'
+          }
+        ]
+      },
+      {
+        _id: 8,
+        _match: [
+          {
+            FIELD: 'brand',
+            VALUE: 'tesla',
+            SCORE: '1.00'
+          }
+        ]
+      }
+    ],
+    RESULT_LENGTH: 2,
+    BUCKETS: [
+      {
+        FIELD: ['make'],
+        VALUE: {
+          GTE: 'volvo',
+          LTE: 'volvo'
         },
-        {
-          _id: 8,
-          _match: [
-            {
-              FIELD: 'brand',
-              VALUE: 'tesla',
-              SCORE: '1.00'
-            }
-          ]
-        }
-      ],
-      RESULT_LENGTH: 2,
-      BUCKETS: [
-        {
-          FIELD: ['make'],
-          VALUE: {
-            GTE: 'volvo',
-            LTE: 'volvo'
-          },
-          _id: [8]
-        }
-      ]
-    }
-  ])
+        _id: [8]
+      }
+    ]
+  })
 })
 
 test('run a duplicate query', t => {
@@ -221,9 +217,10 @@ test('run a duplicate query', t => {
 test('cache still only contains 1 entry', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(_CACHE.keys(), [
+  t.deepEquals(
+    _CACHE.keys().next().value,
     '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
-  ])
+  )
 })
 
 test('run more queries', t => {
@@ -251,8 +248,7 @@ test('run more queries', t => {
 
 test('cache has stripped all duplicate entries', t => {
   const { _CACHE } = global[indexName]
-  t.plan(1)
-  t.deepEquals(_CACHE.keys(), [
+  const keys = [
     '{"QUERY":["four",null]}',
     '{"QUERY":["three",null]}',
     '{"SEARCH":[["tesla"],null]}',
@@ -261,7 +257,10 @@ test('cache has stripped all duplicate entries', t => {
     '{"DICTIONARY":null}',
     '{"QUERY":["two",null]}',
     '{"QUERY":["one",null]}'
-  ])
+  ]
+  t.plan(keys.length)
+  const cKeys = _CACHE.keys()
+  keys.forEach(item => t.deepEquals(cKeys.next().value, item))
 })
 
 test('bump oldest cache entry to newest', t => {
@@ -272,8 +271,7 @@ test('bump oldest cache entry to newest', t => {
 
 test('oldest cache entry is now newest', t => {
   const { _CACHE } = global[indexName]
-  t.plan(1)
-  t.deepEquals(_CACHE.keys(), [
+  const keys = [
     '{"QUERY":["two",null]}',
     '{"QUERY":["four",null]}',
     '{"QUERY":["three",null]}',
@@ -282,7 +280,10 @@ test('oldest cache entry is now newest', t => {
     '{"DOCUMENTS":[]}',
     '{"DICTIONARY":null}',
     '{"QUERY":["one",null]}'
-  ])
+  ]
+  t.plan(keys.length)
+  const cKeys = _CACHE.keys()
+  keys.forEach(item => t.deepEquals(cKeys.next().value, item))
 })
 
 test('adding a new document clears the cache', t => {
@@ -303,7 +304,7 @@ test('adding a new document clears the cache', t => {
 test('cache is now cleared', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(_CACHE.keys(), [])
+  t.deepEquals(_CACHE.keys().next(), { value: undefined, done: true })
 })
 
 test('bump oldest cache entry to newest', t => {
@@ -315,5 +316,5 @@ test('bump oldest cache entry to newest', t => {
 test('cache is filling up again', t => {
   const { _CACHE } = global[indexName]
   t.plan(1)
-  t.deepEquals(_CACHE.keys(), ['{"QUERY":["boooom",null]}'])
+  t.deepEquals(_CACHE.keys().next().value, '{"QUERY":["boooom",null]}')
 })

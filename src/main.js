@@ -11,7 +11,9 @@ const makeASearchIndex = ops =>
   // eslint-disable-next-line
   new Promise(async resolve => {
     // TODO: the cache size should be an option
-    const cache = new LRU(1000)
+    const cache = new LRU({
+      max: 1000
+    })
 
     // eslint-disable-next-line
     const queue = new (await import('p-queue')).default({ concurrency: 1 })
