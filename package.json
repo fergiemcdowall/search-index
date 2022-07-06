@@ -70,7 +70,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "10.0.5",
+    "fergies-inverted-index": "~10.0.6",
     "level-js": "^6.1.0",
     "leveldown": "^6.1.0",
     "lru-cache": "^6.0.0",
