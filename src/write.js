@@ -15,7 +15,7 @@ module.exports = (ops, cache, queue) => {
     )
 
   const _PUT = (docs, putOptions) => {
-    cache.reset()
+    cache.clear()
 
     putOptions = Object.assign(ops, putOptions)
 
@@ -36,7 +36,7 @@ module.exports = (ops, cache, queue) => {
   }
 
   const _PUT_RAW = (docs, ids, dontStoreValue) => {
-    cache.reset()
+    cache.clear()
     return Promise.all(
       docs.map((doc, i) =>
         ops.fii.STORE.put(['DOC_RAW', ids[i]], dontStoreValue ? {} : doc)
@@ -54,7 +54,7 @@ module.exports = (ops, cache, queue) => {
 
   const _DELETE = _ids =>
     ops.fii.DELETE(_ids).then(result => {
-      cache.reset()
+      cache.clear()
       const deleted = result.filter(d => d.status === 'DELETED')
       return Promise.all([
         Promise.all(deleted.map(r => ops.fii.STORE.del(['DOC_RAW', r._id]))),
@@ -65,7 +65,7 @@ module.exports = (ops, cache, queue) => {
   const _FLUSH = () =>
     ops.fii.STORE.clear()
       .then(() => {
-        cache.reset()
+        cache.clear()
         const timestamp = Date.now()
         return ops.fii.STORE.batch([
           { type: 'put', key: ['~CREATED'], value: timestamp },
@@ -80,7 +80,7 @@ module.exports = (ops, cache, queue) => {
     FLUSH: _FLUSH,
     // TODO: IMPORT needs a test
     IMPORT: index => {
-      cache.reset()
+      cache.clear()
       return Promise.resolve(ops.fii.IMPORT(index))
     },
     PUT: (docs, pops) => queue.add(() => _PUT(docs, pops)),
