@@ -72,7 +72,7 @@
   "dependencies": {
     "browser-level": "^1.0.1",
     "classic-level": "^1.2.0",
-    "fergies-inverted-index": "file:../fergies-inverted-index",
+    "fergies-inverted-index": "github:mikaelkaron/fergies-inverted-index",
     "level-read-stream": "^1.1.0",
     "lru-cache": "^7.9.0",
     "ngraminator": "^3.0.1",
