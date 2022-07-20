@@ -1,11 +1,11 @@
 const si = require('./main.js')
-const leveldown = require('level-js')
+const { BrowserLevel } = require('browser-level')
 
 module.exports = ops =>
   si(
     Object.assign(
       {
-        db: leveldown
+        db: BrowserLevel
       },
       ops
     )

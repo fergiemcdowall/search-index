@@ -1,11 +1,13 @@
 // TODO: remove all '￮' and '#'
 
+const { EntryStream } = require('level-read-stream')
+
 module.exports = (ops, cache) => {
   // TODO add aggregation to ALL_DOCUMENTS
   const ALL_DOCUMENTS = limit =>
     new Promise((resolve, reject) => {
       const result = []
-      ops.fii.STORE.createReadStream({
+      new EntryStream(ops.fii.STORE, {
         // gte: null,
         // lte: undefined,
         gte: ['DOC_RAW', null],

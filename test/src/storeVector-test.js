@@ -1,4 +1,5 @@
 const si = require('../../')
+const { EntryStream } = require('level-read-stream')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
@@ -77,7 +78,7 @@ test('can verify store', t => {
     { key: ['IDX', 'text', ['small', '1.00']], value: [3] }
   ]
   t.plan(entries.length + 1)
-  global[indexName].INDEX.STORE.createReadStream({ lt: ['~'] })
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] })
     .on('data', d => {
       t.deepEquals(d, entries.shift())
     })

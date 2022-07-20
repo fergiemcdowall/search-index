@@ -1,4 +1,5 @@
 const si = require('../../')
+const { EntryStream } = require('level-read-stream')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
@@ -82,7 +83,7 @@ test('Verify that an appropriate index has been created (no raw docs)', t => {
     }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
     'data',
     d => {
       t.deepEquals(d, indexEntries.shift())
