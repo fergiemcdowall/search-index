@@ -1,5 +1,5 @@
 const { MemoryLevel } = require('memory-level')
-const si = require('../../src/node')
+const si = require('../../')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
