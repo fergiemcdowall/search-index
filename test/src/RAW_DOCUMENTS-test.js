@@ -1,4 +1,5 @@
 const si = require('../../')
+const { EntryStream } = require('level-read-stream')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
@@ -60,7 +61,7 @@ test('DOC_RAWs are inserted as expected', t => {
     }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream({
+  new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
     lte: ['DOC_RAW', undefined]
   }).on('data', d => {
@@ -100,7 +101,7 @@ test('Verify that PUT_RAW has updated the raw document', t => {
     }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream({
+  new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
     lte: ['DOC_RAW', undefined]
   }).on('data', d => {
@@ -140,7 +141,7 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
     }
   ]
   t.plan(indexEntries.length)
-  global[indexName].INDEX.STORE.createReadStream({
+  new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
     lte: ['DOC_RAW', undefined]
   }).on('data', d => {

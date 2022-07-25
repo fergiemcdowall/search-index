@@ -1,4 +1,4 @@
-const memdown = require('memdown')
+const { MemoryLevel } = require('memory-level')
 const si = require('../../')
 const test = require('tape')
 
@@ -35,10 +35,10 @@ const data = [
   }
 ]
 
-test('create a search-index with memdown', t => {
+test('create a search-index with memory-level', t => {
   t.plan(2)
   si({
-    db: memdown,
+    db: MemoryLevel,
     name: indexName
   })
     .then(idx =>

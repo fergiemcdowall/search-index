@@ -1,4 +1,5 @@
 const si = require('../../')
+const { EntryStream } = require('level-read-stream')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
@@ -81,7 +82,7 @@ test('index looks good', t => {
   ]
   const actualIndex = []
   t.plan(1)
-  global[dontIndexEmptyFields].INDEX.STORE.createReadStream({ lt: ['~'] })
+  new EntryStream(global[dontIndexEmptyFields].INDEX.STORE, { lt: ['~'] })
     .on('data', d => actualIndex.push(d))
     .on('end', () => {
       t.deepEquals(actualIndex, expectedIndex)

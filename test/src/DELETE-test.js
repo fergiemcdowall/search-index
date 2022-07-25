@@ -1,4 +1,5 @@
 const si = require('../../')
+const { EntryStream } = require('level-read-stream')
 const test = require('tape')
 
 const sandbox = 'test/sandbox/'
@@ -189,7 +190,7 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['something', '1.00']], value: ['c'] }
   ]
   t.plan(expectedIndexStructure.length)
-  global[indexName].INDEX.STORE.createReadStream({ lt: ['~'] }).on(
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
     'data',
     d => {
       t.deepEquals(d, expectedIndexStructure.shift())
@@ -310,7 +311,7 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['quite', '1.00']], value: ['a'] }
   ]
   t.plan(expectedIndexStructure.length)
-  global[indexName].INDEX.STORE.createReadStream({ lt: ['~'] }).on('data', d =>
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on('data', d =>
     t.deepEquals(d, expectedIndexStructure.shift())
   )
 })
