@@ -2,11 +2,11 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # API Documentation for search-index
 
-- [Module API](#module-api)
+- [Installation and initialization](#installation-and-initialization)
   - [Importing and requiring](#importing-and-requiring)
   - [Instantiating an index](#instantiating-an-index)
     - [`si(options)`](#sioptions)
-- [Index API](#index-api)
+- [Reading](#reading)
   - [Tokens](#tokens)
     - [Find anywhere](#find-anywhere)
     - [Find in named field or fields](#find-in-named-field-or-fields)
@@ -16,7 +16,6 @@
   - [ALL_DOCUMENTS](#all_documents)
   - [BUCKETS](#buckets)
   - [CREATED](#created)
-  - [DELETE](#delete)
   - [DICTIONARY](#dictionary)
   - [DISTINCT](#distinct)
   - [DOCUMENTS](#documents)
@@ -24,16 +23,8 @@
   - [EXPORT](#export)
   - [FACETS](#facets)
   - [FIELDS](#fields)
-  - [FLUSH](#flush)
-  - [IMPORT](#import)
-  - [INDEX](#index)
   - [MAX](#max)
   - [MIN](#min)
-  - [PUT](#put)
-    - [Tokenization pipeline when indexing](#tokenization-pipeline-when-indexing)
-      - [Reorder pipeline](#reorder-pipeline)
-      - [Create custom pipeline stages](#create-custom-pipeline-stages)
-  - [PUT_RAW](#put_raw)
   - [QUERY](#query)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
@@ -54,13 +45,41 @@
       - [NOT](#not)
       - [OR](#or)
   - [SEARCH](#search)
+- [Writing (creating and updating)](#writing-creating-and-updating)
+  - [IMPORT](#import)
+  - [PUT](#put)
+    - [Tokenization pipeline when indexing](#tokenization-pipeline-when-indexing)
+      - [Reorder pipeline](#reorder-pipeline)
+      - [Create custom pipeline stages](#create-custom-pipeline-stages)
+  - [PUT_RAW](#put_raw)
   - [TOKENIZATION_PIPELINE_STAGES](#tokenization_pipeline_stages)
+- [Deleting](#deleting)
+  - [DELETE](#delete)
+  - [FLUSH](#flush)
+- [Other](#other)
+  - [INDEX](#index)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-***(Convention: it is assumed here that the search-index module is always assigned to the variable `si`, but you can of course assign it to whatever you want)***
+For the purposes of brevity, this document assumes that a search index
+has been initialized in such a way that the functions below are
+available as variables:
 
-# Module API
+```javascript
+const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
+```
+
+It is also assumed here that the search-index module is always
+assigned to the variable `si`, but you can of course assign it to
+whatever you want
+
+It may be helpful to check out the
+[tests](https://github.com/fergiemcdowall/search-index/tree/master/test/src)
+for more examples.
+
+
+
+# Installation and initialization
 
 ## Importing and requiring
 
@@ -109,19 +128,7 @@ parameter.
 | `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
 
 
-# Index API
-
-For the purposes of brevity, this document assumes that a search index
-has been initialized in such a way that the functions below are
-available as variables:
-
-```javascript
-const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
-```
-
-It may be helpful to check out the
-[tests](https://github.com/fergiemcdowall/search-index/tree/master/test/src)
-for more examples.
+# Reading
 
 ## Tokens
 
@@ -201,7 +208,6 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 Use the [`PIPELINE`](#pipeline) option when using [`QUERY`](#query)
 
 
-
 ## ALL_DOCUMENTS
 
 See also [DOCUMENTS](#documents)
@@ -227,20 +233,6 @@ const buckets = await BUCKETS(token1, token2, ...)
 // find out when index was first created
 const timestamp = await CREATED()
 ```
-
-
-## DELETE
-
-NOTE: for indices to be deleteable documents must be indexed whith
-[`storeVectors`](#put) set to `true`
-
-See also [FLUSH](#flush)
-
-```javascript
-// Delete documents from the index
-const result = await DELETE(id1, id2, id3 /*...*/)
-```
-
 
 ## DICTIONARY
 
@@ -304,25 +296,6 @@ const fields = await FIELDS()
 ```
 
 
-## FLUSH
-```javascript
-// Delete everything and start again (including creation metadata)
-await FLUSH()
-```
-
-
-## IMPORT
-
-```javascript
-// creates an index from a backup/export
-await IMPORT(index)
-```
-
-
-## INDEX
-
-`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
-
 
 ## MAX
 
@@ -338,169 +311,6 @@ const max = await MAX(token)
 // get the minimum/first value of the given token space
 const min = await MIN(token)
 ```
-
-
-## PUT
-
-```javascript
-// Put documents into the index
-const result = await PUT(documents, options)
-// "result" shows the success or otherwise of the insertion
-// "documents" is an Array of javascript Objects.
-// "options" is an Object that contains indexing options
-```
-
-If any document does not contain an `_id` field, then one will be
-generated and assigned
-
-
-`options` is an optional object that can contain the following values. These values can also be set when initialising the index rather than in every `PUT`:
-
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams. See [ngraminator](https://www.npmjs.com/package/ngraminator) for how to specify ngrams |
-|`replace`|`object`|`{ fields: [], values: {} }`|`fields` is an array that specifies the fields where replacements will happen, `values` is an array that specifies the tokens to be swapped in, for example: `{ values: { sheep: [ 'animal', 'livestock' ] } }`|
-|`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-|`stopwords`| `Array` | `[]` | A list of words to be ignored when indexing |
-|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
-|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
-|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
-|`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
-
-### Tokenization pipeline when indexing
-
-Every field of every document that is indexed is passed through the
-tokenization pipeline. The tokenization pipeline consists of a
-sequence of stages that are applied to the field with the result of
-the preceding stage providing the input for the result of the
-following stage.
-
-The default tokenization pipeline looks like this:
-
-```javascript
-tokenizer: (tokens, field, ops) =>
-  SPLIT([tokens, field, ops])
-    .then(SKIP)
-    .then(LOWCASE)
-    .then(REPLACE)
-    .then(NGRAMS)
-    .then(STOPWORDS)
-    .then(SCORE_TERM_FREQUENCY)
-    .then(([tokens, field, ops]) => tokens)
-```
-
-#### Reorder pipeline
-
-Example: reorder the pipeline to remove stopwords _before_ creating
-ngrams:
-
-```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizer: (tokens, field, ops) =>
-  TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-    .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-    .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-    .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-    .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS) // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)    // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-    .then(([tokens, field, ops]) => tokens)
-})
-```
-
-#### Create custom pipeline stages
-
-A custom pipeline stage must be in the following form:
-
-```javascript
-// take tokens (Array of tokens), field (the field name), and options,
-// and then return then return the Array of tokens
-([ tokens, field, ops ]) => {
-  // some processing here...
-  return [ tokens, field, ops ]
-}
-```
-
-
-Example: Normalize text characters:
-
-```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-      // björn -> bjorn, allé -> alle, etc.
-      .then(([tokens, field, ops]) => [
-        tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-        field,
-        ops
-      ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-      .then(([tokens, field, ops]) => tokens)
-})
-```
-
-Example: stemmer:
-
-```javascript
-const stemmer = require('stemmer')
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
-  name: 'pipeline-test'
-})
-await PUT(docs, {
-  tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-      // björn -> bjorn, allé -> alle, etc.
-      .then(([tokens, field, ops]) => [
-        tokens.map(stemmer),
-        field,
-        ops
-      ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-      .then(([tokens, field, ops]) => tokens)
-})
-```
-
-
-## PUT_RAW
-
-```javascript
-// Put raw documents into the index
-const result = await PUT_RAW(rawDocuments)
-// "result" shows the success or otherwise of the insertion
-// "rawDocuments" is an Array of javascript Objects that must
-// contain an _id field
-```
-
-`PUT_RAW` writes raw documents to the index. Raw documents are the
-documents that the index returns. Use raw documents when the documents
-that are indexed are not the same as the ones that you want the index
-to return. This can be useful if you want documents to be retrievable
-for terms that dont appear in the actual document. It can also be
-useful if you want to store stripped down versions of the document in
-the index in order to save space.
-
-NOTE: if the documents that the index returns are very different to
-the corresponding documents that are indexed, it may make sense to set
-`storeRawDocs: false` when indexing (making indexing slightly faster),
-and instead add them with `PUT_RAW` afterwards.
-
 
 ## QUERY
 
@@ -736,6 +546,7 @@ function.
 ```
 
 
+
 ## SEARCH
 
 ```javascript
@@ -746,6 +557,179 @@ function.
 // })
 const results = await SEARCH(q)
 ```
+
+
+
+
+# Writing (creating and updating)
+
+## IMPORT
+
+```javascript
+// creates an index from a backup/export
+await IMPORT(index)
+```
+
+## PUT
+
+```javascript
+// Put documents into the index
+const result = await PUT(documents, options)
+// "result" shows the success or otherwise of the insertion
+// "documents" is an Array of javascript Objects.
+// "options" is an Object that contains indexing options
+```
+
+If any document does not contain an `_id` field, then one will be
+generated and assigned
+
+
+`options` is an optional object that can contain the following values. These values can also be set when initialising the index rather than in every `PUT`:
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
+|`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams. See [ngraminator](https://www.npmjs.com/package/ngraminator) for how to specify ngrams |
+|`replace`|`object`|`{ fields: [], values: {} }`|`fields` is an array that specifies the fields where replacements will happen, `values` is an array that specifies the tokens to be swapped in, for example: `{ values: { sheep: [ 'animal', 'livestock' ] } }`|
+|`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
+|`stopwords`| `Array` | `[]` | A list of words to be ignored when indexing |
+|`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
+|`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
+|`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
+|`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
+
+### Tokenization pipeline when indexing
+
+Every field of every document that is indexed is passed through the
+tokenization pipeline. The tokenization pipeline consists of a
+sequence of stages that are applied to the field with the result of
+the preceding stage providing the input for the result of the
+following stage.
+
+The default tokenization pipeline looks like this:
+
+```javascript
+tokenizer: (tokens, field, ops) =>
+  SPLIT([tokens, field, ops])
+    .then(SKIP)
+    .then(LOWCASE)
+    .then(REPLACE)
+    .then(NGRAMS)
+    .then(STOPWORDS)
+    .then(SCORE_TERM_FREQUENCY)
+    .then(([tokens, field, ops]) => tokens)
+```
+
+#### Reorder pipeline
+
+Example: reorder the pipeline to remove stopwords _before_ creating
+ngrams:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizer: (tokens, field, ops) =>
+  TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+    .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+    .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+    .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+    .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS) // <-- order switched
+    .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)    // <-- order switched
+    .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+    .then(([tokens, field, ops]) => tokens)
+})
+```
+
+#### Create custom pipeline stages
+
+A custom pipeline stage must be in the following form:
+
+```javascript
+// take tokens (Array of tokens), field (the field name), and options,
+// and then return then return the Array of tokens
+([ tokens, field, ops ]) => {
+  // some processing here...
+  return [ tokens, field, ops ]
+}
+```
+
+
+Example: Normalize text characters:
+
+```javascript
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizer: (tokens, field, ops) =>
+    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+      // björn -> bjorn, allé -> alle, etc.
+      .then(([tokens, field, ops]) => [
+        tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+        field,
+        ops
+      ])
+      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
+})
+```
+
+Example: stemmer:
+
+```javascript
+const stemmer = require('stemmer')
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+  name: 'pipeline-test'
+})
+await PUT(docs, {
+  tokenizer: (tokens, field, ops) =>
+    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
+      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
+      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+      // björn -> bjorn, allé -> alle, etc.
+      .then(([tokens, field, ops]) => [
+        tokens.map(stemmer),
+        field,
+        ops
+      ])
+      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
+})
+```
+
+
+## PUT_RAW
+
+```javascript
+// Put raw documents into the index
+const result = await PUT_RAW(rawDocuments)
+// "result" shows the success or otherwise of the insertion
+// "rawDocuments" is an Array of javascript Objects that must
+// contain an _id field
+```
+
+`PUT_RAW` writes raw documents to the index. Raw documents are the
+documents that the index returns. Use raw documents when the documents
+that are indexed are not the same as the ones that you want the index
+to return. This can be useful if you want documents to be retrievable
+for terms that dont appear in the actual document. It can also be
+useful if you want to store stripped down versions of the document in
+the index in order to save space.
+
+NOTE: if the documents that the index returns are very different to
+the corresponding documents that are indexed, it may make sense to set
+`storeRawDocs: false` when indexing (making indexing slightly faster),
+and instead add them with `PUT_RAW` afterwards.
 
 
 ## TOKENIZATION_PIPELINE_STAGES
@@ -770,3 +754,34 @@ It is possible to create your own tokenization pipeline stage. See the
 | SPLIT | Splits string into tokens (note: this is always the first stage, and `tokens` is a string rather than an array)|
 | SPY | print output from precending stage to `console.log` |
 | STOPWORDS | remove stopwords |
+
+
+
+
+
+# Deleting
+
+## DELETE
+
+NOTE: for indices to be deleteable documents must be indexed whith
+[`storeVectors`](#put) set to `true`
+
+```javascript
+// Delete documents from the index
+const result = await DELETE(id1, id2, id3 /*...*/)
+```
+
+
+## FLUSH
+```javascript
+// Delete everything and start again (including creation metadata)
+await FLUSH()
+```
+
+# Other
+
+## INDEX
+
+`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
