@@ -296,6 +296,13 @@ const fields = await FIELDS()
 ```
 
 
+## LAST_UPDATED
+
+```javascript
+// find out when index was last updated
+const timestamp = await LAST_UPDATED()
+```
+
 
 ## MAX
 
