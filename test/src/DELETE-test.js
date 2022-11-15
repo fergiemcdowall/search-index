@@ -324,3 +324,100 @@ test('DELETE with non-existent id', t => {
       t.deepEqual(res, [{ _id: 'd', operation: 'DELETE', status: 'FAILED' }])
     )
 })
+
+test('can add some data', t => {
+  t.plan(1)
+  global[indexName].PUT(data).then(() => {
+    t.pass('ok')
+  })
+})
+
+test('_DOCUMENT_COUNT is 3', t => {
+  t.plan(1)
+  const { DOCUMENT_COUNT } = global[indexName]
+  DOCUMENT_COUNT().then(res => {
+    t.equal(res, 3)
+  })
+})
+
+test('can DELETE many documents', t => {
+  t.plan(1)
+  global[indexName].DELETE('a', 'c', 'd').then(res =>
+    t.deepEqual(res, [
+      { _id: 'a', operation: 'DELETE', status: 'DELETED' },
+      { _id: 'c', operation: 'DELETE', status: 'DELETED' },
+      { _id: 'd', operation: 'DELETE', status: 'FAILED' }
+    ])
+  )
+})
+
+test('verify DELETE', t => {
+  const expectedIndexStructure = [
+    { key: ['CREATED_WITH'], value: 'search-index@3.3.0' },
+    {
+      key: ['DOC', 'b'],
+      value: {
+        _id: 'b',
+        title: [
+          '["a","1.00"]',
+          '["cool","1.00"]',
+          '["document","1.00"]',
+          '["quite","1.00"]'
+        ],
+        body: {
+          text: [
+            '["bananas","1.00"]',
+            '["cool","1.00"]',
+            '["document","1.00"]',
+            '["is","1.00"]',
+            '["really","1.00"]',
+            '["this","1.00"]'
+          ],
+          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+        },
+        importantNumber: '[500,500]'
+      }
+    },
+    { key: ['DOCUMENT_COUNT'], value: 1 },
+    {
+      key: ['DOC_RAW', 'b'],
+      value: {
+        _id: 'b',
+        title: 'quite a cool document',
+        body: {
+          text: 'this document is really cool bananas',
+          metadata: 'coolness documentness'
+        },
+        importantNumber: 500
+      }
+    },
+    { key: ['FIELD', 'body.metadata'], value: 'body.metadata' },
+    { key: ['FIELD', 'body.text'], value: 'body.text' },
+    { key: ['FIELD', 'importantnumber'], value: 'importantnumber' },
+    { key: ['FIELD', 'title'], value: 'title' },
+    {
+      key: ['IDX', 'body.metadata', ['coolness', '1.00']],
+      value: ['b']
+    },
+    {
+      key: ['IDX', 'body.metadata', ['documentness', '1.00']],
+      value: ['b']
+    },
+    { key: ['IDX', 'body.text', ['bananas', '1.00']], value: ['b'] },
+    { key: ['IDX', 'body.text', ['cool', '1.00']], value: ['b'] },
+    { key: ['IDX', 'body.text', ['document', '1.00']], value: ['b'] },
+    { key: ['IDX', 'body.text', ['is', '1.00']], value: ['b'] },
+    { key: ['IDX', 'body.text', ['really', '1.00']], value: ['b'] },
+    { key: ['IDX', 'body.text', ['this', '1.00']], value: ['b'] },
+    { key: ['IDX', 'importantnumber', [500, 500]], value: ['b'] },
+    { key: ['IDX', 'title', ['a', '1.00']], value: ['b'] },
+    { key: ['IDX', 'title', ['cool', '1.00']], value: ['b'] },
+    { key: ['IDX', 'title', ['document', '1.00']], value: ['b'] },
+    { key: ['IDX', 'title', ['quite', '1.00']], value: ['b'] }
+  ]
+  t.plan(expectedIndexStructure.length)
+
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on('data', d =>
+    t.deepEquals(d, expectedIndexStructure.shift())
+  )
+})
