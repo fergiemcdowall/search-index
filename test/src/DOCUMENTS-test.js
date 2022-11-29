@@ -158,17 +158,63 @@ test('DOCUMENTS() can return named documents', t => {
   })
 })
 
-// This is not currently supported, but should it be? ->
-// test('access DOCUMENTS() through QUERY()', t => {
-//   t.plan(1)
-//   global[indexName]
-//     .QUERY({
-//       DOCUMENTS: ['8', '9']
-//     })
-//     .then(documents => {
-//       t.deepEqual(documents, {
-//         RESULT: [data[8], data[9]],
-//         RESULT_LENGTH: 2
-//       })
-//     })
-// })
+test('access ALL_DOCUMENTS() through QUERY()', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY({
+      ALL_DOCUMENTS: 1
+    })
+    .then(documents => {
+      t.deepEqual(documents, {
+        RESULT: [
+          {
+            _id: data[0]._id,
+            _doc: data[0]
+          }
+        ],
+        RESULT_LENGTH: 1
+      })
+    })
+})
+
+test('access ALL_DOCUMENTS() through QUERY() unlimited (-1)', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY({
+      ALL_DOCUMENTS: -1
+    })
+    .then(documents => {
+      t.deepEqual(documents, {
+        RESULT: data.map(doc => ({
+          _id: doc._id,
+          _doc: doc
+        })),
+        RESULT_LENGTH: 10
+      })
+    })
+})
+
+test('access ALL_DOCUMENTS() through QUERY() unlimited (-1) with PAGE', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY(
+      {
+        ALL_DOCUMENTS: -1
+      },
+      {
+        PAGE: {
+          NUMBER: 0,
+          SIZE: 2
+        }
+      }
+    )
+    .then(documents => {
+      t.deepEqual(documents, {
+        RESULT: data.slice(0, 2).map(doc => ({
+          _id: doc._id,
+          _doc: doc
+        })),
+        RESULT_LENGTH: 10
+      })
+    })
+})
