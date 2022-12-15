@@ -23,12 +23,12 @@
   - [EXPORT](#export)
   - [FACETS](#facets)
   - [FIELDS](#fields)
+  - [LAST_UPDATED](#last_updated)
   - [MAX](#max)
   - [MIN](#min)
   - [QUERY](#query)
     - [Running queries](#running-queries)
       - [Returning references or documents](#returning-references-or-documents)
-      - [Nesting query verbs](#nesting-query-verbs)
       - [Manipulating result sets](#manipulating-result-sets)
     - [Query options](#query-options)
       - [BUCKETS](#buckets-1)
@@ -40,6 +40,7 @@
       - [SORT](#sort)
       - [WEIGHT](#weight)
     - [Query verbs](#query-verbs)
+      - [Nesting query verbs](#nesting-query-verbs)
       - [ALL_DOCUMENTS](#all_documents-1)
       - [AND](#and)
       - [NOT](#not)
@@ -355,20 +356,6 @@ References are returned by default. To return documents, pass the
     const results = await QUERY(query, { DOCUMENTS: true })
 ```
 
-#### Nesting query verbs
-
-Query verbs can be nested to create powerful expressions:
-
-```javascript
-// Example: AND with a nested OR with a nested AND
-{
-  AND: [ token1, token2, {
-    OR: [ token3, {
-      AND: [ token4, token5 ]
-    }]
-  }]
-}
-```
 
 #### Manipulating result sets
 
@@ -512,6 +499,21 @@ function.
 ```
 
 ### Query verbs
+
+
+Query verbs can be nested to create powerful expressions:
+
+```javascript
+// Example: AND with a nested OR with a nested AND
+{
+  AND: [ token1, token2, {
+    OR: [ token3, {
+      AND: [ token4, token5 ]
+    }]
+  }]
+}
+```
+
 
 #### ALL_DOCUMENTS
 

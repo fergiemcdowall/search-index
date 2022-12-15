@@ -162,6 +162,342 @@ test('SCORE TFIDF JSON all fields', t => {
     })
 })
 
+test('SCORE TFIDF JSON all fields as default', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY(
+      {
+        AND: ['tesla']
+      },
+      {
+        SCORE: {},
+        SORT: true
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '2',
+            _match: [
+              { FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ],
+            _score: 0.64
+          },
+          {
+            _id: '6',
+            _match: [
+              { FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ],
+            _score: 0.64
+          },
+          {
+            _id: '7',
+            _match: [
+              { FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ],
+            _score: 0.64
+          },
+          {
+            _id: '0',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }],
+            _score: 0.32
+          },
+          {
+            _id: '3',
+            _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }],
+            _score: 0.32
+          },
+          {
+            _id: '5',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }],
+            _score: 0.32
+          },
+          {
+            _id: '8',
+            _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }],
+            _score: 0.32
+          },
+          {
+            _id: '9',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }],
+            _score: 0.32
+          }
+        ],
+        RESULT_LENGTH: 8
+      })
+    })
+})
+
+test('SCORE TFIDF JSON when using ALL_DOCUMENTS', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY(
+      {
+        ALL_DOCUMENTS: -1
+      },
+      {
+        SCORE: {
+          TYPE: 'TFIDF'
+        },
+        SORT: true
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '0',
+            _doc: {
+              _id: '0',
+              make: 'Tesla',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 3000
+            },
+            _score: 0
+          },
+          {
+            _id: '1',
+            _doc: {
+              _id: '1',
+              make: 'BMW',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 12000
+            },
+            _score: 0
+          },
+          {
+            _id: '2',
+            _doc: {
+              _id: '2',
+              make: 'Tesla',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 14000
+            },
+            _score: 0
+          },
+          {
+            _id: '3',
+            _doc: {
+              _id: '3',
+              make: 'Tesla',
+              manufacturer: 'Volvo',
+              brand: 'BMW',
+              price: 140000
+            },
+            _score: 0
+          },
+          {
+            _id: '4',
+            _doc: {
+              _id: '4',
+              make: 'Volvo',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 1000
+            },
+            _score: 0
+          },
+          {
+            _id: '5',
+            _doc: {
+              _id: '5',
+              make: 'Volvo',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 2000
+            },
+            _score: 0
+          },
+          {
+            _id: '6',
+            _doc: {
+              _id: '6',
+              make: 'Tesla',
+              manufacturer: 'Tesla',
+              brand: 'BMW',
+              price: 500
+            },
+            _score: 0
+          },
+          {
+            _id: '7',
+            _doc: {
+              _id: '7',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Tesla',
+              price: 5000
+            },
+            _score: 0
+          },
+          {
+            _id: '8',
+            _doc: {
+              _id: '8',
+              make: 'Volvo',
+              manufacturer: 'BMW',
+              brand: 'Tesla',
+              price: 100
+            },
+            _score: 0
+          },
+          {
+            _id: '9',
+            _doc: {
+              _id: '9',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 1000
+            },
+            _score: 0
+          }
+        ],
+        RESULT_LENGTH: 10
+      })
+    })
+})
+
+test('SCORE VALUE JSON when using ALL_DOCUMENTS', t => {
+  t.plan(1)
+  global[indexName]
+    .QUERY(
+      {
+        ALL_DOCUMENTS: -1
+      },
+      {
+        SCORE: {
+          TYPE: 'VALUE'
+        },
+        SORT: true
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '0',
+            _doc: {
+              _id: '0',
+              make: 'Tesla',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 3000
+            },
+            _score: ''
+          },
+          {
+            _id: '1',
+            _doc: {
+              _id: '1',
+              make: 'BMW',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 12000
+            },
+            _score: ''
+          },
+          {
+            _id: '2',
+            _doc: {
+              _id: '2',
+              make: 'Tesla',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 14000
+            },
+            _score: ''
+          },
+          {
+            _id: '3',
+            _doc: {
+              _id: '3',
+              make: 'Tesla',
+              manufacturer: 'Volvo',
+              brand: 'BMW',
+              price: 140000
+            },
+            _score: ''
+          },
+          {
+            _id: '4',
+            _doc: {
+              _id: '4',
+              make: 'Volvo',
+              manufacturer: 'Volvo',
+              brand: 'Volvo',
+              price: 1000
+            },
+            _score: ''
+          },
+          {
+            _id: '5',
+            _doc: {
+              _id: '5',
+              make: 'Volvo',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 2000
+            },
+            _score: ''
+          },
+          {
+            _id: '6',
+            _doc: {
+              _id: '6',
+              make: 'Tesla',
+              manufacturer: 'Tesla',
+              brand: 'BMW',
+              price: 500
+            },
+            _score: ''
+          },
+          {
+            _id: '7',
+            _doc: {
+              _id: '7',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Tesla',
+              price: 5000
+            },
+            _score: ''
+          },
+          {
+            _id: '8',
+            _doc: {
+              _id: '8',
+              make: 'Volvo',
+              manufacturer: 'BMW',
+              brand: 'Tesla',
+              price: 100
+            },
+            _score: ''
+          },
+          {
+            _id: '9',
+            _doc: {
+              _id: '9',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Volvo',
+              price: 1000
+            },
+            _score: ''
+          }
+        ],
+        RESULT_LENGTH: 10
+      })
+    })
+})
+
 test('SCORE TFIDF JSON specified fields', t => {
   t.plan(1)
   global[indexName]
