@@ -366,7 +366,10 @@ test('can DELETE many documents', t => {
 
 test('verify DELETE', t => {
   const expectedIndexStructure = [
-    { key: ['CREATED_WITH'], value: 'search-index@3.3.0' },
+    {
+      key: ['CREATED_WITH'],
+      value: 'search-index@' + require('../../package.json').version
+    },
     {
       key: ['DOC', 'b'],
       value: {
