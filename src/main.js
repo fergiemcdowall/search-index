@@ -55,6 +55,7 @@ const makeASearchIndex = ops =>
         DISTINCT: r.DISTINCT,
         DOCUMENTS: r.DOCUMENTS,
         DOCUMENT_COUNT: r.DOCUMENT_COUNT,
+        DOCUMENT_VECTORS: r.DOCUMENT_VECTORS,
         EXPORT: ops.fii.EXPORT,
         FACETS: r.FACETS,
         FIELDS: ops.fii.FIELDS,
@@ -70,9 +71,6 @@ const makeASearchIndex = ops =>
 
 const initIndex = (ops = {}) =>
   new Promise((resolve, reject) => {
-    // TODO: dont pass tokenization ops through to fii. Use the
-    // tokenization pipeline instead and always initialize fii with the
-    // same ops
     ops = Object.assign(
       {
         cacheLength: 1000,
@@ -84,6 +82,15 @@ const initIndex = (ops = {}) =>
             yield Date.now() + '-' + i++
           }
         })(),
+        isLeaf: node =>
+          Array.isArray(node) &&
+          node.length === 2 &&
+          node.every(
+            item =>
+              typeof item === 'string' ||
+              typeof item === 'number' ||
+              item === null
+          ),
         skipFields: [],
         ngrams: {},
         replace: {},

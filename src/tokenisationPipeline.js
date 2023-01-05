@@ -63,12 +63,15 @@ const SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
   )
   return Promise.resolve([
     v
-      .map(item =>
-        // TODO: maybe stringify should be its own pipeline stage
-        JSON.stringify([
-          item.term[0],
-          (item.positions.length / mostTokenOccurances).toFixed(2)
-        ])
+      .map(
+        item =>
+          // TODO: maybe stringify should be its own pipeline stage
+          // JSON.stringify(
+          [
+            item.term[0],
+            (item.positions.length / mostTokenOccurances).toFixed(2)
+          ]
+        // )
       )
       // TODO: is this working on Arrays?
       .sort(),

@@ -46,21 +46,33 @@ test('can verify store', t => {
       key: ['DOC', 1],
       value: {
         _id: 1,
-        text: ['["a","1.00"]', '["banana","1.00"]', '["giant","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['banana', '1.00'],
+          ['giant', '1.00']
+        ]
       }
     },
     {
       key: ['DOC', 2],
       value: {
         _id: 2,
-        text: ['["a","1.00"]', '["giant","1.00"]', '["pineapple","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['giant', '1.00'],
+          ['pineapple', '1.00']
+        ]
       }
     },
     {
       key: ['DOC', 3],
       value: {
         _id: 3,
-        text: ['["a","1.00"]', '["pineapple","1.00"]', '["small","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['pineapple', '1.00'],
+          ['small', '1.00']
+        ]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 3 },
@@ -155,21 +167,33 @@ test('can verify store', t => {
       key: ['DOC', 1],
       value: {
         _id: 1,
-        text: ['["a","1.00"]', '["banana","1.00"]', '["giant","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['banana', '1.00'],
+          ['giant', '1.00']
+        ]
       }
     },
     {
       key: ['DOC', 2],
       value: {
         _id: 2,
-        text: ['["a","1.00"]', '["giant","1.00"]', '["pineapple","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['giant', '1.00'],
+          ['pineapple', '1.00']
+        ]
       }
     },
     {
       key: ['DOC', 3],
       value: {
         _id: 3,
-        text: ['["a","1.00"]', '["pineapple","1.00"]', '["small","1.00"]']
+        text: [
+          ['a', '1.00'],
+          ['pineapple', '1.00'],
+          ['small', '1.00']
+        ]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 3 },

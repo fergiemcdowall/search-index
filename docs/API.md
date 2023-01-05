@@ -19,6 +19,7 @@
   - [DICTIONARY](#dictionary)
   - [DISTINCT](#distinct)
   - [DOCUMENTS](#documents)
+  - [DOCUMENT_VECTORS](#document_vectors)
   - [DOCUMENT_COUNT](#document_count)
   - [EXPORT](#export)
   - [FACETS](#facets)
@@ -40,7 +41,6 @@
       - [SORT](#sort)
       - [WEIGHT](#weight)
     - [Query verbs](#query-verbs)
-      - [Nesting query verbs](#nesting-query-verbs)
       - [ALL_DOCUMENTS](#all_documents-1)
       - [AND](#and)
       - [NOT](#not)
@@ -261,6 +261,13 @@ See also [ALL_DOCUMENTS](#all_documents)
 ```javascript
 // Return named documents from index.
 const documents = await DOCUMENTS(id1, id2, id3 /* ... */)
+```
+
+## DOCUMENT_VECTORS
+
+```javascript
+// Return named document vectors from index.
+const documentVectors = await DOCUMENT_VECTORS(id1, id2, id3 /* ... */)
 ```
 
 
@@ -608,6 +615,8 @@ generated and assigned
 |`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
 
 ### Tokenization pipeline when indexing
+
+Tokenized documents can be inspected with [`DOCUMENT_VECTORS`](#document_vectors)
 
 Every field of every document that is indexed is passed through the
 tokenization pipeline. The tokenization pipeline consists of a

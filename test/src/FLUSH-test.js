@@ -46,22 +46,25 @@ test('verify index structure', t => {
       value: {
         _id: 'a',
         title: [
-          '["a","1.00"]',
-          '["cool","1.00"]',
-          '["document","1.00"]',
-          '["quite","1.00"]'
+          ['a', '1.00'],
+          ['cool', '1.00'],
+          ['document', '1.00'],
+          ['quite', '1.00']
         ],
         body: {
           text: [
-            '["cool","1.00"]',
-            '["document","0.33"]',
-            '["is","0.33"]',
-            '["really","0.33"]',
-            '["this","0.33"]'
+            ['cool', '1.00'],
+            ['document', '0.33'],
+            ['is', '0.33'],
+            ['really', '0.33'],
+            ['this', '0.33']
           ],
-          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+          metadata: [
+            ['coolness', '1.00'],
+            ['documentness', '1.00']
+          ]
         },
-        importantNumber: '[5000,5000]'
+        importantNumber: [5000, 5000]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 1 },

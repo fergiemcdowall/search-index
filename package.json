@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -53,6 +53,7 @@
     "doctoc": "^2.2.0",
     "fuzzyset": "1.0.5",
     "http-server": "14.1.0",
+    "level-out": "^1.0.1",
     "memory-level": "^1.0.0",
     "open-cli": "^7.0.1",
     "os-browserify": "^0.3.0",
@@ -71,8 +72,9 @@
   },
   "dependencies": {
     "browser-level": "^1.0.1",
+    "charwise": "^3.0.1",
     "classic-level": "^1.2.0",
-    "fergies-inverted-index": "^10.1.0",
+    "fergies-inverted-index": "^11.0.0",
     "level-read-stream": "^1.1.0",
     "lru-cache": "^7.9.0",
     "ngraminator": "^3.0.1",

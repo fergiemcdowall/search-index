@@ -89,38 +89,47 @@ test('verify DELETE', t => {
       value: {
         _id: 'a',
         title: [
-          '["a","1.00"]',
-          '["cool","1.00"]',
-          '["document","1.00"]',
-          '["quite","1.00"]'
+          ['a', '1.00'],
+          ['cool', '1.00'],
+          ['document', '1.00'],
+          ['quite', '1.00']
         ],
         body: {
           text: [
-            '["cool","1.00"]',
-            '["document","0.33"]',
-            '["is","0.33"]',
-            '["really","0.33"]',
-            '["this","0.33"]'
+            ['cool', '1.00'],
+            ['document', '0.33'],
+            ['is', '0.33'],
+            ['really', '0.33'],
+            ['this', '0.33']
           ],
-          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+          metadata: [
+            ['coolness', '1.00'],
+            ['documentness', '1.00']
+          ]
         },
-        importantNumber: '[5000,5000]'
+        importantNumber: [5000, 5000]
       }
     },
     {
       key: ['DOC', 'c'],
       value: {
         _id: 'c',
-        title: ['["different","1.00"]', '["something","1.00"]'],
+        title: [
+          ['different', '1.00'],
+          ['something', '1.00']
+        ],
         body: {
           text: [
-            '["different","1.00"]',
-            '["something","1.00"]',
-            '["totally","1.00"]'
+            ['different', '1.00'],
+            ['something', '1.00'],
+            ['totally', '1.00']
           ],
-          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+          metadata: [
+            ['coolness', '1.00'],
+            ['documentness', '1.00']
+          ]
         },
-        importantNumber: '[200,200]'
+        importantNumber: [200, 200]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 2 },
@@ -193,6 +202,7 @@ test('verify DELETE', t => {
   new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
     'data',
     d => {
+      // console.log(JSON.stringify(d, null, 2))
       t.deepEquals(d, expectedIndexStructure.shift())
     }
   )
@@ -253,22 +263,25 @@ test('verify DELETE', t => {
       value: {
         _id: 'a',
         title: [
-          '["a","1.00"]',
-          '["cool","1.00"]',
-          '["document","1.00"]',
-          '["quite","1.00"]'
+          ['a', '1.00'],
+          ['cool', '1.00'],
+          ['document', '1.00'],
+          ['quite', '1.00']
         ],
         body: {
           text: [
-            '["cool","1.00"]',
-            '["document","0.33"]',
-            '["is","0.33"]',
-            '["really","0.33"]',
-            '["this","0.33"]'
+            ['cool', '1.00'],
+            ['document', '0.33'],
+            ['is', '0.33'],
+            ['really', '0.33'],
+            ['this', '0.33']
           ],
-          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+          metadata: [
+            ['coolness', '1.00'],
+            ['documentness', '1.00']
+          ]
         },
-        importantNumber: '[5000,5000]'
+        importantNumber: [5000, 5000]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 1 },
@@ -359,23 +372,26 @@ test('verify DELETE', t => {
       value: {
         _id: 'b',
         title: [
-          '["a","1.00"]',
-          '["cool","1.00"]',
-          '["document","1.00"]',
-          '["quite","1.00"]'
+          ['a', '1.00'],
+          ['cool', '1.00'],
+          ['document', '1.00'],
+          ['quite', '1.00']
         ],
         body: {
           text: [
-            '["bananas","1.00"]',
-            '["cool","1.00"]',
-            '["document","1.00"]',
-            '["is","1.00"]',
-            '["really","1.00"]',
-            '["this","1.00"]'
+            ['bananas', '1.00'],
+            ['cool', '1.00'],
+            ['document', '1.00'],
+            ['is', '1.00'],
+            ['really', '1.00'],
+            ['this', '1.00']
           ],
-          metadata: ['["coolness","1.00"]', '["documentness","1.00"]']
+          metadata: [
+            ['coolness', '1.00'],
+            ['documentness', '1.00']
+          ]
         },
-        importantNumber: '[500,500]'
+        importantNumber: [500, 500]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 1 },

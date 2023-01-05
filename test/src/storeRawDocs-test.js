@@ -54,18 +54,18 @@ test('Verify that an appropriate index has been created (no raw docs)', t => {
       key: ['DOC', 0],
       value: {
         _id: 0,
-        make: ['["tesla","1.00"]'],
-        manufacturer: ['["volvo","1.00"]'],
-        brand: ['["volvo","1.00"]']
+        make: [['tesla', '1.00']],
+        manufacturer: [['volvo', '1.00']],
+        brand: [['volvo', '1.00']]
       }
     },
     {
       key: ['DOC', 1],
       value: {
         _id: 1,
-        make: ['["bmw","1.00"]'],
-        manufacturer: ['["volvo","1.00"]'],
-        brand: ['["volvo","1.00"]']
+        make: [['bmw', '1.00']],
+        manufacturer: [['volvo', '1.00']],
+        brand: [['volvo', '1.00']]
       }
     },
     { key: ['DOCUMENT_COUNT'], value: 2 },

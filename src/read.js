@@ -32,6 +32,11 @@ module.exports = (ops, cache) => {
       )
       : ALL_DOCUMENTS()
 
+  const DOCUMENT_VECTORS = (...requestedDocs) =>
+    Promise.all(
+      requestedDocs.map(_id => ops.fii.STORE.get(['DOC', _id]).catch(e => null))
+    )
+
   const DICTIONARY = token =>
     DISTINCT(token).then(results =>
       Array.from(
@@ -411,6 +416,7 @@ module.exports = (ops, cache) => {
         DOCUMENTS: docs
       }),
     DOCUMENT_COUNT,
+    DOCUMENT_VECTORS,
     FACETS,
     PAGE,
     QUERY: (q, qops) => tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
