@@ -36,7 +36,11 @@
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run empty-sandbox && tape test/src/*-test.js",
-    "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
+    "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'",
+    "version": "npx changeset version",
+    "version:snapshot": "npx changeset version --snapshot",
+    "publish": "npm publish -r --no-git-checks --access public",
+    "publish:beta": "npm publish -r --tag beta --no-git-checks --access public"
   },
   "repository": {
     "type": "git",
