@@ -6,9 +6,15 @@ const indexName = sandbox + 'CREATED'
 
 let timestamp
 
+const opts = {}
+if (typeof window === 'undefined') {
+  const { ClassicLevel } = require('classic-level')
+  opts.db = new ClassicLevel(indexName)
+}
+
 test('create index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
+  si({ name: indexName, ...opts }).then(db => {
     global[indexName] = db
     t.ok(db, !undefined)
   })
@@ -16,7 +22,7 @@ test('create index', t => {
 
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['~CREATED']).then(created => {
+  global[indexName].INDEX.STORE.get(['~CREATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(created => {
     timestamp = created
     return t.pass('timestamp created')
   })
@@ -42,7 +48,7 @@ test('confirm index is closed', t => {
 
 test('recreate index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
+  si({ name: indexName, ...opts }).then(db => {
     global[indexName] = db
     t.ok(db, !undefined)
   })

@@ -107,7 +107,7 @@ test('Verify that PUT has created an appropriate index (_PUT_1)', t => {
     }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       // console.log(d)
@@ -314,7 +314,7 @@ test('Verify that PUT has created an appropriate index (_PUT_1 again)', t => {
     }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       //      console.log(d)
@@ -409,7 +409,7 @@ test('Verify that PUT has created an appropriate index (_PUT_2)', t => {
     }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName2].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName2].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       t.deepEquals(d, indexEntries.shift())
@@ -544,7 +544,7 @@ test('Verify that PUT has created an appropriate index (_PUT_3)', t => {
     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName3].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName3].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       t.deepEquals(d, indexEntries.shift())
@@ -679,7 +679,7 @@ test('Verify that PUT has created an appropriate index (_PUT_4)', t => {
     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName4].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName4].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       //      console.log(d)
@@ -824,7 +824,7 @@ test('Verify that PUT has created an appropriate index (doesnt index children of
     { key: ['IDX', 'make', ['tesla', '1.00']], value: ['0', '2'] }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName5].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName5].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       t.deepEquals(d, indexEntries.shift())

@@ -2,16 +2,16 @@ const DocumentProcessor = require('./DocumentProcessor')
 
 module.exports = (ops, cache, queue) => {
   const incrementDocCount = increment =>
-    ops.fii.STORE.get(['DOCUMENT_COUNT'])
-      .then(count => ops.fii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
+    ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS)
+      .then(count => ops.fii.STORE.put(['DOCUMENT_COUNT'], +count + increment, ops.fii.LEVEL_OPTIONS))
       .catch(
         // if not found assume value to be 0
-        e => ops.fii.STORE.put(['DOCUMENT_COUNT'], increment)
+        e => ops.fii.STORE.put(['DOCUMENT_COUNT'], increment, ops.fii.LEVEL_OPTIONS)
       )
 
   const decrementDocCount = increment =>
-    ops.fii.STORE.get(['DOCUMENT_COUNT']).then(count =>
-      ops.fii.STORE.put(['DOCUMENT_COUNT'], +count - increment)
+    ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS).then(count =>
+      ops.fii.STORE.put(['DOCUMENT_COUNT'], +count - increment, ops.fii.LEVEL_OPTIONS)
     )
 
   const _PUT = (docs, putOptions) => {
@@ -22,7 +22,7 @@ module.exports = (ops, cache, queue) => {
     return DocumentProcessor(ops)
       .processDocuments(docs)
       .then(vectors => {
-        return ops.fii.PUT(vectors, putOptions).then(result => {
+        return ops.fii.PUT(vectors, putOptions, ops.fii.LEVEL_OPTIONS).then(result => {
           return Promise.all([
             _PUT_RAW(
               docs,
@@ -39,7 +39,7 @@ module.exports = (ops, cache, queue) => {
     cache.clear()
     return Promise.all(
       docs.map((doc, i) =>
-        ops.fii.STORE.put(['DOC_RAW', ids[i]], dontStoreValue ? {} : doc)
+        ops.fii.STORE.put(['DOC_RAW', ids[i]], dontStoreValue ? {} : doc, ops.fii.LEVEL_OPTIONS)
       )
     ).then(
       // TODO: make this actually deal with errors
@@ -53,11 +53,11 @@ module.exports = (ops, cache, queue) => {
   }
 
   const _DELETE = _ids =>
-    ops.fii.DELETE(_ids).then(result => {
+    ops.fii.DELETE(_ids, ops.fii.LEVEL_OPTIONS).then(result => {
       cache.clear()
       const deleted = result.filter(d => d.status === 'DELETED')
       return Promise.all([
-        Promise.all(deleted.map(r => ops.fii.STORE.del(['DOC_RAW', r._id]))),
+        Promise.all(deleted.map(r => ops.fii.STORE.del(['DOC_RAW', r._id], ops.fii.LEVEL_OPTIONS))),
         decrementDocCount(deleted.length)
       ]).then(() => result)
     })
@@ -71,7 +71,7 @@ module.exports = (ops, cache, queue) => {
           { type: 'put', key: ['~CREATED'], value: timestamp },
           { type: 'put', key: ['~LAST_UPDATED'], value: timestamp },
           { type: 'put', key: ['DOCUMENT_COUNT'], value: 0 }
-        ])
+        ], ops.fii.LEVEL_OPTIONS)
       })
       .then(() => true)
 

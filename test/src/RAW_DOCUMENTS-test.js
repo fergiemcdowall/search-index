@@ -63,7 +63,8 @@ test('DOC_RAWs are inserted as expected', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined]
+    lte: ['DOC_RAW', undefined],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -103,7 +104,8 @@ test('Verify that PUT_RAW has updated the raw document', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined]
+    lte: ['DOC_RAW', undefined],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -143,7 +145,8 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined]
+    lte: ['DOC_RAW', undefined],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })

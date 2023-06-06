@@ -38,7 +38,7 @@ const data = [
 test('create a search-index with memory-level', t => {
   t.plan(2)
   si({
-    db: MemoryLevel,
+    db: new MemoryLevel(),
     name: indexName
   })
     .then(idx =>
