@@ -1,0 +1,53 @@
+name: Publish
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      max-parallel: 1
+      matrix:
+        channel:
+          - latest
+          - dev
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - run: sudo apt-get install xvfb
+      - run: xvfb-run --auto-servernum npm test
+      - name: Set NPMRC
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Release to @dev channel
+        if: matrix.channel == 'dev'
+        run: |
+          npm run version:snapshot
+          npm run publish:beta
+      - name: Publish
+        if: matrix.channel == 'latest'
+        run: |
+          npm run publish
+      - name: Create release pull request
+        uses: changesets/action@v1
+        if: matrix.channel == 'latest'
+        with:
+          version: npm run version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -72,12 +72,13 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
+    "@changesets/cli": "^2.26.1",
+    "@tinacms/fergies-inverted-index": "^11.0.2",
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
-    "memory-level": "^1.0.0",
-    "@tinacms/fergies-inverted-index": "^11.0.2",
     "level-read-stream": "^1.1.0",
     "lru-cache": "^7.9.0",
+    "memory-level": "^1.0.0",
     "ngraminator": "^3.0.1",
     "p-queue": "^7.2.0",
     "term-vector": "^1.0.0"
