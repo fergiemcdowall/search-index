@@ -1,6 +1,6 @@
 {
-  "name": "@tinacms/search-index",
-  "version": "3.5.2",
+  "name": "search-index",
+  "version": "4.0.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -36,11 +36,7 @@
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run empty-sandbox && tape test/src/*-test.js",
-    "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'",
-    "version": "npx changeset version",
-    "version:snapshot": "npx changeset version --snapshot",
-    "publish": "npm publish -r --no-git-checks --access public",
-    "publish:beta": "npm publish -r --tag beta --no-git-checks --access public"
+    "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
   },
   "repository": {
     "type": "git",
@@ -76,7 +72,6 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.1",
     "@tinacms/fergies-inverted-index": "^11.0.2",
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
