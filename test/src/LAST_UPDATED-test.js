@@ -36,14 +36,16 @@ test('is valid timestamp', t => {
 
 test('update index', t => {
   t.plan(1)
-  global[indexName]
-    .PUT([
-      {
-        _id: 0,
-        body: 'test doc'
-      }
-    ])
-    .then(res => t.ok(true))
+  setTimeout(function () { // wait to ensure that newer timestamp is bigger
+    global[indexName]
+      .PUT([
+        {
+          _id: 0,
+          body: 'test doc'
+        }
+      ])
+      .then(res => t.ok(true))
+  }, 100)
 })
 
 test('LAST_UPDATED timestamp has increased', t => {

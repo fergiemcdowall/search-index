@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "4.0.0",
+  "version": "5.0.0-rc1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -72,7 +72,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "@tinacms/fergies-inverted-index": "^11.0.2",
+    "fergies-inverted-index": "12.0.0-rc1",
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
     "level-read-stream": "^1.1.0",

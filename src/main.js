@@ -1,4 +1,4 @@
-const fii = require('@tinacms/fergies-inverted-index')
+const fii = require('fergies-inverted-index')
 const tp = require('./tokenisationPipeline')
 
 const LRU = require('lru-cache')
