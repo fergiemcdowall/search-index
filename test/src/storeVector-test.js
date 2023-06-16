@@ -90,7 +90,7 @@ test('can verify store', t => {
     { key: ['IDX', 'text', ['small', '1.00']], value: [3] }
   ]
   t.plan(entries.length + 1)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] })
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS })
     .on('data', d => {
       t.deepEquals(d, entries.shift())
     })
@@ -134,7 +134,7 @@ test('can verify store', t => {
     { key: ['IDX', 'text', ['small', '1.00']], value: [3] }
   ]
   t.plan(entries.length + 1)
-  new EntryStream(global[indexName + '1'].INDEX.STORE, { lt: ['~'] })
+  new EntryStream(global[indexName + '1'].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS })
     .on('data', d => {
       // console.log(d)
       t.deepEquals(d, entries.shift())
@@ -211,7 +211,7 @@ test('can verify store', t => {
     { key: ['IDX', 'text', ['small', '1.00']], value: [3] }
   ]
   t.plan(entries.length + 1)
-  new EntryStream(global[indexName + '2'].INDEX.STORE, { lt: ['~'] })
+  new EntryStream(global[indexName + '2'].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS })
     .on('data', d => {
       // console.log(d)
       t.deepEquals(d, entries.shift())

@@ -122,7 +122,7 @@ parameter.
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-| `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [`abstract-leveldown`](https://github.com/Level/awesome/#stores) compatible store |
+| `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
 | `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
 | `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |

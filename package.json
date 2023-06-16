@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "3.4.0",
+  "version": "4.0.0-rc1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -50,6 +50,7 @@
   "homepage": "https://fergiemcdowall.github.io/search-index/",
   "devDependencies": {
     "assert": "^2.0.0",
+    "classic-level": "^1.3.0",
     "doctoc": "^2.2.0",
     "fuzzyset": "1.0.5",
     "http-server": "14.1.0",
@@ -71,12 +72,12 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
+    "fergies-inverted-index": "12.0.0-rc1",
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
-    "classic-level": "^1.2.0",
-    "fergies-inverted-index": "^11.0.0",
     "level-read-stream": "^1.1.0",
     "lru-cache": "^7.9.0",
+    "memory-level": "^1.0.0",
     "ngraminator": "^3.0.1",
     "p-queue": "^7.2.0",
     "term-vector": "^1.0.0"

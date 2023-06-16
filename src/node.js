@@ -1,12 +1,11 @@
 const si = require('./main.js')
-const { ClassicLevel } = require('classic-level')
-
-module.exports = ops =>
-  si(
+const { MemoryLevel } = require('memory-level')
+module.exports = ops => {
+  const defaultDb = new MemoryLevel({ valueEncoding: 'json' })
+  return si(
     Object.assign(
-      {
-        db: ClassicLevel
-      },
+      { db: defaultDb },
       ops
     )
   )
+}

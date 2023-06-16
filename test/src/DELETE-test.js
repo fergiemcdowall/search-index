@@ -199,7 +199,7 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['something', '1.00']], value: ['c'] }
   ]
   t.plan(expectedIndexStructure.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on(
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
     'data',
     d => {
       // console.log(JSON.stringify(d, null, 2))
@@ -324,7 +324,7 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['quite', '1.00']], value: ['a'] }
   ]
   t.plan(expectedIndexStructure.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on('data', d =>
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on('data', d =>
     t.deepEquals(d, expectedIndexStructure.shift())
   )
 })
@@ -436,7 +436,7 @@ test('verify DELETE', t => {
   ]
   t.plan(expectedIndexStructure.length)
 
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'] }).on('data', d =>
+  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on('data', d =>
     t.deepEquals(d, expectedIndexStructure.shift())
   )
 })

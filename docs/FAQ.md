@@ -84,11 +84,11 @@ initialisation option](API.md#sioptions). (see [tests](https://github.com/fergie
 Example:
 
 ```javascript
-const memdown = require('memdown')
+const { MemoryLevel } = require('memory-level')
 const si = require('search-index')
 
 const memdownIndex = await si({
-  db: memdown,
+  db: new MemoryLevel(),
   name: indexName
 })
 

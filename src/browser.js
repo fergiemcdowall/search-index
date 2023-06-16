@@ -5,7 +5,7 @@ module.exports = ops =>
   si(
     Object.assign(
       {
-        db: BrowserLevel
+        db: new BrowserLevel((ops && ops.name) || 'fii')
       },
       ops
     )

@@ -16,7 +16,7 @@ test('create index', t => {
 
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated => {
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(lastUpdated => {
     timestamp = lastUpdated
     return t.pass('timestamp created')
   })
@@ -29,21 +29,23 @@ test('can read LAST_UPDATED timestamp with API', t => {
 
 test('is valid timestamp', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated =>
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(lastUpdated =>
     t.ok(new Date(lastUpdated))
   )
 })
 
 test('update index', t => {
   t.plan(1)
-  global[indexName]
-    .PUT([
-      {
-        _id: 0,
-        body: 'test doc'
-      }
-    ])
-    .then(res => t.ok(true))
+  setTimeout(function () { // wait to ensure that newer timestamp is bigger
+    global[indexName]
+      .PUT([
+        {
+          _id: 0,
+          body: 'test doc'
+        }
+      ])
+      .then(res => t.ok(true))
+  }, 100)
 })
 
 test('LAST_UPDATED timestamp has increased', t => {

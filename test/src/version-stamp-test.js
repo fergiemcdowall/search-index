@@ -23,7 +23,7 @@ test('create a search index', async function (t) {
   )
 
   t.equals(
-    await INDEX.STORE.get(['CREATED_WITH']),
+    await INDEX.STORE.get(['CREATED_WITH'], INDEX.LEVEL_OPTIONS),
     'search-index@' + require('../../package.json').version
   )
 

@@ -120,7 +120,7 @@ const validateVersion = si =>
   new Promise((resolve, reject) => {
     const key = ['CREATED_WITH']
     const version = 'search-index@' + packageJSON.version
-    return si.INDEX.STORE.get(key)
+    return si.INDEX.STORE.get(key, si.INDEX.LEVEL_OPTIONS)
       .then(v =>
         // throw a rejection if versions do not match
         version === v
@@ -134,7 +134,7 @@ const validateVersion = si =>
             )
           )
       )
-      .catch(e => si.INDEX.STORE.put(key, version).then(resolve))
+      .catch(e => si.INDEX.STORE.put(key, version, si.INDEX.LEVEL_OPTIONS).then(resolve))
   })
 
 module.exports = ops =>
