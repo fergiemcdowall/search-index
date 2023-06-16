@@ -1,7 +1,7 @@
 const fii = require('fergies-inverted-index')
 const tp = require('./tokenisationPipeline')
 
-const LRU = require('lru-cache')
+const { LRUCache } = require('lru-cache')
 const reader = require('./read.js')
 const writer = require('./write.js')
 const packageJSON = require('../package.json')
@@ -11,7 +11,7 @@ const makeASearchIndex = ops =>
   // eslint-disable-next-line
   new Promise(async resolve => {
     // TODO: the cache size should be an option
-    const cache = new LRU({
+    const cache = new LRUCache({
       max: 1000
     })
 

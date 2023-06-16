@@ -226,7 +226,7 @@ test('cache still only contains 1 entry', t => {
 test('run more queries', t => {
   const { DOCUMENTS, DICTIONARY, QUERY, SEARCH, _CACHE } = global[indexName]
   t.plan(1)
-  _CACHE.reset()
+  _CACHE.clear()
   QUERY('one')
     .then(res => QUERY('two'))
     .then(res => QUERY('two'))
