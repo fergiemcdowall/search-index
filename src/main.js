@@ -1,10 +1,14 @@
-const fii = require('fergies-inverted-index')
-const tp = require('./tokenisationPipeline')
-
-const { LRUCache } = require('lru-cache')
-const reader = require('./read.js')
-const writer = require('./write.js')
-const packageJSON = require('../package.json')
+import PQueue from 'p-queue'
+import Reader from './read.js'
+import fii from 'fergies-inverted-index'
+// the following makes standard.js/ESLint throw a wobbly that can't be
+// resolved by setting an ignore rule
+// import packageJSON from '../package.json' assert { type: 'json' }
+// So do this instead:
+import { packageVersion } from './version.js'
+import { LRUCache } from 'lru-cache'
+import { Writer } from './write.js'
+import { tokenizationPipeline } from './tokenisationPipeline.js'
 
 // eslint-disable-next-line
 const makeASearchIndex = ops =>
@@ -16,11 +20,13 @@ const makeASearchIndex = ops =>
     })
 
     // eslint-disable-next-line
-    const queue = new (await import('p-queue')).default({ concurrency: 1 })
+    // const queue = new (await import('p-queue')).default({ concurrency: 1 })
+
+    const queue = new PQueue({ concurrency: 1 })
 
     // TODO: should be just ops?
-    const w = writer(ops, cache, queue)
-    const r = reader(ops, cache)
+    const w = Writer(ops, cache, queue)
+    const r = new Reader(ops, cache)
 
     // TODO: more caching
     return w._INCREMENT_DOC_COUNT(0).then(() =>
@@ -45,7 +51,7 @@ const makeASearchIndex = ops =>
         IMPORT: w.IMPORT,
         PUT: w.PUT,
         PUT_RAW: w.PUT_RAW,
-        TOKENIZATION_PIPELINE_STAGES: tp,
+        TOKENIZATION_PIPELINE_STAGES: tokenizationPipeline,
 
         // public API (read)
         ALL_DOCUMENTS: r.ALL_DOCUMENTS,
@@ -99,7 +105,7 @@ const initIndex = (ops = {}) =>
         storeVectors: true, // TODO: make a test for this being false
         tokenAppend: '#',
         tokenSplitRegex: /[\p{L}\d]+/gu,
-        tokenizer: tp.tokenizer
+        tokenizer: tokenizationPipeline
       },
       ops
     )
@@ -119,7 +125,7 @@ const initIndex = (ops = {}) =>
 const validateVersion = si =>
   new Promise((resolve, reject) => {
     const key = ['CREATED_WITH']
-    const version = 'search-index@' + packageJSON.version
+    const version = 'search-index@' + packageVersion
     return si.INDEX.STORE.get(key, si.INDEX.LEVEL_OPTIONS)
       .then(v =>
         // throw a rejection if versions do not match
@@ -137,7 +143,10 @@ const validateVersion = si =>
       .catch(e => si.INDEX.STORE.put(key, version, si.INDEX.LEVEL_OPTIONS).then(resolve))
   })
 
-module.exports = ops =>
-  initIndex(ops)
-    .then(makeASearchIndex)
-    .then(si => validateVersion(si).then(() => si))
+export class SearchIndex {
+  constructor (ops) {
+    return initIndex(ops)
+      .then(makeASearchIndex)
+      .then(si => validateVersion(si).then(() => si))
+  }
+}

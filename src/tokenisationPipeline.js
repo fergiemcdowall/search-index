@@ -1,5 +1,5 @@
-const tv = require('term-vector')
-const { ngraminator } = require('ngraminator')
+import tv from 'term-vector'
+import ngraminator from 'ngraminator'
 
 const SPLIT = ([tokens, field, ops]) =>
   Promise.resolve([tokens.match(ops.tokenSplitRegex) || [], field, ops])
@@ -80,7 +80,7 @@ const SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
   ])
 }
 
-exports.SPY = ([tokens, field, ops]) => {
+export const SPY = ([tokens, field, ops]) => {
   console.log('----------------')
   console.log('field ->')
   console.log(field)
@@ -90,20 +90,19 @@ exports.SPY = ([tokens, field, ops]) => {
   return Promise.resolve([tokens, field, ops])
 }
 
-exports.tokenizer = (tokens, field, ops) =>
-  SPLIT([tokens, field, ops])
-    .then(SKIP)
-    .then(LOWCASE)
-    .then(REPLACE)
-    .then(NGRAMS)
-    .then(STOPWORDS)
-    .then(SCORE_TERM_FREQUENCY)
-    .then(([tokens, field, ops]) => tokens)
+export const tokenizationPipeline = (tokens, field, ops) => SPLIT([tokens, field, ops])
+  .then(SKIP)
+  .then(LOWCASE)
+  .then(REPLACE)
+  .then(NGRAMS)
+  .then(STOPWORDS)
+  .then(SCORE_TERM_FREQUENCY)
+  .then(([tokens, field, ops]) => tokens)
 
-exports.SPLIT = SPLIT
-exports.SKIP = SKIP
-exports.LOWACASE = LOWCASE
-exports.REPLACE = REPLACE
-exports.NGRAMS = NGRAMS
-exports.STOPWORDS = STOPWORDS
-exports.SCORE_TERM_FREQUENCY = SCORE_TERM_FREQUENCY
+// exports.SPLIT = SPLIT
+// exports.SKIP = SKIP
+// exports.LOWACASE = LOWCASE
+// exports.REPLACE = REPLACE
+// exports.NGRAMS = NGRAMS
+// exports.STOPWORDS = STOPWORDS
+// exports.SCORE_TERM_FREQUENCY = SCORE_TERM_FREQUENCY

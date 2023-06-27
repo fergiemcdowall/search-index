@@ -1,5 +1,8 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+
+import tape from 'tape'
+
+let db
 
 const data = [
   {
@@ -31,17 +34,17 @@ const data = [
   }
 ]
 
-test('can create a search index WITHOUT an options object', t => {
+tape('can create a search index WITHOUT an options object', async t => {
   t.plan(1)
-  si().then(db => {
-    global.db = db
-    t.pass('ok')
-  })
+  try {
+    db = await new SearchIndex()
+    t.ok(db)
+  } catch (e) {
+    t.error(e)
+  }
 })
 
-test('can add some data', t => {
+tape('can add some data', t => {
   t.plan(1)
-  global.db.PUT(data).then(() => {
-    t.pass('ok')
-  })
+  db.PUT(data).then(t.pass)
 })

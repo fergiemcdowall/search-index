@@ -1,7 +1,10 @@
-const path = require('path')
-const webpack = require('webpack')
-const glob = require('glob')
-const pkg = require('./package.json')
+import glob from 'glob'
+import path from 'path'
+import pkg from './package.json' assert { type: "json" }
+import webpack from 'webpack'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 const config = {
   plugins: [
@@ -11,14 +14,14 @@ const config = {
     }),
     // Webpack 5 no longer polyfills 'process'
     new webpack.ProvidePlugin({
-      process: 'process/browser'
+      process: 'process/browser.js'
     }),
     // as per https://github.com/webpack/changelog-v5/issues/10
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer']
     })
   ],
-  target: ['web'],
+  target: [ 'web' ],
   resolve: {
     fallback: {
       // BREAKING CHANGE: webpack < 5 used to include polyfills for
@@ -35,8 +38,8 @@ const config = {
   }
 }
 
-module.exports = [
-  {
+// module.exports = [
+export default [{
     ...config,
     mode: 'production',
     entry: './src/main.js',
@@ -67,7 +70,7 @@ module.exports = [
     // possibly it would be good to have some kind of code splitting
     // instead
     mode: 'production',
-    entry: glob.sync('./test/src/*-test.js'),
+    entry: glob.sync('./test/src/init-test.js'),
     output: {
       path: path.resolve('test/sandbox'),
       filename: 'browser-tests.js'

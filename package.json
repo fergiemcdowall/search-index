@@ -23,6 +23,7 @@
   "directories": {
     "lib": "src"
   },
+  "type": "module",
   "scripts": {
     "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
     "demo-export": "node demo/generate-index/export.js",
@@ -32,10 +33,11 @@
     "demo-start": "http-server -c-1 demo & open-cli http://127.0.0.1:8080",
     "demo-link-lib": "cd demo/lib &&  ln -sf ../../dist/search-index.js && cd ../../",
     "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
+    "generateVersionModule": "echo export const packageVersion = \\\"${npm_package_version}\\\" > src/version.js",
     "lint": "standard --fix test/src/* src/* demo/src/* demo/generate-index/*.js",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
-    "test-node": "npm run empty-sandbox && tape test/src/*-test.js",
+    "test-node": "npm run empty-sandbox && tape test/src/init-test.js",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
   },
   "repository": {

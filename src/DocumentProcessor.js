@@ -1,4 +1,4 @@
-module.exports = ops => {
+export const DocumentProcessor = ops => {
   const isObject = item =>
     typeof item === 'object' && item !== null && !Array.isArray(item)
 
@@ -25,7 +25,7 @@ module.exports = ops => {
 
   const processValueUnknownType = (unknown, key) =>
     // eslint-disable-next-line
-    new Promise(async resolve => {
+        new Promise(async resolve => {
       if (unknown === null) return resolve([null, '1.00'])
       if (isEmptyObject(unknown)) return resolve([[], '1.00'])
       if (Number.isInteger(unknown)) return resolve([unknown, unknown])

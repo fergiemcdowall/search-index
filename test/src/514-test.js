@@ -4,6 +4,8 @@ const test = require('tape')
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '514'
 
+let global = {}
+
 test('create a search index', t => {
   t.plan(1)
   si({ name: indexName, storeVectors: true }).then(db => {
