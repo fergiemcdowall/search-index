@@ -8,7 +8,7 @@ import fii from 'fergies-inverted-index'
 import { packageVersion } from './version.js'
 import { LRUCache } from 'lru-cache'
 import { Writer } from './write.js'
-import { tokenizationPipeline } from './tokenisationPipeline.js'
+import * as tokenization from './tokenisationPipeline.js'
 
 // eslint-disable-next-line
 const makeASearchIndex = ops =>
@@ -51,7 +51,15 @@ const makeASearchIndex = ops =>
         IMPORT: w.IMPORT,
         PUT: w.PUT,
         PUT_RAW: w.PUT_RAW,
-        TOKENIZATION_PIPELINE_STAGES: tokenizationPipeline,
+        TOKENIZATION_PIPELINE_STAGES: {
+          SPLIT: tokenization.SPLIT,
+          SKIP: tokenization.SKIP,
+          LOWCASE: tokenization.LOWCASE,
+          REPLACE: tokenization.REPLACE,
+          NGRAMS: tokenization.NGRAMS,
+          STOPWORDS: tokenization.STOPWORDS,
+          SCORE_TERM_FREQUENCY: tokenization.SCORE_TERM_FREQUENCY
+        },
 
         // public API (read)
         ALL_DOCUMENTS: r.ALL_DOCUMENTS,
@@ -105,7 +113,7 @@ const initIndex = (ops = {}) =>
         storeVectors: true, // TODO: make a test for this being false
         tokenAppend: '#',
         tokenSplitRegex: /[\p{L}\d]+/gu,
-        tokenizer: tokenizationPipeline
+        tokenizer: tokenization.tokenizationPipeline
       },
       ops
     )
@@ -140,7 +148,9 @@ const validateVersion = si =>
             )
           )
       )
-      .catch(e => si.INDEX.STORE.put(key, version, si.INDEX.LEVEL_OPTIONS).then(resolve))
+      .catch(e =>
+        si.INDEX.STORE.put(key, version, si.INDEX.LEVEL_OPTIONS).then(resolve)
+      )
   })
 
 export class SearchIndex {

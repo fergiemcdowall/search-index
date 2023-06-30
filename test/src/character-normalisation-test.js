@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -7,7 +7,7 @@ let i = 0
 
 test('create a search index with no character normalisation', async t => {
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH } = await si({
+  const { PUT, SEARCH } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (await PUT(data)).map(status => status._id)
@@ -32,7 +32,7 @@ test('create a search index with query side character normalisation (_GET)', asy
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, _GET } = await si({
+  const { PUT, _GET } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (await PUT(data)).map(status => status._id)
@@ -53,7 +53,7 @@ test('create a search index with query side character normalisation (_AND)', asy
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, _AND } = await si({
+  const { PUT, _AND } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (await PUT(data)).map(status => status._id)
@@ -75,7 +75,7 @@ test('create a search index with query side character normalisation (QUERY)', as
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, QUERY } = await si({
+  const { PUT, QUERY } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (await PUT(data)).map(status => status._id)
@@ -109,7 +109,7 @@ test('create a search index with query side character normalisation (SEARCH)', a
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH } = await si({
+  const { PUT, SEARCH } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (await PUT(data)).map(status => status._id)
@@ -139,7 +139,7 @@ test('create a search index with query and index side character normalisation', 
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH, TOKENIZATION_PIPELINE_STAGES } = await si({
+  const { PUT, SEARCH, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (

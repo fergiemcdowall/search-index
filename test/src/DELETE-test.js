@@ -1,7 +1,9 @@
-const si = require('../../')
-const { EntryStream } = require('level-read-stream')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
+import { EntryStream } from 'level-read-stream'
+import { packageVersion } from '../../src/version.js'
 
+const global = {}
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DELETE'
 
@@ -35,15 +37,17 @@ const data = [
   }
 ]
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: indexName,
-    storeVectors: true
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName,
+      storeVectors: true
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some data', t => {
@@ -82,7 +86,7 @@ test('verify DELETE', t => {
   const expectedIndexStructure = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', 'a'],
@@ -199,13 +203,13 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['something', '1.00']], value: ['c'] }
   ]
   t.plan(expectedIndexStructure.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
-    'data',
-    d => {
-      // console.log(JSON.stringify(d, null, 2))
-      t.deepEquals(d, expectedIndexStructure.shift())
-    }
-  )
+  new EntryStream(global[indexName].INDEX.STORE, {
+    lt: ['~'],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
+  }).on('data', d => {
+    // console.log(JSON.stringify(d, null, 2))
+    t.deepEquals(d, expectedIndexStructure.shift())
+  })
 })
 
 test('verify DELETE using DOCUMENT', t => {
@@ -256,7 +260,7 @@ test('verify DELETE', t => {
   const expectedIndexStructure = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', 'a'],
@@ -324,9 +328,10 @@ test('verify DELETE', t => {
     { key: ['IDX', 'title', ['quite', '1.00']], value: ['a'] }
   ]
   t.plan(expectedIndexStructure.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on('data', d =>
-    t.deepEquals(d, expectedIndexStructure.shift())
-  )
+  new EntryStream(global[indexName].INDEX.STORE, {
+    lt: ['~'],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
+  }).on('data', d => t.deepEquals(d, expectedIndexStructure.shift()))
 })
 
 test('DELETE with non-existent id', t => {
@@ -368,7 +373,7 @@ test('verify DELETE', t => {
   const expectedIndexStructure = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', 'b'],
@@ -436,7 +441,8 @@ test('verify DELETE', t => {
   ]
   t.plan(expectedIndexStructure.length)
 
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on('data', d =>
-    t.deepEquals(d, expectedIndexStructure.shift())
-  )
+  new EntryStream(global[indexName].INDEX.STORE, {
+    lt: ['~'],
+    ...global[indexName].INDEX.LEVEL_OPTIONS
+  }).on('data', d => t.deepEquals(d, expectedIndexStructure.shift()))
 })

@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -79,7 +79,7 @@ const docs = [
 test('create a search index to test WEIGHT', async function (t) {
   t.plan(7)
 
-  const { PUT, QUERY, SEARCH } = await si({
+  const { PUT, QUERY, SEARCH } = await new SearchIndex({
     name: sandbox + 'WEIGHT'
   })
   t.ok(PUT)

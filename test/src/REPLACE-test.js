@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -21,7 +21,7 @@ const docs = [
 test('create a search index with synonyms (can be in all fields)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
     name: sandbox + 'REPLACE1',
     replace: {
       values: {
@@ -63,7 +63,7 @@ test('create a search index with synonyms (can be in all fields)', async functio
 test('create a search index with synonyms (specific fields)', async function (t) {
   t.plan(6)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
     name: sandbox + 'REPLACE2',
     replace: {
       fields: ['line1'],

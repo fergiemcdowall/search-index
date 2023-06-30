@@ -1,8 +1,9 @@
 import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
-import tape from 'tape'
-
-let db
+const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'init'
+const global = {}
 
 const data = [
   {
@@ -34,17 +35,17 @@ const data = [
   }
 ]
 
-tape('can create a search index WITHOUT an options object', async t => {
+test('can create a search index WITHOUT an options object', async t => {
   t.plan(1)
   try {
-    db = await new SearchIndex()
-    t.ok(db)
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
   } catch (e) {
     t.error(e)
   }
 })
 
-tape('can add some data', t => {
+test('can add some data', t => {
   t.plan(1)
-  db.PUT(data).then(t.pass)
+  global[indexName].PUT(data).then(t.pass)
 })

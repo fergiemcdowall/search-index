@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'DOCUMENT_COUNT'
@@ -76,17 +76,20 @@ const data = [
     colour: 'red'
   }
 ]
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: indexName,
-    storeRawDocs: false,
-    storeVectors: true
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName,
+      storeRawDocs: false,
+      storeVectors: true
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -121,27 +124,29 @@ test('add some more docs, some UPDATED and some CREATED', t => {
   )
 })
 
-// test('simple DOCUMENT_COUNT', t => {
-//   const { DOCUMENT_COUNT } = global[indexName]
-//   t.plan(1)
-//   DOCUMENT_COUNT().then(count => {
-//     t.equals(count, 6)
-//   })
-// })
+test('simple DOCUMENT_COUNT', t => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  t.plan(1)
+  DOCUMENT_COUNT().then(count => {
+    t.equals(count, 6)
+  })
+})
 
-// test('can DELETE data', t => {
-//   t.plan(1)
-//   global[indexName].DELETE('3', '4', '7').then(res => t.deepEquals(res, [
-//     { _id: '3', operation: 'DELETE', status: 'DELETED' },
-//     { _id: '4', operation: 'DELETE', status: 'DELETED' },
-//     { _id: '7', operation: 'DELETE', status: 'FAILED' }
-//   ]))
-// })
+test('can DELETE data', t => {
+  t.plan(1)
+  global[indexName].DELETE('3', '4', '7').then(res =>
+    t.deepEquals(res, [
+      { _id: '3', operation: 'DELETE', status: 'DELETED' },
+      { _id: '4', operation: 'DELETE', status: 'DELETED' },
+      { _id: '7', operation: 'DELETE', status: 'FAILED' }
+    ])
+  )
+})
 
-// test('simple DOCUMENT_COUNT', t => {
-//   const { DOCUMENT_COUNT } = global[indexName]
-//   t.plan(1)
-//   DOCUMENT_COUNT().then(count => {
-//     t.equals(count, 4)
-//   })
-// })
+test('simple DOCUMENT_COUNT', t => {
+  const { DOCUMENT_COUNT } = global[indexName]
+  t.plan(1)
+  DOCUMENT_COUNT().then(count => {
+    t.equals(count, 4)
+  })
+})

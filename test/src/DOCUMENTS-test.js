@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DOCUMENTS'
@@ -46,16 +46,19 @@ const data = [
     text: 'Paul invites you on a musical journey to Egypt Station, estimated time of arrival Friday 7th September 7, 2018 by way of Capitol Records.'
   }
 ]
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: indexName,
-    caseSensitive: false
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName,
+      caseSensitive: false
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {

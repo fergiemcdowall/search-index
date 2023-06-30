@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -12,7 +12,7 @@ test('can concurrently PUT', async function (t) {
     .fill()
     .map((doc, i) => ({ text: 'this is some test text', _id: i }))
 
-  const { PUT, QUERY } = await si({
+  const { PUT, QUERY } = await new SearchIndex({
     name: sandbox + 'concurrency'
   })
   t.ok(PUT)

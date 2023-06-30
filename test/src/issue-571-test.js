@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -25,7 +25,7 @@ const docs = [
 test('set up as per issue #571', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const { PUT, SEARCH } = await new SearchIndex({
     name: sandbox + '571'
   })
 

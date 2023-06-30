@@ -29,14 +29,20 @@ export default class Reader {
       requestedDocs.length
         ? Promise.all(
           requestedDocs.map(_id =>
-            ops.fii.STORE.get(['DOC_RAW', _id], ops.fii.LEVEL_OPTIONS).catch(e => null)
+            ops.fii.STORE.get(['DOC_RAW', _id], ops.fii.LEVEL_OPTIONS).catch(
+              e => null
+            )
           )
         )
         : ALL_DOCUMENTS()
 
     const DOCUMENT_VECTORS = (...requestedDocs) =>
       Promise.all(
-        requestedDocs.map(_id => ops.fii.STORE.get(['DOC', _id], ops.fii.LEVEL_OPTIONS).catch(e => null))
+        requestedDocs.map(_id =>
+          ops.fii.STORE.get(['DOC', _id], ops.fii.LEVEL_OPTIONS).catch(
+            e => null
+          )
+        )
       )
 
     const DICTIONARY = token =>
@@ -44,9 +50,9 @@ export default class Reader {
         Array.from(
           results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
         ).sort((a, b) =>
-        // This should sort an array of strings and
-        // numbers in an intuitive way (numbers numerically, strings
-        // alphabetically)
+          // This should sort an array of strings and
+          // numbers in an intuitive way (numbers numerically, strings
+          // alphabetically)
           (a + '').localeCompare(b + '', undefined, {
             numeric: true,
             sensitivity: 'base'
@@ -176,8 +182,8 @@ export default class Reader {
     }
 
     // TODO: maybe add a default page size?
-    const SEARCH = (q, qops) => {
-      return parseJsonQuery(
+    const SEARCH = (q, qops) =>
+      parseJsonQuery(
         {
           AND: [...q]
         },
@@ -191,7 +197,6 @@ export default class Reader {
           qops
         )
       )
-    }
 
     const SORT = (results, options) => {
       options = Object.assign(
@@ -228,7 +233,8 @@ export default class Reader {
         .sort(sortFunction[options.TYPE][options.DIRECTION])
     }
 
-    const DOCUMENT_COUNT = () => ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS)
+    const DOCUMENT_COUNT = () =>
+      ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS)
 
     const WEIGHT = (results, weights) =>
       results.map(r => {
@@ -273,7 +279,10 @@ export default class Reader {
         if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.PIPELINE)
         if (cmd.GET) return ops.fii.GET(cmd.GET, options.PIPELINE)
         if (cmd.NOT) {
-          return ops.fii.NOT(runQuery(cmd.NOT.INCLUDE), runQuery(cmd.NOT.EXCLUDE))
+          return ops.fii.NOT(
+            runQuery(cmd.NOT.INCLUDE),
+            runQuery(cmd.NOT.EXCLUDE)
+          )
         }
         if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
 
@@ -421,7 +430,8 @@ export default class Reader {
       DOCUMENT_VECTORS,
       FACETS,
       PAGE,
-      QUERY: (q, qops) => tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
+      QUERY: (q, qops) =>
+        tryCache(parseJsonQuery(q, qops), { QUERY: [q, qops] }),
       SCORE,
       SEARCH: (q, qops) => tryCache(SEARCH(q, qops), { SEARCH: [q, qops] }),
       SORT

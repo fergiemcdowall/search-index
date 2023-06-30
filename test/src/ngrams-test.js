@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 
@@ -23,7 +23,7 @@ const docs = [
 test('create a search index with ngrams', async function (t) {
   t.plan(9)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
     name: sandbox + 'ngrams1',
     ngrams: {
       fields: ['line2', 'line3'],
@@ -69,7 +69,7 @@ test('create a search index with ngrams', async function (t) {
 test('create a search index with ngrams (no fields specified)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
     name: sandbox + 'ngrams2',
     ngrams: {
       lengths: [1, 2, 3]
@@ -105,7 +105,7 @@ test('create a search index with ngrams (no fields specified)', async function (
 test('create a search index with ngrams (no fields specified, custom join)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
     name: sandbox + 'ngrams3',
     ngrams: {
       lengths: [1, 2, 3],

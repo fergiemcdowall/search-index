@@ -1,7 +1,7 @@
-const si = require('../../')
-const test = require('tape')
-const sw = require('stopword')
-const stemmer = require('stemmer')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
+import sw from 'stopword'
+import stemmer from 'stemmer'
 
 const sandbox = 'test/sandbox/'
 
@@ -23,9 +23,10 @@ const docs = [
 test('can alter order of tokenization pipeline', async function (t) {
   t.plan(6)
 
-  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'pipeline'
-  })
+  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } =
+    await new SearchIndex({
+      name: sandbox + 'pipeline'
+    })
   t.ok(PUT)
 
   t.deepEquals(
@@ -112,9 +113,10 @@ test('can alter order of tokenization pipeline', async function (t) {
 test('can add custom pipeline stage', async function (t) {
   t.plan(4)
 
-  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'pipeline2'
-  })
+  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } =
+    await new SearchIndex({
+      name: sandbox + 'pipeline2'
+    })
   t.ok(PUT)
 
   t.deepEquals(
@@ -175,9 +177,10 @@ test('can add custom pipeline stage', async function (t) {
 test('can add custom pipeline stage (stemmer)', async function (t) {
   t.plan(3)
 
-  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'pipeline3'
-  })
+  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } =
+    await new SearchIndex({
+      name: sandbox + 'pipeline3'
+    })
   t.ok(PUT)
 
   t.deepEquals(

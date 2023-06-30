@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_GET'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -117,7 +120,10 @@ test('simple _GET', t => {
           _id: '5',
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         },
-        { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
+        {
+          _id: '8',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        }
       ])
     })
 })
@@ -269,7 +275,10 @@ test('simple QUERY using json with QUERY', t => {
             _id: '7',
             _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
           },
-          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+          {
+            _id: '9',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          }
         ],
         RESULT_LENGTH: 3
       })
@@ -330,9 +339,10 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
 
 test('create a search index with query and index side character normalisation', async t => {
   const data = [{ text: 'jeg bør finne en ting' }, { text: 'jeg bor i Oslo' }]
-  const { PUT, _GET, INDEX, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'GET-2'
-  })
+  const { PUT, _GET, INDEX, TOKENIZATION_PIPELINE_STAGES } =
+    await new SearchIndex({
+      name: sandbox + 'GET-2'
+    })
   const ids = (
     await PUT(data, {
       tokenizer: (tokens, field, ops) =>
@@ -346,7 +356,13 @@ test('create a search index with query and index side character normalisation', 
     })
   ).map(status => status._id)
 
-  t.deepEquals(await INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']], INDEX.LEVEL_OPTIONS), ids)
+  t.deepEquals(
+    await INDEX.STORE.get(
+      ['IDX', 'text', ['bor', '1.00']],
+      INDEX.LEVEL_OPTIONS
+    ),
+    ids
+  )
   try {
     await INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
     t.fail('that key should not be in the database')
@@ -375,9 +391,10 @@ test('create a search index with query and index side character normalisation', 
 
 test('create a search index with query and index side character normalisation (QUERY GET)', async t => {
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, QUERY, INDEX, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'GET-3'
-  })
+  const { PUT, QUERY, INDEX, TOKENIZATION_PIPELINE_STAGES } =
+    await new SearchIndex({
+      name: sandbox + 'GET-3'
+    })
   const ids = (
     await PUT(data, {
       tokenizer: (tokens, field, ops) =>
@@ -391,7 +408,13 @@ test('create a search index with query and index side character normalisation (Q
     })
   ).map(status => status._id)
 
-  t.deepEquals(await INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']], INDEX.LEVEL_OPTIONS), ids)
+  t.deepEquals(
+    await INDEX.STORE.get(
+      ['IDX', 'body', ['bor', '1.00']],
+      INDEX.LEVEL_OPTIONS
+    ),
+    ids
+  )
   try {
     await INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
     t.fail('that key should not be in the database')

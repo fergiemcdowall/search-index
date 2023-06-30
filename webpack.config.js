@@ -1,6 +1,6 @@
 import glob from 'glob'
 import path from 'path'
-import pkg from './package.json' assert { type: "json" }
+import pkg from './package.json' assert { type: 'json' }
 import webpack from 'webpack'
 import { createRequire } from 'node:module'
 
@@ -21,7 +21,7 @@ const config = {
       Buffer: ['buffer', 'Buffer']
     })
   ],
-  target: [ 'web' ],
+  target: ['web'],
   resolve: {
     fallback: {
       // BREAKING CHANGE: webpack < 5 used to include polyfills for
@@ -39,7 +39,8 @@ const config = {
 }
 
 // module.exports = [
-export default [{
+export default [
+  {
     ...config,
     mode: 'production',
     entry: './src/main.js',
@@ -70,7 +71,9 @@ export default [{
     // possibly it would be good to have some kind of code splitting
     // instead
     mode: 'production',
-    entry: glob.sync('./test/src/init-test.js'),
+    entry: glob.sync('./test/src/*-test.js', {
+      ignore: './test/src/swap-level-test.js' // ignore the node-only level test
+    }),
     output: {
       path: path.resolve('test/sandbox'),
       filename: 'browser-tests.js'

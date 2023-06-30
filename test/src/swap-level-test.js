@@ -1,6 +1,6 @@
-const { MemoryLevel } = require('memory-level')
-const si = require('../../')
-const test = require('tape')
+import { ClassicLevel } from 'classic-level'
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'memdown-test'
@@ -37,12 +37,13 @@ const data = [
 
 test('create a search-index with memory-level', t => {
   t.plan(2)
-  si({
-    db: new MemoryLevel(),
+  new SearchIndex({
+    db: new ClassicLevel(indexName, { valueEncoding: 'json' }),
+    // db: new MemoryLevel(indexName, { valueEncoding: 'json' }),
     name: indexName
   })
-    .then(idx =>
-      idx.PUT(data).then(res => {
+    .then(idx => {
+      return idx.PUT(data).then(res => {
         t.deepEqual(res, [
           { _id: 'a', status: 'CREATED', operation: 'PUT' },
           { _id: 'b', status: 'CREATED', operation: 'PUT' },
@@ -50,7 +51,7 @@ test('create a search-index with memory-level', t => {
         ])
         return idx
       })
-    )
+    })
     .then(idx => {
       idx
         .SEARCH(['body.text:cool', 'body.text:really', 'body.text:bananas'])
@@ -71,4 +72,5 @@ test('create a search-index with memory-level', t => {
           })
         )
     })
+    .catch(t.error)
 })

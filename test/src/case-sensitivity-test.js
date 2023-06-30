@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import { SearchIndex } from '../../src/main.js'
+import test from 'tape'
 
 const sandbox = 'test/sandbox/'
 const caseSensitivityTest = sandbox + 'caseSensitivityTest'
@@ -68,15 +68,19 @@ const data = [
   }
 ]
 
-test('create a case sensitive search index', t => {
+const global = {}
+
+test('create a case sensitive search index', async t => {
   t.plan(1)
-  si({
-    name: caseSensitivityTest,
-    caseSensitive: true
-  }).then(db => {
-    global[caseSensitivityTest] = db
-    t.pass('ok')
-  })
+  try {
+    global[caseSensitivityTest] = await new SearchIndex({
+      name: caseSensitivityTest,
+      caseSensitive: true
+    })
+    t.ok(global[caseSensitivityTest])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data to case sensitive index', t => {
@@ -131,15 +135,17 @@ test('Match make:BMW', t => {
     })
 })
 
-test('create a case insensitive search index', t => {
+test('create a case INsensitive search index', async t => {
   t.plan(1)
-  si({
-    name: caseInsensitivityTest,
-    caseSensitive: false
-  }).then(db => {
-    global[caseInsensitivityTest] = db
-    t.pass('ok')
-  })
+  try {
+    global[caseInsensitivityTest] = await new SearchIndex({
+      name: caseInsensitivityTest,
+      caseSensitive: false
+    })
+    t.ok(global[caseInsensitivityTest])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data to case insensitive index', t => {
