@@ -1,6 +1,9 @@
 import { ClassicLevel } from 'classic-level'
-import { SearchIndex } from '../../src/main.js'
 import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'memdown-test'
@@ -35,42 +38,42 @@ const data = [
   }
 ]
 
-test('create a search-index with memory-level', t => {
+test('create a search-index with memory-level', async t => {
   t.plan(2)
-  new SearchIndex({
-    db: new ClassicLevel(indexName, { valueEncoding: 'json' }),
-    // db: new MemoryLevel(indexName, { valueEncoding: 'json' }),
+
+  const db = await new ClassicLevel(indexName, { valueEncoding: 'json' })
+
+  const idx = await new SearchIndex({
+    db,
     name: indexName
   })
-    .then(idx => {
-      return idx.PUT(data).then(res => {
-        t.deepEqual(res, [
-          { _id: 'a', status: 'CREATED', operation: 'PUT' },
-          { _id: 'b', status: 'CREATED', operation: 'PUT' },
-          { _id: 'c', status: 'CREATED', operation: 'PUT' }
-        ])
-        return idx
-      })
-    })
-    .then(idx => {
-      idx
-        .SEARCH(['body.text:cool', 'body.text:really', 'body.text:bananas'])
-        .then(res =>
-          t.deepEquals(res, {
-            RESULT: [
-              {
-                _id: 'b',
-                _match: [
-                  { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
-                  { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
-                  { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' }
-                ],
-                _score: 4.16
-              }
-            ],
-            RESULT_LENGTH: 1
-          })
-        )
-    })
-    .catch(t.error)
+
+  const res = await idx.PUT(data)
+
+  t.deepEqual(res, [
+    { _id: 'a', status: 'CREATED', operation: 'PUT' },
+    { _id: 'b', status: 'CREATED', operation: 'PUT' },
+    { _id: 'c', status: 'CREATED', operation: 'PUT' }
+  ])
+
+  const res2 = await idx.SEARCH([
+    'body.text:cool',
+    'body.text:really',
+    'body.text:bananas'
+  ])
+
+  t.deepEquals(res2, {
+    RESULT: [
+      {
+        _id: 'b',
+        _match: [
+          { FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' },
+          { FIELD: 'body.text', VALUE: 'cool', SCORE: '1.00' },
+          { FIELD: 'body.text', VALUE: 'really', SCORE: '1.00' }
+        ],
+        _score: 4.16
+      }
+    ],
+    RESULT_LENGTH: 1
+  })
 })

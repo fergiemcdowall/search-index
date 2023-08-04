@@ -1,7 +1,10 @@
-import { EntryStream } from 'level-read-stream'
 import test from 'tape'
-import { SearchIndex } from '../../src/main.js'
+import { EntryStream } from 'level-read-stream'
 import { packageVersion } from '../../src/version.js'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'storeVector-test'
@@ -112,19 +115,6 @@ test('create another search index with storeVectors: false', async t => {
       storeVectors: false
     })
     t.ok(global[indexName + '1'])
-  } catch (e) {
-    t.error(e)
-  }
-})
-
-test('create another search index with storeVectors: false', async t => {
-  t.plan(1)
-  try {
-    global[indexName] = await new SearchIndex({
-      name: indexName,
-      storeVectors: false
-    })
-    t.ok(global[indexName])
   } catch (e) {
     t.error(e)
   }

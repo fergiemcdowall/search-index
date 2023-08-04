@@ -1,6 +1,9 @@
 import FuzzySet from 'fuzzyset'
-import { SearchIndex } from '../../src/main.js'
 import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DICTIONARY'

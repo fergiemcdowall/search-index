@@ -1,6 +1,8 @@
-import { SearchIndex } from '../../src/main.js'
 import test from 'tape'
-import Level from 'level'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'CREATED'
@@ -12,8 +14,7 @@ test('create a search index', async t => {
   t.plan(1)
   try {
     global[indexName] = await new SearchIndex({
-      name: indexName,
-      db: new Level(indexName, { valueEncoding: 'json' })
+      name: indexName
     })
     t.ok(global[indexName])
   } catch (e) {
@@ -53,8 +54,7 @@ test('confirm index is closed', t => {
 test('reopen index', async t => {
   try {
     global[indexName] = await new SearchIndex({
-      name: indexName,
-      db: new Level(indexName, { valueEncoding: 'json' })
+      name: indexName
     })
     t.ok(global[indexName])
   } catch (e) {

@@ -1,7 +1,10 @@
-import { SearchIndex } from '../../src/main.js'
 import test from 'tape'
 import sw from 'stopword'
 import stemmer from 'stemmer'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 

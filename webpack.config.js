@@ -43,7 +43,7 @@ export default [
   {
     ...config,
     mode: 'production',
-    entry: './src/main.js',
+    entry: './src/entrypoints/browserlevel.js',
     output: {
       path: path.resolve('dist'),
       filename: 'search-index-' + pkg.version + '.js',
@@ -53,7 +53,7 @@ export default [
   {
     ...config,
     mode: 'production',
-    entry: './src/main.js',
+    entry: './src/entrypoints/browserlevel.js',
     experiments: {
       outputModule: true
     },
@@ -67,11 +67,22 @@ export default [
   },
   {
     ...config,
+    plugins: [
+      ...config.plugins,
+      new webpack.DefinePlugin({
+        process: {
+          env: {
+            SI_TEST_ENTRYPOINT: `"entrypoints/browserlevel.js"`
+          }
+        }
+      })
+    ],
     // Use "mode: 'production" to keep bundle size low(ish- around 3mb)
     // possibly it would be good to have some kind of code splitting
     // instead
     mode: 'production',
     entry: glob.sync('./test/src/*-test.js', {
+      // entry: glob.sync('./test/src/init-test.js', {
       ignore: './test/src/swap-level-test.js' // ignore the node-only level test
     }),
     output: {
