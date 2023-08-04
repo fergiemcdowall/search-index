@@ -13,10 +13,10 @@
 ## Quick start
 
 ```javascript
-const si = require('search-index')
+import { SearchIndex } from 'search-index' 
 
 // initialize an index
-const { PUT, QUERY } = await si()
+const { PUT, QUERY } = await new SearchIndex()
 
 // add documents to the index
 await PUT( /* objects */ )

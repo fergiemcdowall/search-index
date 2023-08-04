@@ -5,7 +5,7 @@
 - [Installation and initialization](#installation-and-initialization)
   - [Importing and requiring](#importing-and-requiring)
   - [Instantiating an index](#instantiating-an-index)
-    - [`si(options)`](#sioptions)
+    - [`SearchIndex(options)`](#searchindexoptions)
 - [Reading](#reading)
   - [Tokens](#tokens)
     - [Find anywhere](#find-anywhere)
@@ -67,7 +67,7 @@ has been initialized in such a way that the functions below are
 available as variables:
 
 ```javascript
-const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
+const { INDEX, QUERY, UPDATE /* etc. */ } = await new SearchIndex()
 ```
 
 It is also assumed here that the search-index module is always
@@ -84,17 +84,8 @@ for more examples.
 
 ## Importing and requiring
 
-This module can be invoked with `import` and/or `require`
-depending on your environment:
-
 ```javascript
-import si from 'search-index'
-```
-
-or
-
-```javascript
-const si = require('search-index')
+import { SearchIndex } from 'search-index'
 ```
 
 ## Instantiating an index
@@ -104,7 +95,7 @@ instantiate an index by invoking the module variable as a Promise:
     
 
 ```javascript
-const idx = await si(options)
+const idx = await new SearchIndex(options)
 ```
 
 When intantiated in a browser `search-index` will use `indexedDB`
@@ -113,9 +104,9 @@ as a keystore by default, when intantiated in node.js it will use
 parameter.
 
 
-### `si(options)`
+### `SearchIndex(options)`
 
-`si(options)` returns a Promise which creates a search index when invoked
+`SearchIndex(options)` returns a Promise which creates a search index when invoked
 
 `options` is an object that can contain the following properties:
 
@@ -644,7 +635,7 @@ Example: reorder the pipeline to remove stopwords _before_ creating
 ngrams:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
@@ -677,7 +668,7 @@ A custom pipeline stage must be in the following form:
 Example: Normalize text characters:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
@@ -703,7 +694,7 @@ Example: stemmer:
 
 ```javascript
 const stemmer = require('stemmer')
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
@@ -714,7 +705,7 @@ await PUT(docs, {
       .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
       .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
       .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-      // björn -> bjorn, allé -> alle, etc.
+      // thinking -> think, thinker -> think, etc.
       .then(([tokens, field, ops]) => [
         tokens.map(stemmer),
         field,
