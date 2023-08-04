@@ -85,48 +85,42 @@ const makeASearchIndex = ops =>
 
 const initIndex = (ops = {}) =>
   new Promise((resolve, reject) => {
-    ops = Object.assign(
-      {
-        cacheLength: 1000,
-        caseSensitive: false,
-        docExistsSpace: 'DOC_RAW',
-        idGenerator: (function * generateId () {
-          let i = 0
-          while (true) {
-            yield Date.now() + '-' + i++
-          }
-        })(),
-        isLeaf: node =>
-          Array.isArray(node) &&
-          node.length === 2 &&
-          node.every(
-            item =>
-              typeof item === 'string' ||
-              typeof item === 'number' ||
-              item === null
-          ),
-        skipFields: [],
-        ngrams: {},
-        replace: {},
-        storeRawDocs: true,
-        stopwords: [],
-        storeVectors: true, // TODO: make a test for this being false
-        tokenAppend: '#',
-        tokenSplitRegex: /[\p{L}\d]+/gu,
-        tokenizer: tokenization.tokenizationPipeline
-      },
-      ops
-    )
+    ops = {
+      cacheLength: 1000,
+      caseSensitive: false,
+      docExistsSpace: 'DOC_RAW',
+      idGenerator: (function * generateId () {
+        let i = 0
+        while (true) {
+          yield Date.now() + '-' + i++
+        }
+      })(),
+      isLeaf: node =>
+        Array.isArray(node) &&
+        node.length === 2 &&
+        node.every(
+          item =>
+            typeof item === 'string' ||
+            typeof item === 'number' ||
+            item === null
+        ),
+      skipFields: [],
+      ngrams: {},
+      replace: {},
+      storeRawDocs: true,
+      stopwords: [],
+      storeVectors: true, // TODO: make a test for this being false
+      tokenAppend: '#',
+      tokenSplitRegex: /[\p{L}\d]+/gu,
+      tokenizer: tokenization.tokenizationPipeline,
+      ...ops
+    }
 
     return fii(ops).then(aNewFii =>
-      resolve(
-        Object.assign(
-          {
-            fii: aNewFii
-          },
-          ops
-        )
-      )
+      resolve({
+        fii: aNewFii,
+        ...ops
+      })
     )
   })
 
