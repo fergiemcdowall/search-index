@@ -1,6 +1,10 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
 
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
+
+const global = {}
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'indexing-test'
 
@@ -34,12 +38,14 @@ const data = [
   }
 ]
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some data', t => {

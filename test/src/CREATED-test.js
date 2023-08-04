@@ -1,28 +1,33 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'CREATED'
+const global = {}
 
 let timestamp
 
-const opts = {}
-if (typeof window === 'undefined') {
-  const { ClassicLevel } = require('classic-level')
-  opts.db = new ClassicLevel(indexName)
-}
-
-test('create index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName, ...opts }).then(db => {
-    global[indexName] = db
-    t.ok(db, !undefined)
-  })
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['~CREATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(created => {
+  global[indexName].INDEX.STORE.get(
+    ['~CREATED'],
+    global[indexName].INDEX.LEVEL_OPTIONS
+  ).then(created => {
     timestamp = created
     return t.pass('timestamp created')
   })
@@ -46,12 +51,15 @@ test('confirm index is closed', t => {
   t.equals(global[indexName], null)
 })
 
-test('recreate index', t => {
-  t.plan(1)
-  si({ name: indexName, ...opts }).then(db => {
-    global[indexName] = db
-    t.ok(db, !undefined)
-  })
+test('reopen index', async t => {
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('CREATED timestamp is unchanged after db is closed and reopened', t => {

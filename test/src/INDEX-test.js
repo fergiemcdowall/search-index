@@ -1,15 +1,21 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'INDEX'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -27,7 +33,8 @@ test('can add data', t => {
 
 test('Can access the underlying fergies-inverted-index', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['IDX', 'brand', ['volvo', '1.00']], global[indexName].INDEX.LEVEL_OPTIONS).then(
-    result => t.deepEquals(result, [0])
-  )
+  global[indexName].INDEX.STORE.get(
+    ['IDX', 'brand', ['volvo', '1.00']],
+    global[indexName].INDEX.LEVEL_OPTIONS
+  ).then(result => t.deepEquals(result, [0]))
 })

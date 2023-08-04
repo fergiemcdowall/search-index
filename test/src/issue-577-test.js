@@ -1,5 +1,8 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 
@@ -24,7 +27,7 @@ const docs = [
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const { PUT, SEARCH } = await new SearchIndex({
     name: sandbox + '577',
     tokenSplitRegex: /[\p{L}\d*]+/gu
   })
@@ -60,7 +63,7 @@ test('set up as per issue #577', async function (t) {
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const { PUT, SEARCH } = await new SearchIndex({
     name: sandbox + '577-2'
   })
 

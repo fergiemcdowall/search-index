@@ -1,5 +1,8 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 
@@ -11,7 +14,7 @@ const docs = [
 test('set up as per issue #535', async function (t) {
   t.plan(7)
 
-  const { PUT, FLUSH, SEARCH } = await si({
+  const { PUT, FLUSH, SEARCH } = await new SearchIndex({
     name: sandbox + '535'
   })
   t.ok(PUT)

@@ -1,12 +1,16 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { packageVersion } from '../../src/version.js'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
+
+let exportedIndex = null // holds a text export of an index
 
 const sandbox = 'test/sandbox/'
 const exportingIndexName = sandbox + 'EXPORT'
 const importingIndexName = sandbox + 'IMPORT'
-
-let exportedIndex = null
-
+const global = {}
 const carData = [
   {
     _id: 0,
@@ -25,7 +29,7 @@ const carData = [
 const expectedIndex = [
   {
     key: ['CREATED_WITH'],
-    value: 'search-index@' + require('../../package.json').version
+    value: 'search-index@' + packageVersion
   },
   {
     key: ['DOC', 0],
@@ -63,12 +67,16 @@ const expectedIndex = [
   { key: ['IDX', 'manufacturer', ['volvo', '1.00']], value: [0, 1] }
 ]
 
-test('create a search index for exporting from', t => {
+test('create a search index for exporting from', async t => {
   t.plan(1)
-  si({ name: exportingIndexName }).then(db => {
-    global[exportingIndexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[exportingIndexName] = await new SearchIndex({
+      name: exportingIndexName
+    })
+    t.ok(global[exportingIndexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -91,12 +99,16 @@ test('can export data', t => {
   })
 })
 
-test('create a search index for importing to', t => {
+test('create a search index for importing to', async t => {
   t.plan(1)
-  si({ name: importingIndexName }).then(db => {
-    global[importingIndexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[importingIndexName] = await new SearchIndex({
+      name: importingIndexName
+    })
+    t.ok(global[importingIndexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data that will be overwritten', t => {

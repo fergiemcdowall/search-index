@@ -1,5 +1,12 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
+
+const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'init'
+const global = {}
 
 const data = [
   {
@@ -31,17 +38,17 @@ const data = [
   }
 ]
 
-test('can create a search index WITHOUT an options object', t => {
+test('can create a search index WITHOUT an options object', async t => {
   t.plan(1)
-  si().then(db => {
-    global.db = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some data', t => {
   t.plan(1)
-  global.db.PUT(data).then(() => {
-    t.pass('ok')
-  })
+  global[indexName].PUT(data).then(t.pass)
 })

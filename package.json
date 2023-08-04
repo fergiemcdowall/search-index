@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "4.0.0",
+  "version": "5.0.0-rc1",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -14,8 +14,8 @@
   "engines": {
     "node": ">=12"
   },
-  "main": "src/node.js",
-  "browser": "src/browser.js",
+  "main": "src/entrypoints/classiclevel.js",
+  "browser": "src/entrypoints/browserlevel.js",
   "files": [
     "dist",
     "src"
@@ -23,8 +23,10 @@
   "directories": {
     "lib": "src"
   },
+  "prettier": "./.prettierrc.json",
+  "type": "module",
   "scripts": {
-    "build": "npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
+    "build": "npm run generateVersionModule && npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
     "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",
@@ -32,10 +34,11 @@
     "demo-start": "http-server -c-1 demo & open-cli http://127.0.0.1:8080",
     "demo-link-lib": "cd demo/lib &&  ln -sf ../../dist/search-index.js && cd ../../",
     "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
+    "generateVersionModule": "echo export const packageVersion = \\\"${npm_package_version}\\\" > src/version.js",
     "lint": "standard --fix test/src/* src/* demo/src/* demo/generate-index/*.js",
     "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
     "test-browser": "npm run build && cat test/sandbox/browser-tests.js | tape-run",
-    "test-node": "npm run empty-sandbox && tape test/src/*-test.js",
+    "test-node": "export SI_TEST_ENTRYPOINT=entrypoints/classiclevel.js && npm run empty-sandbox && tape test/src/*-test.js",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
   },
   "repository": {
@@ -60,6 +63,7 @@
     "os-browserify": "^0.3.0",
     "path": "^0.12.7",
     "path-browserify": "^1.0.1",
+    "prettier": "^2.8.8",
     "process": "^0.11.10",
     "standard": "17.1.0",
     "stemmer": "1.0.5",
@@ -72,9 +76,9 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "12.0.0",
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
+    "fergies-inverted-index": "12.0.0",
     "level-read-stream": "^1.1.0",
     "lru-cache": "10.0.0",
     "memory-level": "^1.0.0",

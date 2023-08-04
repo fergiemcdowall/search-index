@@ -1,6 +1,6 @@
-const DocumentProcessor = require('./DocumentProcessor')
+import { DocumentProcessor } from './DocumentProcessor.js'
 
-module.exports = (ops, cache, queue) => {
+export const Writer = (ops, cache, queue) => {
   const incrementDocCount = increment =>
     ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS)
       .then(count => ops.fii.STORE.put(['DOCUMENT_COUNT'], +count + increment, ops.fii.LEVEL_OPTIONS))

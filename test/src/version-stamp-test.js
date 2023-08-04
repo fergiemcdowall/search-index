@@ -1,5 +1,9 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { packageVersion } from '../../src/version.js'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'version-stamp-test'
@@ -7,7 +11,7 @@ const indexName = sandbox + 'version-stamp-test'
 test('create a search index', async function (t) {
   t.plan(3)
 
-  const { PUT, INDEX } = await si({
+  const { PUT, INDEX } = await new SearchIndex({
     name: indexName
   })
   t.ok(PUT)
@@ -24,7 +28,7 @@ test('create a search index', async function (t) {
 
   t.equals(
     await INDEX.STORE.get(['CREATED_WITH'], INDEX.LEVEL_OPTIONS),
-    'search-index@' + require('../../package.json').version
+    'search-index@' + packageVersion
   )
 
   // TODO: test rejections when trying to open with an incorrect

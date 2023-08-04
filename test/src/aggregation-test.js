@@ -1,16 +1,22 @@
-const si = require('../../')
-const test = require('tape')
-const wbd = require('world-bank-dataset')
+import test from 'tape'
+import wbd from 'world-bank-dataset'
+
+const { SearchIndex } = await import(
+  '../../src/' + process.env.SI_TEST_ENTRYPOINT
+)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'aggregation-test'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some worldbank data', t => {
@@ -243,49 +249,77 @@ test('can aggregate totalamt using custom buckets', t => {
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
@@ -674,49 +708,77 @@ test('can run a query and create facets on impagency', t => {
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
@@ -779,49 +841,77 @@ test('JSON AGGREGATE', t => {
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
