@@ -12,20 +12,20 @@ test('can concurrently PUT', async function (t) {
     .fill()
     .map((doc, i) => ({ text: 'this is some test text', _id: i }))
 
-  const { PUT, QUERY } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'concurrency'
   })
-  t.ok(PUT)
+  t.ok(si)
 
   t.deepEquals(
-    await Promise.all(docs.map(doc => PUT([doc]))),
+    await Promise.all(docs.map(doc => si.PUT([doc]))),
     new Array(size)
       .fill()
       .map((res, i) => [{ _id: i, operation: 'PUT', status: 'CREATED' }])
   )
 
   t.deepEquals(
-    await QUERY({
+    await si.QUERY({
       AND: ['this']
     }),
     {

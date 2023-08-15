@@ -725,8 +725,7 @@ test('DICTIONARY without specified field', t => {
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
-  const { DICTIONARY } = global[indexName]
-  DICTIONARY().then(res => {
+  global[indexName].DICTIONARY().then(res => {
     t.deepEqual(res, [
       200,
       500,
@@ -750,8 +749,7 @@ test('DICTIONARY without specified field', t => {
 
 test('DOCUMENT_COUNT is 3', t => {
   t.plan(1)
-  const { DOCUMENT_COUNT } = global[indexName]
-  DOCUMENT_COUNT().then(res => {
+  global[indexName].DOCUMENT_COUNT().then(res => {
     t.equal(res, 3)
   })
 })

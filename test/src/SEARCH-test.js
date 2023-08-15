@@ -69,7 +69,7 @@ test('can add data', t => {
 
 // TODO: can do SEARCH('paul') (single param is not array)
 
-test('simple _SEARCH with 1 clause', t => {
+test('simple SEARCH with 1 clause', t => {
   t.plan(1)
   global[indexName].SEARCH(['paul']).then(res => {
     t.deepEqual(res, {

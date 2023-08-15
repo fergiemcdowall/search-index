@@ -8,13 +8,17 @@ const global = {}
 
 let timestamp
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({
+    global[indexName] = new SearchIndex({
       name: indexName
     })
-    t.ok(global[indexName])
+    // Timeout here to deal with there no longer being a callback/promise on the
+    // constructor
+    setTimeout(() => {
+      t.ok(global[indexName])
+    }, 10)
   } catch (e) {
     t.error(e)
   }
@@ -49,9 +53,10 @@ test('confirm index is closed', t => {
   t.equals(global[indexName], null)
 })
 
-test('reopen index', async t => {
+test('reopen index', t => {
+  t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({
+    global[indexName] = new SearchIndex({
       name: indexName
     })
     t.ok(global[indexName])

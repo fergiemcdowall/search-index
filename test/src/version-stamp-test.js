@@ -8,13 +8,13 @@ const indexName = sandbox + 'version-stamp-test'
 test('create a search index', async function (t) {
   t.plan(3)
 
-  const { PUT, INDEX } = await new SearchIndex({
+  const si = new SearchIndex({
     name: indexName
   })
-  t.ok(PUT)
+  t.ok(si.PUT)
 
   t.deepEquals(
-    await PUT([
+    await si.PUT([
       {
         _id: '0',
         text: 'just a test'
@@ -24,7 +24,7 @@ test('create a search index', async function (t) {
   )
 
   t.equals(
-    await INDEX.STORE.get(['CREATED_WITH'], INDEX.LEVEL_OPTIONS),
+    await si.INDEX.STORE.get(['CREATED_WITH']),
     'search-index@' + packageVersion
   )
 

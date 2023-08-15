@@ -25,18 +25,18 @@ const docs = [
 test('set up as per issue #571', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await new SearchIndex({
+  const si = await new SearchIndex({
     name: sandbox + '571'
   })
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 1, operation: 'PUT', status: 'CREATED' },
     { _id: 'two', operation: 'PUT', status: 'CREATED' },
     { _id: 3, operation: 'PUT', status: 'CREATED' }
   ])
 
   t.deepEquals(
-    await SEARCH(['beatles'], {
+    await si.SEARCH(['beatles'], {
       DOCUMENTS: true
     }),
     {

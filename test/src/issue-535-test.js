@@ -11,17 +11,17 @@ const docs = [
 test('set up as per issue #535', async function (t) {
   t.plan(7)
 
-  const { PUT, FLUSH, SEARCH } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + '535'
   })
-  t.ok(PUT)
+  t.ok(si.PUT)
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 'qwertyu', status: 'CREATED', operation: 'PUT' },
     { _id: 'asdfgh', status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await SEARCH(['q']), {
+  t.deepEquals(await si.SEARCH(['q']), {
     RESULT: [
       {
         _id: 'qwertyu',
@@ -32,19 +32,19 @@ test('set up as per issue #535', async function (t) {
     RESULT_LENGTH: 1
   })
 
-  t.ok(await FLUSH())
+  t.ok(await si.FLUSH())
 
-  t.deepEquals(await SEARCH(['q']), {
+  t.deepEquals(await si.SEARCH(['q']), {
     RESULT: [],
     RESULT_LENGTH: 0
   })
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 'qwertyu', status: 'CREATED', operation: 'PUT' },
     { _id: 'asdfgh', status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await SEARCH(['q']), {
+  t.deepEquals(await si.SEARCH(['q']), {
     RESULT: [
       {
         _id: 'qwertyu',

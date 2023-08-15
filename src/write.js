@@ -17,9 +17,9 @@ export class Writer {
       )
   }
 
-  #decrementDocCount(decrement) {
+  decrementDocCount(decrement) {
     return this.ii.STORE.get(['DOCUMENT_COUNT']).then(count =>
-      this.ii.STORE.put(['DOCUMENT_COUNT'], +count - increment)
+      this.ii.STORE.put(['DOCUMENT_COUNT'], +count - decrement)
     )
   }
 
@@ -53,7 +53,7 @@ export class Writer {
 
   #DELETE(_ids) {
     return this.ii.DELETE(_ids, this.ii.LEVEL_OPTIONS).then(result => {
-      cache.clear()
+      this.cache.clear()
       const deleted = result.filter(d => d.status === 'DELETED')
       return Promise.all([
         Promise.all(
@@ -61,7 +61,7 @@ export class Writer {
             this.ii.STORE.del(['DOC_RAW', r._id], this.ii.LEVEL_OPTIONS)
           )
         ),
-        decrementDocCount(deleted.length)
+        this.decrementDocCount(deleted.length)
       ]).then(() => result)
     })
   }
@@ -73,7 +73,7 @@ export class Writer {
   FLUSH() {
     return this.ii.STORE.clear()
       .then(() => {
-        cache.clear()
+        this.cache.clear()
         const timestamp = Date.now()
         return this.ii.STORE.batch(
           [

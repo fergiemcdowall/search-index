@@ -7,11 +7,11 @@ let i = 0
 
 test('create a search index with no character normalisation', async t => {
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
-  const ids = (await PUT(data)).map(status => status._id)
-  t.deepEquals(await SEARCH(['bor']), {
+  const ids = (await si.PUT(data)).map(status => status._id)
+  t.deepEquals(await si.SEARCH(['bor']), {
     RESULT: [
       {
         _id: ids[1],
@@ -32,11 +32,11 @@ test('create a search index with query side character normalisation (_GET)', asy
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, _GET } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
-  const ids = (await PUT(data)).map(status => status._id)
-  t.deepEquals(await _GET('bør', swapØtoO), [
+  const ids = (await si.PUT(data)).map(status => status._id)
+  t.deepEquals(await si._GET('bør', swapØtoO), [
     {
       _id: ids[1],
       _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
@@ -53,11 +53,11 @@ test('create a search index with query side character normalisation (_AND)', asy
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, _AND } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
-  const ids = (await PUT(data)).map(status => status._id)
-  t.deepEquals(await _AND(['bør'], swapØtoO), [
+  const ids = (await si.PUT(data)).map(status => status._id)
+  t.deepEquals(await si._AND(['bør'], swapØtoO), [
     {
       _id: ids[1],
       _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
@@ -75,12 +75,12 @@ test('create a search index with query side character normalisation (QUERY)', as
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, QUERY } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
-  const ids = (await PUT(data)).map(status => status._id)
+  const ids = (await si.PUT(data)).map(status => status._id)
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       {
         AND: ['bør']
       },
@@ -109,12 +109,12 @@ test('create a search index with query side character normalisation (SEARCH)', a
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
-  const ids = (await PUT(data)).map(status => status._id)
+  const ids = (await si.PUT(data)).map(status => status._id)
   t.deepEquals(
-    await SEARCH(['bør'], {
+    await si.SEARCH(['bør'], {
       PIPELINE: swapØtoO
     }),
     {
@@ -139,24 +139,24 @@ test('create a search index with query and index side character normalisation', 
     })
 
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, SEARCH, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'char-norm-' + ++i
   })
   const ids = (
-    await PUT(data, {
+    await si.PUT(data, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
           .then(([tokens, field, ops]) => [
             tokens.map(t => t.replace(/ø/g, 'o')),
             field,
             ops
           ])
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     })
   ).map(status => status._id)
-  t.deepEquals(await SEARCH(['bor'], swapØtoO), {
+  t.deepEquals(await si.SEARCH(['bor'], swapØtoO), {
     RESULT: [
       {
         _id: ids[0],

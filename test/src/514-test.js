@@ -57,16 +57,16 @@ test('simple _SEARCH with 1 clause', async t => {
     })
   )
 
-  // await global[indexName]
-  //   .DELETE(3)
-  //   .then(res =>
-  //     t.deepEqual(res, [{ _id: 3, operation: 'DELETE', status: 'DELETED' }])
-  //   )
+  await global[indexName]
+    .DELETE(3)
+    .then(res =>
+      t.deepEqual(res, [{ _id: 3, operation: 'DELETE', status: 'DELETED' }])
+    )
 
-  // await global[indexName].SEARCH(['Zeppelin']).then(res =>
-  //   t.deepEqual(res, {
-  //     RESULT: [],
-  //     RESULT_LENGTH: 0
-  //   })
-  // )
+  await global[indexName].SEARCH(['Zeppelin']).then(res =>
+    t.deepEqual(res, {
+      RESULT: [],
+      RESULT_LENGTH: 0
+    })
+  )
 })

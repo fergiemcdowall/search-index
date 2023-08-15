@@ -5,10 +5,10 @@ const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'DISTINCT'
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
+    global[indexName] = new SearchIndex({ name: indexName })
     t.ok(global[indexName])
   } catch (e) {
     t.error(e)
@@ -94,161 +94,170 @@ test('can add data', t => {
 })
 
 test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'colour'
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue' },
-      { FIELD: 'colour', VALUE: 'red' },
-      { FIELD: 'colour', VALUE: 'yellow' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'colour'
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'colour', VALUE: 'blue' },
+        { FIELD: 'colour', VALUE: 'red' },
+        { FIELD: 'colour', VALUE: 'yellow' }
+      ])
+    })
 })
 
 test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'colour',
-    VALUE: {
-      GTE: 'a',
-      LTE: 'c'
-    }
-  }).then(res => {
-    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'colour',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'c'
+      }
+    })
+    .then(res => {
+      t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
+    })
 })
 
 test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'colour',
-    VALUE: {
-      GTE: 'c'
-    }
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'red' },
-      { FIELD: 'colour', VALUE: 'yellow' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'colour',
+      VALUE: {
+        GTE: 'c'
+      }
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'colour', VALUE: 'red' },
+        { FIELD: 'colour', VALUE: 'yellow' }
+      ])
+    })
 })
 
 test('simple DISTINCT with range', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'colour',
-    VALUE: {
-      LTE: 'c'
-    }
-  }).then(res => {
-    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'colour',
+      VALUE: {
+        LTE: 'c'
+      }
+    })
+    .then(res => {
+      t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'blue' }])
+    })
 })
 
 test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'colour'
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'colour', VALUE: 'blue' },
-      { FIELD: 'colour', VALUE: 'red' },
-      { FIELD: 'colour', VALUE: 'yellow' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'colour'
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'colour', VALUE: 'blue' },
+        { FIELD: 'colour', VALUE: 'red' },
+        { FIELD: 'colour', VALUE: 'yellow' }
+      ])
+    })
 })
 
 test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    VALUE: 'red'
-  }).then(res => {
-    t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'red' }])
-  })
+  global[indexName]
+    .DISTINCT({
+      VALUE: 'red'
+    })
+    .then(res => {
+      t.deepEqual(res, [{ FIELD: 'colour', VALUE: 'red' }])
+    })
 })
 
 test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    VALUE: 'volvo'
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'volvo' },
-      { FIELD: 'make', VALUE: 'volvo' },
-      { FIELD: 'manufacturer', VALUE: 'volvo' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      VALUE: 'volvo'
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'brand', VALUE: 'volvo' },
+        { FIELD: 'make', VALUE: 'volvo' },
+        { FIELD: 'manufacturer', VALUE: 'volvo' }
+      ])
+    })
 })
 
 test('simple DISTINCT', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: 'brand'
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'bmw' },
-      { FIELD: 'brand', VALUE: 'tesla' },
-      { FIELD: 'brand', VALUE: 'volvo' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: 'brand'
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'brand', VALUE: 'bmw' },
+        { FIELD: 'brand', VALUE: 'tesla' },
+        { FIELD: 'brand', VALUE: 'volvo' }
+      ])
+    })
 })
 
 test('DISTINCT on 2 fields', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT({
-    FIELD: ['brand', 'colour']
-  }).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'bmw' },
-      { FIELD: 'brand', VALUE: 'tesla' },
-      { FIELD: 'brand', VALUE: 'volvo' },
-      { FIELD: 'colour', VALUE: 'blue' },
-      { FIELD: 'colour', VALUE: 'red' },
-      { FIELD: 'colour', VALUE: 'yellow' }
-    ])
-  })
+  global[indexName]
+    .DISTINCT({
+      FIELD: ['brand', 'colour']
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'brand', VALUE: 'bmw' },
+        { FIELD: 'brand', VALUE: 'tesla' },
+        { FIELD: 'brand', VALUE: 'volvo' },
+        { FIELD: 'colour', VALUE: 'blue' },
+        { FIELD: 'colour', VALUE: 'red' },
+        { FIELD: 'colour', VALUE: 'yellow' }
+      ])
+    })
 })
 
 test('DISTINCT on 2 fields with GTE/LTE', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT(
-    {
-      FIELD: ['brand'],
-      VALUE: {
-        GTE: 'f'
+  global[indexName]
+    .DISTINCT(
+      {
+        FIELD: ['brand'],
+        VALUE: {
+          GTE: 'f'
+        }
+      },
+      {
+        FIELD: ['colour'],
+        VALUE: {
+          LTE: 'x'
+        }
       }
-    },
-    {
-      FIELD: ['colour'],
-      VALUE: {
-        LTE: 'x'
-      }
-    }
-  ).then(res => {
-    t.deepEqual(res, [
-      { FIELD: 'brand', VALUE: 'tesla' },
-      { FIELD: 'brand', VALUE: 'volvo' },
-      { FIELD: 'colour', VALUE: 'blue' },
-      { FIELD: 'colour', VALUE: 'red' }
-    ])
-  })
+    )
+    .then(res => {
+      t.deepEqual(res, [
+        { FIELD: 'brand', VALUE: 'tesla' },
+        { FIELD: 'brand', VALUE: 'volvo' },
+        { FIELD: 'colour', VALUE: 'blue' },
+        { FIELD: 'colour', VALUE: 'red' }
+      ])
+    })
 })
 
 test('DISTINCT from string', t => {
-  const { DISTINCT } = global[indexName]
   t.plan(1)
-  DISTINCT('tes').then(res => {
+  global[indexName].DISTINCT('tes').then(res => {
     t.deepEqual(res, [
       { FIELD: 'brand', VALUE: 'tesla' },
       { FIELD: 'make', VALUE: 'tesla' },

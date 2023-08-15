@@ -28,10 +28,10 @@ const carData = [
 
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
+    global[indexName] = new SearchIndex({ name: indexName })
     t.ok(global[indexName])
   } catch (e) {
     t.error(e)
@@ -67,8 +67,7 @@ test('DOC_RAWs are inserted as expected', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -108,8 +107,7 @@ test('Verify that PUT_RAW has updated the raw document', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -149,8 +147,7 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })

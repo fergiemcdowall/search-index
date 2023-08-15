@@ -81,29 +81,6 @@ import * as tokenization from './tokenisationPipeline.js'
 //     )
 //   })
 
-// const validateVersion = si =>
-//   new Promise((resolve, reject) => {
-//     const key = ['CREATED_WITH']
-//     const version = 'search-index@' + packageVersion
-//     return si.INDEX.STORE.get(key, si.INDEX.LEVEL_OPTIONS)
-//       .then(v =>
-//         // throw a rejection if versions do not match
-//         version === v
-//           ? resolve()
-//           : reject(
-//               new Error(
-//                 'This index was created with ' +
-//                   v +
-//                   ', you are running ' +
-//                   version
-//               )
-//             )
-//       )
-//       .catch(e =>
-//         si.INDEX.STORE.put(key, version, si.INDEX.LEVEL_OPTIONS).then(resolve)
-//       )
-//   })
-
 export class Main {
   constructor(ops = {}) {
     ops = {
@@ -139,12 +116,20 @@ export class Main {
 
     this.INDEX = new InvertedIndex(ops)
 
-    const cache = new LRUCache({
+    // Now that constructor is not async- not sure where this should be called...
+    this._validateVersion()
+
+    this._CACHE = new LRUCache({
       max: 1000
     })
 
-    this.w = new Writer(ops, cache, new PQueue({ concurrency: 1 }), this.INDEX)
-    this.r = new Reader(ops, cache, this.INDEX)
+    this.w = new Writer(
+      ops,
+      this._CACHE,
+      new PQueue({ concurrency: 1 }),
+      this.INDEX
+    )
+    this.r = new Reader(ops, this._CACHE, this.INDEX)
 
     // TODO: this should be something more sensible like "countDocs"
     // async so this is "fire and forget"
@@ -201,12 +186,24 @@ export class Main {
     return this.INDEX.BUCKET(token)
   }
 
-  BUCKETS(...token) {
-    return this.INDEX.BUCKETS(...token)
-  }
-
   _GET(tokens, pipeline) {
     return this.INDEX.GET(tokens, pipeline)
+  }
+
+  _NOT(include, exclude) {
+    return this.INDEX.NOT(include, exclude)
+  }
+
+  _OR(tokens, pipeline) {
+    return this.INDEX.OR(tokens, pipeline)
+  }
+
+  _PAGE(results, options) {
+    return this.r.PAGE(results, options)
+  }
+
+  _SORT(results, options) {
+    return this.r.SORT(results, options)
   }
 
   TOKENIZATION_PIPELINE_STAGES = {
@@ -219,32 +216,114 @@ export class Main {
     SCORE_TERM_FREQUENCY: tokenization.SCORE_TERM_FREQUENCY
   }
 
-  // _NOT(include, exclude) {
-  //   return ops.fii.NOT
-  // }
-
-  // _OR(tokens, pipeline) {
-  //   return ops.fii.OR
-  // }
-
   // // TODO: should cache be at the fii level?
-  // _CACHE(tokens, pipeline) {
-  //   return this.cache
-  // }
+  // _CACHE = this.cache
 
-  // _PAGE(tokens, pipeline) {
-  //   return this.cache
-  // }
+  ALL_DOCUMENTS(limit) {
+    return this.r.ALL_DOCUMENTS(limit)
+  }
 
-  QUERY(q, ops) {
-    return this.r.QUERY(q, ops)
+  BUCKETS(...token) {
+    return this.INDEX.BUCKETS(...token)
+  }
+
+  CREATED() {
+    return this.INDEX.CREATED()
+  }
+
+  EXPORT() {
+    return this.INDEX.EXPORT()
+  }
+
+  IMPORT(index) {
+    return this.INDEX.IMPORT(index)
+  }
+
+  DELETE(ids) {
+    return this.w.DELETE(ids)
+  }
+
+  DISTINCT(...tokens) {
+    return this.r.DISTINCT(...tokens)
+  }
+
+  DICTIONARY(token) {
+    return this.r.DICTIONARY(token)
+  }
+
+  DOCUMENTS(...docs) {
+    return this.r.DOCUMENTS(...docs)
+  }
+
+  DOCUMENT_COUNT() {
+    return this.r.DOCUMENT_COUNT()
+  }
+
+  DOCUMENT_VECTORS(...requestedDocs) {
+    return this.r.DOCUMENT_VECTORS(...requestedDocs)
+  }
+
+  FACETS(...token) {
+    return this.r.FACETS(...token)
+  }
+
+  FIELDS() {
+    return this.INDEX.FIELDS()
+  }
+
+  FLUSH() {
+    return this.w.FLUSH()
+  }
+
+  LAST_UPDATED() {
+    return this.INDEX.LAST_UPDATED()
+  }
+
+  MAX(token) {
+    return this.INDEX.MAX(token)
+  }
+
+  MIN(token) {
+    return this.INDEX.MIN(token)
   }
 
   PUT(docs, ops) {
     return this.w.PUT(docs, ops)
   }
 
+  // TODO: is this a sensible API?
+  PUT_RAW(docs, ids, dontStoreValue) {
+    return this.w.PUT_RAW(docs, ids, dontStoreValue)
+  }
+
+  QUERY(q, ops) {
+    return this.r.QUERY(q, ops)
+  }
+
   SEARCH(q, ops) {
-    this.r.SEARCH(q, ops)
+    return this.r.SEARCH(q, ops)
+  }
+
+  //TODO: put into own file
+  _validateVersion() {
+    return new Promise((resolve, reject) => {
+      const key = ['CREATED_WITH']
+      const version = 'search-index@' + packageVersion
+      return this.INDEX.STORE.get(key)
+        .then(v =>
+          // throw a rejection if versions do not match
+          version === v
+            ? resolve()
+            : reject(
+                new Error(
+                  'This index was created with ' +
+                    v +
+                    ', you are running ' +
+                    version
+                )
+              )
+        )
+        .catch(e => this.INDEX.STORE.put(key, version).then(resolve))
+    })
   }
 }

@@ -5,10 +5,10 @@ const global = {}
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'FIELDS'
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
+    global[indexName] = new SearchIndex({ name: indexName })
     t.ok(global[indexName])
   } catch (e) {
     t.error(e)

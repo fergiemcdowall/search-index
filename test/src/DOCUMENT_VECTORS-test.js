@@ -25,10 +25,10 @@ const data = [
 ]
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({
+    global[indexName] = new SearchIndex({
       name: indexName,
       caseSensitive: false,
       storeVectors: true
@@ -164,10 +164,10 @@ test('DOCUMENT_VECTORS()', t => {
   })
 })
 
-test('create a search index with storeVectors: false', async t => {
+test('create a search index with storeVectors: false', t => {
   t.plan(1)
   try {
-    global[indexName + '1'] = await new SearchIndex({
+    global[indexName + '1'] = new SearchIndex({
       name: indexName + '1',
       caseSensitive: false,
       storeVectors: false

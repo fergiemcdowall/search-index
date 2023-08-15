@@ -78,10 +78,10 @@ const data = [
 ]
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({
+    global[indexName] = new SearchIndex({
       name: indexName,
       storeRawDocs: false,
       storeVectors: true
@@ -105,9 +105,8 @@ test('can add data', t => {
 })
 
 test('simple DOCUMENT_COUNT', t => {
-  const { DOCUMENT_COUNT } = global[indexName]
   t.plan(1)
-  DOCUMENT_COUNT().then(count => {
+  global[indexName].DOCUMENT_COUNT().then(count => {
     t.equals(count, 4)
   })
 })
@@ -125,9 +124,8 @@ test('add some more docs, some UPDATED and some CREATED', t => {
 })
 
 test('simple DOCUMENT_COUNT', t => {
-  const { DOCUMENT_COUNT } = global[indexName]
   t.plan(1)
-  DOCUMENT_COUNT().then(count => {
+  global[indexName].DOCUMENT_COUNT().then(count => {
     t.equals(count, 6)
   })
 })
@@ -144,9 +142,8 @@ test('can DELETE data', t => {
 })
 
 test('simple DOCUMENT_COUNT', t => {
-  const { DOCUMENT_COUNT } = global[indexName]
   t.plan(1)
-  DOCUMENT_COUNT().then(count => {
+  global[indexName].DOCUMENT_COUNT().then(count => {
     t.equals(count, 4)
   })
 })

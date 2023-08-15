@@ -10,13 +10,12 @@ export default class Reader {
     const ALL_DOCUMENTS = limit =>
       new Promise((resolve, reject) => {
         const result = []
-        new EntryStream(ops.fii.STORE, {
+        new EntryStream(this.ii.STORE, {
           // gte: null,
           // lte: undefined,
           gte: ['DOC_RAW', null],
           lte: ['DOC_RAW', undefined],
-          limit,
-          ...ops.fii.LEVEL_OPTIONS
+          limit
         })
           .on('data', d =>
             result.push({
@@ -31,9 +30,7 @@ export default class Reader {
       requestedDocs.length
         ? Promise.all(
             requestedDocs.map(_id =>
-              ops.fii.STORE.get(['DOC_RAW', _id], ops.fii.LEVEL_OPTIONS).catch(
-                e => null
-              )
+              this.ii.STORE.get(['DOC_RAW', _id]).catch(e => null)
             )
           )
         : ALL_DOCUMENTS()
@@ -41,9 +38,7 @@ export default class Reader {
     const DOCUMENT_VECTORS = (...requestedDocs) =>
       Promise.all(
         requestedDocs.map(_id =>
-          ops.fii.STORE.get(['DOC', _id], ops.fii.LEVEL_OPTIONS).catch(
-            e => null
-          )
+          this.ii.STORE.get(['DOC', _id]).catch(e => null)
         )
       )
 
@@ -63,7 +58,7 @@ export default class Reader {
       )
 
     const DISTINCT = (...tokens) =>
-      ops.fii.DISTINCT(...tokens).then(result => {
+      this.ii.DISTINCT(...tokens).then(result => {
         return [
           // Stringify Set entries so that Set can determine duplicates
           ...result.reduce(
@@ -81,7 +76,7 @@ export default class Reader {
       }) // un-stringify
 
     const FACETS = (...tokens) =>
-      ops.fii.FACETS(...tokens).then(result =>
+      this.ii.FACETS(...tokens).then(result =>
         [
           // Stringify Set entries so that Set can determine duplicates
           ...result.reduce(
@@ -236,8 +231,7 @@ export default class Reader {
         .sort(sortFunction[options.TYPE][options.DIRECTION])
     }
 
-    const DOCUMENT_COUNT = () =>
-      ops.fii.STORE.get(['DOCUMENT_COUNT'], ops.fii.LEVEL_OPTIONS)
+    const DOCUMENT_COUNT = () => this.ii.STORE.get(['DOCUMENT_COUNT'])
 
     const WEIGHT = (results, weights) =>
       results.map(r => {
@@ -344,9 +338,9 @@ export default class Reader {
       // BUCKETS IF SPECIFIED
       const buckets = result =>
         options.BUCKETS
-          ? ops.fii.BUCKETS(...options.BUCKETS).then(bkts =>
+          ? this.ii.BUCKETS(...options.BUCKETS).then(bkts =>
               Object.assign(result, {
-                BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
+                BUCKETS: this.ii.AGGREGATION_FILTER(bkts, result.RESULT)
               })
             )
           : result
@@ -378,7 +372,7 @@ export default class Reader {
         // else
         return FACETS(...options.FACETS).then(fcts =>
           Object.assign(result, {
-            FACETS: ops.fii.AGGREGATION_FILTER(fcts, result.RESULT)
+            FACETS: this.ii.AGGREGATION_FILTER(fcts, result.RESULT)
           })
         )
       }

@@ -7,11 +7,14 @@ const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'LAST_UPDATED'
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
-    t.ok(global[indexName])
+    global[indexName] = new SearchIndex({ name: indexName })
+    // wait a bit...
+    setTimeout(() => {
+      t.ok(global[indexName])
+    }, 10)
   } catch (e) {
     t.error(e)
   }

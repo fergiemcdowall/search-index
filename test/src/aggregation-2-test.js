@@ -5,10 +5,10 @@ const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_AGGREGATE'
 const global = {}
 
-test('create a search index', async t => {
+test('create a search index', t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
+    global[indexName] = new SearchIndex({ name: indexName })
     t.ok(global[indexName])
   } catch (e) {
     t.error(e)
@@ -84,323 +84,354 @@ test('can add data', t => {
 })
 
 test('simple aggregation', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      AND: ['make:bmw']
-    },
-    {
-      BUCKETS: [
-        {
-          FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
+  global[indexName]
+    .QUERY(
+      {
+        AND: ['make:bmw']
+      },
+      {
+        BUCKETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
           }
-        }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [
-        {
-          FIELD: ['make'],
-          VALUE: { GTE: 'a', LTE: 'u' },
-          _id: ['1', '7', '9']
-        }
-      ],
-      RESULT_LENGTH: 3,
-      RESULT: [
-        { _id: '1', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
-      ]
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        BUCKETS: [
+          {
+            FIELD: ['make'],
+            VALUE: { GTE: 'a', LTE: 'u' },
+            _id: ['1', '7', '9']
+          }
+        ],
+        RESULT_LENGTH: 3,
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ]
+      })
     })
-  })
 })
 
 test('simple AGGREGATE (JSON)', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      AND: ['make:bmw', 'manufacturer:tesla']
-    },
-    {
-      BUCKETS: [
-        {
-          FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
+  global[indexName]
+    .QUERY(
+      {
+        AND: ['make:bmw', 'manufacturer:tesla']
+      },
+      {
+        BUCKETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
           }
-        }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      BUCKETS: [
-        {
-          FIELD: ['make'],
-          VALUE: { GTE: 'a', LTE: 'u' },
-          _id: ['7', '9']
-        }
-      ],
-      RESULT: [
-        {
-          _id: '7',
-          _match: [
-            { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' },
-            { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '9',
-          _match: [
-            { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' },
-            { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
-          ]
-        }
-      ],
-      RESULT_LENGTH: 2
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        BUCKETS: [
+          {
+            FIELD: ['make'],
+            VALUE: { GTE: 'a', LTE: 'u' },
+            _id: ['7', '9']
+          }
+        ],
+        RESULT: [
+          {
+            _id: '7',
+            _match: [
+              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '9',
+            _match: [
+              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ]
+          }
+        ],
+        RESULT_LENGTH: 2
+      })
     })
-  })
 })
 
 test('simple AGGREGATE (JSON)', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      OR: ['brand:tesla', 'manufacturer:tesla']
-    },
-    {
-      BUCKETS: [
-        {
-          FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
+  global[indexName]
+    .QUERY(
+      {
+        OR: ['brand:tesla', 'manufacturer:tesla']
+      },
+      {
+        BUCKETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
           }
-        }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        {
-          _id: '7',
-          _match: [
-            { FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' },
-            { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '8',
-          _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
-        },
-        {
-          _id: '2',
-          _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
-        },
-        {
-          _id: '5',
-          _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
-        },
-        {
-          _id: '6',
-          _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
-        },
-        {
-          _id: '9',
-          _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
-        }
-      ],
-      RESULT_LENGTH: 6,
-      BUCKETS: [
-        {
-          FIELD: ['make'],
-          VALUE: { GTE: 'a', LTE: 'u' },
-          _id: ['2', '6', '7', '9']
-        }
-      ]
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '7',
+            _match: [
+              { FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' },
+              { FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '8',
+            _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '2',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '5',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '6',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
+          },
+          {
+            _id: '9',
+            _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 6,
+        BUCKETS: [
+          {
+            FIELD: ['make'],
+            VALUE: { GTE: 'a', LTE: 'u' },
+            _id: ['2', '6', '7', '9']
+          }
+        ]
+      })
     })
-  })
 })
 
 test('simple aggregation', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      GET: 'make:bmw'
-    },
-    {
-      FACETS: [
-        {
-          FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
+  global[indexName]
+    .QUERY(
+      {
+        GET: 'make:bmw'
+      },
+      {
+        FACETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
           }
-        }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '1', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
-      ],
-      RESULT_LENGTH: 3,
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ]
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3,
+        FACETS: [
+          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+          { FIELD: 'make', VALUE: 'tesla', _id: [] }
+        ]
+      })
     })
-  })
 })
 
 test('simple AGGREGATE, using DISTINCT (JSON)', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      GET: {
-        FIELD: ['make'],
-        VALUE: {
-          GTE: 'a',
-          LTE: 'c'
-        }
-      }
-    },
-    {
-      FACETS: [
-        {
-          FIELD: 'make',
+  global[indexName]
+    .QUERY(
+      {
+        GET: {
+          FIELD: ['make'],
           VALUE: {
             GTE: 'a',
-            LTE: 'u'
+            LTE: 'c'
           }
         }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
-      RESULT: [
-        { _id: '1', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
-      ],
-      RESULT_LENGTH: 3
+      },
+      {
+        FACETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
+          }
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        FACETS: [
+          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+          { FIELD: 'make', VALUE: 'tesla', _id: [] }
+        ],
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
     })
-  })
 })
 
 test('simple aggregation', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      GET: {
-        FIELD: 'make',
-        VALUE: 'bmw'
-      }
-    },
-    {
-      FACETS: [
-        {
+  global[indexName]
+    .QUERY(
+      {
+        GET: {
           FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
-          }
+          VALUE: 'bmw'
         }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ],
-      RESULT: [
-        { _id: '1', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-        { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
-      ],
-      RESULT_LENGTH: 3
+      },
+      {
+        FACETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
+          }
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        FACETS: [
+          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+          { FIELD: 'make', VALUE: 'tesla', _id: [] }
+        ],
+        RESULT: [
+          {
+            _id: '1',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          {
+            _id: '7',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          },
+          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 3
+      })
     })
-  })
 })
 
 test('simple aggregation, return full documents', t => {
-  const { QUERY } = global[indexName]
   t.plan(1)
-  QUERY(
-    {
-      GET: {
-        FIELD: 'make',
-        VALUE: 'bmw'
-      }
-    },
-    {
-      DOCUMENTS: true,
-      FACETS: [
-        {
+  global[indexName]
+    .QUERY(
+      {
+        GET: {
           FIELD: 'make',
-          VALUE: {
-            GTE: 'a',
-            LTE: 'u'
-          }
+          VALUE: 'bmw'
         }
-      ]
-    }
-  ).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        {
-          _id: '1',
-          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
-          _doc: {
+      },
+      {
+        DOCUMENTS: true,
+        FACETS: [
+          {
+            FIELD: 'make',
+            VALUE: {
+              GTE: 'a',
+              LTE: 'u'
+            }
+          }
+        ]
+      }
+    )
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
             _id: '1',
-            make: 'BMW',
-            manufacturer: 'Volvo',
-            brand: 'Volvo'
-          }
-        },
-        {
-          _id: '7',
-          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
-          _doc: {
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
+            _doc: {
+              _id: '1',
+              make: 'BMW',
+              manufacturer: 'Volvo',
+              brand: 'Volvo'
+            }
+          },
+          {
             _id: '7',
-            make: 'BMW',
-            manufacturer: 'Tesla',
-            brand: 'Tesla'
-          }
-        },
-        {
-          _id: '9',
-          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
-          _doc: {
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
+            _doc: {
+              _id: '7',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Tesla'
+            }
+          },
+          {
             _id: '9',
-            make: 'BMW',
-            manufacturer: 'Tesla',
-            brand: 'Volvo'
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
+            _doc: {
+              _id: '9',
+              make: 'BMW',
+              manufacturer: 'Tesla',
+              brand: 'Volvo'
+            }
           }
-        }
-      ],
-      RESULT_LENGTH: 3,
-      FACETS: [
-        { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-        { FIELD: 'make', VALUE: 'tesla', _id: [] }
-      ]
+        ],
+        RESULT_LENGTH: 3,
+        FACETS: [
+          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
+          { FIELD: 'make', VALUE: 'tesla', _id: [] }
+        ]
+      })
     })
-  })
 })

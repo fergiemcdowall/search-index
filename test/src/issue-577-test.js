@@ -24,19 +24,19 @@ const docs = [
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + '577',
     tokenSplitRegex: /[\p{L}\d*]+/gu
   })
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 1, operation: 'PUT', status: 'CREATED' },
     { _id: 'two', operation: 'PUT', status: 'CREATED' },
     { _id: 3, operation: 'PUT', status: 'CREATED' }
   ])
 
   t.deepEquals(
-    await SEARCH(['*'], {
+    await si.SEARCH(['*'], {
       DOCUMENTS: true
     }),
     {
@@ -60,12 +60,12 @@ test('set up as per issue #577', async function (t) {
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + '577-2'
   })
 
   t.deepEquals(
-    await PUT(docs, {
+    await si.PUT(docs, {
       tokenSplitRegex: /[\p{L}\d*]+/gu
     }),
     [
@@ -76,7 +76,7 @@ test('set up as per issue #577', async function (t) {
   )
 
   t.deepEquals(
-    await SEARCH(['*'], {
+    await si.SEARCH(['*'], {
       DOCUMENTS: true
     }),
     {

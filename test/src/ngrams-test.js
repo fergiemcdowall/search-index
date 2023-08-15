@@ -23,18 +23,18 @@ const docs = [
 test('create a search index with ngrams', async function (t) {
   t.plan(9)
 
-  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
+  const si = await new SearchIndex({
     name: sandbox + 'ngrams1',
     ngrams: {
       fields: ['line2', 'line3'],
       lengths: [1, 2, 3]
     }
   })
-  t.ok(PUT)
-  t.ok(DICTIONARY)
+  t.ok(si.PUT)
+  t.ok(si.DICTIONARY)
 
   t.deepEquals(
-    await PUT(docs, {
+    await si.PUT(docs, {
       storeRawDocs: false
     }),
     [
@@ -43,16 +43,20 @@ test('create a search index with ngrams', async function (t) {
     ]
   )
 
-  t.deepEquals(await DICTIONARY('who'), ['who', 'who lives', 'who lives there'])
-  t.deepEquals(await DICTIONARY('are'), ['are'])
-  t.deepEquals(await DICTIONARY('xxx'), [])
-  t.deepEquals(await DICTIONARY('parsley'), [
+  t.deepEquals(await si.DICTIONARY('who'), [
+    'who',
+    'who lives',
+    'who lives there'
+  ])
+  t.deepEquals(await si.DICTIONARY('are'), ['are'])
+  t.deepEquals(await si.DICTIONARY('xxx'), [])
+  t.deepEquals(await si.DICTIONARY('parsley'), [
     'parsley',
     'parsley sage',
     'parsley sage rosemary'
   ])
-  t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives there'])
-  t.deepEquals(await QUERY('lives there'), {
+  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
+  t.deepEquals(await si.QUERY('lives there'), {
     RESULT: [
       {
         _id: 0,
@@ -69,29 +73,33 @@ test('create a search index with ngrams', async function (t) {
 test('create a search index with ngrams (no fields specified)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'ngrams2',
     ngrams: {
       lengths: [1, 2, 3]
     }
   })
-  t.ok(PUT)
+  t.ok(si.PUT)
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 0, status: 'CREATED', operation: 'PUT' },
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('who'), ['who', 'who lives', 'who lives there'])
-  t.deepEquals(await DICTIONARY('are'), ['are', 'are you', 'are you going'])
-  t.deepEquals(await DICTIONARY('xxx'), [])
-  t.deepEquals(await DICTIONARY('parsley'), [
+  t.deepEquals(await si.DICTIONARY('who'), [
+    'who',
+    'who lives',
+    'who lives there'
+  ])
+  t.deepEquals(await si.DICTIONARY('are'), ['are', 'are you', 'are you going'])
+  t.deepEquals(await si.DICTIONARY('xxx'), [])
+  t.deepEquals(await si.DICTIONARY('parsley'), [
     'parsley',
     'parsley sage',
     'parsley sage rosemary'
   ])
-  t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives there'])
-  t.deepEquals(await QUERY('lives there'), {
+  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
+  t.deepEquals(await si.QUERY('lives there'), {
     RESULT: [
       {
         _id: 0,
@@ -105,30 +113,34 @@ test('create a search index with ngrams (no fields specified)', async function (
 test('create a search index with ngrams (no fields specified, custom join)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await new SearchIndex({
+  const si = new SearchIndex({
     name: sandbox + 'ngrams3',
     ngrams: {
       lengths: [1, 2, 3],
       join: '$'
     }
   })
-  t.ok(PUT)
+  t.ok(si.PUT)
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 0, status: 'CREATED', operation: 'PUT' },
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('who'), ['who', 'who$lives', 'who$lives$there'])
-  t.deepEquals(await DICTIONARY('are'), ['are', 'are$you', 'are$you$going'])
-  t.deepEquals(await DICTIONARY('xxx'), [])
-  t.deepEquals(await DICTIONARY('parsley'), [
+  t.deepEquals(await si.DICTIONARY('who'), [
+    'who',
+    'who$lives',
+    'who$lives$there'
+  ])
+  t.deepEquals(await si.DICTIONARY('are'), ['are', 'are$you', 'are$you$going'])
+  t.deepEquals(await si.DICTIONARY('xxx'), [])
+  t.deepEquals(await si.DICTIONARY('parsley'), [
     'parsley',
     'parsley$sage',
     'parsley$sage$rosemary'
   ])
-  t.deepEquals(await DICTIONARY('lives'), ['lives', 'lives$there'])
-  t.deepEquals(await QUERY('lives$there'), {
+  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives$there'])
+  t.deepEquals(await si.QUERY('lives$there'), {
     RESULT: [
       {
         _id: 0,
