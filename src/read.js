@@ -3,7 +3,9 @@ import { EntryStream } from 'level-read-stream'
 
 export default class Reader {
   // exports.reader = (ops, cache) => {
-  constructor (ops, cache) {
+  constructor(ops, cache, ii) {
+    this.ii = ii
+
     // TODO add aggregation to ALL_DOCUMENTS
     const ALL_DOCUMENTS = limit =>
       new Promise((resolve, reject) => {
@@ -28,12 +30,12 @@ export default class Reader {
     const DOCUMENTS = (...requestedDocs) =>
       requestedDocs.length
         ? Promise.all(
-          requestedDocs.map(_id =>
-            ops.fii.STORE.get(['DOC_RAW', _id], ops.fii.LEVEL_OPTIONS).catch(
-              e => null
+            requestedDocs.map(_id =>
+              ops.fii.STORE.get(['DOC_RAW', _id], ops.fii.LEVEL_OPTIONS).catch(
+                e => null
+              )
             )
           )
-        )
         : ALL_DOCUMENTS()
 
     const DOCUMENT_VECTORS = (...requestedDocs) =>
@@ -136,47 +138,47 @@ export default class Reader {
         resolve(
           scoreOps.TYPE === 'TFIDF'
             ? DOCUMENT_COUNT().then(docCount =>
-              results.map((result, _, resultSet) => {
-                const idf = Math.log((docCount + 1) / resultSet.length)
-                result._score = +(result._match || [])
-                  .filter(filterFields)
-                  .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
-                // TODO: make precision an option
-                  .toFixed(2)
-                return result
-              })
-            )
+                results.map((result, _, resultSet) => {
+                  const idf = Math.log((docCount + 1) / resultSet.length)
+                  result._score = +(result._match || [])
+                    .filter(filterFields)
+                    .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
+                    // TODO: make precision an option
+                    .toFixed(2)
+                  return result
+                })
+              )
             : scoreOps.TYPE === 'PRODUCT'
-              ? results.map(r => ({
+            ? results.map(r => ({
                 ...r,
                 _score: +filterMatch(r._match)
                   .reduce((acc, cur) => acc * +cur.SCORE, 1)
                   .toFixed(2)
               }))
-              : scoreOps.TYPE === 'CONCAT'
-                ? results.map(r => ({
-                  ...r,
-                  _score: filterMatch(r._match).reduce(
-                    (acc, cur) => acc + cur.SCORE,
-                    ''
-                  )
-                }))
-                : scoreOps.TYPE === 'SUM'
-                  ? results.map(r => ({
-                    ...r,
-                    _score: +filterMatch(r._match)
-                      .reduce((acc, cur) => acc + +cur.SCORE, 0)
-                      .toFixed(2) // TODO: make precision an option
-                  }))
-                  : scoreOps.TYPE === 'VALUE'
-                    ? results.map(r => ({
-                      ...r,
-                      _score: filterMatch(r._match).reduce(
-                        (acc, cur) => acc + cur.VALUE,
-                        ''
-                      )
-                    }))
-                    : null
+            : scoreOps.TYPE === 'CONCAT'
+            ? results.map(r => ({
+                ...r,
+                _score: filterMatch(r._match).reduce(
+                  (acc, cur) => acc + cur.SCORE,
+                  ''
+                )
+              }))
+            : scoreOps.TYPE === 'SUM'
+            ? results.map(r => ({
+                ...r,
+                _score: +filterMatch(r._match)
+                  .reduce((acc, cur) => acc + +cur.SCORE, 0)
+                  .toFixed(2) // TODO: make precision an option
+              }))
+            : scoreOps.TYPE === 'VALUE'
+            ? results.map(r => ({
+                ...r,
+                _score: filterMatch(r._match).reduce(
+                  (acc, cur) => acc + cur.VALUE,
+                  ''
+                )
+              }))
+            : null
         )
       )
     }
@@ -187,6 +189,7 @@ export default class Reader {
         {
           AND: [...q]
         },
+        //TODO: destructure instead of Object.assign
         Object.assign(
           {
             SCORE: {
@@ -270,21 +273,21 @@ export default class Reader {
         // if string or object with only FIELD or VALUE, assume
         // that this is a GET
         if (typeof cmd === 'string' || typeof cmd === 'number') {
-          return ops.fii.GET(cmd, options.PIPELINE)
+          return this.ii.GET(cmd, options.PIPELINE)
         }
-        if (cmd.FIELD) return ops.fii.GET(cmd)
-        if (cmd.VALUE) return ops.fii.GET(cmd)
+        if (cmd.FIELD) return this.ii.GET(cmd)
+        if (cmd.VALUE) return this.ii.GET(cmd)
 
         // else:
-        if (cmd.AND) return ops.fii.AND(cmd.AND.map(runQuery), options.PIPELINE)
-        if (cmd.GET) return ops.fii.GET(cmd.GET, options.PIPELINE)
+        if (cmd.AND) return this.ii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+        if (cmd.GET) return this.ii.GET(cmd.GET, options.PIPELINE)
         if (cmd.NOT) {
-          return ops.fii.NOT(
+          return this.ii.NOT(
             runQuery(cmd.NOT.INCLUDE),
             runQuery(cmd.NOT.EXCLUDE)
           )
         }
-        if (cmd.OR) return ops.fii.OR(cmd.OR.map(runQuery), options.PIPELINE)
+        if (cmd.OR) return this.ii.OR(cmd.OR.map(runQuery), options.PIPELINE)
 
         // TODO this should be ALL_DOCUMENTS, such that
         // ALL_DOCUMENTS=true returns everything (needs test)
@@ -296,8 +299,8 @@ export default class Reader {
       const formatResults = result =>
         result.RESULT
           ? Object.assign(result, {
-            RESULT_LENGTH: result.RESULT.length
-          })
+              RESULT_LENGTH: result.RESULT.length
+            })
           : {
               RESULT: result,
               RESULT_LENGTH: result.length
@@ -307,24 +310,24 @@ export default class Reader {
       const appendDocuments = result =>
         options.DOCUMENTS
           ? DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(documents =>
-            Object.assign(result, {
-              RESULT: result.RESULT.map((doc, i) =>
-                Object.assign(doc, {
-                  _doc: documents[i]
-                })
-              )
-            })
-          )
+              Object.assign(result, {
+                RESULT: result.RESULT.map((doc, i) =>
+                  Object.assign(doc, {
+                    _doc: documents[i]
+                  })
+                )
+              })
+            )
           : result
 
       // SCORE IF SPECIFIED
       const score = result =>
         options.SCORE
           ? SCORE(result.RESULT, options.SCORE).then(scoredResult =>
-            Object.assign(result, {
-              RESULT: scoredResult
-            })
-          )
+              Object.assign(result, {
+                RESULT: scoredResult
+              })
+            )
           : result
 
       // SORT IF SPECIFIED
@@ -342,10 +345,10 @@ export default class Reader {
       const buckets = result =>
         options.BUCKETS
           ? ops.fii.BUCKETS(...options.BUCKETS).then(bkts =>
-            Object.assign(result, {
-              BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
-            })
-          )
+              Object.assign(result, {
+                BUCKETS: ops.fii.AGGREGATION_FILTER(bkts, result.RESULT)
+              })
+            )
           : result
 
       // FACETS IF SPECIFIED
@@ -391,9 +394,9 @@ export default class Reader {
       const weight = result =>
         options.WEIGHT
           ? Object.assign(
-            { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
-            result
-          )
+              { RESULT: WEIGHT(result.RESULT, options.WEIGHT) },
+              result
+            )
           : result
 
       return runQuery(q)
@@ -413,8 +416,8 @@ export default class Reader {
         return cache.has(cacheKey)
           ? resolve(cache.get(cacheKey))
           : q
-            .then(res => cache.set(cacheKey, res))
-            .then(() => resolve(cache.get(cacheKey)))
+              .then(res => cache.set(cacheKey, res))
+              .then(() => resolve(cache.get(cacheKey)))
       })
 
     return {

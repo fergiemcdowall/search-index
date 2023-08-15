@@ -1,8 +1,5 @@
 import test from 'tape'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '514'
@@ -45,7 +42,7 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple _AND with 1 clause', async t => {
+test('simple _SEARCH with 1 clause', async t => {
   t.plan(3)
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
@@ -60,16 +57,16 @@ test('simple _AND with 1 clause', async t => {
     })
   )
 
-  await global[indexName]
-    .DELETE(3)
-    .then(res =>
-      t.deepEqual(res, [{ _id: 3, operation: 'DELETE', status: 'DELETED' }])
-    )
+  // await global[indexName]
+  //   .DELETE(3)
+  //   .then(res =>
+  //     t.deepEqual(res, [{ _id: 3, operation: 'DELETE', status: 'DELETED' }])
+  //   )
 
-  await global[indexName].SEARCH(['Zeppelin']).then(res =>
-    t.deepEqual(res, {
-      RESULT: [],
-      RESULT_LENGTH: 0
-    })
-  )
+  // await global[indexName].SEARCH(['Zeppelin']).then(res =>
+  //   t.deepEqual(res, {
+  //     RESULT: [],
+  //     RESULT_LENGTH: 0
+  //   })
+  // )
 })

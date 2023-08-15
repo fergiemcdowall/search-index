@@ -1,5 +1,5 @@
-import { SearchIndex } from '../../src/main.js'
 import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'DISTINCT'

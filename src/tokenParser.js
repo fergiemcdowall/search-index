@@ -85,7 +85,6 @@ module.exports = (token, availableFields) =>
 
     // parse object FIELD
     if (typeof token.FIELD === 'undefined') {
-      console.log(token)
       return resolve(
         Object.assign(token, {
           FIELD: availableFields

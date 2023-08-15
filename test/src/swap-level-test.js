@@ -1,9 +1,6 @@
-import { ClassicLevel } from 'classic-level'
 import test from 'tape'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { ClassicLevel } from 'classic-level'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'memdown-test'

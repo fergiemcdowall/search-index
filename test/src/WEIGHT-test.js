@@ -1,8 +1,5 @@
 import test from 'tape'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 

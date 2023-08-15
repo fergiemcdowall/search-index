@@ -1,9 +1,6 @@
 import test from 'tape'
 import { EntryStream } from 'level-read-stream'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'PUT_RAW_DOCUMENTS'

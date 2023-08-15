@@ -1,9 +1,6 @@
 import test from 'tape'
 import wbd from 'world-bank-dataset'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'BOOLEAN'

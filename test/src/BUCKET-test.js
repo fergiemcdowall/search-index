@@ -1,8 +1,6 @@
 import test from 'tape'
 
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_BUCKET'
@@ -88,9 +86,8 @@ test('can add data', t => {
 })
 
 test('simple _BUCKET', t => {
-  const { _BUCKET } = global[indexName]
   t.plan(1)
-  _BUCKET('make:volvo').then(res => {
+  global[indexName]._BUCKET('make:volvo').then(res => {
     t.deepEqual(res, {
       FIELD: ['make'],
       VALUE: { GTE: 'volvo', LTE: 'volvo' },
@@ -100,28 +97,28 @@ test('simple _BUCKET', t => {
 })
 
 test('simple _BUCKET with a range', t => {
-  const { _BUCKET } = global[indexName]
   t.plan(1)
-  _BUCKET({
-    FIELD: 'make',
-    VALUE: {
-      GTE: 'a',
-      LTE: 'u'
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      FIELD: ['make'],
-      VALUE: { GTE: 'a', LTE: 'u' },
-      _id: [0, 1, 2, 3, 6, 7, 9]
+  global[indexName]
+    ._BUCKET({
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        FIELD: ['make'],
+        VALUE: { GTE: 'a', LTE: 'u' },
+        _id: [0, 1, 2, 3, 6, 7, 9]
+      })
+    })
 })
 
 // TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET (JSON)', t => {
-  const { BUCKETS } = global[indexName]
   t.plan(1)
-  BUCKETS('make:volvo').then(res => {
+  global[indexName].BUCKETS('make:volvo').then(res => {
     t.deepEqual(res, [
       {
         FIELD: ['make'],
@@ -134,21 +131,22 @@ test('simple BUCKET (JSON)', t => {
 
 // TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET with a range (JSON)', t => {
-  const { BUCKETS } = global[indexName]
   t.plan(1)
-  BUCKETS({
-    FIELD: 'make',
-    VALUE: {
-      GTE: 'a',
-      LTE: 'u'
-    }
-  }).then(res => {
-    t.deepEqual(res, [
-      {
-        FIELD: ['make'],
-        VALUE: { GTE: 'a', LTE: 'u' },
-        _id: [0, 1, 2, 3, 6, 7, 9]
+  global[indexName]
+    .BUCKETS({
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
       }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          FIELD: ['make'],
+          VALUE: { GTE: 'a', LTE: 'u' },
+          _id: [0, 1, 2, 3, 6, 7, 9]
+        }
+      ])
+    })
 })

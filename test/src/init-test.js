@@ -1,8 +1,5 @@
 import test from 'tape'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'init'
@@ -38,10 +35,10 @@ const data = [
   }
 ]
 
-test('can create a search index WITHOUT an options object', async t => {
+test('can create a search index', async t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({ name: indexName })
+    global[indexName] = new SearchIndex({ name: indexName })
     t.ok(global[indexName])
   } catch (e) {
     t.error(e)

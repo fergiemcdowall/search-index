@@ -1,10 +1,7 @@
-import test from 'tape'
-import sw from 'stopword'
 import stemmer from 'stemmer'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import sw from 'stopword'
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 

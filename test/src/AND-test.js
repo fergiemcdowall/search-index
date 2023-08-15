@@ -1,8 +1,6 @@
 import test from 'tape'
 
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_AND'
@@ -86,7 +84,7 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple _AND with 1 clause', t => {
+test('simple AND with 1 clause', t => {
   t.plan(1)
   global[indexName]._AND(['make:volvo']).then(res => {
     t.deepEqual(res, [

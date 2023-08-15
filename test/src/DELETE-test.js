@@ -2,9 +2,7 @@ import test from 'tape'
 import { EntryStream } from 'level-read-stream'
 import { packageVersion } from '../../src/version.js'
 
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const global = {}
 const sandbox = 'test/sandbox/'

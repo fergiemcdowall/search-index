@@ -1,9 +1,6 @@
 import test from 'tape'
+import { SearchIndex } from 'search-index'
 import { packageVersion } from '../../src/version.js'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'version-stamp-test'

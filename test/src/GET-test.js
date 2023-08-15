@@ -1,8 +1,5 @@
 import test from 'tape'
-
-const { SearchIndex } = await import(
-  '../../src/' + process.env.SI_TEST_ENTRYPOINT
-)
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_GET'
@@ -91,7 +88,7 @@ test('can add data', t => {
 
 test('simple _GET', t => {
   t.plan(1)
-  global[indexName]._GET('make:volvo').then(res => {
+  global[indexName]._GET('make:volvo').then(res =>
     t.deepEqual(res, [
       {
         _id: '4',
@@ -103,7 +100,7 @@ test('simple _GET', t => {
       },
       { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
-  })
+  )
 })
 
 test('simple _GET', t => {
@@ -113,7 +110,7 @@ test('simple _GET', t => {
       FIELD: 'make',
       VALUE: 'volvo'
     })
-    .then(res => {
+    .then(res =>
       t.deepEqual(res, [
         {
           _id: '4',
@@ -128,7 +125,7 @@ test('simple _GET', t => {
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         }
       ])
-    })
+    )
 })
 
 test('_GET over 2 fields', t => {
@@ -342,32 +339,33 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
 
 test('create a search index with query and index side character normalisation', async t => {
   const data = [{ text: 'jeg bør finne en ting' }, { text: 'jeg bor i Oslo' }]
-  const { PUT, _GET, INDEX, TOKENIZATION_PIPELINE_STAGES } =
-    await new SearchIndex({
-      name: sandbox + 'GET-2'
-    })
+
+  const si = new SearchIndex({
+    name: sandbox + 'GET-2'
+  })
+
   const ids = (
-    await PUT(data, {
+    await si.PUT(data, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
           .then(([tokens, field, ops]) =>
             Promise.resolve([tokens.map(t => t.replace(/ø/g, 'o'))])
           )
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
           .then(([tokens, field, ops]) => tokens)
     })
   ).map(status => status._id)
 
   t.deepEquals(
-    await INDEX.STORE.get(
+    await si.INDEX.STORE.get(
       ['IDX', 'text', ['bor', '1.00']],
-      INDEX.LEVEL_OPTIONS
+      si.INDEX.LEVEL_OPTIONS
     ),
     ids
   )
   try {
-    await INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
+    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']])
     t.fail('that key should not be in the database')
   } catch (e) {
     t.ok(e instanceof Error)
@@ -380,7 +378,7 @@ test('create a search index with query and index side character normalisation', 
       return resolve(token)
     })
 
-  t.deepEquals(await _GET('bør', swapØtoO), [
+  t.deepEquals(await si._GET('bør', swapØtoO), [
     {
       _id: ids[0],
       _match: [{ FIELD: 'text', VALUE: 'bor', SCORE: '1.00' }]
@@ -394,32 +392,25 @@ test('create a search index with query and index side character normalisation', 
 
 test('create a search index with query and index side character normalisation (QUERY GET)', async t => {
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, QUERY, INDEX, TOKENIZATION_PIPELINE_STAGES } =
-    await new SearchIndex({
-      name: sandbox + 'GET-3'
-    })
+  const si = new SearchIndex({
+    name: sandbox + 'GET-3'
+  })
   const ids = (
-    await PUT(data, {
+    await si.PUT(data, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
           .then(([tokens, field, ops]) =>
             Promise.resolve([tokens.map(t => t.replace(/ø/g, 'o'))])
           )
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
           .then(([tokens, field, ops]) => tokens)
     })
   ).map(status => status._id)
 
-  t.deepEquals(
-    await INDEX.STORE.get(
-      ['IDX', 'body', ['bor', '1.00']],
-      INDEX.LEVEL_OPTIONS
-    ),
-    ids
-  )
+  t.deepEquals(await si.INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']]), ids)
   try {
-    await INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
+    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']])
     t.fail('that key should not be in the database')
   } catch (e) {
     t.ok(e instanceof Error)
@@ -433,7 +424,7 @@ test('create a search index with query and index side character normalisation (Q
     })
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       { GET: 'bør' },
       {
         PIPELINE: swapØtoO
