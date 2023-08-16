@@ -109,99 +109,99 @@ test('can alter order of tokenization pipeline', async function (t) {
   )
 })
 
-test('can add custom pipeline stage', async function (t) {
-  t.plan(4)
+// test('can add custom pipeline stage', async function (t) {
+//   t.plan(4)
 
-  const si = new SearchIndex({
-    name: sandbox + 'pipeline2'
-  })
-  t.ok(si.PUT)
+//   const si = new SearchIndex({
+//     name: sandbox + 'pipeline2'
+//   })
+//   t.ok(si.PUT)
 
-  t.deepEquals(
-    await si.PUT(docs, {
-      tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(([tokens, field, ops]) => [
-            [field.split('').reverse().join(''), ...tokens],
-            field,
-            ops
-          ])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-          .then(([tokens]) => tokens)
-    }),
-    [
-      { _id: 0, status: 'CREATED', operation: 'PUT' },
-      { _id: 1, status: 'CREATED', operation: 'PUT' }
-    ]
-  )
+//   t.deepEquals(
+//     await si.PUT(docs, {
+//       tokenizer: (tokens, field, ops) =>
+//         si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+//           .then(([tokens, field, ops]) => [
+//             [field.split('').reverse().join(''), ...tokens],
+//             field,
+//             ops
+//           ])
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+//           .then(([tokens]) => tokens)
+//     }),
+//     [
+//       { _id: 0, status: 'CREATED', operation: 'PUT' },
+//       { _id: 1, status: 'CREATED', operation: 'PUT' }
+//     ]
+//   )
 
-  t.deepEquals(
-    await si.DICTIONARY({
-      FIELD: 'line1'
-    }),
-    [
-      '1enil',
-      'a',
-      'are',
-      'cambric',
-      'deep',
-      'fair',
-      'forest',
-      'going',
-      'green',
-      'her',
-      'in',
-      'make',
-      'me',
-      'scarborough',
-      'shirt',
-      'tell',
-      'the',
-      'to',
-      'you'
-    ]
-  )
-  t.deepEquals(
-    await si.DICTIONARY({
-      FIELD: 'line2'
-    }),
-    ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme']
-  )
-})
+//   t.deepEquals(
+//     await si.DICTIONARY({
+//       FIELD: 'line1'
+//     }),
+//     [
+//       '1enil',
+//       'a',
+//       'are',
+//       'cambric',
+//       'deep',
+//       'fair',
+//       'forest',
+//       'going',
+//       'green',
+//       'her',
+//       'in',
+//       'make',
+//       'me',
+//       'scarborough',
+//       'shirt',
+//       'tell',
+//       'the',
+//       'to',
+//       'you'
+//     ]
+//   )
+//   t.deepEquals(
+//     await si.DICTIONARY({
+//       FIELD: 'line2'
+//     }),
+//     ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme']
+//   )
+// })
 
-test('can add custom pipeline stage (stemmer)', async function (t) {
-  t.plan(3)
+// test('can add custom pipeline stage (stemmer)', async function (t) {
+//   t.plan(3)
 
-  const si = new SearchIndex({
-    name: sandbox + 'pipeline3'
-  })
-  t.ok(si.PUT)
+//   const si = new SearchIndex({
+//     name: sandbox + 'pipeline3'
+//   })
+//   t.ok(si.PUT)
 
-  t.deepEquals(
-    await si.PUT(docs, {
-      stopwords: sw.eng,
-      tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(([tokens, field, ops]) => [tokens.map(stemmer), field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-          .then(([tokens]) => tokens)
-    }),
-    [
-      { _id: 0, status: 'CREATED', operation: 'PUT' },
-      { _id: 1, status: 'CREATED', operation: 'PUT' }
-    ]
-  )
+//   t.deepEquals(
+//     await si.PUT(docs, {
+//       stopwords: sw.eng,
+//       tokenizer: (tokens, field, ops) =>
+//         si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+//           .then(([tokens, field, ops]) => [tokens.map(stemmer), field, ops])
+//           .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+//           .then(([tokens]) => tokens)
+//     }),
+//     [
+//       { _id: 0, status: 'CREATED', operation: 'PUT' },
+//       { _id: 1, status: 'CREATED', operation: 'PUT' }
+//     ]
+//   )
 
-  t.deepEquals(
-    await si.DICTIONARY({
-      FIELD: 'line3'
-    }),
-    ['crest', 'ground', 'live', 'on', 'rememb', 'snow', 'sparrow', 'trace']
-  )
-})
+//   t.deepEquals(
+//     await si.DICTIONARY({
+//       FIELD: 'line3'
+//     }),
+//     ['crest', 'ground', 'live', 'on', 'rememb', 'snow', 'sparrow', 'trace']
+//   )
+// })

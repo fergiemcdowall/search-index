@@ -342,7 +342,8 @@ test('make some _BUCKETs', t => {
         FIELD: 'totalamt',
         VALUE: { GTE: 200000000, LTE: 200000000 }
       }
-    ].map(global[indexName]._BUCKET)
+      // ].map(global[indexName]._BUCKET)
+    ].map(res => global[indexName]._BUCKET(res))
   )
   b.then(result =>
     t.deepEqual(result, [
@@ -443,7 +444,9 @@ test('can aggregate totalamt', t => {
     .DISTINCT({
       FIELD: 'impagency'
     })
-    .then(result => Promise.all(result.map(global[indexName]._BUCKET)))
+    .then(result =>
+      Promise.all(result.map(res => global[indexName]._BUCKET(res)))
+    )
     .then(result => {
       t.deepEqual(result, [
         {

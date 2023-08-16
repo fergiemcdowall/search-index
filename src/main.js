@@ -239,8 +239,8 @@ export class Main {
     return this.INDEX.IMPORT(index)
   }
 
-  DELETE(ids) {
-    return this.w.DELETE(ids)
+  DELETE(...id) {
+    return this.w.DELETE(...id)
   }
 
   DISTINCT(...tokens) {

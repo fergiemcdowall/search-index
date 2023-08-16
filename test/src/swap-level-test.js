@@ -1,5 +1,5 @@
 import test from 'tape'
-import { ClassicLevel } from 'classic-level'
+import { MemoryLevel } from 'memory-level'
 import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
@@ -38,10 +38,8 @@ const data = [
 test('create a search-index with memory-level', async t => {
   t.plan(2)
 
-  const db = await new ClassicLevel(indexName, { valueEncoding: 'json' })
-
-  const idx = await new SearchIndex({
-    db,
+  const idx = new SearchIndex({
+    Level: MemoryLevel,
     name: indexName
   })
 
