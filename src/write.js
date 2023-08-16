@@ -1,14 +1,14 @@
 import { DocumentProcessor } from './DocumentProcessor.js'
 
 export class Writer {
-  constructor(ops, cache, queue, ii) {
+  constructor (ops, cache, queue, ii) {
     this.cache = cache
     this.ii = ii
     this.ops = ops
     this.queue = queue
   }
 
-  incrementDocCount(increment) {
+  incrementDocCount (increment) {
     return this.ii.STORE.get(['DOCUMENT_COUNT'])
       .then(count => this.ii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
       .catch(
@@ -17,13 +17,13 @@ export class Writer {
       )
   }
 
-  decrementDocCount(decrement) {
+  decrementDocCount (decrement) {
     return this.ii.STORE.get(['DOCUMENT_COUNT']).then(count =>
       this.ii.STORE.put(['DOCUMENT_COUNT'], +count - decrement)
     )
   }
 
-  #PUT(docs, putOptions) {
+  #PUT (docs, putOptions) {
     this.cache.clear()
 
     const ops = {
@@ -51,7 +51,7 @@ export class Writer {
       })
   }
 
-  #DELETE(_ids) {
+  #DELETE (_ids) {
     return this.ii.DELETE(_ids, this.ii.LEVEL_OPTIONS).then(result => {
       this.cache.clear()
       const deleted = result.filter(d => d.status === 'DELETED')
@@ -66,11 +66,11 @@ export class Writer {
     })
   }
 
-  DELETE(...docIds) {
+  DELETE (...docIds) {
     return this.#DELETE(docIds)
   }
 
-  FLUSH() {
+  FLUSH () {
     return this.ii.STORE.clear()
       .then(() => {
         this.cache.clear()
@@ -87,16 +87,16 @@ export class Writer {
       .then(() => true)
   }
 
-  IMPORT(index) {
+  IMPORT (index) {
     this.cache.clear()
     return Promise.resolve(this.ii.IMPORT(index))
   }
 
-  PUT(docs, pops) {
+  PUT (docs, pops) {
     return this.queue.add(() => this.#PUT(docs, pops))
   }
 
-  PUT_RAW(docs, ids, dontStoreValue) {
+  PUT_RAW (docs, ids, dontStoreValue) {
     this.cache.clear()
     return Promise.all(
       docs.map((doc, i) =>
@@ -118,7 +118,7 @@ export class Writer {
   }
 
   // TODO: does this need to be exported?
-  _INCREMENT_DOC_COUNT(increment) {
+  _INCREMENT_DOC_COUNT (increment) {
     return this.incrementDocCount(increment)
   }
 

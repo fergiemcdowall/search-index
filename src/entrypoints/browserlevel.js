@@ -1,12 +1,10 @@
-import { SearchIndex as MainSearchIndex } from '../main.js'
+import { Main } from '../main.js'
 import { BrowserLevel } from 'browser-level'
 
 export class SearchIndex {
-  constructor(ops = {}) {
-    return new MainSearchIndex({
-      db: new BrowserLevel(ops.name || 'fii', {
-        valueEncoding: 'json'
-      }),
+  constructor (ops = {}) {
+    return new Main({
+      Level: BrowserLevel,
       ...ops
     })
   }

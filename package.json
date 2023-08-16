@@ -79,7 +79,7 @@
   "dependencies": {
     "browser-level": "^1.0.1",
     "charwise": "^3.0.1",
-    "fergies-inverted-index": "13.0.0-rc.1",
+    "fergies-inverted-index": "13.0.0-rc.2",
     "level-read-stream": "^1.1.0",
     "lru-cache": "10.0.0",
     "memory-level": "^1.0.0",

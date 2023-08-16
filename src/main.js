@@ -82,12 +82,12 @@ import * as tokenization from './tokenisationPipeline.js'
 //   })
 
 export class Main {
-  constructor(ops = {}) {
+  constructor (ops = {}) {
     ops = {
       cacheLength: 1000,
       caseSensitive: false,
       docExistsSpace: 'DOC_RAW',
-      idGenerator: (function* generateId() {
+      idGenerator: (function * generateId () {
         let i = 0
         while (true) {
           yield Date.now() + '-' + i++
@@ -178,31 +178,31 @@ export class Main {
   }
 
   // internal functions inherited from fergies-inverted-index
-  _AND(tokens, pipeline) {
+  _AND (tokens, pipeline) {
     return this.INDEX.AND(tokens, pipeline)
   }
 
-  _BUCKET(token) {
+  _BUCKET (token) {
     return this.INDEX.BUCKET(token)
   }
 
-  _GET(tokens, pipeline) {
+  _GET (tokens, pipeline) {
     return this.INDEX.GET(tokens, pipeline)
   }
 
-  _NOT(include, exclude) {
+  _NOT (include, exclude) {
     return this.INDEX.NOT(include, exclude)
   }
 
-  _OR(tokens, pipeline) {
+  _OR (tokens, pipeline) {
     return this.INDEX.OR(tokens, pipeline)
   }
 
-  _PAGE(results, options) {
+  _PAGE (results, options) {
     return this.r.PAGE(results, options)
   }
 
-  _SORT(results, options) {
+  _SORT (results, options) {
     return this.r.SORT(results, options)
   }
 
@@ -219,93 +219,93 @@ export class Main {
   // // TODO: should cache be at the fii level?
   // _CACHE = this.cache
 
-  ALL_DOCUMENTS(limit) {
+  ALL_DOCUMENTS (limit) {
     return this.r.ALL_DOCUMENTS(limit)
   }
 
-  BUCKETS(...token) {
+  BUCKETS (...token) {
     return this.INDEX.BUCKETS(...token)
   }
 
-  CREATED() {
+  CREATED () {
     return this.INDEX.CREATED()
   }
 
-  EXPORT() {
+  EXPORT () {
     return this.INDEX.EXPORT()
   }
 
-  IMPORT(index) {
+  IMPORT (index) {
     return this.INDEX.IMPORT(index)
   }
 
-  DELETE(...id) {
+  DELETE (...id) {
     return this.w.DELETE(...id)
   }
 
-  DISTINCT(...tokens) {
+  DISTINCT (...tokens) {
     return this.r.DISTINCT(...tokens)
   }
 
-  DICTIONARY(token) {
+  DICTIONARY (token) {
     return this.r.DICTIONARY(token)
   }
 
-  DOCUMENTS(...docs) {
+  DOCUMENTS (...docs) {
     return this.r.DOCUMENTS(...docs)
   }
 
-  DOCUMENT_COUNT() {
+  DOCUMENT_COUNT () {
     return this.r.DOCUMENT_COUNT()
   }
 
-  DOCUMENT_VECTORS(...requestedDocs) {
+  DOCUMENT_VECTORS (...requestedDocs) {
     return this.r.DOCUMENT_VECTORS(...requestedDocs)
   }
 
-  FACETS(...token) {
+  FACETS (...token) {
     return this.r.FACETS(...token)
   }
 
-  FIELDS() {
+  FIELDS () {
     return this.INDEX.FIELDS()
   }
 
-  FLUSH() {
+  FLUSH () {
     return this.w.FLUSH()
   }
 
-  LAST_UPDATED() {
+  LAST_UPDATED () {
     return this.INDEX.LAST_UPDATED()
   }
 
-  MAX(token) {
+  MAX (token) {
     return this.INDEX.MAX(token)
   }
 
-  MIN(token) {
+  MIN (token) {
     return this.INDEX.MIN(token)
   }
 
-  PUT(docs, ops) {
+  PUT (docs, ops) {
     return this.w.PUT(docs, ops)
   }
 
   // TODO: is this a sensible API?
-  PUT_RAW(docs, ids, dontStoreValue) {
+  PUT_RAW (docs, ids, dontStoreValue) {
     return this.w.PUT_RAW(docs, ids, dontStoreValue)
   }
 
-  QUERY(q, ops) {
+  QUERY (q, ops) {
     return this.r.QUERY(q, ops)
   }
 
-  SEARCH(q, ops) {
+  SEARCH (q, ops) {
     return this.r.SEARCH(q, ops)
   }
 
-  //TODO: put into own file
-  _validateVersion() {
+  // TODO: put into own file
+  _validateVersion () {
     return new Promise((resolve, reject) => {
       const key = ['CREATED_WITH']
       const version = 'search-index@' + packageVersion
@@ -315,13 +315,13 @@ export class Main {
           version === v
             ? resolve()
             : reject(
-                new Error(
-                  'This index was created with ' +
+              new Error(
+                'This index was created with ' +
                     v +
                     ', you are running ' +
                     version
-                )
               )
+            )
         )
         .catch(e => this.INDEX.STORE.put(key, version).then(resolve))
     })
