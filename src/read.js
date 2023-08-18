@@ -1,7 +1,7 @@
 // TODO: remove all '￮' and '#'
 import { EntryStream } from 'level-read-stream'
 
-export default class Reader {
+export class Reader {
   // exports.reader = (ops, cache) => {
   constructor (ops, cache, ii) {
     this.ii = ii

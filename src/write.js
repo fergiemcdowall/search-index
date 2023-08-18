@@ -121,17 +121,4 @@ export class Writer {
   _INCREMENT_DOC_COUNT (increment) {
     return this.incrementDocCount(increment)
   }
-
-  // return {
-  //   DELETE: (...docIds) => _DELETE(docIds), // for external use
-  //   FLUSH: _FLUSH,
-  //   // TODO: IMPORT needs a test
-  //   IMPORT: index => {
-  //     cache.clear()
-  //     return Promise.resolve(ii.IMPORT(index))
-  //   },
-  //   PUT: (docs, pops) => queue.add(() => _PUT(docs, pops)),
-  //   PUT_RAW: _PUT_RAW,
-  //   _INCREMENT_DOC_COUNT: incrementDocCount
-  // }
 }
