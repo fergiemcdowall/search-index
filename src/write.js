@@ -63,6 +63,7 @@ export class Writer {
   }
 
   DELETE_RAW (...docIds) {
+    // TODO: should we be using ops.docExistsSpace instead of DOC_RAW?
     return Promise.all(docIds.map(id => this.#ii.STORE.del(['DOC_RAW', id])))
   }
 

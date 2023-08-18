@@ -17,6 +17,19 @@ export class Main {
           yield Date.now() + '-' + i++
         }
       })(),
+      skipFields: [],
+      ngrams: {},
+      replace: {},
+      storeRawDocs: true,
+      stopwords: [],
+      storeVectors: true, // TODO: make a test for this being false
+      tokenSplitRegex: /[\p{L}\d]+/gu,
+      tokenizer: tokenization.tokenizationPipeline,
+      ...ops
+    }
+    this.INDEX = new InvertedIndex({
+      ...ops,
+      // isLeaf must be like so and is not a user defined option
       isLeaf: node =>
         Array.isArray(node) &&
         node.length === 2 &&
@@ -25,21 +38,10 @@ export class Main {
             typeof item === 'string' ||
             typeof item === 'number' ||
             item === null
-        ),
-      skipFields: [],
-      ngrams: {},
-      replace: {},
-      storeRawDocs: true,
-      stopwords: [],
-      storeVectors: true, // TODO: make a test for this being false
-      tokenAppend: '#',
-      tokenSplitRegex: /[\p{L}\d]+/gu,
-      tokenizer: tokenization.tokenizationPipeline,
-      ...ops
-    }
-    this.INDEX = new InvertedIndex(ops)
+        )
+    })
     // Now that constructor is not async- not sure where this should be called...
-    this._CACHE = new LRUCache({ max: 1000 })
+    this._CACHE = new LRUCache({ max: ops.cacheLength })
     this.r = new Reader(ops, this._CACHE, this.INDEX)
     this.w = new Writer(ops, this._CACHE, this.INDEX)
     validateVersion(this.INDEX)

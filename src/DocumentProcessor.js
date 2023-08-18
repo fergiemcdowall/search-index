@@ -25,7 +25,7 @@ export const DocumentProcessor = ops => {
 
   const processValueUnknownType = (unknown, key) =>
     // eslint-disable-next-line
-        new Promise(async resolve => {
+    new Promise(async resolve => {
       if (unknown === null) return resolve([null, '1.00'])
       if (isEmptyObject(unknown)) return resolve([[], '1.00'])
       if (Number.isInteger(unknown)) return resolve([unknown, unknown])
@@ -42,7 +42,6 @@ export const DocumentProcessor = ops => {
       if (isString(doc)) doc = { body: doc }
 
       // Docs with no _id are auto-assigned an ID
-      // if (!doc.hasOwnProperty('_id')) doc._id = ops.idGenerator.next().value
       if (!Object.prototype.hasOwnProperty.call(doc, '_id')) {
         doc._id = ops.idGenerator.next().value
       }
