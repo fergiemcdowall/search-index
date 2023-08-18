@@ -9,7 +9,7 @@ const global = {}
 test('create a search index', async t => {
   t.plan(1)
   try {
-    global[indexName] = await new SearchIndex({
+    global[indexName] = new SearchIndex({
       name: indexName,
       storeVectors: true
     })

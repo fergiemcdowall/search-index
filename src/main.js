@@ -3,7 +3,7 @@ import { InvertedIndex } from 'fergies-inverted-index'
 import { LRUCache } from 'lru-cache'
 import { Reader } from './read.js'
 import { Writer } from './write.js'
-import { packageVersion } from './version.js'
+import { validateVersion } from './util.js'
 
 export class Main {
   constructor (ops = {}) {
@@ -37,22 +37,12 @@ export class Main {
       tokenizer: tokenization.tokenizationPipeline,
       ...ops
     }
-
     this.INDEX = new InvertedIndex(ops)
-
     // Now that constructor is not async- not sure where this should be called...
-    this._validateVersion()
-
-    this._CACHE = new LRUCache({
-      max: 1000
-    })
-
-    this.w = new Writer(ops, this._CACHE, this.INDEX)
+    this._CACHE = new LRUCache({ max: 1000 })
     this.r = new Reader(ops, this._CACHE, this.INDEX)
-
-    // TODO: this should be something more sensible like "countDocs"
-    // async so this is "fire and forget"
-    this.w._INCREMENT_DOC_COUNT(0)
+    this.w = new Writer(ops, this._CACHE, this.INDEX)
+    validateVersion(this.INDEX)
   }
 
   // internal functions inherited from fergies-inverted-index
@@ -181,29 +171,5 @@ export class Main {
     NGRAMS: tokenization.NGRAMS,
     STOPWORDS: tokenization.STOPWORDS,
     SCORE_TERM_FREQUENCY: tokenization.SCORE_TERM_FREQUENCY
-  }
-
-  // TODO: put into own file
-  // TODO: needs test
-  _validateVersion () {
-    return new Promise((resolve, reject) => {
-      const key = ['CREATED_WITH']
-      const version = 'search-index@' + packageVersion
-      return this.INDEX.STORE.get(key)
-        .then(v =>
-          // throw a rejection if versions do not match
-          version === v
-            ? resolve()
-            : reject(
-              new Error(
-                'This index was created with ' +
-                    v +
-                    ', you are running ' +
-                    version
-              )
-            )
-        )
-        .catch(e => this.INDEX.STORE.put(key, version).then(resolve))
-    })
   }
 }

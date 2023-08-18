@@ -12,22 +12,17 @@ export class Writer {
     this.#ii = ii
     this.#ops = ops
     this.#queue = new PQueue({ concurrency: 1 })
+    // Initialize document count (async fire and forget)
+    this.#setDocCount(0)
   }
 
-  #incrementDocCount (increment) {
+  // TODO: should be queued
+  #setDocCount (increment) {
     return this.#ii.STORE.get(['DOCUMENT_COUNT'])
-      .then(count => this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + increment))
-      .catch(
-        // if not found assume value to be 0
-        e => this.#ii.STORE.put(['DOCUMENT_COUNT'], increment)
+      .then(count =>
+        this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + (+increment || 0))
       )
-  }
-
-  // TODO: should this be a separate function?
-  #decrementDocCount (decrement) {
-    return this.#ii.STORE.get(['DOCUMENT_COUNT']).then(count =>
-      this.#ii.STORE.put(['DOCUMENT_COUNT'], +count - decrement)
-    )
+      .catch(e => this.#ii.STORE.put(['DOCUMENT_COUNT'], 0))
   }
 
   #PUT (docs, putOptions) {
@@ -46,9 +41,7 @@ export class Writer {
           !ops.storeRawDocs
         )
           .then(() =>
-            this.#incrementDocCount(
-              result.filter(r => r.status === 'CREATED').length
-            )
+            this.#setDocCount(result.filter(r => r.status === 'CREATED').length)
           )
           .then(() => result)
       )
@@ -58,9 +51,7 @@ export class Writer {
     return this.#ii.DELETE(_ids).then(result =>
       this.DELETE_RAW(..._ids)
         .then(() =>
-          this.#decrementDocCount(
-            result.filter(d => d.status === 'DELETED').length
-          )
+          this.#setDocCount(-result.filter(d => d.status === 'DELETED').length)
         )
         .then(() => this.#cache.clear())
         .then(() => result)
@@ -113,10 +104,5 @@ export class Writer {
           operation: '_PUT_RAW'
         }))
     )
-  }
-
-  // TODO: does this need to be exported?
-  _INCREMENT_DOC_COUNT (increment) {
-    return this.#incrementDocCount(increment)
   }
 }
