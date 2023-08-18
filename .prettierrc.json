@@ -3,5 +3,6 @@
   "bracketSpacing": true,
   "semi": false,
   "singleQuote": true,
+  "spaceBeforeFunctionParen": true,
   "trailingComma": "none"
 }
