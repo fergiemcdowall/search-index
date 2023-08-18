@@ -99,11 +99,3 @@ export const tokenizationPipeline = (tokens, field, ops) =>
     .then(STOPWORDS)
     .then(SCORE_TERM_FREQUENCY)
     .then(([tokens, field, ops]) => tokens)
-
-// export const SPLIT = SPLIT
-// export const SKIP = SKIP
-// export const LOWACASE = LOWCASE
-// export const REPLACE = REPLACE
-// export const NGRAMS = NGRAMS
-// export const STOPWORDS = STOPWORDS
-// export const SCORE_TERM_FREQUENCY = SCORE_TERM_FREQUENCY

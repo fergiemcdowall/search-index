@@ -1,5 +1,4 @@
 import * as tokenization from './tokenisationPipeline.js'
-import PQueue from 'p-queue'
 import { InvertedIndex } from 'fergies-inverted-index'
 import { LRUCache } from 'lru-cache'
 import { Reader } from './read.js'
@@ -48,12 +47,7 @@ export class Main {
       max: 1000
     })
 
-    this.w = new Writer(
-      ops,
-      this._CACHE,
-      new PQueue({ concurrency: 1 }),
-      this.INDEX
-    )
+    this.w = new Writer(ops, this._CACHE, this.INDEX)
     this.r = new Reader(ops, this._CACHE, this.INDEX)
 
     // TODO: this should be something more sensible like "countDocs"
@@ -106,8 +100,12 @@ export class Main {
     return this.w.DELETE(...id)
   }
 
-  DISTINCT (...tokens) {
-    return this.r.DISTINCT(...tokens)
+  DELETE_RAW (...id) {
+    return this.w.DELETE_RAW(...id)
+  }
+
+  DISTINCT (...token) {
+    return this.r.DISTINCT(...token)
   }
 
   DICTIONARY (token) {
