@@ -24,12 +24,16 @@ test('create a search index', t => {
   }
 })
 
+test('timeout here to deal with there no longer being a callback/promise on the constructor', t => {
+  t.plan(1)
+  setTimeout(() => {
+    t.ok(global[indexName])
+  }, 100)
+})
+
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(
-    ['~CREATED'],
-    global[indexName].INDEX.LEVEL_OPTIONS
-  ).then(created => {
+  global[indexName].INDEX.STORE.get(['~CREATED']).then(created => {
     timestamp = created
     return t.pass('timestamp created')
   })
