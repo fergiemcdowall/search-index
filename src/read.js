@@ -1,10 +1,10 @@
-import { EntryStream } from 'level-read-stream'
-
 export class Reader {
   #cache
+  #docExistsSpace
   #ii
 
   constructor (ops, cache, ii) {
+    this.#docExistsSpace = ops.docExistsSpace
     this.#ii = ii
     this.#cache = cache
   }
@@ -186,7 +186,7 @@ export class Reader {
     return requestedDocs.length
       ? Promise.all(
         requestedDocs.map(_id =>
-          this.#ii.STORE.get(['DOC_RAW', _id]).catch(e => null)
+          this.#ii.STORE.get([this.#docExistsSpace, _id]).catch(e => null)
         )
       )
       : this.ALL_DOCUMENTS()
@@ -213,25 +213,18 @@ export class Reader {
 
   // TODO add aggregation to ALL_DOCUMENTS
   ALL_DOCUMENTS (limit) {
-    // TODO: is promise needed here?
-    return new Promise((resolve, reject) => {
-      const result = []
-      // TODO: factor out EntryStream
-      new EntryStream(this.#ii.STORE, {
-        // gte: null,
-        // lte: undefined,
-        gte: ['DOC_RAW', null],
-        lte: ['DOC_RAW', undefined],
-        limit
-      })
-        .on('data', d =>
-          result.push({
-            _id: d.value._id,
-            _doc: d.value
-          })
-        )
-        .on('end', () => resolve(result))
+    return this.#ii.STORE.iterator({
+      gte: [this.#docExistsSpace, null],
+      lte: [this.#docExistsSpace, undefined],
+      limit
     })
+      .all()
+      .then(entries =>
+        entries.map(([key, value]) => ({
+          _id: value._id,
+          _doc: value
+        }))
+      )
   }
 
   DICTIONARY (token) {

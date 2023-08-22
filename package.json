@@ -56,11 +56,13 @@
   "homepage": "https://fergiemcdowall.github.io/search-index/",
   "devDependencies": {
     "assert": "^2.0.0",
+    "browser-level": "^1.0.1",
     "classic-level": "^1.3.0",
     "doctoc": "2.2.1",
     "fuzzyset": "1.0.5",
     "http-server": "14.1.1",
     "level-out": "^1.0.1",
+    "level-read-stream": "^1.1.0",
     "memory-level": "^1.0.0",
     "open-cli": "7.2.0",
     "os-browserify": "^0.3.0",
@@ -79,12 +81,8 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "browser-level": "^1.0.1",
-    "charwise": "^3.0.1",
     "fergies-inverted-index": "13.0.0-rc.2",
-    "level-read-stream": "^1.1.0",
     "lru-cache": "10.0.0",
-    "memory-level": "^1.0.0",
     "ngraminator": "3.0.2",
     "p-queue": "7.3.4",
     "term-vector": "^1.0.0"

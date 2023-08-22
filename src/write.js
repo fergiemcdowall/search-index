@@ -63,8 +63,9 @@ export class Writer {
   }
 
   DELETE_RAW (...docIds) {
-    // TODO: should we be using ops.docExistsSpace instead of DOC_RAW?
-    return Promise.all(docIds.map(id => this.#ii.STORE.del(['DOC_RAW', id])))
+    return Promise.all(
+      docIds.map(id => this.#ii.STORE.del([this.#ops.docExistsSpace, id]))
+    )
   }
 
   FLUSH () {
@@ -94,7 +95,10 @@ export class Writer {
     this.#cache.clear()
     return Promise.all(
       docs.map((doc, i) =>
-        this.#ii.STORE.put(['DOC_RAW', ids[i]], dontStoreValue ? {} : doc)
+        this.#ii.STORE.put(
+          [this.#ops.docExistsSpace, ids[i]],
+          dontStoreValue ? {} : doc
+        )
       )
     ).then(
       // TODO: make this actually deal with errors
