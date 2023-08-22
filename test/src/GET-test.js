@@ -357,13 +357,7 @@ test('create a search index with query and index side character normalisation', 
     })
   ).map(status => status._id)
 
-  t.deepEquals(
-    await si.INDEX.STORE.get(
-      ['IDX', 'text', ['bor', '1.00']],
-      si.INDEX.LEVEL_OPTIONS
-    ),
-    ids
-  )
+  t.deepEquals(await si.INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']]), ids)
   try {
     await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']])
     t.fail('that key should not be in the database')

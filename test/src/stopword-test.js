@@ -99,8 +99,7 @@ test('verify index structure', t => {
   ]
   t.plan(expectedIndexStructure.length)
   new EntryStream(global[testIndex].INDEX.STORE, {
-    lt: ['~'],
-    ...global[testIndex].INDEX.LEVEL_OPTIONS
+    lt: ['~']
   }).on('data', d => {
     t.deepEquals(d, expectedIndexStructure.shift())
   })

@@ -86,8 +86,7 @@ test('Verify that an appropriate index has been created (no raw docs)', t => {
   ]
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
-    lt: ['~'],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lt: ['~']
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })

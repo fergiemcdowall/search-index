@@ -88,8 +88,7 @@ test('index looks good', t => {
   const actualIndex = []
   t.plan(1)
   new EntryStream(global[dontIndexEmptyFields].INDEX.STORE, {
-    lt: ['~'],
-    ...global[dontIndexEmptyFields].INDEX.LEVEL_OPTIONS
+    lt: ['~']
   })
     .on('data', d => actualIndex.push(d))
     .on('end', () => {

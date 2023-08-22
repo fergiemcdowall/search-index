@@ -112,8 +112,7 @@ test('verify index structure', t => {
   ]
   t.plan(expectedIndexStructure.length)
   new EntryStream(global[indexName].INDEX.STORE, {
-    lt: ['~'],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lt: ['~']
   }).on('data', d => {
     // console.log(d)
     t.deepEquals(d, expectedIndexStructure.shift())
@@ -127,8 +126,7 @@ test('FLUSH index and verify', t => {
     .FLUSH()
     .then(() =>
       new EntryStream(global[indexName].INDEX.STORE, {
-        lt: ['~'],
-        ...global[indexName].INDEX.LEVEL_OPTIONS
+        lt: ['~']
       }).on('data', d => t.deepEquals(d, expectedIndexStructure.shift()))
     )
     .then(() => t.pass('index appears empty'))
