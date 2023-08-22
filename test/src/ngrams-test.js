@@ -60,10 +60,7 @@ test('create a search index with ngrams', async function (t) {
     RESULT: [
       {
         _id: 0,
-        _match: [
-          { FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }
-          // 'line3:lives there#1.00'
-        ]
+        _match: [{ FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }]
       }
     ],
     RESULT_LENGTH: 1

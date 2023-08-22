@@ -84,7 +84,6 @@ test('create a search index', t => {
   try {
     global[indexName] = new SearchIndex({
       name: indexName
-      //      cacheLength: 5 // TODO: this needs to be updated
     })
     t.ok(global[indexName])
   } catch (e) {

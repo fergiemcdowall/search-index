@@ -200,15 +200,6 @@ test('simple _OR with 2 clauses', t => {
             _id: '7',
             _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
           }
-
-          // { _id: '0', _match: ['brand:volvo#1.00'] },
-          // { _id: '1', _match: ['brand:volvo#1.00'] },
-          // { _id: '2', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-          // { _id: '4', _match: ['brand:volvo#1.00'] },
-          // { _id: '5', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] },
-          // { _id: '6', _match: ['manufacturer:tesla#1.00'] },
-          // { _id: '7', _match: ['manufacturer:tesla#1.00'] },
-          // { _id: '9', _match: ['brand:volvo#1.00', 'manufacturer:tesla#1.00'] }
         ],
         RESULT_LENGTH: 8
       })

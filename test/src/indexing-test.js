@@ -463,7 +463,7 @@ test('AND with embedded OR (JSON API)', t => {
     })
 })
 
-// This is not currently supported, but should it be? ->
+// // This is not currently supported, but should it be? ->
 // test('DOCUMENT (JSON API)', t => {
 //   t.plan(1)
 //   global[indexName]

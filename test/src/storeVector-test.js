@@ -146,7 +146,6 @@ test('can verify store', t => {
     lt: ['~']
   })
     .on('data', d => {
-      // console.log(d)
       t.deepEquals(d, entries.shift())
     })
     .on('end', resolve => t.pass('ended'))
@@ -227,7 +226,6 @@ test('can verify store', t => {
     lt: ['~']
   })
     .on('data', d => {
-      // console.log(d)
       t.deepEquals(d, entries.shift())
     })
     .on('end', resolve => t.pass('ended'))
