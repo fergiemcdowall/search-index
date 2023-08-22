@@ -11,21 +11,22 @@ test('create a search index', t => {
   t.plan(1)
   try {
     global[indexName] = new SearchIndex({ name: indexName })
-    // wait a bit...
-    setTimeout(() => {
-      t.ok(global[indexName])
-    }, 10)
+    t.ok(global[indexName])
   } catch (e) {
     t.error(e)
   }
 })
 
+test('timeout here to deal with there no longer being a callback/promise on the constructor', t => {
+  t.plan(1)
+  setTimeout(() => {
+    t.ok(global[indexName])
+  }, 100)
+})
+
 test('timestamp was created', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(
-    ['~LAST_UPDATED'],
-    global[indexName].INDEX.LEVEL_OPTIONS
-  ).then(lastUpdated => {
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated => {
     timestamp = lastUpdated
     return t.pass('timestamp created')
   })
@@ -38,10 +39,9 @@ test('can read LAST_UPDATED timestamp with API', t => {
 
 test('is valid timestamp', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(
-    ['~LAST_UPDATED'],
-    global[indexName].INDEX.LEVEL_OPTIONS
-  ).then(lastUpdated => t.ok(new Date(lastUpdated)))
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated =>
+    t.ok(new Date(lastUpdated))
+  )
 })
 
 test('update index', t => {
