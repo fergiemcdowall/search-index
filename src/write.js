@@ -17,15 +17,14 @@ export class Writer {
   }
 
   // TODO: should be queued
-  #setDocCount (increment) {
-    return this.#ii.STORE.get(['DOCUMENT_COUNT'])
+  #setDocCount = increment =>
+    this.#ii.STORE.get(['DOCUMENT_COUNT'])
       .then(count =>
         this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + (+increment || 0))
       )
       .catch(e => this.#ii.STORE.put(['DOCUMENT_COUNT'], 0))
-  }
 
-  #PUT (docs, putOptions) {
+  #PUT = (docs, putOptions) => {
     this.#cache.clear()
     const ops = {
       ...this.#ops,
@@ -47,8 +46,8 @@ export class Writer {
       )
   }
 
-  #DELETE (_ids) {
-    return this.#ii.DELETE(_ids).then(result =>
+  #DELETE = _ids =>
+    this.#ii.DELETE(_ids).then(result =>
       this.DELETE_RAW(..._ids)
         .then(() =>
           this.#setDocCount(-result.filter(d => d.status === 'DELETED').length)
@@ -56,20 +55,16 @@ export class Writer {
         .then(() => this.#cache.clear())
         .then(() => result)
     )
-  }
 
-  DELETE (...docIds) {
-    return this.#DELETE(docIds)
-  }
+  DELETE = (...docIds) => this.#DELETE(docIds)
 
-  DELETE_RAW (...docIds) {
-    return Promise.all(
+  DELETE_RAW = (...docIds) =>
+    Promise.all(
       docIds.map(id => this.#ii.STORE.del([this.#ops.docExistsSpace, id]))
     )
-  }
 
-  FLUSH () {
-    return this.#ii.STORE.clear()
+  FLUSH = () =>
+    this.#ii.STORE.clear()
       .then(() => {
         this.#cache.clear()
         const timestamp = Date.now()
@@ -80,20 +75,16 @@ export class Writer {
         ])
       })
       .then(() => true)
-  }
 
-  IMPORT (index) {
+  IMPORT = index => {
     this.#cache.clear()
     return Promise.resolve(this.#ii.IMPORT(index))
   }
 
-  PUT (docs, pops) {
-    return this.#queue.add(() => this.#PUT(docs, pops))
-  }
+  PUT = (docs, pops) => this.#queue.add(() => this.#PUT(docs, pops))
 
-  PUT_RAW (docs, ids, dontStoreValue) {
-    this.#cache.clear()
-    return Promise.all(
+  PUT_RAW = (docs, ids, dontStoreValue) =>
+    Promise.all(
       docs.map((doc, i) =>
         this.#ii.STORE.put(
           [this.#ops.docExistsSpace, ids[i]],
@@ -102,12 +93,13 @@ export class Writer {
       )
     ).then(
       // TODO: make this actually deal with errors
-      result =>
-        docs.map((doc, i) => ({
+      result => {
+        this.#cache.clear()
+        return docs.map((doc, i) => ({
           _id: ids[i],
           status: 'OK',
           operation: '_PUT_RAW'
         }))
+      }
     )
-  }
 }

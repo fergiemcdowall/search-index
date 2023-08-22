@@ -16,7 +16,7 @@
 import { SearchIndex } from 'search-index' 
 
 // initialize an index
-const { PUT, QUERY } = await new SearchIndex()
+const { PUT, QUERY } = new SearchIndex()
 
 // add documents to the index
 await PUT( /* objects */ )

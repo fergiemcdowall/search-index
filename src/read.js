@@ -11,7 +11,7 @@ export class Reader {
 
   // This function reads queries in a JSON format and then translates them to
   // Promises
-  #parseJsonQuery (q, options = {}) {
+  #parseJsonQuery = (q, options = {}) => {
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -155,8 +155,8 @@ export class Reader {
   }
 
   // TODO: this surely does not _need_ to return a promise?
-  #tryCache (q, cacheKey) {
-    return new Promise(resolve => {
+  #tryCache = (q, cacheKey) =>
+    new Promise(resolve => {
       cacheKey = JSON.stringify(cacheKey)
       return this.#cache.has(cacheKey)
         ? resolve(this.#cache.get(cacheKey))
@@ -164,10 +164,9 @@ export class Reader {
           .then(res => this.#cache.set(cacheKey, res))
           .then(() => resolve(this.#cache.get(cacheKey)))
     })
-  }
 
-  #DICTIONARY (token) {
-    return this.DISTINCT(token).then(results =>
+  #DICTIONARY = token =>
+    this.DISTINCT(token).then(results =>
       Array.from(
         results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
       ).sort((a, b) =>
@@ -180,21 +179,19 @@ export class Reader {
         })
       )
     )
-  }
 
-  #DOCUMENTS (...requestedDocs) {
-    return requestedDocs.length
+  #DOCUMENTS = (...requestedDocs) =>
+    requestedDocs.length
       ? Promise.all(
         requestedDocs.map(_id =>
           this.#ii.STORE.get([this.#docExistsSpace, _id]).catch(e => null)
         )
       )
       : this.ALL_DOCUMENTS()
-  }
 
   // TODO: maybe add a default page size?
-  #SEARCH (q, qops) {
-    return this.#parseJsonQuery(
+  #SEARCH = (q, qops) =>
+    this.#parseJsonQuery(
       {
         AND: [...q]
       },
@@ -209,11 +206,10 @@ export class Reader {
         qops
       )
     )
-  }
 
   // TODO add aggregation to ALL_DOCUMENTS
-  ALL_DOCUMENTS (limit) {
-    return this.#ii.STORE.iterator({
+  ALL_DOCUMENTS = limit =>
+    this.#ii.STORE.iterator({
       gte: [this.#docExistsSpace, null],
       lte: [this.#docExistsSpace, undefined],
       limit
@@ -225,17 +221,15 @@ export class Reader {
           _doc: value
         }))
       )
-  }
 
-  DICTIONARY (token) {
-    return this.#tryCache(this.#DICTIONARY(token), {
+  DICTIONARY = token =>
+    this.#tryCache(this.#DICTIONARY(token), {
       DICTIONARY: token || null
     })
-  }
 
-  DISTINCT (...tokens) {
-    return this.#ii.DISTINCT(...tokens).then(result => {
-      return [
+  DISTINCT = (...tokens) =>
+    this.#ii.DISTINCT(...tokens).then(result =>
+      [
         // Stringify Set entries so that Set can determine duplicates
         ...result.reduce(
           (acc, cur) =>
@@ -249,29 +243,24 @@ export class Reader {
           new Set()
         )
       ].map(JSON.parse)
-    }) // un-stringify
-  }
+    ) // un-stringify
 
-  DOCUMENTS (...docs) {
-    return this.#tryCache(this.#DOCUMENTS(...docs), {
+  DOCUMENTS = (...docs) =>
+    this.#tryCache(this.#DOCUMENTS(...docs), {
       DOCUMENTS: docs
     })
-  }
 
-  DOCUMENT_COUNT () {
-    return this.#ii.STORE.get(['DOCUMENT_COUNT'])
-  }
+  DOCUMENT_COUNT = () => this.#ii.STORE.get(['DOCUMENT_COUNT'])
 
-  DOCUMENT_VECTORS (...requestedDocs) {
-    return Promise.all(
+  DOCUMENT_VECTORS = (...requestedDocs) =>
+    Promise.all(
       requestedDocs.map(_id =>
         this.#ii.STORE.get(['DOC', _id]).catch(e => null)
       )
     )
-  }
 
-  FACETS (...tokens) {
-    return this.#ii.FACETS(...tokens).then(result =>
+  FACETS = (...tokens) =>
+    this.#ii.FACETS(...tokens).then(result =>
       [
         // Stringify Set entries so that Set can determine duplicates
         ...result.reduce(
@@ -288,15 +277,14 @@ export class Reader {
         )
       ].map(JSON.parse)
     ) // un-stringify
-  }
 
-  PAGE (results, options) {
+  PAGE = (results, options = {}) => {
     options = Object.assign(
       {
         NUMBER: 0,
         SIZE: 20
       },
-      options || {}
+      options
     )
     const start = options.NUMBER * options.SIZE
     // handle end index correctly when (start + size) == 0
@@ -305,15 +293,14 @@ export class Reader {
     return results.slice(start, end)
   }
 
-  QUERY (q, qops) {
-    return this.#tryCache(this.#parseJsonQuery(q, qops), { QUERY: [q, qops] })
-  }
+  QUERY = (q, qops) =>
+    this.#tryCache(this.#parseJsonQuery(q, qops), { QUERY: [q, qops] })
 
   // score by tfidf by default
   // TODO: Total hits (length of _match)
   // TODO: better error handling: what if TYPE is 'XXXXX'
   // TODO: scoring precision (decimal places) should be an option
-  SCORE (results, scoreOps = {}) {
+  SCORE = (results, scoreOps = {}) => {
     // TODO: test for defaulting to TFIDF
     scoreOps = Object.assign(
       {
@@ -378,11 +365,10 @@ export class Reader {
     )
   }
 
-  SEARCH (q, qops) {
-    return this.#tryCache(this.#SEARCH(q, qops), { SEARCH: [q, qops] })
-  }
+  SEARCH = (q, qops) =>
+    this.#tryCache(this.#SEARCH(q, qops), { SEARCH: [q, qops] })
 
-  SORT (results, options) {
+  SORT = (results, options) => {
     options = Object.assign(
       {
         DIRECTION: 'DESCENDING',
@@ -417,8 +403,8 @@ export class Reader {
       .sort(sortFunction[options.TYPE][options.DIRECTION])
   }
 
-  WEIGHT (results, weights) {
-    return results.map(r => {
+  WEIGHT = (results, weights) =>
+    results.map(r => {
       r._match = r._match.map(m => {
         weights.forEach(w => {
           let doWeighting = false
@@ -442,5 +428,4 @@ export class Reader {
       })
       return r
     })
-  }
 }

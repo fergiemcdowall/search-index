@@ -47,124 +47,33 @@ export class Main {
     validateVersion(this.INDEX)
   }
 
-  // internal functions inherited from fergies-inverted-index
-  _AND (tokens, pipeline) {
-    return this.INDEX.AND(tokens, pipeline)
-  }
-
-  _BUCKET (token) {
-    return this.INDEX.BUCKET(token)
-  }
-
-  _GET (tokens, pipeline) {
-    return this.INDEX.GET(tokens, pipeline)
-  }
-
-  _NOT (include, exclude) {
-    return this.INDEX.NOT(include, exclude)
-  }
-
-  _OR (tokens, pipeline) {
-    return this.INDEX.OR(tokens, pipeline)
-  }
-
-  _PAGE (results, options) {
-    return this.r.PAGE(results, options)
-  }
-
-  _SORT (results, options) {
-    return this.r.SORT(results, options)
-  }
-
-  ALL_DOCUMENTS (limit) {
-    return this.r.ALL_DOCUMENTS(limit)
-  }
-
-  BUCKETS (...token) {
-    return this.INDEX.BUCKETS(...token)
-  }
-
-  CREATED () {
-    return this.INDEX.CREATED()
-  }
-
-  DELETE (...id) {
-    return this.w.DELETE(...id)
-  }
-
-  DELETE_RAW (...id) {
-    return this.w.DELETE_RAW(...id)
-  }
-
-  DISTINCT (...token) {
-    return this.r.DISTINCT(...token)
-  }
-
-  DICTIONARY (token) {
-    return this.r.DICTIONARY(token)
-  }
-
-  DOCUMENTS (...docs) {
-    return this.r.DOCUMENTS(...docs)
-  }
-
-  DOCUMENT_COUNT () {
-    return this.r.DOCUMENT_COUNT()
-  }
-
-  DOCUMENT_VECTORS (...requestedDocs) {
-    return this.r.DOCUMENT_VECTORS(...requestedDocs)
-  }
-
-  EXPORT () {
-    return this.INDEX.EXPORT()
-  }
-
-  FACETS (...token) {
-    return this.r.FACETS(...token)
-  }
-
-  FLUSH () {
-    return this.w.FLUSH()
-  }
-
-  FIELDS () {
-    return this.INDEX.FIELDS()
-  }
-
-  IMPORT (index) {
-    return this.INDEX.IMPORT(index)
-  }
-
-  LAST_UPDATED () {
-    return this.INDEX.LAST_UPDATED()
-  }
-
-  MAX (token) {
-    return this.INDEX.MAX(token)
-  }
-
-  MIN (token) {
-    return this.INDEX.MIN(token)
-  }
-
-  PUT (docs, ops) {
-    return this.w.PUT(docs, ops)
-  }
-
   // TODO: is this a sensible API?
-  PUT_RAW (docs, ids, dontStoreValue) {
-    return this.w.PUT_RAW(docs, ids, dontStoreValue)
-  }
+  ALL_DOCUMENTS = limit => this.r.ALL_DOCUMENTS(limit)
+  BUCKETS = (...token) => this.INDEX.BUCKETS(...token)
+  CREATED = () => this.INDEX.CREATED()
+  DELETE = (...id) => this.w.DELETE(...id)
+  DELETE_RAW = (...id) => this.w.DELETE_RAW(...id)
+  DICTIONARY = token => this.r.DICTIONARY(token)
+  DISTINCT = (...token) => this.r.DISTINCT(...token)
+  DOCUMENTS = (...docs) => this.r.DOCUMENTS(...docs)
+  DOCUMENT_COUNT = () => this.r.DOCUMENT_COUNT()
+  DOCUMENT_VECTORS = (...requestedDocs) =>
+    this.r.DOCUMENT_VECTORS(...requestedDocs)
 
-  QUERY (q, ops) {
-    return this.r.QUERY(q, ops)
-  }
+  EXPORT = () => this.INDEX.EXPORT()
+  FACETS = (...token) => this.r.FACETS(...token)
+  FIELDS = () => this.INDEX.FIELDS()
+  FLUSH = () => this.w.FLUSH()
+  IMPORT = index => this.INDEX.IMPORT(index)
+  LAST_UPDATED = () => this.INDEX.LAST_UPDATED()
+  MAX = token => this.INDEX.MAX(token)
+  MIN = token => this.INDEX.MIN(token)
+  PUT = (docs, ops) => this.w.PUT(docs, ops)
+  PUT_RAW = (docs, ids, dontStoreValue) =>
+    this.w.PUT_RAW(docs, ids, dontStoreValue)
 
-  SEARCH (q, ops) {
-    return this.r.SEARCH(q, ops)
-  }
-
+  QUERY = (q, ops) => this.r.QUERY(q, ops)
+  SEARCH = (q, ops) => this.r.SEARCH(q, ops)
   TOKENIZATION_PIPELINE_STAGES = {
     SPLIT: tokenization.SPLIT,
     SKIP: tokenization.SKIP,
@@ -174,4 +83,13 @@ export class Main {
     STOPWORDS: tokenization.STOPWORDS,
     SCORE_TERM_FREQUENCY: tokenization.SCORE_TERM_FREQUENCY
   }
+
+  // internal functions inherited from fergies-inverted-index
+  _AND = (tokens, pipeline) => this.INDEX.AND(tokens, pipeline)
+  _BUCKET = token => this.INDEX.BUCKET(token)
+  _GET = (tokens, pipeline) => this.INDEX.GET(tokens, pipeline)
+  _NOT = (include, exclude) => this.INDEX.NOT(include, exclude)
+  _OR = (tokens, pipeline) => this.INDEX.OR(tokens, pipeline)
+  _PAGE = (results, options) => this.r.PAGE(results, options)
+  _SORT = (results, options) => this.r.SORT(results, options)
 }

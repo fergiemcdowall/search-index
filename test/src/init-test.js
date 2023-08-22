@@ -47,5 +47,7 @@ test('can create a search index', async t => {
 
 test('can add some data', t => {
   t.plan(1)
-  global[indexName].PUT(data).then(t.pass)
+  // global[indexName].PUT(data).then(t.pass)
+  const { PUT } = global[indexName]
+  PUT(data).then(t.pass)
 })
