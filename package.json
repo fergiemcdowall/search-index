@@ -35,9 +35,11 @@
     "demo-link-lib": "cd demo/lib &&  ln -sf ../../dist/search-index.js && cd ../../",
     "empty-sandbox": "rm -rf fii && rm -rf test/sandbox && mkdir test/sandbox",
     "generateVersionModule": "echo export const packageVersion = \\\"${npm_package_version}\\\" > src/version.js",
+    "format-code": "npm run prettyify && npm run lint",
     "lint": "standard --fix test/src/* src/* demo/src/* demo/generate-index/*.js",
+    "prettyify": "prettier --config .prettierrc.json src/*.js test/src/*.js --write",
     "symlink-for-test": "cd node_modules && ln -sf ../../search-index && cd ..",
-    "test": "npm run empty-sandbox && npm run test-node && npm run test-browser && npm run lint",
+    "test": "npm run format-code && npm run empty-sandbox && npm run test-node && npm run test-browser",
     "test-browser": "npm run symlink-for-test && npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run symlink-for-test && npm run empty-sandbox && tape test/src/*-test.js",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
