@@ -23,24 +23,28 @@ const docs = [
 test('can alter order of tokenization pipeline', async function (t) {
   t.plan(6)
 
-  const si = new SearchIndex({
-    name: sandbox + 'pipeline'
-  })
-  t.ok(si.PUT)
+  const { DICTIONARY, DELETE, PUT, TOKENIZATION_PIPELINE_STAGES } =
+    new SearchIndex({
+      name: sandbox + 'pipeline'
+    })
+  t.ok(PUT)
+
+  const { SPLIT, LOWCASE, NGRAMS, STOPWORDS, SCORE_TERM_FREQUENCY } =
+    TOKENIZATION_PIPELINE_STAGES
 
   t.deepEquals(
-    await si.PUT(docs, {
+    await PUT(docs, {
       stopwords: sw.eng,
       ngrams: {
         fields: ['line2'],
         lengths: [1, 2]
       },
       tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
+          .then(STOPWORDS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -50,7 +54,7 @@ test('can alter order of tokenization pipeline', async function (t) {
   )
 
   t.deepEquals(
-    await si.DICTIONARY({
+    await DICTIONARY({
       FIELD: 'line2'
     }),
     [
@@ -65,24 +69,24 @@ test('can alter order of tokenization pipeline', async function (t) {
     ]
   )
 
-  t.deepEquals(await si.DELETE(0, 1), [
+  t.deepEquals(await DELETE(0, 1), [
     { _id: 0, operation: 'DELETE', status: 'DELETED' },
     { _id: 1, operation: 'DELETE', status: 'DELETED' }
   ])
 
   t.deepEquals(
-    await si.PUT(docs, {
+    await PUT(docs, {
       stopwords: sw.eng,
       ngrams: {
         fields: ['line2'],
         lengths: [1, 2]
       },
       tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(STOPWORDS)
+          .then(NGRAMS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -94,7 +98,7 @@ test('can alter order of tokenization pipeline', async function (t) {
   // because STOPWORDS came before NGRAMS in pipeline, ngrams do not
   // contain stopwords (no 'and thyme' for example)
   t.deepEquals(
-    await si.DICTIONARY({
+    await DICTIONARY({
       FIELD: 'line2'
     }),
     [
@@ -112,24 +116,28 @@ test('can alter order of tokenization pipeline', async function (t) {
 test('can add custom pipeline stage', async function (t) {
   t.plan(4)
 
-  const si = new SearchIndex({
+  const { DICTIONARY, PUT, TOKENIZATION_PIPELINE_STAGES } = new SearchIndex({
     name: sandbox + 'pipeline2'
   })
-  t.ok(si.PUT)
+
+  const { SPLIT, LOWCASE, NGRAMS, STOPWORDS, SCORE_TERM_FREQUENCY } =
+    TOKENIZATION_PIPELINE_STAGES
+
+  t.ok(PUT)
 
   t.deepEquals(
-    await si.PUT(docs, {
+    await PUT(docs, {
       tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
           .then(([tokens, field, ops]) => [
             [field.split('').reverse().join(''), ...tokens],
             field,
             ops
           ])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(STOPWORDS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -139,7 +147,7 @@ test('can add custom pipeline stage', async function (t) {
   )
 
   t.deepEquals(
-    await si.DICTIONARY({
+    await DICTIONARY({
       FIELD: 'line1'
     }),
     [
@@ -165,7 +173,7 @@ test('can add custom pipeline stage', async function (t) {
     ]
   )
   t.deepEquals(
-    await si.DICTIONARY({
+    await DICTIONARY({
       FIELD: 'line2'
     }),
     ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme']
@@ -175,21 +183,32 @@ test('can add custom pipeline stage', async function (t) {
 test('can add custom pipeline stage (stemmer)', async function (t) {
   t.plan(3)
 
-  const si = new SearchIndex({
+  const {
+    DICTIONARY,
+    PUT,
+    TOKENIZATION_PIPELINE_STAGES: {
+      SPLIT,
+      LOWCASE,
+      NGRAMS,
+      STOPWORDS,
+      SCORE_TERM_FREQUENCY
+    }
+  } = new SearchIndex({
     name: sandbox + 'pipeline3'
   })
-  t.ok(si.PUT)
+
+  t.ok(PUT)
 
   t.deepEquals(
-    await si.PUT(docs, {
+    await PUT(docs, {
       stopwords: sw.eng,
       tokenizer: (tokens, field, ops) =>
-        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(si.TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
+          .then(STOPWORDS)
           .then(([tokens, field, ops]) => [tokens.map(stemmer), field, ops])
-          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -199,7 +218,7 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
   )
 
   t.deepEquals(
-    await si.DICTIONARY({
+    await DICTIONARY({
       FIELD: 'line3'
     }),
     ['crest', 'ground', 'live', 'on', 'rememb', 'snow', 'sparrow', 'trace']

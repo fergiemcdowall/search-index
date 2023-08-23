@@ -16,13 +16,13 @@
 import { SearchIndex } from 'search-index' 
 
 // initialize an index
-const { PUT, QUERY } = new SearchIndex()
+const { PUT, QUERY } = new SearchIndex(options)
 
 // add documents to the index
-await PUT( /* objects */ )
+await PUT(documents)
 
 // read documents from the index
-const results = await QUERY( /* query */ )
+const results = await QUERY(query)
 ```
 
 ## Documentation

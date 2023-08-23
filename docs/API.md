@@ -49,13 +49,15 @@
 - [Writing (creating and updating)](#writing-creating-and-updating)
   - [IMPORT](#import)
   - [PUT](#put)
-    - [Tokenization pipeline when indexing](#tokenization-pipeline-when-indexing)
-      - [Reorder pipeline](#reorder-pipeline)
-      - [Create custom pipeline stages](#create-custom-pipeline-stages)
+    - [Tokenization pipeline](#tokenization-pipeline)
+      - [Default stage order](#default-stage-order)
+      - [Reorder stages](#reorder-stages)
+      - [Create custom stages](#create-custom-stages)
   - [PUT_RAW](#put_raw)
   - [TOKENIZATION_PIPELINE_STAGES](#tokenization_pipeline_stages)
 - [Deleting](#deleting)
   - [DELETE](#delete)
+  - [DELETE_RAW](#delete_raw)
   - [FLUSH](#flush)
 - [Other](#other)
   - [INDEX](#index)
@@ -67,7 +69,7 @@ has been initialized in such a way that the functions below are
 available as variables:
 
 ```javascript
-const { INDEX, QUERY, UPDATE /* etc. */ } = await new SearchIndex()
+const { INDEX, QUERY, UPDATE /* etc. */ } = new SearchIndex()
 ```
 
 It is also assumed here that the search-index module is always
@@ -95,7 +97,13 @@ instantiate an index by invoking the module variable as a Promise:
     
 
 ```javascript
-const idx = await new SearchIndex(options)
+const idx = new SearchIndex(options)
+```
+
+Alternatively:
+
+```javascript
+const { PUT, QUERY, /* etc */ } = new SearchIndex(options)
 ```
 
 When intantiated in a browser `search-index` will use `indexedDB`
@@ -113,7 +121,7 @@ parameter.
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-| `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
+| `db` | [`abstract-level`](https://www.npmjs.com/package/abstract-level?activeTab=dependents) store | `ClassicLevel` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
 | `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
 | `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
@@ -222,7 +230,7 @@ const buckets = await BUCKETS(token1, token2, ...)
 ## CREATED
 
 ```javascript
-// find out when index was first created
+// Find out when index was first created
 const timestamp = await CREATED()
 ```
 
@@ -605,7 +613,7 @@ generated and assigned
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 |`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
 
-### Tokenization pipeline when indexing
+### Tokenization pipeline
 
 Tokenized documents can be inspected with [`DOCUMENT_VECTORS`](#document_vectors)
 
@@ -615,7 +623,10 @@ sequence of stages that are applied to the field with the result of
 the preceding stage providing the input for the result of the
 following stage.
 
-The default tokenization pipeline looks like this:
+#### Default stage order
+
+The default tokenization pipeline looks like this (note the order of
+the stages):
 
 ```javascript
 tokenizer: (tokens, field, ops) =>
@@ -629,29 +640,38 @@ tokenizer: (tokens, field, ops) =>
     .then(([tokens, field, ops]) => tokens)
 ```
 
-#### Reorder pipeline
+#### Reorder stages
 
 Example: reorder the pipeline to remove stopwords _before_ creating
 ngrams:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-  TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-    .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-    .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-    .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-    .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS) // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)    // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-    .then(([tokens, field, ops]) => tokens)
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(STOPWORDS) // <-- order switched
+      .then(NGRAMS)    // <-- order switched
+      .then(SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
 })
 ```
 
-#### Create custom pipeline stages
+#### Create custom stages
 
 A custom pipeline stage must be in the following form:
 
@@ -668,24 +688,33 @@ A custom pipeline stage must be in the following form:
 Example: Normalize text characters:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(NGRAMS)
+      .then(STOPWORDS)
       // björn -> bjorn, allé -> alle, etc.
       .then(([tokens, field, ops]) => [
         tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
         field,
         ops
       ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(SCORE_TERM_FREQUENCY)
       .then(([tokens, field, ops]) => tokens)
 })
 ```
@@ -693,25 +722,34 @@ await PUT(docs, {
 Example: stemmer:
 
 ```javascript
-const stemmer = require('stemmer')
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await new SearchIndex({
+import stemmer from 'stemmer'
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(NGRAMS)
+      .then(STOPWORDS)
       // thinking -> think, thinker -> think, etc.
       .then(([tokens, field, ops]) => [
         tokens.map(stemmer),
         field,
         ops
       ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(SCORE_TERM_FREQUENCY)
       .then(([tokens, field, ops]) => tokens)
 })
 ```
@@ -780,6 +818,14 @@ NOTE: for indices to be deleteable documents must be indexed whith
 const result = await DELETE(id1, id2, id3 /*...*/)
 ```
 
+## DELETE_RAW
+
+See also [PUT_RAW](#put_raw)
+
+```javascript
+// Deletes raw documents (but retains the indexed versions)
+const result = await DELETE_RAW(id1, id2, id3 /*...*/)
+```
 
 ## FLUSH
 ```javascript

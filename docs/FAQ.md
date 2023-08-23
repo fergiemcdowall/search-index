@@ -74,21 +74,21 @@ PUT([ /* my array of objects */ ]).then(doStuff)
 # Can I use another backend like MySQL or Redis?
 
 Yes you can! Because `search-index` is built on top of
-[`levelup`](https://github.com/Level/levelup) its possible to use
-another backend by passing the appropriate
-[`abstract-leveldown`](https://github.com/Level/abstract-leveldown)
-when initialising. [Many datastores are
-supported](https://github.com/Level/awesome/#stores). Use the [`db`
-initialisation option](API.md#sioptions). (see [tests](https://github.com/fergiemcdowall/search-index/blob/master/test/src/memdown-test.js) for a working example).
+[`abstract-level`](https://github.com/Level/abstract-level) it is
+possible to swap out database backends by passing the appropriate
+[`store`](https://www.npmjs.com/package/abstract-level?activeTab=dependents)
+when initialising. Use the [`Level` initialisation
+option](API.md#sioptions).
 
 Example:
 
 ```javascript
-const { MemoryLevel } = require('memory-level')
-const si = require('search-index')
+// Use the in-memory MemoryLevel store
+import { MemoryLevel } from 'memory-level'
+import { SearchIndex } from 'search-index'
 
-const memdownIndex = await si({
-  db: new MemoryLevel(),
+const memdownIndex = new SearchIndex({
+  Level: MemoryLevel,
   name: indexName
 })
 
@@ -207,9 +207,9 @@ simple "begins with" autosuggest, then you can simply use the
 `DICTIONARY` function:
 
 ```javascript
-const results = DICTIONARY('b')   // [ 'bananas','branch','brunch' ]
-const results = DICTIONARY('br')  // [ 'branch','brunch' ]
-const results = DICTIONARY('bra') // [ 'branch' ]
+const results = await DICTIONARY('b')   // [ 'bananas','branch','brunch' ]
+const results = await DICTIONARY('br')  // [ 'branch','brunch' ]
+const results = await DICTIONARY('bra') // [ 'branch' ]
 ```
 
 Alternatively you can use `DICTIONARY` to extract all terms from the
