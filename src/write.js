@@ -30,8 +30,7 @@ export class Writer {
       ...this.#ops,
       ...putOptions
     }
-    return DocumentProcessor(ops)
-      .processDocuments(docs)
+    return DocumentProcessor(docs, ops)
       .then(vectors => this.#ii.PUT(vectors, putOptions))
       .then(result =>
         this.PUT_RAW(

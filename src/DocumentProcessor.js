@@ -1,4 +1,4 @@
-export const DocumentProcessor = ops => {
+export const DocumentProcessor = (docs, ops) => {
   const isObject = item =>
     typeof item === 'object' && item !== null && !Array.isArray(item)
 
@@ -57,7 +57,5 @@ export const DocumentProcessor = ops => {
       return resolve(acc)
     })
 
-  return {
-    processDocuments: docs => Promise.all(docs.map(processDocument))
-  }
+  return Promise.all(docs.map(processDocument))
 }
