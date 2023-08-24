@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
-import json from './EarthPorn-top-raw.json' assert { type: 'json' }
+// import json from './EarthPorn-top-raw.json' assert { type: 'json' }
+const json = JSON.parse(fs.readFileSync('./EarthPorn-top-raw.json'))
 
 const __dirname = new URL('.', import.meta.url).pathname
 
