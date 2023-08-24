@@ -11,6 +11,8 @@ const el = name => document.getElementById(name)
 
 // render page
 const renderResults = (q, { RESULT, FACETS, RESULT_LENGTH }) => {
+  console.log('IN RENDER RESULTS')
+  console.log(RESULT_LENGTH)
   const getFacet = name =>
     FACETS.filter(f => f.FIELD === name).filter(f => f._id.length)
   const yearFacet = getFacet('year')
@@ -116,20 +118,30 @@ autocomplete('#query', { hint: false }, [
 
 /* INITIALIZE */
 
-// TODO: put in logic here to see if index is imported or not...
-Promise.all([
-  SearchIndex({
-    name: 'mySearchIndex',
-    stopwords
-  }),
-  fetch('generate-index/EarthPorn-top-search-index.json').then(res =>
-    res.json()
-  )
-])
-  .then(([thisSi, dump]) => {
-    // set global variable (in practice you might not want to do this)
-    si = thisSi
-    // replicate pregenerated index
-    si.IMPORT(dump).then(search)
-  })
-  .catch(console.log)
+// // TODO: put in logic here to see if index is imported or not...
+// Promise.all([
+//   SearchIndex({
+//     name: 'mySearchIndex',
+//     stopwords
+//   }),
+//   fetch('generate-index/EarthPorn-top-search-index.json').then(res =>
+//     res.json()
+//   )
+// ])
+//   .then(([thisSi, dump]) => {
+//     // set global variable (in practice you might not want to do this)
+//     si = thisSi
+//     // replicate pregenerated index
+//     si.IMPORT(dump).then(search)
+//   })
+//   .catch(console.log)
+
+si = new SearchIndex.SearchIndex({
+  name: 'mySearchIndex',
+  stopwords
+})
+
+fetch('generate-index/EarthPorn-top-search-index.json')
+  .then(res => res.json())
+  .then(dump => si.IMPORT(dump))
+  .then(search)

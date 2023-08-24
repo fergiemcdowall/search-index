@@ -17,7 +17,8 @@ const data = [
   },
   {
     _id: 2,
-    text: 'Over 50 years after the The Beatles’ ‘White Album’ first stormed the charts, the Fab Four’s iconic double-album achieved 24-time Platinum-certified status – making it the fourth-highest certified release in US history.'
+    text: 'Over 50 years after the The Beatles’ ‘White Album’ first stormed the charts, the Fab Four’s iconic double-album achieved 24-time Platinum-certified status – making it the fourth-highest certified release in US history.',
+    year: '1920'
   },
   {
     _id: 3,
@@ -182,6 +183,27 @@ test('simple _SEARCH with 2 clauses', t => {
         }
       ],
       RESULT_LENGTH: 3
+    })
+  })
+})
+
+test('SEARCH in all fields', t => {
+  t.plan(1)
+  global[indexName].SEARCH(['1920']).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
+        {
+          _id: 2,
+          _match: [{ FIELD: 'year', VALUE: '1920', SCORE: '1.00' }],
+          _score: 1.7
+        },
+        {
+          _id: 6,
+          _match: [{ FIELD: 'text', VALUE: '1920', SCORE: '0.33' }],
+          _score: 0.56
+        }
+      ],
+      RESULT_LENGTH: 2
     })
   })
 })

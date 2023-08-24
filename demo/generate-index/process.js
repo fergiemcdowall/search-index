@@ -1,6 +1,9 @@
-const fs = require('fs')
-const json = require('./EarthPorn-top-raw.json')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { URL } from 'url'
+import json from './EarthPorn-top-raw.json' assert { type: 'json' }
+
+const __dirname = new URL('.', import.meta.url).pathname
 
 fs.writeFileSync(
   path.join(__dirname, '/EarthPorn-top-processed.json'),
