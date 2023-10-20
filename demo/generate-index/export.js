@@ -1,12 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-// import data from './EarthPorn-top-processed.json' assert { type: 'json' }
 import { SearchIndex } from 'search-index'
 import { URL } from 'url'
 
-const data = JSON.parse(fs.readFileSync('./EarthPorn-top-processed.json'))
-
+// const data = JSON.parse(fs.readFileSync('./EarthPorn-top-processed.json'))
 const __dirname = new URL('.', import.meta.url).pathname
+const data = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '/EarthPorn-top-processed.json'))
+)
 
 const stopwords = [
   'about',

@@ -81,7 +81,7 @@
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "fergies-inverted-index": "13.0.0-rc.2",
+    "fergies-inverted-index": "13.0.0-rc.4",
     "lru-cache": "10.0.0",
     "ngraminator": "3.0.2",
     "p-queue": "7.3.4",
