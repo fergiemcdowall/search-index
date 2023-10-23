@@ -86,6 +86,7 @@
     
     <script src="./lib/search-index.js"></script>
     <script src="./lib/stopwords.js"></script>
+    <script src="./lib/ui.js"></script>
     <script src="./lib/autocomplete.js"></script>
     <script src="./src/app.js"></script>
     <title>Search-index demo</title>
@@ -96,12 +97,12 @@
     </header>
     <div style="flex-direction: row;display: flex;">
       <div style="flex-basis: 300px; background-color: green;">
-        <div class="refiner" data-field="year"></div>
-        <div class="refiner" data-field="month"></div>
+        <div id="year-refiner" class="refiner"></div>
+        <div id="month-refiner" class="refiner"></div>
       </div>
       <div style="flex-basis: 80%; background-color: red;flex-wrap:wrap;">
         <div style="flex-direction: column;display: flex;">
-          <input id="searchbox"></input>
+          <input id="searchbox" autofocus></input>
           <div id="suggestions" />
         </div>
         <div id="count"></div>
