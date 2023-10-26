@@ -11,7 +11,7 @@ Promise.all([
   fetch('data/EarthPorn-top-search-index.json')
     .then(res => res.json())
     .then(si.IMPORT),
-  new Promise(res => (window.onload = () => res()))
+  new Promise(resolve => (window.onload = () => resolve()))
 ]).then(() =>
   ui({
     index: si,

@@ -10,14 +10,21 @@ export const ui = ({
 } = {}) => {
   const countTemplate = count => `showing ${count} hits`
   const hitsTemplate = doc => `<p>${JSON.stringify(doc)}</p>`
-  const refinerOptionTemplate = (value, set, token, active) => `
+  const refinerOptionTemplate = (rOption, active) => {
+    console.log(active)
+    return `
     <input class="filter-select"
-           id=${token}
-           name=${token}
+           id=${rOption.FIELD + ':' + rOption.VALUE}
+           name=${rOption.FIELD + ':' + rOption.VALUE}
            type="checkbox"
+           data-field=${rOption.FIELD}
+           data-value=${rOption.VALUE}
            ${active ? 'checked' : ''}>
-    <label for=${token}>${value} (${set.length})</label>
+    <label for=${rOption.FIELD + ':' + rOption.VALUE}>${rOption.VALUE} (${
+      rOption._id.length
+    })</label>
     <br>`
+  }
   const refinerTitleTemplate = title => `<h2>${title}</h2>`
 
   count = { template: countTemplate, elementId: 'count', ...count }
@@ -77,7 +84,6 @@ export const ui = ({
         DOCUMENTS: true
       }
     ]
-    console.log(JSON.stringify(q, null, 2))
     return q
   }
 
@@ -107,6 +113,7 @@ export const ui = ({
   let activeFilters = []
 
   const displayRefiners = facets => {
+    // List all refiner options
     refiners.forEach(refiner => {
       refiner.el.innerHTML =
         refinerTitleTemplate(refiner.title) +
@@ -114,24 +121,41 @@ export const ui = ({
           .filter(item => item.FIELD == refiner.field)
           .sort(refiner.sort)
           .reduce(
-            (acc, { VALUE, _id }) =>
+            (acc, refinerOption) =>
               acc +
               refinerOptionTemplate(
-                VALUE,
-                _id,
-                refiner.field + ':' + VALUE,
-                activeFilters.includes(refiner.field + ':' + VALUE)
+                refinerOption,
+                activeFilters.includes(
+                  refinerOption.FIELD + ':' + refinerOption.VALUE
+                )
               ),
             ''
           )
+
+      // Display active filters even when no hits in filter
+      activeFilters.forEach(refinerOption => {
+        if (!document.getElementById(refinerOption)) {
+          const [FIELD, VALUE] = refinerOption.split(':')
+          refiner.el.innerHTML += refinerOptionTemplate(
+            { FIELD: FIELD, VALUE: VALUE, _id: [] },
+            true
+          )
+        }
+      })
     })
+
+    // Event listener for selection/unselection
     const filterCheckboxes = document.getElementsByClassName('filter-select')
     for (let i = 0; i < filterCheckboxes.length; i++) {
       filterCheckboxes[i].addEventListener('input', function (e) {
+        const token =
+          e.target.attributes['data-field'].value +
+          ':' +
+          e.target.attributes['data-value'].value
         if (e.target.checked) {
-          activeFilters.push(e.target.name)
+          activeFilters.push(token)
         } else {
-          activeFilters = activeFilters.filter(item => item !== e.target.name)
+          activeFilters = activeFilters.filter(item => item !== token)
         }
         search()
       })
