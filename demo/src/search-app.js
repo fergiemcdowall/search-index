@@ -116,11 +116,11 @@ autocomplete({
   },
   container: '#searchbox',
   placeholder: 'Search for pictures of nature',
-  getSources({ query }) {
+  getSources ({ query }) {
     return [
       {
         sourceId: 'dictionary',
-        getItems({ query }) {
+        getItems ({ query }) {
           return si.DICTIONARY(query).then(res => [
             ...res.map(item => ({
               label: item,
@@ -129,12 +129,12 @@ autocomplete({
             { label: 'clear', value: '' }
           ])
         },
-        getItemUrl({ item }) {
+        getItemUrl ({ item }) {
           console.log('fetching ... ' + item.label)
           return '?q=' + item.label
         },
         templates: {
-          item({ item, html }) {
+          item ({ item, html }) {
             return html`<a href="?q=${item.value}">${item.label}</a>`
           }
         }

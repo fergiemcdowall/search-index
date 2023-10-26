@@ -78,7 +78,6 @@ test('can add data', t => {
       brand: 'Volvo'
     }
   ]
-
   t.plan(1)
   global[indexName].PUT(data).then(t.pass)
 })
@@ -196,7 +195,6 @@ test('QUERY with FACETS', t => {
         RESULT_LENGTH: 2,
         FACETS: [
           { FIELD: 'make', VALUE: 'bmw', _id: [7] },
-          { FIELD: 'make', VALUE: 'tesla', _id: [] },
           { FIELD: 'make', VALUE: 'volvo', _id: [8] }
         ]
       })

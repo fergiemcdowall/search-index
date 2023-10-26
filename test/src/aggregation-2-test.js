@@ -271,10 +271,7 @@ test('simple aggregation', t => {
           { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
         RESULT_LENGTH: 3,
-        FACETS: [
-          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-          { FIELD: 'make', VALUE: 'tesla', _id: [] }
-        ]
+        FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }]
       })
     })
 })
@@ -306,10 +303,7 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
     )
     .then(res => {
       t.deepEqual(res, {
-        FACETS: [
-          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-          { FIELD: 'make', VALUE: 'tesla', _id: [] }
-        ],
+        FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }],
         RESULT: [
           {
             _id: '1',
@@ -350,10 +344,7 @@ test('simple aggregation', t => {
     )
     .then(res => {
       t.deepEqual(res, {
-        FACETS: [
-          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-          { FIELD: 'make', VALUE: 'tesla', _id: [] }
-        ],
+        FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }],
         RESULT: [
           {
             _id: '1',
@@ -428,10 +419,7 @@ test('simple aggregation, return full documents', t => {
           }
         ],
         RESULT_LENGTH: 3,
-        FACETS: [
-          { FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] },
-          { FIELD: 'make', VALUE: 'tesla', _id: [] }
-        ]
+        FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }]
       })
     })
 })

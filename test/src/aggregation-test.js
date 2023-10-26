@@ -104,7 +104,6 @@ test('can aggregate totalamt using underlying index', t => {
             VALUE: 0,
             _id: ['52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787']
           },
-          { FIELD: 'totalamt', VALUE: 6060000, _id: [] },
           {
             FIELD: 'totalamt',
             VALUE: 10000000,
@@ -115,7 +114,6 @@ test('can aggregate totalamt using underlying index', t => {
             VALUE: 13100000,
             _id: ['52b213b38594d8a2be17c784']
           },
-          { FIELD: 'totalamt', VALUE: 130000000, _id: [] },
           {
             FIELD: 'totalamt',
             VALUE: 160000000,
@@ -604,13 +602,11 @@ test('can run a query and create facets on impagency', t => {
             VALUE: 'and',
             _id: ['52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786']
           },
-          { FIELD: 'impagency', VALUE: 'communications', _id: [] },
           {
             FIELD: 'impagency',
             VALUE: 'departmant',
             _id: ['52b213b38594d8a2be17c788']
           },
-          { FIELD: 'impagency', VALUE: 'education', _id: [] },
           {
             FIELD: 'impagency',
             VALUE: 'energy',

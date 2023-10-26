@@ -90,7 +90,7 @@ export class Reader {
       options.BUCKETS
         ? this.#ii.BUCKETS(...options.BUCKETS).then(bkts =>
           Object.assign(result, {
-            BUCKETS: this.#ii.AGGREGATION_FILTER(bkts, result.RESULT)
+            BUCKETS: this.#ii.AGGREGATION_FILTER(bkts, result.RESULT, false)
           })
         )
         : result

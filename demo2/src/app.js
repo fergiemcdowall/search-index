@@ -1,14 +1,18 @@
-const si = new SearchIndex.SearchIndex({
+import { stopwords } from '/lib/stopwords.js'
+import { ui } from '/lib/ui.js'
+import { SearchIndex } from '/lib/search-index-esm-5.0.0-rc1.js'
+
+const si = new SearchIndex({
   name: 'mySearchIndex',
   stopwords
 })
 
-fetch('data/EarthPorn-top-search-index.json')
-  .then(res => res.json())
-  .then(si.IMPORT)
-  .catch(e => console.error('problem with import'))
-
-window.onload = function () {
+Promise.all([
+  fetch('data/EarthPorn-top-search-index.json')
+    .then(res => res.json())
+    .then(si.IMPORT),
+  new Promise(res => (window.onload = () => res()))
+]).then(() =>
   ui({
     index: si,
     count: {
@@ -26,8 +30,17 @@ window.onload = function () {
     },
     refiners: [
       { elementId: 'year-refiner', title: 'YEAR', field: 'year' },
-      { elementId: 'month-refiner', title: 'MONTH', field: 'month' }
+      {
+        elementId: 'month-refiner',
+        title: 'MONTH',
+        field: 'month',
+        sort: (a, b) => {
+          const monthNumber = month =>
+            new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1
+          return monthNumber(a.VALUE) - monthNumber(b.VALUE)
+        }
+      }
     ],
     searchInput: { elementId: 'searchbox' }
   })
-}
+)

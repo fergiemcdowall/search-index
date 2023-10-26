@@ -7,12 +7,12 @@ import { Writer } from './write.js'
 import { validateVersion } from './util.js'
 
 export class Main {
-  constructor(ops = {}) {
+  constructor (ops = {}) {
     ops = {
       cacheLength: 1000,
       caseSensitive: false,
       docExistsSpace: 'DOC_RAW',
-      idGenerator: (function* generateId() {
+      idGenerator: (function * generateId () {
         let i = 0
         while (true) {
           yield Date.now() + '-' + i++

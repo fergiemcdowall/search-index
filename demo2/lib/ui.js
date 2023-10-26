@@ -1,6 +1,7 @@
 // should be eventually bundled in with search-index
+import { autocomplete } from '/lib/autocomplete.js'
 
-const ui = ({
+export const ui = ({
   index = null,
   count = {},
   hits = {},
@@ -37,6 +38,9 @@ const ui = ({
 
   refiners = refiners.map(refiner => ({
     el: document.getElementById(refiner.elementId),
+    sort: (a, b) => {
+      a.VALUE.localeCompare(b.VALUE)
+    },
     ...refiner
   }))
 
@@ -56,8 +60,7 @@ const ui = ({
   ]
 
   const searchQuery = () => {
-    // debugger
-    return [
+    const q = [
       [
         ...searchInput.el.value.split(/\s+/).filter(item => item),
         ...activeFilters
@@ -65,12 +68,17 @@ const ui = ({
       {
         FACETS: [
           {
-            FIELD: ['month', 'year']
+            FIELD: ['month']
+          },
+          {
+            FIELD: ['year']
           }
         ],
         DOCUMENTS: true
       }
     ]
+    console.log(JSON.stringify(q, null, 2))
+    return q
   }
 
   const search = () =>
@@ -82,6 +90,10 @@ const ui = ({
         // query: q,
         result // TODO: should this be nested like this?
       }))
+      .then(res => {
+        console.log(res)
+        return res
+      })
       .then(displaySearch)
 
   const displaySearch = res => {
@@ -100,6 +112,7 @@ const ui = ({
         refinerTitleTemplate(refiner.title) +
         facets
           .filter(item => item.FIELD == refiner.field)
+          .sort(refiner.sort)
           .reduce(
             (acc, { VALUE, _id }) =>
               acc +
