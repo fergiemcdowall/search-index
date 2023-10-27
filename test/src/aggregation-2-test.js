@@ -112,6 +112,7 @@ test('simple aggregation', t => {
           }
         ],
         RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         RESULT: [
           {
             _id: '1',
@@ -171,7 +172,8 @@ test('simple AGGREGATE (JSON)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -227,6 +229,7 @@ test('simple AGGREGATE (JSON)', t => {
           }
         ],
         RESULT_LENGTH: 6,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         BUCKETS: [
           {
             FIELD: ['make'],
@@ -271,6 +274,7 @@ test('simple aggregation', t => {
           { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
         RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }]
       })
     })
@@ -315,7 +319,8 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
           },
           { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -356,7 +361,8 @@ test('simple aggregation', t => {
           },
           { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -419,6 +425,7 @@ test('simple aggregation, return full documents', t => {
           }
         ],
         RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }]
       })
     })

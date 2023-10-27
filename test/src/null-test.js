@@ -94,7 +94,8 @@ test('GET all docs with null values', t => {
             _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

@@ -29,14 +29,16 @@ test('set up as per issue #535', async function (t) {
         _score: 1.1
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 
   t.ok(await si.FLUSH())
 
   t.deepEquals(await si.SEARCH(['q']), {
     RESULT: [],
-    RESULT_LENGTH: 0
+    RESULT_LENGTH: 0,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
   })
 
   t.deepEquals(await si.PUT(docs), [
@@ -52,6 +54,7 @@ test('set up as per issue #535', async function (t) {
         _score: 1.1
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

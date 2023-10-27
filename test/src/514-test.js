@@ -53,7 +53,8 @@ test('simple _SEARCH with 1 clause', async t => {
           _score: 0.69
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   )
 
@@ -66,7 +67,8 @@ test('simple _SEARCH with 1 clause', async t => {
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
       RESULT: [],
-      RESULT_LENGTH: 0
+      RESULT_LENGTH: 0,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
     })
   )
 })

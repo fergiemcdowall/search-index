@@ -132,7 +132,8 @@ test('query', t => {
             _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -167,6 +168,7 @@ test('inspect cache', t => {
       }
     ],
     RESULT_LENGTH: 2,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
     BUCKETS: [
       {
         FIELD: ['make'],
@@ -211,7 +213,8 @@ test('run a duplicate query', t => {
             _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

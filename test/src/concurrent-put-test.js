@@ -33,7 +33,8 @@ test('can concurrently PUT', async function (t) {
         _id: i,
         _match: [{ FIELD: 'text', VALUE: 'this', SCORE: '1.00' }]
       })),
-      RESULT_LENGTH: size
+      RESULT_LENGTH: size,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

@@ -63,7 +63,8 @@ test('create a search index with ngrams', async function (t) {
         _match: [{ FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }]
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })
 
@@ -103,7 +104,8 @@ test('create a search index with ngrams (no fields specified)', async function (
         _match: [{ FIELD: 'line3', VALUE: 'lives there', SCORE: '1.00' }]
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })
 
@@ -144,6 +146,7 @@ test('create a search index with ngrams (no fields specified, custom join)', asy
         _match: [{ FIELD: 'line3', VALUE: 'lives$there', SCORE: '1.00' }]
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

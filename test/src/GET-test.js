@@ -280,7 +280,8 @@ test('simple QUERY using json with QUERY', t => {
             _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -332,7 +333,8 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
             _score: 3
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -435,7 +437,8 @@ test('create a search index with query and index side character normalisation (Q
           _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
         }
       ],
-      RESULT_LENGTH: 2
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

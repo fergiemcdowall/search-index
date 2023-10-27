@@ -12,6 +12,8 @@ export class Reader {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   #parseJsonQuery = (q, options = {}) => {
+    // options.PAGE = { NUMBER: 0, SIZE: 10, ...options.PAGE }
+
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -128,12 +130,25 @@ export class Reader {
     }
 
     // PAGE IF SPECIFIED
-    const page = result =>
-      Object.assign(
+    const page = result => {
+      let pageDetails
+      return Object.assign(
         result,
-        options.PAGE ? { RESULT: this.PAGE(result.RESULT, options.PAGE) } : {}
+        // TODO: surely options.PAGE is always set with default values?
+        {
+          RESULT: this.PAGE(result.RESULT, options.PAGE, pd => {
+            pageDetails = pd
+          })
+        },
+        { PAGING: pageDetails }
+        // {
+        //   PAGING: {
+        //     TOTAL: Math.ceil(result.RESULT.length / options.PAGE.SIZE),
+        //     ...options.PAGE
+        //   }
+        // },
       )
-
+    }
     // WEIGHT IF SPECIFIED
     const weight = result =>
       options.WEIGHT
@@ -278,19 +293,25 @@ export class Reader {
       ].map(JSON.parse)
     ) // un-stringify
 
-  PAGE = (results, options = {}) => {
-    options = Object.assign(
-      {
-        NUMBER: 0,
-        SIZE: 20
-      },
-      options
+  PAGE = (results, options = {}, callback = () => null) => {
+    options = {
+      // TODO: 'NUMBER' should probably be renamed 'PAGE_OFFSET'
+      NUMBER: 0,
+      SIZE: 20,
+      ...options
+    }
+
+    options.TOTAL = Math.ceil(results.length / options.SIZE)
+    options.DOC_OFFSET = options.NUMBER * options.SIZE
+
+    callback(options)
+
+    return results.slice(
+      options.DOC_OFFSET,
+      // (when paging from the end with a negative page number)
+      // handle end index correctly when (start + size) == 0
+      options.DOC_OFFSET + options.SIZE || undefined
     )
-    const start = options.NUMBER * options.SIZE
-    // handle end index correctly when (start + size) == 0
-    // (when paging from the end with a negative page number)
-    const end = start + options.SIZE || undefined
-    return results.slice(start, end)
   }
 
   QUERY = (q, qops) =>

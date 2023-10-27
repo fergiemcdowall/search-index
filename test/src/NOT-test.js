@@ -137,7 +137,8 @@ test('simple NOT in QUERY', t => {
           },
           { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

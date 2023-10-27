@@ -70,7 +70,8 @@ test('AND', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -105,7 +106,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 5
+        RESULT_LENGTH: 5,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -128,7 +130,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -151,7 +154,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -174,7 +178,8 @@ test('OR', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -218,7 +223,8 @@ test('can NOT', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

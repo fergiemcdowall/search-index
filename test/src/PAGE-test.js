@@ -158,7 +158,8 @@ test('get all', t => {
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         }
       ],
-      RESULT_LENGTH: 10
+      RESULT_LENGTH: 10,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -191,7 +192,8 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
             _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 1, SIZE: 3, TOTAL: 4, DOC_OFFSET: 3 }
       })
     })
 })

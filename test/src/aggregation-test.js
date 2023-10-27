@@ -98,6 +98,7 @@ test('can aggregate totalamt using underlying index', t => {
           }
         ],
         RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         FACETS: [
           {
             FIELD: 'totalamt',
@@ -241,6 +242,7 @@ test('can aggregate totalamt using custom buckets', t => {
           }
         ],
         RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c783',
@@ -780,7 +782,8 @@ test('can run a query and create facets on impagency', t => {
             _score: 0.45
           }
         ],
-        RESULT_LENGTH: 7
+        RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -913,7 +916,8 @@ test('JSON AGGREGATE', t => {
             _score: 0.45
           }
         ],
-        RESULT_LENGTH: 7
+        RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

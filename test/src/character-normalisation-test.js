@@ -19,7 +19,8 @@ test('create a search index with no character normalisation', async t => {
         _score: 1.1
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })
 
@@ -95,7 +96,8 @@ test('create a search index with query side character normalisation (QUERY)', as
           _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })
@@ -125,7 +127,8 @@ test('create a search index with query side character normalisation (SEARCH)', a
           _score: 1.1
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })
@@ -169,6 +172,7 @@ test('create a search index with query and index side character normalisation', 
         _score: 0.41
       }
     ],
-    RESULT_LENGTH: 2
+    RESULT_LENGTH: 2,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

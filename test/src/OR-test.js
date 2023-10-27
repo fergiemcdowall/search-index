@@ -201,7 +201,8 @@ test('simple _OR with 2 clauses', t => {
             _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -280,7 +281,8 @@ test('simple OR with 2 clauses (embedded AND) (JSON)', t => {
           },
           { _id: '7', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 5
+        RESULT_LENGTH: 5,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

@@ -139,7 +139,8 @@ test('simple AND with 2 clauses (JSON)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -183,7 +184,8 @@ test('simple AND with 2 clauses (JSON)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 4
+        RESULT_LENGTH: 4,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -296,7 +298,8 @@ test('AND with no VALUE (JSON)', t => {
             _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -345,7 +348,8 @@ test('AND with no VALUE (JSON)', t => {
           ]
         }
       ],
-      RESULT_LENGTH: 4
+      RESULT_LENGTH: 4,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })

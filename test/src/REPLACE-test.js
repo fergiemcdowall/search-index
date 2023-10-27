@@ -49,14 +49,16 @@ test('create a search index with synonyms (can be in all fields)', async functio
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'sparrow', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 
   t.deepEquals(await si.QUERY('bird'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'bird', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })
 
@@ -87,13 +89,15 @@ test('create a search index with synonyms (specific fields)', async function (t)
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
       { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 2
+    RESULT_LENGTH: 2,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 
   t.deepEquals(await si.QUERY('myself'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'myself', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

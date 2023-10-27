@@ -121,7 +121,8 @@ test('search with stopwords', t => {
             _match: [{ FIELD: 'body', VALUE: 'banana', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -147,7 +148,8 @@ test('search with stopwords', t => {
             _match: [{ FIELD: 'body', VALUE: 'banana', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

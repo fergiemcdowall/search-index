@@ -110,7 +110,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
             _doc: data[8]
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -175,7 +176,8 @@ test('access ALL_DOCUMENTS() through QUERY()', t => {
             _doc: data[0]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -192,7 +194,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1)', t => {
           _id: doc._id,
           _doc: doc
         })),
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -217,7 +220,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1) with PAGE', t => {
           _id: doc._id,
           _doc: doc
         })),
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 2, TOTAL: 5, DOC_OFFSET: 0 }
       })
     })
 })

@@ -70,7 +70,8 @@ test('can search', t => {
             _score: 4.16
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -100,7 +101,8 @@ test('can search with QUERY', t => {
             _score: 4.16
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -121,7 +123,8 @@ test('can search in any field', t => {
           _score: 5.55
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -131,7 +134,11 @@ test('can do 0-hit', t => {
   global[indexName]
     .SEARCH(['cool', 'really', 'sdasdadsasd', 'bananas'])
     .then(res => {
-      t.deepEqual(res, { RESULT: [], RESULT_LENGTH: 0 })
+      t.deepEqual(res, {
+        RESULT: [],
+        RESULT_LENGTH: 0,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
+      })
     })
 })
 
@@ -157,7 +164,8 @@ test('can do a mixture of fielded search and any-field search', t => {
           _score: 1.39
         }
       ],
-      RESULT_LENGTH: 2
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -186,7 +194,8 @@ test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
             }
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -436,7 +445,8 @@ test('AND with embedded OR (JSON API)', t => {
             _match: [{ FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -458,7 +468,8 @@ test('AND with embedded OR (JSON API)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -518,7 +529,8 @@ test('QUERY with a string and then connect documents', t => {
           }
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -643,7 +655,8 @@ test('_SEARCH with embedded _OR', t => {
             _score: 1.39
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

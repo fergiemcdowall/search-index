@@ -101,7 +101,8 @@ test('simple SEARCH with 1 clause', t => {
           _score: 0.2
         }
       ],
-      RESULT_LENGTH: 5
+      RESULT_LENGTH: 5,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -120,7 +121,8 @@ test('simple _SEARCH with 2 clauses', t => {
           _score: 2.4
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -147,7 +149,8 @@ test('simple _SEARCH with 2 clauses and documents', t => {
             }
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -182,7 +185,8 @@ test('simple _SEARCH with 2 clauses', t => {
           _score: 0.97
         }
       ],
-      RESULT_LENGTH: 3
+      RESULT_LENGTH: 3,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -203,7 +207,8 @@ test('SEARCH in all fields', t => {
           _score: 0.56
         }
       ],
-      RESULT_LENGTH: 2
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })

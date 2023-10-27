@@ -99,7 +99,8 @@ test('Match maKE:BMW', t => {
         RESULT: [
           { _id: 9, _match: [{ FIELD: 'maKE', VALUE: 'BMW', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -113,7 +114,8 @@ test('Match make:bmw', t => {
     .then(res => {
       t.deepEqual(res, {
         RESULT: [],
-        RESULT_LENGTH: 0
+        RESULT_LENGTH: 0,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
       })
     })
 })
@@ -130,7 +132,8 @@ test('Match make:BMW', t => {
           { _id: 1, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] },
           { _id: 7, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -172,7 +175,8 @@ test('Match maKE:BMW', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -196,7 +200,8 @@ test('Match make:bmw', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -220,7 +225,8 @@ test('Match make:BMW', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

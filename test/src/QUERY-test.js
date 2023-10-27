@@ -100,7 +100,8 @@ test('simple AND with 2 clauses', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -156,7 +157,8 @@ test('simple AGGREGATE', t => {
             _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -196,7 +198,8 @@ test('QUERY with FACETS', t => {
         FACETS: [
           { FIELD: 'make', VALUE: 'bmw', _id: [7] },
           { FIELD: 'make', VALUE: 'volvo', _id: [8] }
-        ]
+        ],
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -223,7 +226,8 @@ test('QUERY with FACETS where query gives an empty result', t => {
       t.deepEqual(res, {
         RESULT: [],
         RESULT_LENGTH: 0,
-        FACETS: []
+        FACETS: [],
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
       })
     })
 })
@@ -248,7 +252,8 @@ test('simple QUERY', t => {
           },
           { _id: 8, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -275,7 +280,8 @@ test('simple NOT', t => {
             _match: [{ FIELD: 'manufacturer', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -316,7 +322,8 @@ test('simple NOT with DOCUMENTS', t => {
             }
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -351,7 +358,8 @@ test('simple OR with 2 clauses', t => {
             _match: [{ FIELD: 'brand', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 4
+        RESULT_LENGTH: 4,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -412,7 +420,8 @@ test('simple SEARCH', t => {
           _score: 0.32
         }
       ],
-      RESULT_LENGTH: 8
+      RESULT_LENGTH: 8,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -544,7 +553,8 @@ test('get all documents', t => {
             VALUE: 'volvo',
             _id: [4, 5, 8]
           }
-        ]
+        ],
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -617,7 +627,8 @@ test('get all documents', t => {
             VALUE: 'volvo',
             _id: [4, 5, 8]
           }
-        ]
+        ],
+        PAGING: { NUMBER: 0, SIZE: 3, TOTAL: 4, DOC_OFFSET: 0 }
       })
     })
 })

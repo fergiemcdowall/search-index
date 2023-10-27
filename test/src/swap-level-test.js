@@ -69,6 +69,7 @@ test('create a search-index with memory-level', async t => {
         _score: 4.16
       }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

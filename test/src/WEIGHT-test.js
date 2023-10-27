@@ -136,7 +136,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.61
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
@@ -183,7 +184,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.61
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
@@ -244,7 +246,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 2.02
         }
       ],
-      RESULT_LENGTH: 4
+      RESULT_LENGTH: 4,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
@@ -299,7 +302,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 1
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
@@ -358,7 +362,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.2
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })
