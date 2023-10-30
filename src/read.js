@@ -141,12 +141,6 @@ export class Reader {
           })
         },
         { PAGING: pageDetails }
-        // {
-        //   PAGING: {
-        //     TOTAL: Math.ceil(result.RESULT.length / options.PAGE.SIZE),
-        //     ...options.PAGE
-        //   }
-        // },
       )
     }
     // WEIGHT IF SPECIFIED

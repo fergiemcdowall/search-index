@@ -6,10 +6,64 @@ export const ui = ({
   count = {},
   hits = {},
   refiners = [],
-  searchInput = {}
+  searchInput = {},
+  paging = {}
 } = {}) => {
-  const countTemplate = count => `showing ${count} hits`
+  const countTemplate = count => `${count} hits`
   const hitsTemplate = doc => `<p>${JSON.stringify(doc)}</p>`
+  const pagingTemplate = p => {
+    const pagePadding = 3 // Display 3 pages before and after current page
+    const maxDisplayedPages = pagePadding * 2 + 1
+
+    let pageFrom = 0
+    let pageTo = p.TOTAL
+
+    if (p.TOTAL > maxDisplayedPages) {
+      pageFrom = p.NUMBER > pagePadding ? p.NUMBER - pagePadding : 0
+      pageTo = maxDisplayedPages + pageFrom
+    }
+    if (pageTo > p.TOTAL) {
+      pageFrom = p.TOTAL - pagePadding * 2 - 1
+      pageTo = p.TOTAL
+    }
+
+    const getPageLink = (label, pageNumber) => {
+      return `
+    <li class="page-item ${pageNumber == p.NUMBER ? 'active' : ''}">
+      <a class="page-link" data-page=${pageNumber} href="#">
+        ${label}
+      </a>
+    </li>`
+    }
+
+    const getPageNavLink = (label, pageNumber, disabled) => {
+      console.log(pageNumber)
+      return `
+    <li class="page-item ${disabled ? 'disabled' : ''}">
+      <a class="page-link" data-page=${pageNumber} href="#">
+        ${label}
+      </a>
+    </li>`
+    }
+
+    const getPageNumberLinks = () => {
+      let html = ''
+      for (let i = pageFrom; i < pageTo; i++) {
+        html += getPageLink(i + 1, i, true)
+      }
+      return html
+    }
+
+    return `
+     <ul class="pagination">
+       ${getPageNavLink('First', 0, p.NUMBER == 0)}
+       ${getPageNavLink('‹', p.NUMBER - 1, p.NUMBER == 0)}
+       ${getPageNumberLinks()}
+       ${getPageNavLink('›', p.NUMBER + 1, p.NUMBER >= p.TOTAL - 1)}
+       ${getPageNavLink('Last', p.TOTAL - 1, p.NUMBER >= p.TOTAL - 1)}
+     </ul>`
+  }
+
   const refinerOptionTemplate = (rOption, active) => {
     console.log(active)
     return `
@@ -51,6 +105,24 @@ export const ui = ({
     ...refiner
   }))
 
+  paging.el = document.getElementById(paging.elementId)
+  let pageOptions = {
+    NUMBER: 0,
+    SIZE: paging.pageSize || 3
+  }
+
+  const displayPaging = result => {
+    paging.el.innerHTML = pagingTemplate(result.PAGING)
+    const pagingLinks = document.getElementsByClassName('page-link')
+    for (let i = 0; i < pagingLinks.length; i++) {
+      pagingLinks[i].addEventListener('mousedown', function (e) {
+        pageOptions.NUMBER = +e.target.attributes['data-page'].value
+        console.log(e.target.attributes['data-page'].value)
+        search()
+      })
+    }
+  }
+
   // treat empty search as a special case: instead of showing nothing,
   // show everything.
   const emptySearchQuery = () => [
@@ -62,7 +134,8 @@ export const ui = ({
         {
           FIELD: ['month', 'year']
         }
-      ]
+      ],
+      PAGE: pageOptions
     }
   ]
 
@@ -81,7 +154,8 @@ export const ui = ({
             FIELD: ['year']
           }
         ],
-        DOCUMENTS: true
+        DOCUMENTS: true,
+        PAGE: pageOptions
       }
     ]
     return q
@@ -108,6 +182,7 @@ export const ui = ({
     ).join('\n')
     count.el.innerHTML = count.template(res.result.RESULT_LENGTH)
     displayRefiners(res.result.FACETS)
+    displayPaging(res.result)
   }
 
   let activeFilters = []

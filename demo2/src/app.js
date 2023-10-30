@@ -1,6 +1,6 @@
-import { stopwords } from '/lib/stopwords.js'
-import { ui } from '/lib/ui.js'
-import { SearchIndex } from '/lib/search-index-esm-5.0.0-rc1.js'
+import { stopwords } from '../../../../../../lib/stopwords.js'
+import { ui } from '../../../../../../lib/ui.js'
+import { SearchIndex } from '../../../../../../lib/search-index-esm-5.0.0-rc1.js'
 
 const si = new SearchIndex({
   name: 'mySearchIndex',
@@ -26,7 +26,7 @@ Promise.all([
         <a href=${doc.url_overridden_by_dest} target=_blank>
           <img src=${doc.thumbnail}>
         </a>
-        <p>${JSON.stringify(doc)}</p>`
+<!--        <p>${JSON.stringify(doc)}</p>-->`
     },
     refiners: [
       { elementId: 'year-refiner', title: 'YEAR', field: 'year' },
@@ -41,6 +41,7 @@ Promise.all([
         }
       }
     ],
+    paging: { elementId: 'paging', pageSize: 2 },
     searchInput: { elementId: 'searchbox' }
   })
 )
