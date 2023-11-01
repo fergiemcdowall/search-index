@@ -1,5 +1,5 @@
 // should be eventually bundled in with search-index
-import { autocomplete } from '/lib/autocomplete.js'
+import { autocomplete } from './autocomplete.js'
 
 export const ui = ({
   index = null,
@@ -238,6 +238,7 @@ export const ui = ({
   }
 
   searchInput.el.addEventListener('input', function (e) {
+    pageOptions.NUMBER = 0 // always go back to page 1 on a new search
     search(this.value)
   })
 

@@ -26,7 +26,7 @@
   "prettier": "./.prettierrc.json",
   "type": "module",
   "scripts": {
-    "build": "npm run generateVersionModule && npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js",
+    "build": "npm run generateVersionModule && npm run empty-sandbox && rm -rf ./dist/* && webpack && cp dist/search-index-$npm_package_version.js dist/search-index.js && cp dist/search-index-esm-$npm_package_version.js demo2/lib/",
     "demo-export": "node demo/generate-index/export.js",
     "demo-fetch": "node demo/generate-index/fetch.js",
     "demo-process": "node demo/generate-index/process.js",

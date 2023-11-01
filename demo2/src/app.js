@@ -1,6 +1,8 @@
 import { stopwords } from '../../../../../../lib/stopwords.js'
-import { ui } from '../../../../../../lib/ui.js'
-import { SearchIndex } from '../../../../../../lib/search-index-esm-5.0.0-rc1.js'
+import {
+  SearchIndex,
+  ui
+} from '../../../../../../lib/search-index-esm-5.0.0-rc1.js'
 
 const si = new SearchIndex({
   name: 'mySearchIndex',
