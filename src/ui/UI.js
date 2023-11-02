@@ -1,6 +1,6 @@
-import { Count } from './count.js'
-import { Hits } from './hits.js'
-import { Paging } from './paging.js'
+import { Count } from './Count.js'
+import { Hits } from './Hits.js'
+import { Paging } from './Paging.js'
 import { Refiner } from './Refiner.js'
 import { SearchInput } from './SearchInput.js'
 
