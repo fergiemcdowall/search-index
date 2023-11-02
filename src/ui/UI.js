@@ -1,7 +1,7 @@
 import { Count } from './Count.js'
 import { Hits } from './Hits.js'
 import { Paging } from './Paging.js'
-import { Refiner } from './Refiner.js'
+import { Facet } from './Facet.js'
 import { SearchInput } from './SearchInput.js'
 
 export class UI {
@@ -9,7 +9,7 @@ export class UI {
     index = null,
     count = {},
     hits = {},
-    refiners = [],
+    facets = [],
     searchInput = {},
     paging = {}
   }) {
@@ -25,9 +25,17 @@ export class UI {
       this.search,
       this.paging
     )
-    this.refiners = refiners.map(r => new Refiner(r, this.search))
+    this.facets = facets.map(r => new Facet(r, this.search))
     this.search()
   }
+
+  queryOptions = () => ({
+    FACETS: this.facets.map(r => ({
+      FIELD: r.field
+    })),
+    DOCUMENTS: true,
+    PAGE: this.paging.page
+  })
 
   // treat empty search as a special case: instead of showing nothing,
   // show everything.
@@ -35,50 +43,26 @@ export class UI {
     {
       ALL_DOCUMENTS: true
     },
-    {
-      FACETS: [
-        {
-          FIELD: ['month', 'year']
-        }
-      ],
-      PAGE: this.paging.page
-    }
+    this.queryOptions()
   ]
 
-  searchQuery = () => {
-    console.log('in searchQuery')
-    const q = [
-      [
-        ...this.searchInput.el.value.split(/\s+/).filter(item => item),
-        ...this.refiners.map(r => r.activeFilters).flat(Infinity)
-      ],
-      {
-        FACETS: [
-          {
-            FIELD: ['month']
-          },
-          {
-            FIELD: ['year']
-          }
-        ],
-        DOCUMENTS: true,
-        PAGE: this.paging.page
-      }
-    ]
-    return q
-  }
+  searchQuery = () => [
+    [
+      ...this.searchInput.el.value.split(/\s+/).filter(item => item),
+      ...this.facets.map(r => r.activeFilters).flat(Infinity)
+    ],
+    this.queryOptions()
+  ]
 
   search = () =>
     (this.searchInput.el.value.length +
-    this.refiners.map(r => r.activeFilters).flat(Infinity).length
+    this.facets.map(r => r.activeFilters).flat(Infinity).length
       ? this.index.SEARCH(...this.searchQuery())
       : this.index.QUERY(...this.emptySearchQuery())
-    ).then(this.displaySearch)
-
-  displaySearch = res => {
-    this.hits.update(res.RESULT)
-    this.count.update(res.RESULT_LENGTH)
-    this.refiners.forEach(r => r.render(res.FACETS))
-    this.paging.update(res.PAGING)
-  }
+    ).then(res => {
+      this.hits.update(res.RESULT)
+      this.count.update(res.RESULT_LENGTH)
+      this.facets.forEach(r => r.update(res.FACETS))
+      this.paging.update(res.PAGING)
+    })
 }

@@ -31,7 +31,7 @@ Promise.all([
         </a>
 <!--        <p>${JSON.stringify(doc)} --> </p>`
       },
-      refiners: [
+      facets: [
         { elementId: 'year-refiner', title: 'YEAR', field: 'year' },
         {
           elementId: 'month-refiner',

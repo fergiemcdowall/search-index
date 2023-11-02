@@ -8,12 +8,8 @@ export class Hits {
     this.el = el
   }
 
-  update = results => {
-    console.log('UPDATING')
-    console.log(results)
-
-    return (this.el.innerHTML = results
+  update = results =>
+    (this.el.innerHTML = results
       .map(({ _doc }) => this.template(_doc))
       .join('\n'))
-  }
 }

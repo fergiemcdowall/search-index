@@ -1,7 +1,7 @@
-export class Refiner {
+export class Facet {
   constructor (
     {
-      refinerOptionTemplate = (rOption, active) => `
+      facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
            id=${rOption.FIELD + ':' + rOption.VALUE}
            name=${rOption.FIELD + ':' + rOption.VALUE}
@@ -13,7 +13,7 @@ export class Refiner {
         rOption._id.length
       })</label>
     <br>`,
-      refinerTitleTemplate = title => `<h2>${title}</h2>`,
+      facetTitleTemplate = title => `<h2>${title}</h2>`,
       elementId = 'count',
       sort = (a, b) => {
         a.VALUE.localeCompare(b.VALUE)
@@ -27,26 +27,26 @@ export class Refiner {
     this.activeFilters = []
     this.el = el
     this.field = field
-    this.refinerOptionTemplate = refinerOptionTemplate
-    this.refinerTitleTemplate = refinerTitleTemplate
+    this.facetOptionTemplate = facetOptionTemplate
+    this.facetTitleTemplate = facetTitleTemplate
     this.search = search
     this.sort = sort
     this.title = title
   }
 
-  render = facets => {
+  update = facets => {
     this.el.innerHTML =
-      this.refinerTitleTemplate(this.title) +
+      this.facetTitleTemplate(this.title) +
       facets
         .filter(item => item.FIELD === this.field)
         .sort(this.sort)
         .reduce(
-          (acc, refinerOption) =>
+          (acc, facetOption) =>
             acc +
-            this.refinerOptionTemplate(
-              refinerOption,
+            this.facetOptionTemplate(
+              facetOption,
               this.activeFilters.includes(
-                refinerOption.FIELD + ':' + refinerOption.VALUE
+                facetOption.FIELD + ':' + facetOption.VALUE
               )
             ),
           ''
