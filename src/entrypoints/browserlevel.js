@@ -1,6 +1,6 @@
 import { Main } from '../main.js'
 import { BrowserLevel } from 'browser-level'
-import { ui as uix } from '../ui/ui.js'
+import { UI as UIX } from '../ui/ui.js'
 
 export class SearchIndex {
   constructor(ops = {}) {
@@ -11,4 +11,8 @@ export class SearchIndex {
   }
 }
 
-export const ui = ops => uix(ops)
+export class UI {
+  constructor(ops = {}) {
+    return new UIX(ops)
+  }
+}
