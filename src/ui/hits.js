@@ -1,5 +1,5 @@
 export class Hits {
-  constructor({
+  constructor ({
     template = doc => `<p>${JSON.stringify(doc)}</p>`,
     elementId = 'hits',
     el = document.getElementById(elementId)

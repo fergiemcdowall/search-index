@@ -1,5 +1,5 @@
 export class Refiner {
-  constructor(
+  constructor (
     {
       refinerOptionTemplate = (rOption, active) => `
     <input class="filter-select"
@@ -38,7 +38,7 @@ export class Refiner {
     this.el.innerHTML =
       this.refinerTitleTemplate(this.title) +
       facets
-        .filter(item => item.FIELD == this.field)
+        .filter(item => item.FIELD === this.field)
         .sort(this.sort)
         .reduce(
           (acc, refinerOption) =>
@@ -53,7 +53,7 @@ export class Refiner {
         )
 
     // Event listener for selection/unselection
-    for (let filterCheckbox of document.getElementsByClassName(
+    for (const filterCheckbox of document.getElementsByClassName(
       'filter-select'
     )) {
       filterCheckbox.addEventListener('input', e => {

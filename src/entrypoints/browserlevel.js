@@ -3,7 +3,7 @@ import { BrowserLevel } from 'browser-level'
 import { UI as UIX } from '../ui/ui.js'
 
 export class SearchIndex {
-  constructor(ops = {}) {
+  constructor (ops = {}) {
     return new Main({
       Level: BrowserLevel,
       ...ops
@@ -12,7 +12,7 @@ export class SearchIndex {
 }
 
 export class UI {
-  constructor(ops = {}) {
+  constructor (ops = {}) {
     return new UIX(ops)
   }
 }

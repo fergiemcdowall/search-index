@@ -1,8 +1,8 @@
 export class Paging {
-  constructor(
+  constructor (
     {
       pageLinkTemplate = (label, pageNumber, activeNumber) => `
-    <li class="page-item ${pageNumber == activeNumber ? 'active' : ''}">
+    <li class="page-item ${pageNumber === activeNumber ? 'active' : ''}">
       <a class="page-link" data-page=${pageNumber} href="#">
         ${label}
       </a>
@@ -54,8 +54,8 @@ export class Paging {
 
     return `
      <ul class="pagination">
-       ${this.navLinkTemplate('First', 0, p.NUMBER == 0)}
-       ${this.navLinkTemplate('‹', p.NUMBER - 1, p.NUMBER == 0)}
+       ${this.navLinkTemplate('First', 0, p.NUMBER === 0)}
+       ${this.navLinkTemplate('‹', p.NUMBER - 1, p.NUMBER === 0)}
        ${getPageNumberLinks()}
        ${this.navLinkTemplate('›', p.NUMBER + 1, p.NUMBER >= p.TOTAL - 1)}
        ${this.navLinkTemplate('Last', p.TOTAL - 1, p.NUMBER >= p.TOTAL - 1)}

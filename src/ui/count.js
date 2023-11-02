@@ -1,5 +1,5 @@
 export class Count {
-  constructor({
+  constructor ({
     template = count => `${count} hits`,
     elementId = 'count',
     el = document.getElementById(elementId)
