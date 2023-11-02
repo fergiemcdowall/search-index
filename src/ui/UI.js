@@ -5,7 +5,7 @@ import { Facet } from './Facet.js'
 import { SearchInput } from './SearchInput.js'
 
 export class UI {
-  constructor ({
+  constructor({
     index = null,
     count = {},
     hits = {},

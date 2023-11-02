@@ -1,5 +1,5 @@
 export class Facet {
-  constructor (
+  constructor(
     {
       facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
@@ -34,7 +34,7 @@ export class Facet {
     this.title = title
   }
 
-  update = facets => {
+  update = (facets, source) => {
     this.el.innerHTML =
       this.facetTitleTemplate(this.title) +
       facets
