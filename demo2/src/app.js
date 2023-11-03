@@ -42,7 +42,7 @@ Promise.all([
           elementId: 'month-refiner',
           title: 'MONTH',
           field: 'month',
-          mode: 'AND',
+          mode: 'OR',
           sort: (a, b) => {
             const monthNumber = month =>
               new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1

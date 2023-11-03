@@ -58,6 +58,7 @@ export default [
       outputModule: true
     },
     output: {
+      publicPath: '/lib/',
       path: path.resolve('dist'),
       filename: 'search-index-esm-' + pkg.version + '.js',
       library: {
@@ -88,6 +89,13 @@ export default [
     output: {
       path: path.resolve('test/sandbox'),
       filename: 'browser-tests.js'
+    },
+    devServer: {
+      static: {
+        directory: './demo2'
+      },
+      compress: true,
+      port: 3030
     }
   }
 ]
