@@ -1,5 +1,5 @@
 export class Facet {
-  constructor(
+  constructor (
     {
       facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
@@ -47,7 +47,8 @@ export class Facet {
       : []
 
   update = (facets, source) => {
-    if (source == 'facet' && this.mode == 'OR') return
+    // if ORing, dont redraw facets when selecting facet options
+    if (source === 'facet' && this.mode === 'OR') return
 
     this.el.innerHTML =
       this.facetTitleTemplate(this.title) +
@@ -71,7 +72,7 @@ export class Facet {
       if (!document.getElementById(filterOption)) {
         const [FIELD, VALUE] = filterOption.split(':')
         this.el.innerHTML += this.facetOptionTemplate(
-          { FIELD: FIELD, VALUE: VALUE, _id: [] },
+          { FIELD, VALUE, _id: [] },
           true
         )
       }

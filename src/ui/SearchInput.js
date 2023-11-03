@@ -2,7 +2,7 @@ import { autocomplete } from './autocomplete.js'
 
 // TODO: should be possible to customise templates
 export class SearchInput {
-  constructor(
+  constructor (
     {
       elementId = 'searchInput',
       el = document.getElementById(elementId),
