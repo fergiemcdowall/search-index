@@ -1,5 +1,5 @@
 export class Paging {
-  constructor(
+  constructor (
     {
       pageLinkTemplate = (label, pageNumber, activeNumber) => `
     <li class="page-item ${pageNumber === activeNumber ? 'active' : ''}">
@@ -64,7 +64,8 @@ export class Paging {
 
   update = p => {
     // if only one page, don't show paging
-    if (p.TOTAL === 1) {
+    console.log(p)
+    if (p.TOTAL <= 1) {
       this.el.innerHTML = ''
       return
     }

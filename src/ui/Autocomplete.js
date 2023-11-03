@@ -1,5 +1,5 @@
 export class Autocomplete {
-  constructor(searchboxEl, DICTIONARY, search, suggestionsElementId) {
+  constructor (searchboxEl, DICTIONARY, search, suggestionsElementId) {
     this.DICTIONARY = DICTIONARY
     this.currentFocus = -1
     this.searchboxEl = searchboxEl
@@ -14,9 +14,8 @@ export class Autocomplete {
   }
 
   closeAllLists = elmnt => {
-    for (let item of document.getElementsByClassName('autocomplete-items')) {
-      if (elmnt !== item && elmnt !== this.searchboxEl)
-        item.parentNode.removeChild(item)
+    for (const item of document.getElementsByClassName('autocomplete-items')) {
+      if (elmnt !== item && elmnt !== this.searchboxEl) { item.parentNode.removeChild(item) }
     }
   }
 

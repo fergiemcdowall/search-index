@@ -1,7 +1,7 @@
 import { Autocomplete } from './Autocomplete.js'
 
 export class SearchInput {
-  constructor(
+  constructor (
     {
       elementId = 'searchInput',
       suggestionsElementId = 'suggestions',
@@ -16,7 +16,13 @@ export class SearchInput {
       search('searchInput')
     })
 
-    new Autocomplete(el, autoCompleteFunction, search, suggestionsElementId)
+    // TODO: this api should probably be cleaned up
+    this.autocomplete = new Autocomplete(
+      el,
+      autoCompleteFunction,
+      search,
+      suggestionsElementId
+    )
 
     this.el = el
   }
