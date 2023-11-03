@@ -1,21 +1,16 @@
 
-name: tests
 on:
-  - push
   - pull_request
+  - push
+
 jobs:
-  run-tests:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16, 18, 20]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: sudo apt-get install xvfb
-      - run: xvfb-run --auto-servernum npm test
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
+    - uses: actions/checkout@v4
+    - run: npm install
+    - run: xvfb-run npm test
+      timeout-minutes: 5 # If the tests fails, the browser will hang open indefinitely
