@@ -52,7 +52,7 @@ export default [
   },
   {
     ...config,
-    mode: 'development', // TODO: change this back
+    mode: 'production',
     entry: './src/entrypoints/browserlevel.js',
     experiments: {
       outputModule: true
