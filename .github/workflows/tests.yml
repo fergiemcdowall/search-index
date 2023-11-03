@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: sudo apt-get install xvfb
+      - run: sudo apt-get install xvfbenv:
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
       - run: xvfb-run --auto-servernum npm test
         
