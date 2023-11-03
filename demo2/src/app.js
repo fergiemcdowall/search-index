@@ -32,11 +32,17 @@ Promise.all([
 <!--        <p>${JSON.stringify(doc)} --> </p>`
       },
       facets: [
-        { elementId: 'year-refiner', title: 'YEAR', field: 'year' },
+        {
+          elementId: 'year-refiner',
+          title: 'YEAR',
+          field: 'year',
+          mode: 'OR'
+        },
         {
           elementId: 'month-refiner',
           title: 'MONTH',
           field: 'month',
+          mode: 'AND',
           sort: (a, b) => {
             const monthNumber = month =>
               new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1

@@ -30,6 +30,7 @@ export class UI {
   }
 
   queryOptions = () => ({
+    // TODO: this should be somehow controlled by the Facet class so that its turned off when ORing
     FACETS: this.facets.map(r => ({
       FIELD: r.field
     })),
@@ -46,23 +47,27 @@ export class UI {
     this.queryOptions()
   ]
 
-  searchQuery = () => [
-    [
-      ...this.searchInput.el.value.split(/\s+/).filter(item => item),
-      ...this.facets.map(r => r.activeFilters).flat(Infinity)
-    ],
-    this.queryOptions()
-  ]
+  searchQuery = () => {
+    return [
+      [
+        ...this.searchInput.el.value.split(/\s+/).filter(item => item),
+        ...this.facets.map(r => r.getActiveFilters()).flat(Infinity)
+      ],
+      this.queryOptions()
+    ]
+  }
 
-  search = () =>
-    (this.searchInput.el.value.length +
-    this.facets.map(r => r.activeFilters).flat(Infinity).length
-      ? this.index.SEARCH(...this.searchQuery())
-      : this.index.QUERY(...this.emptySearchQuery())
+  search = source => {
+    return (
+      this.searchInput.el.value.length +
+      this.facets.map(r => r.getActiveFilters()).flat(Infinity).length
+        ? this.index.SEARCH(...this.searchQuery())
+        : this.index.QUERY(...this.emptySearchQuery())
     ).then(res => {
       this.hits.update(res.RESULT)
       this.count.update(res.RESULT_LENGTH)
-      this.facets.forEach(r => r.update(res.FACETS))
+      this.facets.forEach(r => r.update(res.FACETS, source))
       this.paging.update(res.PAGING)
     })
+  }
 }

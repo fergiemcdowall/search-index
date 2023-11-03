@@ -13,7 +13,7 @@ export class SearchInput {
   ) {
     el.addEventListener('input', e => {
       paging.page.NUMBER = 0 // always go back to page 1 on a new search
-      search()
+      search('searchInput')
     })
 
     autocomplete(el, autoCompleteFunction, search)
