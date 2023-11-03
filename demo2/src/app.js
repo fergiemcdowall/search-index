@@ -51,6 +51,9 @@ Promise.all([
         }
       ],
       paging: { elementId: 'paging', pageSize: 2 },
-      searchInput: { elementId: 'searchbox' }
+      searchInput: {
+        elementId: 'searchbox',
+        suggestionsElementId: 'suggestions'
+      }
     })
 )

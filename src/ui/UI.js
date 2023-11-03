@@ -5,13 +5,14 @@ import { Facet } from './Facet.js'
 import { SearchInput } from './SearchInput.js'
 
 export class UI {
-  constructor ({
+  constructor({
     index = null,
     count = {},
     hits = {},
     facets = [],
     searchInput = {},
-    paging = {}
+    paging = {},
+    suggestions = {}
   }) {
     this.index = index
     this.count = new Count(count)

@@ -1,10 +1,10 @@
-import { autocomplete } from './autocomplete.js'
+import { Autocomplete } from './Autocomplete.js'
 
-// TODO: should be possible to customise templates
 export class SearchInput {
-  constructor (
+  constructor(
     {
       elementId = 'searchInput',
+      suggestionsElementId = 'suggestions',
       el = document.getElementById(elementId),
       autoCompleteFunction = new Promise()
     },
@@ -16,7 +16,7 @@ export class SearchInput {
       search('searchInput')
     })
 
-    autocomplete(el, autoCompleteFunction, search)
+    new Autocomplete(el, autoCompleteFunction, search, suggestionsElementId)
 
     this.el = el
   }
