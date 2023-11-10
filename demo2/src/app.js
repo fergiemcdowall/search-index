@@ -34,13 +34,13 @@ Promise.all([
       facets: [
         {
           elementId: 'year-refiner',
-          title: 'YEAR',
+          titleTemplate: '<p class="h6">YEAR</p>',
           field: 'year',
           mode: 'OR'
         },
         {
           elementId: 'month-refiner',
-          title: 'MONTH',
+          titleTemplate: '<p class="h6">MONTH</p>',
           field: 'month',
           mode: 'OR',
           sort: (a, b) => {

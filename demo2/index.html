@@ -3,99 +3,64 @@
   <head>
     <meta charset="utf-8"/>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    
     <style>
 
-
-      body, h1 {
-        margin: 0;
-        padding: 0
-      }
-
-      header {
-        /* background-color: yellow; */
-        padding: 20px
-                          
-      }
-
       .refiner {
-        width: 180px;
+        width: 30em;
+        margin-bottom: 2em;
       }
       
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font: 16px Arial;  
-      }
-
-      /*the container must be positioned relative:*/
-      .autocomplete {
-        position: relative;
-        display: inline-block;
-      }
-
-      input {
-        border: 1px solid transparent;
-        background-color: #f1f1f1;
-        padding: 10px;
-        font-size: 16px;
-      }
-
-      input[type=text] {
-        background-color: #f1f1f1;
-        width: 100%;
-      }
-
-      input[type=submit] {
-        background-color: DodgerBlue;
-        color: #fff;
-        cursor: pointer;
-      }
-
       .autocomplete-items {
         position: absolute;
-        border: 1px solid #d4d4d4;
+        border: 1px solid var(--bs-gray-300);
         border-bottom: none;
         border-top: none;
         z-index: 99;
-        /*position the autocomplete items to be the same width as the container:*/
-        /* top: 100%; */
-        /* left: 0; */
-        /* right: 0; */
       }
 
       .autocomplete-items div {
         padding: 10px;
         cursor: pointer;
-        background-color: #fff; 
-        border-bottom: 1px solid #d4d4d4; 
+        background-color: white;
+        border-bottom: 1px solid var(--bs-gray-300); 
       }
 
       /*when hovering an item:*/
       .autocomplete-items div:hover {
-        background-color: #e9e9e9; 
+        background-color: var(--bs-light); 
       }
 
       /*when navigating through the items using the arrow keys:*/
       .autocomplete-active {
-        background-color: DodgerBlue !important; 
-        color: #ffffff; 
+        background-color: var(--bs-blue) !important; 
       }
+
+      .navbar {
+        margin-bottom: 1em;
+      }
+
+      #count {
+        margin-bottom: 1em;
+        margin-top: 1em;
+        font-style: italic;
+      }
+      
     </style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
       
     <script src="./src/app.js" type="module"></script>
     <title>Search-index demo</title>
   </head>
   <body>
-
+    
     <nav class="navbar navbar-light bg-light">
       <div class="container">
-        <h1>Search index demo</h1>
+        <h1 class="display-6">Search index demo</h1>
         <button class="navbar-toggler d-block d-sm-none"
                 type="button"
                 data-bs-toggle="collapse"
@@ -105,7 +70,6 @@
       </div>
     </nav>
 
-
     <div class="container">
       <div class="row">
         <div class="col-sm-3">
@@ -114,7 +78,7 @@
         </div>
         <div class="col-sm-9">
           <div>
-            <input id="searchbox" class="w-100" autofocus></input>
+            <input id="searchbox" class="w-100 form-control" autofocus></input>
             <div id="suggestions" />
           </div>
           <div id="count"></div>

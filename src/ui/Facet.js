@@ -1,5 +1,5 @@
 export class Facet {
-  constructor (
+  constructor(
     {
       facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
@@ -13,7 +13,7 @@ export class Facet {
         rOption._id.length
       })</label>
     <br>`,
-      facetTitleTemplate = title => `<h2>${title}</h2>`,
+      titleTemplate = '',
       elementId = '', // TODO: what should default element name be?
       sort = (a, b) => {
         a.VALUE.localeCompare(b.VALUE)
@@ -29,7 +29,7 @@ export class Facet {
     this.el = el
     this.elementId = elementId
     this.facetOptionTemplate = facetOptionTemplate
-    this.facetTitleTemplate = facetTitleTemplate
+    this.titleTemplate = titleTemplate
     this.field = field
     this.mode = mode
     this.search = search
@@ -49,23 +49,24 @@ export class Facet {
   update = (facets, source) => {
     // if ORing, dont redraw facets when selecting facet options
     if (source === 'facet' && this.mode === 'OR') return
+    const options = facets.filter(item => item.FIELD === this.field)
 
-    this.el.innerHTML =
-      this.facetTitleTemplate(this.title) +
-      facets
-        .filter(item => item.FIELD === this.field)
-        .sort(this.sort)
-        .reduce(
-          (acc, facetOption) =>
-            acc +
-            this.facetOptionTemplate(
-              facetOption,
-              this.activeFilters.includes(
-                facetOption.FIELD + ':' + facetOption.VALUE
-              )
-            ),
-          ''
-        )
+    this.el.innerHTML = options.length
+      ? this.titleTemplate +
+        options
+          .sort(this.sort)
+          .reduce(
+            (acc, facetOption) =>
+              acc +
+              this.facetOptionTemplate(
+                facetOption,
+                this.activeFilters.includes(
+                  facetOption.FIELD + ':' + facetOption.VALUE
+                )
+              ),
+            ''
+          )
+      : ''
 
     // Display active filters even when no hits in filter
     this.activeFilters.forEach(filterOption => {
@@ -92,10 +93,8 @@ export class Facet {
           e.target.attributes['data-value'].value
         if (e.target.checked) {
           this.activeFilters.push(token)
-          // this.search(this.elementId)
         } else {
           this.activeFilters = this.activeFilters.filter(item => item !== token)
-          // this.search()
         }
         this.search('facet')
       })
