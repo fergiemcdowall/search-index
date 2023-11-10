@@ -15,7 +15,9 @@ export class Autocomplete {
 
   closeAllLists = elmnt => {
     for (const item of document.getElementsByClassName('autocomplete-items')) {
-      if (elmnt !== item && elmnt !== this.searchboxEl) { item.parentNode.removeChild(item) }
+      if (elmnt !== item && elmnt !== this.searchboxEl) {
+        item.parentNode.removeChild(item)
+      }
     }
   }
 

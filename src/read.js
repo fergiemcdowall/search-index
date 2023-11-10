@@ -163,17 +163,6 @@ export class Reader {
       .then(appendDocuments)
   }
 
-  // TODO: this surely does not _need_ to return a promise?
-  #tryCache = (q, cacheKey) =>
-    new Promise(resolve => {
-      cacheKey = JSON.stringify(cacheKey)
-      return this.#cache.has(cacheKey)
-        ? resolve(this.#cache.get(cacheKey))
-        : q
-          .then(res => this.#cache.set(cacheKey, res))
-          .then(() => resolve(this.#cache.get(cacheKey)))
-    })
-
   #DICTIONARY = token =>
     this.DISTINCT(token).then(results =>
       Array.from(
@@ -231,10 +220,21 @@ export class Reader {
         }))
       )
 
-  DICTIONARY = token =>
-    this.#tryCache(this.#DICTIONARY(token), {
-      DICTIONARY: token || null
+  cachePipeline = (func, funcLabel, ...params) => {
+    const cacheKey = JSON.stringify({
+      funcLabel,
+      params
     })
+    return this.#cache.has(cacheKey)
+      ? Promise.resolve(this.#cache.get(cacheKey))
+      : func(...params).then(res => {
+        this.#cache.set(cacheKey, res)
+        return res
+      })
+  }
+
+  DICTIONARY = token =>
+    this.cachePipeline(this.#DICTIONARY, '#DICTIONARY', token)
 
   DISTINCT = (...tokens) =>
     this.#ii.DISTINCT(...tokens).then(result =>
@@ -255,9 +255,7 @@ export class Reader {
     ) // un-stringify
 
   DOCUMENTS = (...docs) =>
-    this.#tryCache(this.#DOCUMENTS(...docs), {
-      DOCUMENTS: docs
-    })
+    this.cachePipeline(this.#DOCUMENTS, '#DOCUMENTS', ...docs)
 
   DOCUMENT_COUNT = () => this.#ii.STORE.get(['DOCUMENT_COUNT'])
 
@@ -309,7 +307,7 @@ export class Reader {
   }
 
   QUERY = (q, qops) =>
-    this.#tryCache(this.#parseJsonQuery(q, qops), { QUERY: [q, qops] })
+    this.cachePipeline(this.#parseJsonQuery, '#parseJsonQuery', q, qops)
 
   // score by tfidf by default
   // TODO: Total hits (length of _match)
@@ -380,8 +378,7 @@ export class Reader {
     )
   }
 
-  SEARCH = (q, qops) =>
-    this.#tryCache(this.#SEARCH(q, qops), { SEARCH: [q, qops] })
+  SEARCH = (q, qops) => this.cachePipeline(this.#SEARCH, '#SEARCH', q, qops)
 
   SORT = (results, options) => {
     options = Object.assign(

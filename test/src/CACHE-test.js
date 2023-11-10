@@ -142,7 +142,7 @@ test('inspect cache', t => {
   t.plan(2)
   t.deepEquals(
     global[indexName]._CACHE.keys().next().value,
-    '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
+    '{"funcLabel":"#parseJsonQuery","params":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
   )
   t.deepEquals(global[indexName]._CACHE.values().next().value, {
     RESULT: [
@@ -223,7 +223,7 @@ test('cache still only contains 1 entry', t => {
   t.plan(1)
   t.deepEquals(
     global[indexName]._CACHE.keys().next().value,
-    '{"QUERY":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
+    '{"funcLabel":"#parseJsonQuery","params":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
   )
 })
 
@@ -253,14 +253,14 @@ test('run more queries', t => {
 
 test('cache has stripped all duplicate entries', t => {
   const keys = [
-    '{"QUERY":["four",null]}',
-    '{"QUERY":["three",null]}',
-    '{"SEARCH":[["tesla"],null]}',
-    '{"SEARCH":["tesla",null]}',
-    '{"DOCUMENTS":[]}',
-    '{"DICTIONARY":null}',
-    '{"QUERY":["two",null]}',
-    '{"QUERY":["one",null]}'
+    '{"funcLabel":"#parseJsonQuery","params":["four",null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["three",null]}',
+    '{"funcLabel":"#SEARCH","params":[["tesla"],null]}',
+    '{"funcLabel":"#SEARCH","params":["tesla",null]}',
+    '{"funcLabel":"#DOCUMENTS","params":[]}',
+    '{"funcLabel":"#DICTIONARY","params":[null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["two",null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["one",null]}'
   ]
   t.plan(keys.length)
   const cKeys = global[indexName]._CACHE.keys()
@@ -274,14 +274,14 @@ test('bump oldest cache entry to newest', t => {
 
 test('oldest cache entry is now newest', t => {
   const keys = [
-    '{"QUERY":["two",null]}',
-    '{"QUERY":["four",null]}',
-    '{"QUERY":["three",null]}',
-    '{"SEARCH":[["tesla"],null]}',
-    '{"SEARCH":["tesla",null]}',
-    '{"DOCUMENTS":[]}',
-    '{"DICTIONARY":null}',
-    '{"QUERY":["one",null]}'
+    '{"funcLabel":"#parseJsonQuery","params":["two",null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["four",null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["three",null]}',
+    '{"funcLabel":"#SEARCH","params":[["tesla"],null]}',
+    '{"funcLabel":"#SEARCH","params":["tesla",null]}',
+    '{"funcLabel":"#DOCUMENTS","params":[]}',
+    '{"funcLabel":"#DICTIONARY","params":[null]}',
+    '{"funcLabel":"#parseJsonQuery","params":["one",null]}'
   ]
   t.plan(keys.length)
   const cKeys = global[indexName]._CACHE.keys()
@@ -318,7 +318,7 @@ test('cache is filling up again', t => {
   t.plan(1)
   t.deepEquals(
     global[indexName]._CACHE.keys().next().value,
-    '{"QUERY":["boooom",null]}'
+    '{"funcLabel":"#parseJsonQuery","params":["boooom",null]}'
   )
 })
 
@@ -351,11 +351,11 @@ test('test cacheLength', t => {
     .then(res => t.pass('done'))
     .then(() => {
       const keys = [
-        '{"QUERY":["four",null]}',
-        '{"QUERY":["three",null]}',
-        '{"SEARCH":[["tesla"],null]}',
-        '{"SEARCH":["tesla",null]}',
-        '{"DOCUMENTS":[]}'
+        '{"funcLabel":"#parseJsonQuery","params":["four",null]}',
+        '{"funcLabel":"#parseJsonQuery","params":["three",null]}',
+        '{"funcLabel":"#SEARCH","params":[["tesla"],null]}',
+        '{"funcLabel":"#SEARCH","params":["tesla",null]}',
+        '{"funcLabel":"#DOCUMENTS","params":[]}'
       ]
       // cache only has 5 entries since cacheLength:5
       let cacheSize = 0

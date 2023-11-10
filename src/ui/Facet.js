@@ -1,5 +1,5 @@
 export class Facet {
-  constructor(
+  constructor (
     {
       facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
