@@ -5,7 +5,7 @@ import { Facet } from './Facet.js'
 import { SearchInput } from './SearchInput.js'
 
 export class UI {
-  constructor ({
+  constructor({
     index = null,
     count = {},
     hits = {},
@@ -20,8 +20,12 @@ export class UI {
     this.hits = new Hits(hits)
     this.searchInput = new SearchInput(
       {
-        autoCompleteFunction: this.index.DICTIONARY,
-        ...searchInput
+        // autoCompleteFunction: this.index.DICTIONARY,
+        ...searchInput,
+        suggestions: {
+          autoCompleteFunction: this.index.DICTIONARY,
+          ...searchInput.suggestions
+        }
       },
       this.search,
       this.paging

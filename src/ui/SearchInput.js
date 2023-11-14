@@ -1,12 +1,12 @@
 import { Autocomplete } from './Autocomplete.js'
 
 export class SearchInput {
-  constructor (
+  constructor(
     {
       elementId = 'searchInput',
-      suggestionsElementId = 'suggestions',
-      el = document.getElementById(elementId),
-      autoCompleteFunction = new Promise()
+      suggestions = {},
+      el = document.getElementById(elementId)
+      // autoCompleteFunction = new Promise()
     },
     search,
     paging
@@ -16,13 +16,7 @@ export class SearchInput {
       search('searchInput')
     })
 
-    // TODO: this api should probably be cleaned up
-    this.autocomplete = new Autocomplete(
-      el,
-      autoCompleteFunction,
-      search,
-      suggestionsElementId
-    )
+    this.autocomplete = new Autocomplete(el, search, suggestions)
 
     this.el = el
   }

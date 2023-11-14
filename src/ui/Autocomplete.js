@@ -1,11 +1,13 @@
 export class Autocomplete {
-  constructor (searchboxEl, DICTIONARY, search, suggestionsElementId) {
-    this.DICTIONARY = DICTIONARY
+  constructor(searchboxEl, search, suggestions = {}) {
+    this.autoCompleteFunction = suggestions.autoCompleteFunction
     this.currentFocus = -1
     this.searchboxEl = searchboxEl
     this.search = search
+    this.limit = suggestions.limit || 20
+    this.threshold = suggestions.threshold || 2
     this.autocompleteListId = searchboxEl.id + '-autocomplete-list'
-    this.suggestionsElementId = suggestionsElementId
+    this.suggestionsElementId = suggestions.elementId
     searchboxEl.addEventListener('input', this.searchBoxInputListener)
     searchboxEl.addEventListener('keydown', this.searchBoxKeydownListener)
     document.addEventListener('click', e => {
@@ -54,12 +56,16 @@ export class Autocomplete {
   }
 
   searchBoxInputListener = async e => {
-    const suggestions = await this.DICTIONARY(e.target.value)
+    const suggestions = (await this.autoCompleteFunction(e.target.value)).slice(
+      0,
+      this.limit
+    )
     let b
     const val = e.target.value
     /* close any already open lists of autocompleted values */
     this.closeAllLists()
     if (!val) return false
+    if (val.length < this.threshold) return false
     this.currentFocus = -1
     /* create a DIV element that will contain the items (values): */
     const a = document.createElement('DIV')

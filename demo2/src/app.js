@@ -53,7 +53,11 @@ Promise.all([
       paging: { elementId: 'paging', pageSize: 2 },
       searchInput: {
         elementId: 'searchbox',
-        suggestionsElementId: 'suggestions'
+        suggestions: {
+          elementId: 'suggestions'
+          // limit: 10,
+          // threshold: 1
+        }
       }
     })
 )
