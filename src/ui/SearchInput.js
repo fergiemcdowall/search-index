@@ -1,7 +1,7 @@
 import { Autocomplete } from './Autocomplete.js'
 
 export class SearchInput {
-  constructor(
+  constructor (
     {
       elementId = 'searchInput',
       suggestions = {},

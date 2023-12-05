@@ -1,5 +1,5 @@
 export class Autocomplete {
-  constructor(searchboxEl, search, suggestions = {}) {
+  constructor (searchboxEl, search, suggestions = {}) {
     this.autoCompleteFunction = suggestions.autoCompleteFunction
     this.currentFocus = -1
     this.searchboxEl = searchboxEl
