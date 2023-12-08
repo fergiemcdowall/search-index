@@ -1,8 +1,11 @@
 import glob from 'glob'
 import path from 'path'
-import pkg from './package.json' assert { type: 'json' }
 import webpack from 'webpack'
 import { createRequire } from 'node:module'
+import { readFileSync } from 'fs'
+
+// import pkg from './package.json' assert { type: 'json' }
+const pkg = JSON.parse(readFileSync('./package.json'))
 
 const require = createRequire(import.meta.url)
 
@@ -73,7 +76,7 @@ export default [
       new webpack.DefinePlugin({
         process: {
           env: {
-            SI_TEST_ENTRYPOINT: `"entrypoints/browserlevel.js"`
+            SI_TEST_ENTRYPOINT: '"entrypoints/browserlevel.js"'
           }
         }
       })
