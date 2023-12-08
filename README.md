@@ -29,5 +29,4 @@ const results = await QUERY(query)
 
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
-* [Browser demo](https://fergiemcdowall.github.io/search-index/demo/index.html) ([source code](demo/))
-* [Code examples](docs/EXAMPLES.md)
+* [Browser demo](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
