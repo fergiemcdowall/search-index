@@ -4,6 +4,69 @@ import { Paging } from './Paging.js'
 import { Facet } from './Facet.js'
 import { SearchInput } from './SearchInput.js'
 
+/**
+ * Options for writing documents to the index
+ * @typedef { Object } Options
+ * @memberof UI
+ * @property { SearchIndex } [index] - the search index
+ * @property { UI.CountOptions } [count] - initialise the <code>count</code> component
+ * @property { Array.<UI.FacetOptions> } [facets] - initialise the <code>facet</code> components
+ * @property { UI.HitsOptions } [hits] - initialise the <code>hits</code> component
+ * @property { UI.PagingOptions } [paging] - initialise the paging component
+ * @property { UI.SearchInputOptions } [searchInput] - initialise the search box component
+ * @property { UI.SuggestionsOptions } [suggestions] - initialise the suggestions component
+ */
+
+/**
+ * (Beta) Class that can be used to create a simple UI for a search index. See
+ * the <a href="https://github.com/fergiemcdowall/search-index-demo">live
+ * demo</a>
+ * @param { UI.Options } [ops] - initialisation options
+ * @example
+ * import { SearchIndex, UI } from 'search-index'
+ *
+ * // ...
+ *
+ * new UI({
+ *   index: si,
+ *   count: {
+ *     elementId: 'count'
+ *   },
+ *   facets: [
+ *     {
+ *       elementId: 'year-refiner',
+ *       titleTemplate: '<p class="h6">YEAR</p>',
+ *       field: 'year',
+ *       mode: 'OR'
+ *     },
+ *     {
+ *       elementId: 'month-refiner',
+ *       titleTemplate: '<p class="h6">MONTH</p>',
+ *       field: 'month',
+ *       mode: 'OR',
+ *       sort: (a, b) => {
+ *         const monthNumber = month =>
+ *           new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1
+ *         return monthNumber(a.VALUE) - monthNumber(b.VALUE)
+ *       }
+ *     }
+ *   ],
+ *   hits: {
+ *     elementId: 'hits',
+ *     template: doc => `<p>${JSON.stringify(doc)}</p>`
+ *   },
+ *   paging: { elementId: 'paging', pageSize: 2 },
+ *   searchInput: {
+ *     elementId: 'searchbox',
+ *     suggestions: {
+ *       elementId: 'suggestions',
+ *       limit: 10,
+ *       threshold: 1
+ *     }
+ *   }
+ * })
+ *
+ */
 export class UI {
   constructor ({
     index = null,

@@ -1,23 +1,23 @@
 import tv from 'term-vector'
 import { ngraminator } from 'ngraminator'
 
-export const SPLIT = ([tokens, field, ops]) =>
+const SPLIT = ([tokens, field, ops]) =>
   Promise.resolve([tokens.match(ops.tokenSplitRegex) || [], field, ops])
 
-export const SKIP = ([tokens, field, ops]) => [
+const SKIP = ([tokens, field, ops]) => [
   ops.skipFields.includes(field) ? [] : tokens,
   field,
   ops
 ]
 
-export const LOWCASE = ([tokens, field, ops]) =>
+const LOWCASE = ([tokens, field, ops]) =>
   Promise.resolve([
     tokens.map(t => (ops.caseSensitive ? t : t.toLowerCase())),
     field,
     ops
   ])
 
-export const REPLACE = ([tokens, field, ops]) => {
+const REPLACE = ([tokens, field, ops]) => {
   const { fields, values } = ops.replace
   const replace = () =>
     tokens.reduce((acc, cur) => [cur, ...acc, ...(values[cur] || [])], [])
@@ -27,7 +27,7 @@ export const REPLACE = ([tokens, field, ops]) => {
   return Promise.resolve([tokens, field, ops])
 }
 
-export const NGRAMS = ([tokens, field, ops]) => {
+const NGRAMS = ([tokens, field, ops]) => {
   let { fields, lengths, join = ' ' } = ops.ngrams
   // if no fields are specified then ngramify all fields
   if (!fields) fields = [field]
@@ -47,7 +47,7 @@ export const NGRAMS = ([tokens, field, ops]) => {
   return Promise.resolve([tokens, field, ops])
 }
 
-export const STOPWORDS = ([tokens, field, ops]) => {
+const STOPWORDS = ([tokens, field, ops]) => {
   return [
     tokens.filter(t => !ops.stopwords.includes(t.toLowerCase())),
     field,
@@ -55,7 +55,7 @@ export const STOPWORDS = ([tokens, field, ops]) => {
   ]
 }
 
-export const SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
+const SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
   const v = tv(tokens)
   const mostTokenOccurances = v.reduce(
     (acc, cur) => Math.max(cur.positions.length, acc),
@@ -80,7 +80,7 @@ export const SCORE_TERM_FREQUENCY = ([tokens, field, ops]) => {
   ])
 }
 
-export const SPY = ([tokens, field, ops]) => {
+const SPY = ([tokens, field, ops]) => {
   console.log('----------------')
   console.log('field ->')
   console.log(field)
@@ -90,7 +90,18 @@ export const SPY = ([tokens, field, ops]) => {
   return Promise.resolve([tokens, field, ops])
 }
 
-export const tokenizationPipeline = (tokens, field, ops) =>
+export const tokenizationPipelineStages = {
+  SPLIT,
+  SKIP,
+  LOWCASE,
+  REPLACE,
+  NGRAMS,
+  STOPWORDS,
+  SCORE_TERM_FREQUENCY,
+  SPY
+}
+
+export const defaultPipeline = (tokens, field, ops) =>
   SPLIT([tokens, field, ops])
     .then(SKIP)
     .then(LOWCASE)

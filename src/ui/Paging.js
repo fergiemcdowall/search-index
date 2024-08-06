@@ -1,3 +1,11 @@
+/**
+ * Paging element
+ * @typedef { Object } PagingOptions
+ * @memberof UI
+ * @property { string } [ elementId="paging" ] - The id of the HTML element that contains paging
+ * @property { function } [ pageLinkTemplate=(label, pageNumber, activeNumber) => `<li class="page-item ${pageNumber === activeNumber ? 'active' : ''}"><a class="page-link" data-page=${pageNumber} href="#">${label}</a></li>` ] - A template for each page number link
+ * @property { function } [ navLinkTemplate=(label, pageNumber, disabled) => `<li class="page-item ${disabled ? 'disabled' : ''}"><a class="page-link" data-page=${pageNumber} href="#">${label}</a></li>` ] - A template for each pagination "arrow" link
+ */
 export class Paging {
   constructor (
     {
@@ -13,14 +21,13 @@ export class Paging {
         ${label}
       </a>
     </li>`,
-      elementId = 'paging',
-      el = document.getElementById(elementId)
+      elementId = 'paging'
     },
     search
   ) {
     this.pageLinkTemplate = pageLinkTemplate
     this.navLinkTemplate = navLinkTemplate
-    this.el = el
+    this.el = document.getElementById(elementId)
     this.search = search
     this.page = {
       NUMBER: 0,

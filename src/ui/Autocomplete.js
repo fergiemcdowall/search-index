@@ -1,3 +1,12 @@
+/**
+ * Options for suggestions
+ * @typedef { Object } SuggestionsOptions
+ * @memberof UI
+ * @property { string } [ elementId="suggestions" ] - The id of the HTML element that contains the suggestions
+ * @property { number } [ limit=20 ] - Max suggestions
+ * @property { number } [ threshold=2 ] - Amount of keystrokes before suggestions are generated
+ */
+
 export class Autocomplete {
   constructor (searchboxEl, search, suggestions = {}) {
     this.autoCompleteFunction = suggestions.autoCompleteFunction

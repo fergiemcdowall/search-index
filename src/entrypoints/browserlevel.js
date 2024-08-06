@@ -1,10 +1,10 @@
-import { Main } from '../main.js'
+import { SearchIndex as _SearchIndex } from '../SearchIndex.js'
 import { BrowserLevel } from 'browser-level'
 import { UI as _UI } from '../ui/UI.js'
 
 export class SearchIndex {
   constructor (ops = {}) {
-    return new Main({
+    return new _SearchIndex({
       Level: BrowserLevel,
       ...ops
     })

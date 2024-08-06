@@ -124,7 +124,6 @@ parameter.
 | `db` | [`abstract-level`](https://www.npmjs.com/package/abstract-level?activeTab=dependents) store | `ClassicLevel` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
 | `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
 | `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
-| `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
 | `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
 
 
@@ -203,7 +202,8 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
-### Create a tokenization pipeline when querying
+
+## Create a tokenization pipeline when querying
 
 Use the [`PIPELINE`](#pipeline) option when using [`QUERY`](#query)
 
@@ -298,7 +298,7 @@ const facets = await FACETS(token)
 ## FIELDS
 
 ```javascript
-// get every document field name that has been indexed:
+// Return every document field name that has been indexed
 const fields = await FIELDS()
 ```
 
@@ -831,6 +831,56 @@ const result = await DELETE_RAW(id1, id2, id3 /*...*/)
 ```javascript
 // Delete everything and start again (including creation metadata)
 await FLUSH()
+```
+
+
+# UI (beta)
+
+```javascript
+import { SearchIndex, UI } from 'search-index'
+
+// ...
+
+new UI({
+  index: si,
+  count: {
+    elementId: 'count'
+  },
+  hits: {
+    elementId: 'hits',
+    template: doc => `<p>${JSON.stringify(doc)}</p>`
+  },
+  facets: [
+    {
+      elementId: 'year-refiner',
+      titleTemplate: '<p class="h6">YEAR</p>',
+      field: 'year',
+      mode: 'OR'
+    },
+    {
+      elementId: 'month-refiner',
+      titleTemplate: '<p class="h6">MONTH</p>',
+      field: 'month',
+      mode: 'OR',
+      sort: (a, b) => {
+        const monthNumber = month =>
+          new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1
+        return monthNumber(a.VALUE) - monthNumber(b.VALUE)
+      }
+    }
+  ],
+  paging: { elementId: 'paging', pageSize: 2 },
+  searchInput: {
+    elementId: 'searchbox',
+    suggestions: {
+      elementId: 'suggestions',
+      limit: 10,
+      threshold: 1
+    }
+  }
+})
+
+
 ```
 
 # Other

@@ -1,6 +1,20 @@
+/**
+ * Options for elements used to display faceted navigation
+ * @typedef { Object } FacetOptions
+ * @memberof UI
+ * @property { Array.<string> } [ activeFilters=[] ] - An array of the filters that are currently active
+ * @property { string } elementId - The <code>id</code> of the element to be used
+ * @property { function } [facetOptionTemplate=(rOption, active) => `<input class="filter-select"id=${rOption.FIELD + ':' + rOption.VALUE}name=${rOption.FIELD + ':' + rOption.VALUE}type="checkbox"data-field=${rOption.FIELD}data-value=${rOption.VALUE}${active ? 'checked' : ''}><label for=${rOption.FIELD + ':' + rOption.VALUE}>${rOption.VALUE} (${ rOption._id.length })</label> <br>`] - The template to be used per facet option
+ * @property { string } field - The name of the field that this facet applies to
+ * @property { string } [ mode="OR" ] - Can be <code>"AND"</code> or <code>"OR"</code>. Combine filters with AND or OR.
+ * @property { string } [ sort=(a, b) => { a.VALUE.localeCompare(b.VALUE) } ] - Function that determines sorting of facet options
+ * @property { string } [ title="<p>" + field.toUpperCase() + "</p>" ] - The HTML template to be used per facet title
+ */
+
 export class Facet {
   constructor (
     {
+      elementId = '',
       facetOptionTemplate = (rOption, active) => `
     <input class="filter-select"
            id=${rOption.FIELD + ':' + rOption.VALUE}
@@ -13,23 +27,19 @@ export class Facet {
         rOption._id.length
       })</label>
     <br>`,
-      titleTemplate = '',
-      elementId = '', // TODO: what should default element name be?
+      field = null,
+      mode = 'OR',
       sort = (a, b) => {
         a.VALUE.localeCompare(b.VALUE)
       },
-      mode = 'OR',
-      el = document.getElementById(elementId),
-      title = null,
-      field = null
+      title = '<p>' + field.toUpperCase() + '</p>'
     },
     search
   ) {
     this.activeFilters = []
-    this.el = el
+    this.el = document.getElementById(elementId)
     this.elementId = elementId
     this.facetOptionTemplate = facetOptionTemplate
-    this.titleTemplate = titleTemplate
     this.field = field
     this.mode = mode
     this.search = search
@@ -52,7 +62,7 @@ export class Facet {
     const options = facets.filter(item => item.FIELD === this.field)
 
     this.el.innerHTML = options.length
-      ? this.titleTemplate +
+      ? this.title +
         options
           .sort(this.sort)
           .reduce(
