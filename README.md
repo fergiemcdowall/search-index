@@ -31,3 +31,5 @@ const results = await QUERY( /* query */ )
 * [FAQ](docs/FAQ.md)
 * [Browser demo](https://fergiemcdowall.github.io/search-index/demo/index.html) ([source code](demo/))
 * [Code examples](docs/EXAMPLES.md)
+
+test
