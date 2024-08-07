@@ -66,7 +66,8 @@ export class Writer {
     this.#ii.STORE.clear()
       .then(() => {
         this.#cache.clear()
-        const timestamp = Date.now()
+        //        const timestamp = Date.now()
+        const timestamp = new Date().toISOString()
         return this.#ii.STORE.batch([
           { type: 'put', key: ['~CREATED'], value: timestamp },
           { type: 'put', key: ['~LAST_UPDATED'], value: timestamp },

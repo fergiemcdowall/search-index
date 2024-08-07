@@ -25,9 +25,13 @@ test('timeout here to deal with there no longer being a callback/promise on the 
 })
 
 test('timestamp was created', t => {
-  t.plan(1)
+  t.plan(2)
   global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated => {
     timestamp = lastUpdated
+    t.ok(
+      /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(timestamp),
+      'Is in a zulutimeish format'
+    )
     return t.pass('timestamp created')
   })
 })

@@ -33,7 +33,7 @@
     "lint": "standard --fix *.js test/src/* src/*",
     "prettyify": "prettier --config .prettierrc.json src/*.js test/src/*.js --write",
     "symlink-for-test": "cd node_modules && ln -sf ../../search-index && cd ..",
-    "test": "npm run format-code && npm run empty-sandbox && npm run test-node && npm run test-browser",
+    "test": "npm run format-code && npm run test-node && npm run test-browser",
     "test-browser": "npm run symlink-for-test && npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run symlink-for-test && npm run empty-sandbox && tape test/src/*-test.js",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
@@ -75,7 +75,7 @@
   "dependencies": {
     "browser-level": "^1.0.1",
     "classic-level": "^1.4.1",
-    "fergies-inverted-index": "13.0.0-rc.5",
+    "fergies-inverted-index": "13.0.0",
     "lru-cache": "11.0.0",
     "ngraminator": "3.0.2",
     "p-queue": "8.0.1",

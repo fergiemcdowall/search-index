@@ -1,14 +1,13 @@
-
+name: tests
 on:
   - pull_request
   - push
-
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20, 22]
     steps:
     - uses: actions/checkout@v4
     - run: npm install
