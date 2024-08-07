@@ -23,11 +23,11 @@
 # How do I create an index?
 
 ```javascript
-const si = import si from 'si'
+import { SearchIndex } from 'search-index'
+const idx = new SearchIndex({
+  name: indexName
+})
 
-// ...
-
-const index = await si() // or si().then(index => ...)
 ```
 
 There is also a file in the `dist` folder called
@@ -37,7 +37,10 @@ be referenced from a `script` tag:
 ```html
 <script type='text/javascript' src='search-index.x.x.x.js'></script>
 <script type='text/javascript'>
-  import si from search-index
+  import SearchIndex from search-index
+  const idx = new SearchIndex({
+    name: indexName
+  })
   // ...
 </script>
 

@@ -836,6 +836,11 @@ await FLUSH()
 
 # UI (beta)
 
+The UI class can be used to quickly create interfaces for search
+applications. For an example see
+[here](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
+
+
 ```javascript
 import { SearchIndex, UI } from 'search-index'
 
