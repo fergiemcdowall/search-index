@@ -59,8 +59,9 @@
   - [DELETE](#delete)
   - [DELETE_RAW](#delete_raw)
   - [FLUSH](#flush)
-- [Other](#other)
+- [Data store](#data-store)
   - [INDEX](#index)
+- [UI (beta)](#ui-beta)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -203,7 +204,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 ```
 
 
-## Create a tokenization pipeline when querying
+### Create a tokenization pipeline when querying
 
 Use the [`PIPELINE`](#pipeline) option when using [`QUERY`](#query)
 
@@ -834,6 +835,13 @@ await FLUSH()
 ```
 
 
+# Data store
+
+## INDEX
+
+`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
+
+
 # UI (beta)
 
 The UI class can be used to quickly create interfaces for search
@@ -887,11 +895,3 @@ new UI({
 
 
 ```
-
-# Other
-
-## INDEX
-
-`INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
-
-
