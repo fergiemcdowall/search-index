@@ -1,7 +1,7 @@
-import stemmer from 'stemmer'
 import sw from 'stopword'
 import test from 'tape'
 import { SearchIndex } from 'search-index'
+import { stemmer } from 'stemmer'
 
 const sandbox = 'test/sandbox/'
 
