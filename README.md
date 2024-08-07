@@ -2,7 +2,6 @@
 
 ### A network resilient, persistent full-text search library for the browser and Node.js
 
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/fergiemcdowall/search-index)
 [![npm](https://img.shields.io/npm/v/search-index.svg?style=flat-square)](https://www.npmjs.com/package/search-index)
 [![npm](https://img.shields.io/npm/dm/search-index.svg?style=flat-square)](https://npm-stat.com/charts.html?package=search-index)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENCE)
