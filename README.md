@@ -26,8 +26,8 @@ const results = await QUERY(query)
 
 ## Documentation
 
-* [Live browser
-demo](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
-(see also the [git repo](https://github.com/fergiemcdowall/search-index-demo))
+* [Browser
+  demo](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
+  ([source code](https://github.com/fergiemcdowall/search-index-demo))
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
