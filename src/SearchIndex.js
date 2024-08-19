@@ -30,12 +30,12 @@ export class SearchIndex {
    * Create a SearchIndex
    * @param {SIIndexOptions} [ops] - The initialisation options. Most can be overridden when reading or writing to the index.
    */
-  constructor(ops = {}) {
+  constructor (ops = {}) {
     ops = {
       cacheLength: 1000,
       caseSensitive: false,
       docExistsSpace: 'DOC_RAW',
-      idGenerator: (function* generateId() {
+      idGenerator: (function * generateId () {
         let i = 0
         while (true) {
           yield Date.now() + '-' + i++
