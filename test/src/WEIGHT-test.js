@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 
@@ -79,16 +79,16 @@ const docs = [
 test('create a search index to test WEIGHT', async function (t) {
   t.plan(7)
 
-  const { PUT, QUERY, SEARCH } = await si({
+  const si = new SearchIndex({
     name: sandbox + 'WEIGHT'
   })
-  t.ok(PUT)
+  t.ok(si.PUT)
 
-  const indexingResult = await PUT(docs)
+  const indexingResult = await si.PUT(docs)
   t.deepEquals([...new Set(indexingResult.map(ir => ir.status))], ['CREATED'])
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       {
         AND: ['bmw']
       },
@@ -136,13 +136,14 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.61
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
   // as above but with SEARCH
   t.deepEquals(
-    await SEARCH(['bmw'], {
+    await si.SEARCH(['bmw'], {
       WEIGHT: [
         {
           FIELD: 'make',
@@ -183,12 +184,13 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.61
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       {
         AND: [
           'red',
@@ -244,12 +246,13 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 2.02
         }
       ],
-      RESULT_LENGTH: 4
+      RESULT_LENGTH: 4,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       {
         OR: ['colour:red', 'brand:tesla']
       },
@@ -299,12 +302,13 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 1
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       {
         OR: ['colour:red', 'brand:tesla']
       },
@@ -358,7 +362,8 @@ test('create a search index to test WEIGHT', async function (t) {
           _score: 0.2
         }
       ],
-      RESULT_LENGTH: 6
+      RESULT_LENGTH: 6,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

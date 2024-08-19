@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 
@@ -24,19 +24,19 @@ const docs = [
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const si = new SearchIndex({
     name: sandbox + '577',
     tokenSplitRegex: /[\p{L}\d*]+/gu
   })
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 1, operation: 'PUT', status: 'CREATED' },
     { _id: 'two', operation: 'PUT', status: 'CREATED' },
     { _id: 3, operation: 'PUT', status: 'CREATED' }
   ])
 
   t.deepEquals(
-    await SEARCH(['*'], {
+    await si.SEARCH(['*'], {
       DOCUMENTS: true
     }),
     {
@@ -52,7 +52,8 @@ test('set up as per issue #577', async function (t) {
           }
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })
@@ -60,12 +61,12 @@ test('set up as per issue #577', async function (t) {
 test('set up as per issue #577', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const si = new SearchIndex({
     name: sandbox + '577-2'
   })
 
   t.deepEquals(
-    await PUT(docs, {
+    await si.PUT(docs, {
       tokenSplitRegex: /[\p{L}\d*]+/gu
     }),
     [
@@ -76,7 +77,7 @@ test('set up as per issue #577', async function (t) {
   )
 
   t.deepEquals(
-    await SEARCH(['*'], {
+    await si.SEARCH(['*'], {
       DOCUMENTS: true
     }),
     {
@@ -92,7 +93,8 @@ test('set up as per issue #577', async function (t) {
           }
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_GET'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -85,7 +88,7 @@ test('can add data', t => {
 
 test('simple _GET', t => {
   t.plan(1)
-  global[indexName]._GET('make:volvo').then(res => {
+  global[indexName]._GET('make:volvo').then(res =>
     t.deepEqual(res, [
       {
         _id: '4',
@@ -97,7 +100,7 @@ test('simple _GET', t => {
       },
       { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
     ])
-  })
+  )
 })
 
 test('simple _GET', t => {
@@ -107,7 +110,7 @@ test('simple _GET', t => {
       FIELD: 'make',
       VALUE: 'volvo'
     })
-    .then(res => {
+    .then(res =>
       t.deepEqual(res, [
         {
           _id: '4',
@@ -117,9 +120,12 @@ test('simple _GET', t => {
           _id: '5',
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         },
-        { _id: '8', _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
+        {
+          _id: '8',
+          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+        }
       ])
-    })
+    )
 })
 
 test('_GET over 2 fields', t => {
@@ -269,9 +275,13 @@ test('simple QUERY using json with QUERY', t => {
             _id: '7',
             _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
           },
-          { _id: '9', _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
+          {
+            _id: '9',
+            _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }]
+          }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -323,32 +333,35 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
             _score: 3
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
 
 test('create a search index with query and index side character normalisation', async t => {
   const data = [{ text: 'jeg bør finne en ting' }, { text: 'jeg bor i Oslo' }]
-  const { PUT, _GET, INDEX, TOKENIZATION_PIPELINE_STAGES } = await si({
+
+  const si = new SearchIndex({
     name: sandbox + 'GET-2'
   })
+
   const ids = (
-    await PUT(data, {
+    await si.PUT(data, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
           .then(([tokens, field, ops]) =>
             Promise.resolve([tokens.map(t => t.replace(/ø/g, 'o'))])
           )
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
           .then(([tokens, field, ops]) => tokens)
     })
   ).map(status => status._id)
 
-  t.deepEquals(await INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']], INDEX.LEVEL_OPTIONS), ids)
+  t.deepEquals(await si.INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']]), ids)
   try {
-    await INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
+    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']])
     t.fail('that key should not be in the database')
   } catch (e) {
     t.ok(e instanceof Error)
@@ -361,7 +374,7 @@ test('create a search index with query and index side character normalisation', 
       return resolve(token)
     })
 
-  t.deepEquals(await _GET('bør', swapØtoO), [
+  t.deepEquals(await si._GET('bør', swapØtoO), [
     {
       _id: ids[0],
       _match: [{ FIELD: 'text', VALUE: 'bor', SCORE: '1.00' }]
@@ -375,25 +388,25 @@ test('create a search index with query and index side character normalisation', 
 
 test('create a search index with query and index side character normalisation (QUERY GET)', async t => {
   const data = ['jeg bør finne en ting', 'jeg bor i Oslo']
-  const { PUT, QUERY, INDEX, TOKENIZATION_PIPELINE_STAGES } = await si({
+  const si = new SearchIndex({
     name: sandbox + 'GET-3'
   })
   const ids = (
-    await PUT(data, {
+    await si.PUT(data, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
+        si.TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
+          .then(si.TOKENIZATION_PIPELINE_STAGES.LOWCASE)
           .then(([tokens, field, ops]) =>
             Promise.resolve([tokens.map(t => t.replace(/ø/g, 'o'))])
           )
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(si.TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
           .then(([tokens, field, ops]) => tokens)
     })
   ).map(status => status._id)
 
-  t.deepEquals(await INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']], INDEX.LEVEL_OPTIONS), ids)
+  t.deepEquals(await si.INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']]), ids)
   try {
-    await INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']], INDEX.LEVEL_OPTIONS)
+    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']])
     t.fail('that key should not be in the database')
   } catch (e) {
     t.ok(e instanceof Error)
@@ -407,7 +420,7 @@ test('create a search index with query and index side character normalisation (Q
     })
 
   t.deepEquals(
-    await QUERY(
+    await si.QUERY(
       { GET: 'bør' },
       {
         PIPELINE: swapØtoO
@@ -424,7 +437,8 @@ test('create a search index with query and index side character normalisation (Q
           _match: [{ FIELD: 'body', VALUE: 'bor', SCORE: '1.00' }]
         }
       ],
-      RESULT_LENGTH: 2
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

@@ -1,16 +1,19 @@
-const si = require('../../')
-const test = require('tape')
-const wbd = require('world-bank-dataset')
+import test from 'tape'
+import wbd from 'world-bank-dataset'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'BOOLEAN'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some worldbank data', t => {
@@ -67,7 +70,8 @@ test('AND', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -102,7 +106,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bz', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 5
+        RESULT_LENGTH: 5,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -125,7 +130,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -148,7 +154,8 @@ test('OR', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'bc', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -171,7 +178,8 @@ test('OR', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -215,7 +223,8 @@ test('can NOT', t => {
             _match: [{ FIELD: 'sectorcode', VALUE: 'ti', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

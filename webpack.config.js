@@ -1,7 +1,13 @@
-const path = require('path')
-const webpack = require('webpack')
-const glob = require('glob')
-const pkg = require('./package.json')
+import glob from 'glob'
+import path from 'path'
+import webpack from 'webpack'
+import { createRequire } from 'node:module'
+import { readFileSync } from 'fs'
+
+// import pkg from './package.json' assert { type: 'json' }
+const pkg = JSON.parse(readFileSync('./package.json'))
+
+const require = createRequire(import.meta.url)
 
 const config = {
   plugins: [
@@ -11,7 +17,7 @@ const config = {
     }),
     // Webpack 5 no longer polyfills 'process'
     new webpack.ProvidePlugin({
-      process: 'process/browser'
+      process: 'process/browser.js'
     }),
     // as per https://github.com/webpack/changelog-v5/issues/10
     new webpack.ProvidePlugin({
@@ -35,11 +41,12 @@ const config = {
   }
 }
 
-module.exports = [
+// module.exports = [
+export default [
   {
     ...config,
     mode: 'production',
-    entry: './src/main.js',
+    entry: './src/entrypoints/browserlevel.js',
     output: {
       path: path.resolve('dist'),
       filename: 'search-index-' + pkg.version + '.js',
@@ -49,11 +56,12 @@ module.exports = [
   {
     ...config,
     mode: 'production',
-    entry: './src/main.js',
+    entry: './src/entrypoints/browserlevel.js',
     experiments: {
       outputModule: true
     },
     output: {
+      publicPath: '/lib/',
       path: path.resolve('dist'),
       filename: 'search-index-esm-' + pkg.version + '.js',
       library: {
@@ -63,14 +71,34 @@ module.exports = [
   },
   {
     ...config,
+    plugins: [
+      ...config.plugins,
+      new webpack.DefinePlugin({
+        process: {
+          env: {
+            SI_TEST_ENTRYPOINT: '"entrypoints/browserlevel.js"'
+          }
+        }
+      })
+    ],
     // Use "mode: 'production" to keep bundle size low(ish- around 3mb)
     // possibly it would be good to have some kind of code splitting
     // instead
     mode: 'production',
-    entry: glob.sync('./test/src/*-test.js'),
+    entry: glob.sync('./test/src/*-test.js', {
+      // entry: glob.sync('./test/src/init-test.js', {
+      ignore: './test/src/swap-level-test.js' // ignore the node-only level test
+    }),
     output: {
       path: path.resolve('test/sandbox'),
       filename: 'browser-tests.js'
+    },
+    devServer: {
+      static: {
+        directory: './demo2'
+      },
+      compress: true,
+      port: 3030
     }
   }
 ]

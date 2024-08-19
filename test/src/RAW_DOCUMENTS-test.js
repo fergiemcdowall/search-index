@@ -1,6 +1,6 @@
-const si = require('../../')
-const { EntryStream } = require('level-read-stream')
-const test = require('tape')
+import test from 'tape'
+import { EntryStream } from 'level-read-stream'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'PUT_RAW_DOCUMENTS'
@@ -26,12 +26,16 @@ const carData = [
   }
 ]
 
+const global = {}
+
 test('create a search index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -63,8 +67,7 @@ test('DOC_RAWs are inserted as expected', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -104,8 +107,7 @@ test('Verify that PUT_RAW has updated the raw document', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })
@@ -145,8 +147,7 @@ test('Verify that PUT_RAW has created an appropriate index', t => {
   t.plan(indexEntries.length)
   new EntryStream(global[indexName].INDEX.STORE, {
     gte: ['DOC_RAW', null],
-    lte: ['DOC_RAW', undefined],
-    ...global[indexName].INDEX.LEVEL_OPTIONS
+    lte: ['DOC_RAW', undefined]
   }).on('data', d => {
     t.deepEquals(d, indexEntries.shift())
   })

@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_DOCUMENTS'
@@ -46,16 +46,19 @@ const data = [
     text: 'Paul invites you on a musical journey to Egypt Station, estimated time of arrival Friday 7th September 7, 2018 by way of Capitol Records.'
   }
 ]
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: indexName,
-    caseSensitive: false
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({
+      name: indexName,
+      caseSensitive: false
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -107,7 +110,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
             _doc: data[8]
           }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -172,7 +176,8 @@ test('access ALL_DOCUMENTS() through QUERY()', t => {
             _doc: data[0]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -189,7 +194,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1)', t => {
           _id: doc._id,
           _doc: doc
         })),
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -214,7 +220,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1) with PAGE', t => {
           _id: doc._id,
           _doc: doc
         })),
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 2, TOTAL: 5, DOC_OFFSET: 0 }
       })
     })
 })

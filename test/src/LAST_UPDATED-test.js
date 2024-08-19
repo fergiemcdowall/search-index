@@ -1,23 +1,37 @@
-const si = require('../../')
-const test = require('tape')
-
-const sandbox = 'test/sandbox/'
-const indexName = sandbox + 'LAST_UPDATED'
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 let timestamp
 
-test('create index', t => {
+const sandbox = 'test/sandbox/'
+const indexName = sandbox + 'LAST_UPDATED'
+const global = {}
+
+test('create a search index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.ok(db, !undefined)
-  })
+  try {
+    global[indexName] = new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
+})
+
+test('timeout here to deal with there no longer being a callback/promise on the constructor', t => {
+  t.plan(1)
+  setTimeout(() => {
+    t.ok(global[indexName])
+  }, 100)
 })
 
 test('timestamp was created', t => {
-  t.plan(1)
-  global[indexName].INDEX.STORE.get(['~LAST_UPDATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(lastUpdated => {
+  t.plan(2)
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated => {
     timestamp = lastUpdated
+    t.ok(
+      /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(timestamp),
+      'Is in a zulutimeish format'
+    )
     return t.pass('timestamp created')
   })
 })
@@ -29,14 +43,15 @@ test('can read LAST_UPDATED timestamp with API', t => {
 
 test('is valid timestamp', t => {
   t.plan(1)
-  global[indexName].INDEX.STORE.get(['~LAST_UPDATED'], global[indexName].INDEX.LEVEL_OPTIONS).then(lastUpdated =>
+  global[indexName].INDEX.STORE.get(['~LAST_UPDATED']).then(lastUpdated =>
     t.ok(new Date(lastUpdated))
   )
 })
 
 test('update index', t => {
   t.plan(1)
-  setTimeout(function () { // wait to ensure that newer timestamp is bigger
+  setTimeout(function () {
+    // wait to ensure that newer timestamp is bigger
     global[indexName]
       .PUT([
         {

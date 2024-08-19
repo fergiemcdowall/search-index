@@ -1,7 +1,7 @@
-const si = require('../../')
-const test = require('tape')
-const sw = require('stopword')
-const stemmer = require('stemmer')
+import sw from 'stopword'
+import test from 'tape'
+import { SearchIndex } from 'search-index'
+import { stemmer } from 'stemmer'
 
 const sandbox = 'test/sandbox/'
 
@@ -23,10 +23,14 @@ const docs = [
 test('can alter order of tokenization pipeline', async function (t) {
   t.plan(6)
 
-  const { PUT, DELETE, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
-    name: sandbox + 'pipeline'
-  })
+  const { DICTIONARY, DELETE, PUT, TOKENIZATION_PIPELINE_STAGES } =
+    new SearchIndex({
+      name: sandbox + 'pipeline'
+    })
   t.ok(PUT)
+
+  const { SPLIT, LOWCASE, NGRAMS, STOPWORDS, SCORE_TERM_FREQUENCY } =
+    TOKENIZATION_PIPELINE_STAGES
 
   t.deepEquals(
     await PUT(docs, {
@@ -36,11 +40,11 @@ test('can alter order of tokenization pipeline', async function (t) {
         lengths: [1, 2]
       },
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
+          .then(STOPWORDS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -78,11 +82,11 @@ test('can alter order of tokenization pipeline', async function (t) {
         lengths: [1, 2]
       },
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(STOPWORDS)
+          .then(NGRAMS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -112,24 +116,28 @@ test('can alter order of tokenization pipeline', async function (t) {
 test('can add custom pipeline stage', async function (t) {
   t.plan(4)
 
-  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
+  const { DICTIONARY, PUT, TOKENIZATION_PIPELINE_STAGES } = new SearchIndex({
     name: sandbox + 'pipeline2'
   })
+
+  const { SPLIT, LOWCASE, NGRAMS, STOPWORDS, SCORE_TERM_FREQUENCY } =
+    TOKENIZATION_PIPELINE_STAGES
+
   t.ok(PUT)
 
   t.deepEquals(
     await PUT(docs, {
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
           .then(([tokens, field, ops]) => [
             [field.split('').reverse().join(''), ...tokens],
             field,
             ops
           ])
-          .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(STOPWORDS)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [
@@ -175,21 +183,32 @@ test('can add custom pipeline stage', async function (t) {
 test('can add custom pipeline stage (stemmer)', async function (t) {
   t.plan(3)
 
-  const { PUT, DICTIONARY, TOKENIZATION_PIPELINE_STAGES } = await si({
+  const {
+    DICTIONARY,
+    PUT,
+    TOKENIZATION_PIPELINE_STAGES: {
+      SPLIT,
+      LOWCASE,
+      NGRAMS,
+      STOPWORDS,
+      SCORE_TERM_FREQUENCY
+    }
+  } = new SearchIndex({
     name: sandbox + 'pipeline3'
   })
+
   t.ok(PUT)
 
   t.deepEquals(
     await PUT(docs, {
       stopwords: sw.eng,
       tokenizer: (tokens, field, ops) =>
-        TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-          .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-          .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+        SPLIT([tokens, field, ops])
+          .then(LOWCASE)
+          .then(NGRAMS)
+          .then(STOPWORDS)
           .then(([tokens, field, ops]) => [tokens.map(stemmer), field, ops])
-          .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+          .then(SCORE_TERM_FREQUENCY)
           .then(([tokens]) => tokens)
     }),
     [

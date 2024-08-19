@@ -1,7 +1,9 @@
-const si = require('../../')
-const { EntryStream } = require('level-read-stream')
-const test = require('tape')
+import test from 'tape'
+import { EntryStream } from 'level-read-stream'
+import { SearchIndex } from 'search-index'
+import { packageVersion } from '../../src/version.js'
 
+const global = {}
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'FLUSH'
 
@@ -19,13 +21,15 @@ const data = [
 
 test('create a search index', t => {
   t.plan(1)
-  si({
-    name: indexName,
-    storeVectors: true
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = new SearchIndex({
+      name: indexName,
+      storeVectors: true
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some data', t => {
@@ -39,7 +43,7 @@ test('verify index structure', t => {
   const expectedIndexStructure = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', 'a'],
@@ -107,13 +111,12 @@ test('verify index structure', t => {
     { key: ['IDX', 'title', ['quite', '1.00']], value: ['a'] }
   ]
   t.plan(expectedIndexStructure.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
-    'data',
-    d => {
-      // console.log(d)
-      t.deepEquals(d, expectedIndexStructure.shift())
-    }
-  )
+  new EntryStream(global[indexName].INDEX.STORE, {
+    lt: ['~']
+  }).on('data', d => {
+    // console.log(d)
+    t.deepEquals(d, expectedIndexStructure.shift())
+  })
 })
 
 test('FLUSH index and verify', t => {
@@ -122,10 +125,9 @@ test('FLUSH index and verify', t => {
   global[indexName]
     .FLUSH()
     .then(() =>
-      new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
-        'data',
-        d => t.deepEquals(d, expectedIndexStructure.shift())
-      )
+      new EntryStream(global[indexName].INDEX.STORE, {
+        lt: ['~']
+      }).on('data', d => t.deepEquals(d, expectedIndexStructure.shift()))
     )
     .then(() => t.pass('index appears empty'))
 })

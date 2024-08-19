@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_SORT'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {

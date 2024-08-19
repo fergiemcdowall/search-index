@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 
@@ -25,18 +25,18 @@ const docs = [
 test('set up as per issue #571', async function (t) {
   t.plan(2)
 
-  const { PUT, SEARCH } = await si({
+  const si = await new SearchIndex({
     name: sandbox + '571'
   })
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 1, operation: 'PUT', status: 'CREATED' },
     { _id: 'two', operation: 'PUT', status: 'CREATED' },
     { _id: 3, operation: 'PUT', status: 'CREATED' }
   ])
 
   t.deepEquals(
-    await SEARCH(['beatles'], {
+    await si.SEARCH(['beatles'], {
       DOCUMENTS: true
     }),
     {
@@ -53,7 +53,8 @@ test('set up as per issue #571', async function (t) {
           }
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     }
   )
 })

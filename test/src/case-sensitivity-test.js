@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const caseSensitivityTest = sandbox + 'caseSensitivityTest'
@@ -68,15 +68,19 @@ const data = [
   }
 ]
 
-test('create a case sensitive search index', t => {
+const global = {}
+
+test('create a case sensitive search index', async t => {
   t.plan(1)
-  si({
-    name: caseSensitivityTest,
-    caseSensitive: true
-  }).then(db => {
-    global[caseSensitivityTest] = db
-    t.pass('ok')
-  })
+  try {
+    global[caseSensitivityTest] = await new SearchIndex({
+      name: caseSensitivityTest,
+      caseSensitive: true
+    })
+    t.ok(global[caseSensitivityTest])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data to case sensitive index', t => {
@@ -95,7 +99,8 @@ test('Match maKE:BMW', t => {
         RESULT: [
           { _id: 9, _match: [{ FIELD: 'maKE', VALUE: 'BMW', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -109,7 +114,8 @@ test('Match make:bmw', t => {
     .then(res => {
       t.deepEqual(res, {
         RESULT: [],
-        RESULT_LENGTH: 0
+        RESULT_LENGTH: 0,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
       })
     })
 })
@@ -126,20 +132,23 @@ test('Match make:BMW', t => {
           { _id: 1, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] },
           { _id: 7, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
 
-test('create a case insensitive search index', t => {
+test('create a case INsensitive search index', async t => {
   t.plan(1)
-  si({
-    name: caseInsensitivityTest,
-    caseSensitive: false
-  }).then(db => {
-    global[caseInsensitivityTest] = db
-    t.pass('ok')
-  })
+  try {
+    global[caseInsensitivityTest] = await new SearchIndex({
+      name: caseInsensitivityTest,
+      caseSensitive: false
+    })
+    t.ok(global[caseInsensitivityTest])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data to case insensitive index', t => {
@@ -166,7 +175,8 @@ test('Match maKE:BMW', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -190,7 +200,8 @@ test('Match make:bmw', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -214,7 +225,8 @@ test('Match make:BMW', t => {
           },
           { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] }
         ],
-        RESULT_LENGTH: 3
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

@@ -1,5 +1,5 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 
@@ -21,7 +21,7 @@ const docs = [
 test('create a search index with synonyms (can be in all fields)', async function (t) {
   t.plan(8)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const si = new SearchIndex({
     name: sandbox + 'REPLACE1',
     replace: {
       values: {
@@ -33,37 +33,39 @@ test('create a search index with synonyms (can be in all fields)', async functio
       }
     }
   })
-  t.ok(PUT)
-  t.ok(DICTIONARY)
+  t.ok(si.PUT)
+  t.ok(si.DICTIONARY)
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 0, status: 'CREATED', operation: 'PUT' },
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('animal'), ['animal'])
-  t.deepEquals(await DICTIONARY('herb'), ['herb'])
-  t.deepEquals(await DICTIONARY('livestock'), [])
+  t.deepEquals(await si.DICTIONARY('animal'), ['animal'])
+  t.deepEquals(await si.DICTIONARY('herb'), ['herb'])
+  t.deepEquals(await si.DICTIONARY('livestock'), [])
 
-  t.deepEquals(await QUERY('sparrow'), {
+  t.deepEquals(await si.QUERY('sparrow'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'sparrow', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 
-  t.deepEquals(await QUERY('bird'), {
+  t.deepEquals(await si.QUERY('bird'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'bird', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })
 
 test('create a search index with synonyms (specific fields)', async function (t) {
   t.plan(6)
 
-  const { PUT, DICTIONARY, QUERY } = await si({
+  const si = await new SearchIndex({
     name: sandbox + 'REPLACE2',
     replace: {
       fields: ['line1'],
@@ -72,28 +74,30 @@ test('create a search index with synonyms (specific fields)', async function (t)
       }
     }
   })
-  t.ok(PUT)
-  t.ok(DICTIONARY)
+  t.ok(si.PUT)
+  t.ok(si.DICTIONARY)
 
-  t.deepEquals(await PUT(docs), [
+  t.deepEquals(await si.PUT(docs), [
     { _id: 0, status: 'CREATED', operation: 'PUT' },
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await DICTIONARY('myself'), ['myself'])
+  t.deepEquals(await si.DICTIONARY('myself'), ['myself'])
 
-  t.deepEquals(await QUERY('me'), {
+  t.deepEquals(await si.QUERY('me'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
       { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 2
+    RESULT_LENGTH: 2,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 
-  t.deepEquals(await QUERY('myself'), {
+  t.deepEquals(await si.QUERY('myself'), {
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'myself', SCORE: '1.00' }] }
     ],
-    RESULT_LENGTH: 1
+    RESULT_LENGTH: 1,
+    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
   })
 })

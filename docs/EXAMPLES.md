@@ -1,8 +1,0 @@
-* [Example CLI](https://replit.com/@fergiemcdowall/search-index-example-CLI#index.js)
-* [SEARCH](https://replit.com/@fergiemcdowall/search-index-SEARCH#index.js)
-* [QUERY](https://replit.com/@fergiemcdowall/search-index-QUERY#index.js)
-* [more QUERY](https://replit.com/@fergiemcdowall/search-index-QUERY-2#index.js)
-* [FACETS](https://replit.com/@fergiemcdowall/search-index-FACETS#index.js)
-* [DELETE](https://replit.com/@fergiemcdowall/search-index-DELETE#index.js)
-* [BUCKETS](https://replit.com/@fergiemcdowall/search-index-BUCKETS#index.js)
-* [AND](https://replit.com/@fergiemcdowall/search-index-AND#index.js)

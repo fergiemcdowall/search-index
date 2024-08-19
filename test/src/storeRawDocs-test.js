@@ -1,9 +1,11 @@
-const si = require('../../')
-const { EntryStream } = require('level-read-stream')
-const test = require('tape')
+import test from 'tape'
+import { EntryStream } from 'level-read-stream'
+import { SearchIndex } from 'search-index'
+import { packageVersion } from '../../src/version.js'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'storeRawDocs'
+const global = {}
 
 const carData = [
   {
@@ -20,14 +22,14 @@ const carData = [
   }
 ]
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: indexName
-  }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -48,7 +50,7 @@ test('Verify that an appropriate index has been created (no raw docs)', t => {
   const indexEntries = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', 0],
@@ -83,10 +85,9 @@ test('Verify that an appropriate index has been created (no raw docs)', t => {
     }
   ]
   t.plan(indexEntries.length)
-  new EntryStream(global[indexName].INDEX.STORE, { lt: ['~'], ...global[indexName].INDEX.LEVEL_OPTIONS }).on(
-    'data',
-    d => {
-      t.deepEquals(d, indexEntries.shift())
-    }
-  )
+  new EntryStream(global[indexName].INDEX.STORE, {
+    lt: ['~']
+  }).on('data', d => {
+    t.deepEquals(d, indexEntries.shift())
+  })
 })

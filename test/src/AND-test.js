@@ -1,15 +1,19 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_AND'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -80,7 +84,7 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple _AND with 1 clause', t => {
+test('simple AND with 1 clause', t => {
   t.plan(1)
   global[indexName]._AND(['make:volvo']).then(res => {
     t.deepEqual(res, [
@@ -135,7 +139,8 @@ test('simple AND with 2 clauses (JSON)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -179,7 +184,8 @@ test('simple AND with 2 clauses (JSON)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 4
+        RESULT_LENGTH: 4,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -292,7 +298,8 @@ test('AND with no VALUE (JSON)', t => {
             _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -301,48 +308,48 @@ test('AND with no VALUE (JSON)', t => {
 
 test('AND with no VALUE (JSON)', t => {
   t.plan(1)
-  global[indexName]
-    .QUERY({
-      AND: [
-        'brand:volvo',
+  const { QUERY } = global[indexName]
+  QUERY({
+    AND: [
+      'brand:volvo',
+      {
+        OR: ['make:bmw', 'make:volvo']
+      }
+    ]
+  }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
         {
-          OR: ['make:bmw', 'make:volvo']
+          _id: '1',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '4',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '5',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+          ]
+        },
+        {
+          _id: '9',
+          _match: [
+            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+            { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
+          ]
         }
-      ]
+      ],
+      RESULT_LENGTH: 4,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
-    .then(res => {
-      t.deepEqual(res, {
-        RESULT: [
-          {
-            _id: '1',
-            _match: [
-              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
-            ]
-          },
-          {
-            _id: '4',
-            _match: [
-              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-            ]
-          },
-          {
-            _id: '5',
-            _match: [
-              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-            ]
-          },
-          {
-            _id: '9',
-            _match: [
-              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-              { FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }
-            ]
-          }
-        ],
-        RESULT_LENGTH: 4
-      })
-    })
+  })
 })

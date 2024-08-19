@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_SCORE'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -157,7 +160,8 @@ test('SCORE TFIDF JSON all fields', t => {
             _score: 0.32
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -227,7 +231,8 @@ test('SCORE TFIDF JSON all fields as default', t => {
             _score: 0.32
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -360,7 +365,8 @@ test('SCORE TFIDF JSON when using ALL_DOCUMENTS', t => {
             _score: 0
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -493,7 +499,8 @@ test('SCORE VALUE JSON when using ALL_DOCUMENTS', t => {
             _score: ''
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -566,7 +573,8 @@ test('SCORE TFIDF JSON specified fields', t => {
             _score: 0
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -777,7 +785,8 @@ test('SCORE PRODUCT JSON', t => {
             _score: 1
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -852,7 +861,8 @@ test('SCORE CONCAT JSON', t => {
             _score: '1.00'
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -943,7 +953,8 @@ test('dump "price" into SCORE', t => {
             _score: '100'
           }
         ],
-        RESULT_LENGTH: 8
+        RESULT_LENGTH: 8,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

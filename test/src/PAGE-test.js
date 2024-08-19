@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_PAGE'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -98,11 +101,21 @@ test('get page 2 (called "1": count from "0") with page size of 3', t => {
         },
         {
           _id: 4,
-          _doc: { _id: 4, make: 'Volvo', manufacturer: 'Volvo', brand: 'Volvo' }
+          _doc: {
+            _id: 4,
+            make: 'Volvo',
+            manufacturer: 'Volvo',
+            brand: 'Volvo'
+          }
         },
         {
           _id: 5,
-          _doc: { _id: 5, make: 'Volvo', manufacturer: 'Tesla', brand: 'Volvo' }
+          _doc: {
+            _id: 5,
+            make: 'Volvo',
+            manufacturer: 'Tesla',
+            brand: 'Volvo'
+          }
         }
       ])
     })
@@ -145,7 +158,8 @@ test('get all', t => {
           _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
         }
       ],
-      RESULT_LENGTH: 10
+      RESULT_LENGTH: 10,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -178,7 +192,8 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
             _match: [{ FIELD: 'make', VALUE: 'tesla', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 10
+        RESULT_LENGTH: 10,
+        PAGING: { NUMBER: 1, SIZE: 3, TOTAL: 4, DOC_OFFSET: 3 }
       })
     })
 })

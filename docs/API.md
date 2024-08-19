@@ -5,7 +5,7 @@
 - [Installation and initialization](#installation-and-initialization)
   - [Importing and requiring](#importing-and-requiring)
   - [Instantiating an index](#instantiating-an-index)
-    - [`si(options)`](#sioptions)
+    - [`SearchIndex(options)`](#searchindexoptions)
 - [Reading](#reading)
   - [Tokens](#tokens)
     - [Find anywhere](#find-anywhere)
@@ -49,16 +49,19 @@
 - [Writing (creating and updating)](#writing-creating-and-updating)
   - [IMPORT](#import)
   - [PUT](#put)
-    - [Tokenization pipeline when indexing](#tokenization-pipeline-when-indexing)
-      - [Reorder pipeline](#reorder-pipeline)
-      - [Create custom pipeline stages](#create-custom-pipeline-stages)
+    - [Tokenization pipeline](#tokenization-pipeline)
+      - [Default stage order](#default-stage-order)
+      - [Reorder stages](#reorder-stages)
+      - [Create custom stages](#create-custom-stages)
   - [PUT_RAW](#put_raw)
   - [TOKENIZATION_PIPELINE_STAGES](#tokenization_pipeline_stages)
 - [Deleting](#deleting)
   - [DELETE](#delete)
+  - [DELETE_RAW](#delete_raw)
   - [FLUSH](#flush)
-- [Other](#other)
+- [Data store](#data-store)
   - [INDEX](#index)
+- [UI (beta)](#ui-beta)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -67,7 +70,7 @@ has been initialized in such a way that the functions below are
 available as variables:
 
 ```javascript
-const { INDEX, QUERY, UPDATE /* etc. */ } = await si()
+const { INDEX, QUERY, UPDATE /* etc. */ } = new SearchIndex()
 ```
 
 It is also assumed here that the search-index module is always
@@ -84,17 +87,8 @@ for more examples.
 
 ## Importing and requiring
 
-This module can be invoked with `import` and/or `require`
-depending on your environment:
-
 ```javascript
-import si from 'search-index'
-```
-
-or
-
-```javascript
-const si = require('search-index')
+import { SearchIndex } from 'search-index'
 ```
 
 ## Instantiating an index
@@ -104,7 +98,13 @@ instantiate an index by invoking the module variable as a Promise:
     
 
 ```javascript
-const idx = await si(options)
+const idx = new SearchIndex(options)
+```
+
+Alternatively:
+
+```javascript
+const { PUT, QUERY, /* etc */ } = new SearchIndex(options)
 ```
 
 When intantiated in a browser `search-index` will use `indexedDB`
@@ -113,19 +113,18 @@ as a keystore by default, when intantiated in node.js it will use
 parameter.
 
 
-### `si(options)`
+### `SearchIndex(options)`
 
-`si(options)` returns a Promise which creates a search index when invoked
+`SearchIndex(options)` returns a Promise which creates a search index when invoked
 
 `options` is an object that can contain the following properties:
 
 | Name | Type | Default | Description |
 |---|---|---|---|
+| `cacheLength` | `Number` | `1000` | The length of the LRU cache. A higher value makes the index faster but uses more memory. Cache is emptied after each write. |
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
-| `db` | [`abstract-leveldown`](https://github.com/Level/awesome/#stores) store | `leveldown` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
-| `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
-| `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
-| `tokenAppend` | `String` | `'#'` | The string used to separate language tokens from scores in the underlying index. Should have a higher sort value than all text characters that are stored in the index- however, lower values are more platform independent (a consideration when replicating indices into web browsers for instance) |
+| `db` | [`abstract-level`](https://www.npmjs.com/package/abstract-level?activeTab=dependents) store | `ClassicLevel` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
+| `name` | `String` | `'index'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
 
 
@@ -204,6 +203,7 @@ Example (get all fruits beginning with 'a', 'b' or 'c'):
 }
 ```
 
+
 ### Create a tokenization pipeline when querying
 
 Use the [`PIPELINE`](#pipeline) option when using [`QUERY`](#query)
@@ -224,14 +224,14 @@ const documents = await ALL_DOCUMENTS(limit)
 ```javascript
 // Return the IDs of documents for each given token filtered by the
 // query result
-const buckets = await BUCKETS(token1, token2, ...)
+const buckets = await BUCKETS(token1, token2, /* ... */)
 ```
 
 
 ## CREATED
 
 ```javascript
-// find out when index was first created
+// Find out when index was first created
 const timestamp = await CREATED()
 ```
 
@@ -299,7 +299,7 @@ const facets = await FACETS(token)
 ## FIELDS
 
 ```javascript
-// get every document field name that has been indexed:
+// Return every document field name that has been indexed
 const fields = await FIELDS()
 ```
 
@@ -604,17 +604,15 @@ generated and assigned
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 |`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams. See [ngraminator](https://www.npmjs.com/package/ngraminator) for how to specify ngrams |
 |`replace`|`object`|`{ fields: [], values: {} }`|`fields` is an array that specifies the fields where replacements will happen, `values` is an array that specifies the tokens to be swapped in, for example: `{ values: { sheep: [ 'animal', 'livestock' ] } }`|
 |`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-|`stopwords`| `Array` | `[]` | A list of words to be ignored when indexing |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
 |`tokenSplitRegex`|`RegExp`| `/[\p{L}\d]+/gu` | The regular expression that splits strings into tokens|
 
-### Tokenization pipeline when indexing
+### Tokenization pipeline
 
 Tokenized documents can be inspected with [`DOCUMENT_VECTORS`](#document_vectors)
 
@@ -624,7 +622,10 @@ sequence of stages that are applied to the field with the result of
 the preceding stage providing the input for the result of the
 following stage.
 
-The default tokenization pipeline looks like this:
+#### Default stage order
+
+The default tokenization pipeline looks like this (note the order of
+the stages):
 
 ```javascript
 tokenizer: (tokens, field, ops) =>
@@ -638,29 +639,38 @@ tokenizer: (tokens, field, ops) =>
     .then(([tokens, field, ops]) => tokens)
 ```
 
-#### Reorder pipeline
+#### Reorder stages
 
 Example: reorder the pipeline to remove stopwords _before_ creating
 ngrams:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-  TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-    .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-    .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-    .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-    .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS) // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)    // <-- order switched
-    .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
-    .then(([tokens, field, ops]) => tokens)
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(STOPWORDS) // <-- order switched
+      .then(NGRAMS)    // <-- order switched
+      .then(SCORE_TERM_FREQUENCY)
+      .then(([tokens, field, ops]) => tokens)
 })
 ```
 
-#### Create custom pipeline stages
+#### Create custom stages
 
 A custom pipeline stage must be in the following form:
 
@@ -677,24 +687,33 @@ A custom pipeline stage must be in the following form:
 Example: Normalize text characters:
 
 ```javascript
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(NGRAMS)
+      .then(STOPWORDS)
       // björn -> bjorn, allé -> alle, etc.
       .then(([tokens, field, ops]) => [
         tokens.map(t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
         field,
         ops
       ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(SCORE_TERM_FREQUENCY)
       .then(([tokens, field, ops]) => tokens)
 })
 ```
@@ -702,25 +721,34 @@ await PUT(docs, {
 Example: stemmer:
 
 ```javascript
-const stemmer = require('stemmer')
-const { PUT, TOKENIZATION_PIPELINE_STAGES } = await si({
+import stemmer from 'stemmer'
+const {
+  PUT,
+  TOKENIZATION_PIPELINE_STAGES: {
+    SPLIT,
+    LOWCASE,
+    NGRAMS,
+    STOPWORDS,
+    SCORE_TERM_FREQUENCY
+  }
+} = new SearchIndex({
   name: 'pipeline-test'
 })
 await PUT(docs, {
   tokenizer: (tokens, field, ops) =>
-    TOKENIZATION_PIPELINE_STAGES.SPLIT([tokens, field, ops])
-      .then(TOKENIZATION_PIPELINE_STAGES.SKIP)
-      .then(TOKENIZATION_PIPELINE_STAGES.LOWCASE)
-      .then(TOKENIZATION_PIPELINE_STAGES.REPLACE)
-      .then(TOKENIZATION_PIPELINE_STAGES.NGRAMS)
-      .then(TOKENIZATION_PIPELINE_STAGES.STOPWORDS)
-      // björn -> bjorn, allé -> alle, etc.
+    SPLIT([tokens, field, ops])
+      .then(SKIP)
+      .then(LOWCASE)
+      .then(REPLACE)
+      .then(NGRAMS)
+      .then(STOPWORDS)
+      // thinking -> think, thinker -> think, etc.
       .then(([tokens, field, ops]) => [
         tokens.map(stemmer),
         field,
         ops
       ])
-      .then(TOKENIZATION_PIPELINE_STAGES.SCORE_TERM_FREQUENCY)
+      .then(SCORE_TERM_FREQUENCY)
       .then(([tokens, field, ops]) => tokens)
 })
 ```
@@ -789,6 +817,14 @@ NOTE: for indices to be deleteable documents must be indexed whith
 const result = await DELETE(id1, id2, id3 /*...*/)
 ```
 
+## DELETE_RAW
+
+See also [PUT_RAW](#put_raw)
+
+```javascript
+// Deletes raw documents (but retains the indexed versions)
+const result = await DELETE_RAW(id1, id2, id3 /*...*/)
+```
 
 ## FLUSH
 ```javascript
@@ -796,10 +832,64 @@ const result = await DELETE(id1, id2, id3 /*...*/)
 await FLUSH()
 ```
 
-# Other
+
+# Data store
 
 ## INDEX
 
 `INDEX` points to the underlying instance of [`fergies-inverted-index`](https://github.com/fergiemcdowall/fergies-inverted-index).
 
 
+# UI (beta)
+
+The UI class can be used to quickly create interfaces for search
+applications. For an example see
+[here](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
+
+
+```javascript
+import { SearchIndex, UI } from 'search-index'
+
+// ...
+
+new UI({
+  index: si,
+  count: {
+    elementId: 'count'
+  },
+  hits: {
+    elementId: 'hits',
+    template: doc => `<p>${JSON.stringify(doc)}</p>`
+  },
+  facets: [
+    {
+      elementId: 'year-refiner',
+      titleTemplate: '<p class="h6">YEAR</p>',
+      field: 'year',
+      mode: 'OR'
+    },
+    {
+      elementId: 'month-refiner',
+      titleTemplate: '<p class="h6">MONTH</p>',
+      field: 'month',
+      mode: 'OR',
+      sort: (a, b) => {
+        const monthNumber = month =>
+          new Date(Date.parse(month + ' 1, 2012')).getMonth() + 1
+        return monthNumber(a.VALUE) - monthNumber(b.VALUE)
+      }
+    }
+  ],
+  paging: { elementId: 'paging', pageSize: 2 },
+  searchInput: {
+    elementId: 'searchbox',
+    suggestions: {
+      elementId: 'suggestions',
+      limit: 10,
+      threshold: 1
+    }
+  }
+})
+
+
+```

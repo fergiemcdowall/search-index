@@ -1,15 +1,20 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_BUCKET'
 
-test('create a search index', t => {
+const global = {}
+
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -81,9 +86,8 @@ test('can add data', t => {
 })
 
 test('simple _BUCKET', t => {
-  const { _BUCKET } = global[indexName]
   t.plan(1)
-  _BUCKET('make:volvo').then(res => {
+  global[indexName]._BUCKET('make:volvo').then(res => {
     t.deepEqual(res, {
       FIELD: ['make'],
       VALUE: { GTE: 'volvo', LTE: 'volvo' },
@@ -93,28 +97,28 @@ test('simple _BUCKET', t => {
 })
 
 test('simple _BUCKET with a range', t => {
-  const { _BUCKET } = global[indexName]
   t.plan(1)
-  _BUCKET({
-    FIELD: 'make',
-    VALUE: {
-      GTE: 'a',
-      LTE: 'u'
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      FIELD: ['make'],
-      VALUE: { GTE: 'a', LTE: 'u' },
-      _id: [0, 1, 2, 3, 6, 7, 9]
+  global[indexName]
+    ._BUCKET({
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
+      }
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        FIELD: ['make'],
+        VALUE: { GTE: 'a', LTE: 'u' },
+        _id: [0, 1, 2, 3, 6, 7, 9]
+      })
+    })
 })
 
 // TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET (JSON)', t => {
-  const { BUCKETS } = global[indexName]
   t.plan(1)
-  BUCKETS('make:volvo').then(res => {
+  global[indexName].BUCKETS('make:volvo').then(res => {
     t.deepEqual(res, [
       {
         FIELD: ['make'],
@@ -127,21 +131,22 @@ test('simple BUCKET (JSON)', t => {
 
 // TODO: RESULT SHOULD BE IN THE FORM { BUCKETS: []}
 test('simple BUCKET with a range (JSON)', t => {
-  const { BUCKETS } = global[indexName]
   t.plan(1)
-  BUCKETS({
-    FIELD: 'make',
-    VALUE: {
-      GTE: 'a',
-      LTE: 'u'
-    }
-  }).then(res => {
-    t.deepEqual(res, [
-      {
-        FIELD: ['make'],
-        VALUE: { GTE: 'a', LTE: 'u' },
-        _id: [0, 1, 2, 3, 6, 7, 9]
+  global[indexName]
+    .BUCKETS({
+      FIELD: 'make',
+      VALUE: {
+        GTE: 'a',
+        LTE: 'u'
       }
-    ])
-  })
+    })
+    .then(res => {
+      t.deepEqual(res, [
+        {
+          FIELD: ['make'],
+          VALUE: { GTE: 'a', LTE: 'u' },
+          _id: [0, 1, 2, 3, 6, 7, 9]
+        }
+      ])
+    })
 })

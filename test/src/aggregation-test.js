@@ -1,16 +1,19 @@
-const si = require('../../')
-const test = require('tape')
-const wbd = require('world-bank-dataset')
+import test from 'tape'
+import wbd from 'world-bank-dataset'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'aggregation-test'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some worldbank data', t => {
@@ -32,104 +35,104 @@ test('can add some worldbank data', t => {
 })
 
 test('can aggregate totalamt using underlying index', t => {
-  const { SEARCH } = global[indexName]
   t.plan(1)
-  SEARCH(['board_approval_month:october'], {
-    FACETS: [
-      {
-        FIELD: 'totalamt'
-      }
-    ]
-  }).then(result =>
-    t.deepEqual(result, {
-      RESULT: [
-        {
-          _id: '52b213b38594d8a2be17c783',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c784',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c785',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c786',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c787',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c788',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        },
-        {
-          _id: '52b213b38594d8a2be17c789',
-          _match: [
-            { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
-          ],
-          _score: 0.45
-        }
-      ],
-      RESULT_LENGTH: 7,
+  global[indexName]
+    .SEARCH(['board_approval_month:october'], {
       FACETS: [
         {
-          FIELD: 'totalamt',
-          VALUE: 0,
-          _id: ['52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787']
-        },
-        { FIELD: 'totalamt', VALUE: 6060000, _id: [] },
-        {
-          FIELD: 'totalamt',
-          VALUE: 10000000,
-          _id: ['52b213b38594d8a2be17c785']
-        },
-        {
-          FIELD: 'totalamt',
-          VALUE: 13100000,
-          _id: ['52b213b38594d8a2be17c784']
-        },
-        { FIELD: 'totalamt', VALUE: 130000000, _id: [] },
-        {
-          FIELD: 'totalamt',
-          VALUE: 160000000,
-          _id: ['52b213b38594d8a2be17c788']
-        },
-        {
-          FIELD: 'totalamt',
-          VALUE: 200000000,
-          _id: ['52b213b38594d8a2be17c789']
-        },
-        {
-          FIELD: 'totalamt',
-          VALUE: 500000000,
-          _id: ['52b213b38594d8a2be17c786']
+          FIELD: 'totalamt'
         }
       ]
     })
-  )
+    .then(result =>
+      t.deepEqual(result, {
+        RESULT: [
+          {
+            _id: '52b213b38594d8a2be17c783',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c784',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c785',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c786',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c787',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c788',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          },
+          {
+            _id: '52b213b38594d8a2be17c789',
+            _match: [
+              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+            ],
+            _score: 0.45
+          }
+        ],
+        RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
+        FACETS: [
+          {
+            FIELD: 'totalamt',
+            VALUE: 0,
+            _id: ['52b213b38594d8a2be17c783', '52b213b38594d8a2be17c787']
+          },
+          {
+            FIELD: 'totalamt',
+            VALUE: 10000000,
+            _id: ['52b213b38594d8a2be17c785']
+          },
+          {
+            FIELD: 'totalamt',
+            VALUE: 13100000,
+            _id: ['52b213b38594d8a2be17c784']
+          },
+          {
+            FIELD: 'totalamt',
+            VALUE: 160000000,
+            _id: ['52b213b38594d8a2be17c788']
+          },
+          {
+            FIELD: 'totalamt',
+            VALUE: 200000000,
+            _id: ['52b213b38594d8a2be17c789']
+          },
+          {
+            FIELD: 'totalamt',
+            VALUE: 500000000,
+            _id: ['52b213b38594d8a2be17c786']
+          }
+        ]
+      })
+    )
 })
 
 test('_BUCKETing', t => {
@@ -239,53 +242,82 @@ test('can aggregate totalamt using custom buckets', t => {
           }
         ],
         RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 },
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
@@ -310,7 +342,8 @@ test('make some _BUCKETs', t => {
         FIELD: 'totalamt',
         VALUE: { GTE: 200000000, LTE: 200000000 }
       }
-    ].map(global[indexName]._BUCKET)
+      // ].map(global[indexName]._BUCKET)
+    ].map(res => global[indexName]._BUCKET(res))
   )
   b.then(result =>
     t.deepEqual(result, [
@@ -411,7 +444,9 @@ test('can aggregate totalamt', t => {
     .DISTINCT({
       FIELD: 'impagency'
     })
-    .then(result => Promise.all(result.map(global[indexName]._BUCKET)))
+    .then(result =>
+      Promise.all(result.map(res => global[indexName]._BUCKET(res)))
+    )
     .then(result => {
       t.deepEqual(result, [
         {
@@ -569,13 +604,11 @@ test('can run a query and create facets on impagency', t => {
             VALUE: 'and',
             _id: ['52b213b38594d8a2be17c784', '52b213b38594d8a2be17c786']
           },
-          { FIELD: 'impagency', VALUE: 'communications', _id: [] },
           {
             FIELD: 'impagency',
             VALUE: 'departmant',
             _id: ['52b213b38594d8a2be17c788']
           },
-          { FIELD: 'impagency', VALUE: 'education', _id: [] },
           {
             FIELD: 'impagency',
             VALUE: 'energy',
@@ -674,54 +707,83 @@ test('can run a query and create facets on impagency', t => {
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
         ],
-        RESULT_LENGTH: 7
+        RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -779,54 +841,83 @@ test('JSON AGGREGATE', t => {
           {
             _id: '52b213b38594d8a2be17c783',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c784',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c785',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c786',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c787',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c788',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           },
           {
             _id: '52b213b38594d8a2be17c789',
             _match: [
-              { FIELD: 'board_approval_month', VALUE: 'october', SCORE: '1.00' }
+              {
+                FIELD: 'board_approval_month',
+                VALUE: 'october',
+                SCORE: '1.00'
+              }
             ],
             _score: 0.45
           }
         ],
-        RESULT_LENGTH: 7
+        RESULT_LENGTH: 7,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })

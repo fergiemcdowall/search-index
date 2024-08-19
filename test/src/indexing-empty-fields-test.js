@@ -1,6 +1,7 @@
-const si = require('../../')
-const { EntryStream } = require('level-read-stream')
-const test = require('tape')
+import test from 'tape'
+import { EntryStream } from 'level-read-stream'
+import { SearchIndex } from 'search-index'
+import { packageVersion } from '../../src/version.js'
 
 const sandbox = 'test/sandbox/'
 const dontIndexEmptyFields = sandbox + 'dontIndexEmptyFields'
@@ -12,14 +13,18 @@ const data = [
   }
 ]
 
-test('create a search index', t => {
+const global = {}
+
+test('create a search index', async t => {
   t.plan(1)
-  si({
-    name: dontIndexEmptyFields
-  }).then(db => {
-    global[dontIndexEmptyFields] = db
-    t.pass('ok')
-  })
+  try {
+    global[dontIndexEmptyFields] = await new SearchIndex({
+      name: dontIndexEmptyFields
+    })
+    t.ok(global[dontIndexEmptyFields])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -37,7 +42,8 @@ test('should give no results for AND: [""]', t => {
     .then(res => {
       t.deepEqual(res, {
         RESULT: [],
-        RESULT_LENGTH: 0
+        RESULT_LENGTH: 0,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
       })
     })
 })
@@ -46,7 +52,7 @@ test('index looks good', t => {
   const expectedIndex = [
     {
       key: ['CREATED_WITH'],
-      value: 'search-index@' + require('../../package.json').version
+      value: 'search-index@' + packageVersion
     },
     {
       key: ['DOC', '6'],
@@ -82,7 +88,9 @@ test('index looks good', t => {
   ]
   const actualIndex = []
   t.plan(1)
-  new EntryStream(global[dontIndexEmptyFields].INDEX.STORE, { lt: ['~'], ...global[dontIndexEmptyFields].INDEX.LEVEL_OPTIONS })
+  new EntryStream(global[dontIndexEmptyFields].INDEX.STORE, {
+    lt: ['~']
+  })
     .on('data', d => actualIndex.push(d))
     .on('end', () => {
       t.deepEquals(actualIndex, expectedIndex)

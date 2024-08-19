@@ -1,15 +1,22 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '514'
 
-test('create a search index', t => {
+const global = {}
+
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName, storeVectors: true }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = new SearchIndex({
+      name: indexName,
+      storeVectors: true
+    })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -35,7 +42,7 @@ test('can add data', t => {
   global[indexName].PUT(data).then(t.pass)
 })
 
-test('simple _AND with 1 clause', async t => {
+test('simple _SEARCH with 1 clause', async t => {
   t.plan(3)
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
@@ -46,7 +53,8 @@ test('simple _AND with 1 clause', async t => {
           _score: 0.69
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   )
 
@@ -59,7 +67,8 @@ test('simple _AND with 1 clause', async t => {
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
       RESULT: [],
-      RESULT_LENGTH: 0
+      RESULT_LENGTH: 0,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
     })
   )
 })

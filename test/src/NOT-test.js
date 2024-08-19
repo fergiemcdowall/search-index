@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + '_NOT'
+const global = {}
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -81,9 +84,8 @@ test('can add data', t => {
 })
 
 test('simple _NOT', t => {
-  const { _NOT } = global[indexName]
   t.plan(1)
-  _NOT('make:volvo', 'brand:tesla').then(res => {
+  global[indexName]._NOT('make:volvo', 'brand:tesla').then(res => {
     t.deepEqual(res, [
       { _id: 4, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
@@ -92,9 +94,8 @@ test('simple _NOT', t => {
 })
 
 test('simple _NOT', t => {
-  const { _NOT } = global[indexName]
   t.plan(1)
-  _NOT('brand:volvo', 'make:bmw').then(res => {
+  global[indexName]._NOT('brand:volvo', 'make:bmw').then(res => {
     t.deepEqual(res, [
       { _id: 0, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
       { _id: 2, _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }] },
@@ -105,36 +106,39 @@ test('simple _NOT', t => {
 })
 
 test('simple _NOT with OR clause', t => {
-  const { _OR, _NOT } = global[indexName]
   t.plan(1)
-  _NOT(_OR(['make:bmw', 'make:volvo']), 'brand:tesla').then(res => {
-    t.deepEqual(res, [
-      { _id: 1, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-      { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
-      { _id: 4, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
-      { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
-    ])
-  })
+  global[indexName]
+    ._NOT(global[indexName]._OR(['make:bmw', 'make:volvo']), 'brand:tesla')
+    .then(res => {
+      t.deepEqual(res, [
+        { _id: 1, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+        { _id: 9, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
+        { _id: 4, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] },
+        { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
+      ])
+    })
 })
 
-test('simple NOT', t => {
-  const { QUERY } = global[indexName]
+test('simple NOT in QUERY', t => {
   t.plan(1)
-  QUERY({
-    NOT: {
-      INCLUDE: 'make:volvo',
-      EXCLUDE: 'brand:tesla'
-    }
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        {
-          _id: 4,
-          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
-      ],
-      RESULT_LENGTH: 2
+  global[indexName]
+    .QUERY({
+      NOT: {
+        INCLUDE: 'make:volvo',
+        EXCLUDE: 'brand:tesla'
+      }
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: 4,
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          { _id: 5, _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }] }
+        ],
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+      })
+    })
 })

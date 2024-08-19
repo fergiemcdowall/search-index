@@ -1,15 +1,18 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'nulltest'
+const global = {}
 
 test('create a search index', t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add data', t => {
@@ -41,8 +44,7 @@ test('can add data', t => {
 
 test('get all docs with null values with DOCUMENT', t => {
   t.plan(1)
-  const { DOCUMENTS } = global[indexName]
-  DOCUMENTS().then(res => {
+  global[indexName].DOCUMENTS().then(res => {
     t.deepEqual(res, [
       {
         _id: '0',
@@ -68,24 +70,32 @@ test('get all docs with null values with DOCUMENT', t => {
 
 test('GET all docs with null values', t => {
   t.plan(1)
-  const { QUERY } = global[indexName]
-  QUERY({
-    AND: [
-      {
-        FIELD: 'brand'
-      }
-    ]
-  }).then(res => {
-    t.deepEqual(res, {
-      RESULT: [
-        { _id: '0', _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }] },
-        { _id: '1', _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }] },
+  global[indexName]
+    .QUERY({
+      AND: [
         {
-          _id: '2',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          FIELD: 'brand'
         }
-      ],
-      RESULT_LENGTH: 3
+      ]
     })
-  })
+    .then(res => {
+      t.deepEqual(res, {
+        RESULT: [
+          {
+            _id: '0',
+            _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }]
+          },
+          {
+            _id: '1',
+            _match: [{ FIELD: 'brand', VALUE: null, SCORE: '1.00' }]
+          },
+          {
+            _id: '2',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          }
+        ],
+        RESULT_LENGTH: 3,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+      })
+    })
 })

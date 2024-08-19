@@ -1,6 +1,7 @@
-const si = require('../../')
-const test = require('tape')
+import test from 'tape'
+import { SearchIndex } from 'search-index'
 
+const global = {}
 const sandbox = 'test/sandbox/'
 const indexName = sandbox + 'indexing-test'
 
@@ -34,12 +35,14 @@ const data = [
   }
 ]
 
-test('create a search index', t => {
+test('create a search index', async t => {
   t.plan(1)
-  si({ name: indexName }).then(db => {
-    global[indexName] = db
-    t.pass('ok')
-  })
+  try {
+    global[indexName] = await new SearchIndex({ name: indexName })
+    t.ok(global[indexName])
+  } catch (e) {
+    t.error(e)
+  }
 })
 
 test('can add some data', t => {
@@ -67,7 +70,8 @@ test('can search', t => {
             _score: 4.16
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -97,7 +101,8 @@ test('can search with QUERY', t => {
             _score: 4.16
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -118,7 +123,8 @@ test('can search in any field', t => {
           _score: 5.55
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -128,7 +134,11 @@ test('can do 0-hit', t => {
   global[indexName]
     .SEARCH(['cool', 'really', 'sdasdadsasd', 'bananas'])
     .then(res => {
-      t.deepEqual(res, { RESULT: [], RESULT_LENGTH: 0 })
+      t.deepEqual(res, {
+        RESULT: [],
+        RESULT_LENGTH: 0,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
+      })
     })
 })
 
@@ -154,7 +164,8 @@ test('can do a mixture of fielded search and any-field search', t => {
           _score: 1.39
         }
       ],
-      RESULT_LENGTH: 2
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -183,7 +194,8 @@ test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
             }
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -433,7 +445,8 @@ test('AND with embedded OR (JSON API)', t => {
             _match: [{ FIELD: 'body.text', VALUE: 'bananas', SCORE: '1.00' }]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -455,12 +468,13 @@ test('AND with embedded OR (JSON API)', t => {
             ]
           }
         ],
-        RESULT_LENGTH: 1
+        RESULT_LENGTH: 1,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
 
-// This is not currently supported, but should it be? ->
+// // This is not currently supported, but should it be? ->
 // test('DOCUMENT (JSON API)', t => {
 //   t.plan(1)
 //   global[indexName]
@@ -515,7 +529,8 @@ test('QUERY with a string and then connect documents', t => {
           }
         }
       ],
-      RESULT_LENGTH: 1
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })
   })
 })
@@ -640,7 +655,8 @@ test('_SEARCH with embedded _OR', t => {
             _score: 1.39
           }
         ],
-        RESULT_LENGTH: 2
+        RESULT_LENGTH: 2,
+        PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
       })
     })
 })
@@ -722,8 +738,7 @@ test('DICTIONARY without specified field', t => {
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
-  const { DICTIONARY } = global[indexName]
-  DICTIONARY().then(res => {
+  global[indexName].DICTIONARY().then(res => {
     t.deepEqual(res, [
       200,
       500,
@@ -747,8 +762,7 @@ test('DICTIONARY without specified field', t => {
 
 test('DOCUMENT_COUNT is 3', t => {
   t.plan(1)
-  const { DOCUMENT_COUNT } = global[indexName]
-  DOCUMENT_COUNT().then(res => {
+  global[indexName].DOCUMENT_COUNT().then(res => {
     t.equal(res, 3)
   })
 })

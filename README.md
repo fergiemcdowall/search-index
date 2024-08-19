@@ -2,7 +2,6 @@
 
 ### A network resilient, persistent full-text search library for the browser and Node.js
 
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/fergiemcdowall/search-index)
 [![npm](https://img.shields.io/npm/v/search-index.svg?style=flat-square)](https://www.npmjs.com/package/search-index)
 [![npm](https://img.shields.io/npm/dm/search-index.svg?style=flat-square)](https://npm-stat.com/charts.html?package=search-index)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENCE)
@@ -13,22 +12,22 @@
 ## Quick start
 
 ```javascript
-const si = require('search-index')
+import { SearchIndex } from 'search-index' 
 
 // initialize an index
-const { PUT, QUERY } = await si()
+const { PUT, QUERY } = new SearchIndex(options)
 
 // add documents to the index
-await PUT( /* objects */ )
+await PUT(documents)
 
 // read documents from the index
-const results = await QUERY( /* query */ )
+const results = await QUERY(query)
 ```
 
 ## Documentation
 
+* [Browser
+  demo](https://codesandbox.io/p/github/fergiemcdowall/search-index-demo/)
+  ([source code](https://github.com/fergiemcdowall/search-index-demo))
 * [API](docs/API.md)
 * [FAQ](docs/FAQ.md)
-* [Browser demo](https://fergiemcdowall.github.io/search-index/demo/index.html) ([source code](demo/))
-* [Code examples](docs/EXAMPLES.md)
-

@@ -1,4 +1,4 @@
-module.exports = ops => {
+export const DocumentProcessor = (docs, ops) => {
   const isObject = item =>
     typeof item === 'object' && item !== null && !Array.isArray(item)
 
@@ -42,7 +42,6 @@ module.exports = ops => {
       if (isString(doc)) doc = { body: doc }
 
       // Docs with no _id are auto-assigned an ID
-      // if (!doc.hasOwnProperty('_id')) doc._id = ops.idGenerator.next().value
       if (!Object.prototype.hasOwnProperty.call(doc, '_id')) {
         doc._id = ops.idGenerator.next().value
       }
@@ -58,7 +57,5 @@ module.exports = ops => {
       return resolve(acc)
     })
 
-  return {
-    processDocuments: docs => Promise.all(docs.map(processDocument))
-  }
+  return Promise.all(docs.map(processDocument))
 }
