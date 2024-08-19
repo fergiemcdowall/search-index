@@ -121,10 +121,10 @@ parameter.
 
 | Name | Type | Default | Description |
 |---|---|---|---|
+| `cacheLength` | `Number` | `1000` | The length of the LRU cache. A higher value makes the index faster but uses more memory. Cache is emptied after each write. |
 | `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 | `db` | [`abstract-level`](https://www.npmjs.com/package/abstract-level?activeTab=dependents) store | `ClassicLevel` | The underlying data store. If you want to run `search-index` on a different backend (say for example Redis or Postgres), then you can pass the appropriate [abstract-level](https://github.com/Level/abstract-level) compatible backend- for example [memory-level](https://github.com/Level/memory-level). See also the [howto in the FAQ](FAQ.md#can-i-use-another-backend-like-mysql-or-redis) |
-| `cacheLength` | `Number` | `1000` | Length of the LRU cache. A bigger number will give faster reads but use more memory. Cache is emptied after each write. |
-| `name` | `String` | `'fii'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
+| `name` | `String` | `'index'` | Name of the index- will correspond to a physical folder on a filesystem (default for node) or a namespace in a database (default for web is indexedDB) depending on which backend you use  |
 | `stopwords` | `Array` | `[]` | A list of words to be ignored when indexing and querying |
 
 
@@ -224,7 +224,7 @@ const documents = await ALL_DOCUMENTS(limit)
 ```javascript
 // Return the IDs of documents for each given token filtered by the
 // query result
-const buckets = await BUCKETS(token1, token2, ...)
+const buckets = await BUCKETS(token1, token2, /* ... */)
 ```
 
 
@@ -604,11 +604,9 @@ generated and assigned
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| `caseSensitive` | `boolean` | `false` | If true, `case` is preserved (so 'BaNaNa' != 'banana'), if `false`, text matching will not be case sensitive |
 |`ngrams`|`object`|<pre lang="javascript">{<br>  lengths: [ 1 ],<br>  join: ' ',<br>  fields: undefined<br>}</pre>| An object that describes ngrams. See [ngraminator](https://www.npmjs.com/package/ngraminator) for how to specify ngrams |
 |`replace`|`object`|`{ fields: [], values: {} }`|`fields` is an array that specifies the fields where replacements will happen, `values` is an array that specifies the tokens to be swapped in, for example: `{ values: { sheep: [ 'animal', 'livestock' ] } }`|
 |`skipField`|`Array`|`[]`|These fields will not be searchable, but they will still be stored|
-|`stopwords`| `Array` | `[]` | A list of words to be ignored when indexing |
 |`storeRawDocs`|`boolean`|`true`|Whether to store the raw document or not. In many cases it may be desirable to store it externally, or to skip storing when indexing if it is going to be updated directly later on|
 |`storeVectors`|`boolean`|`false`|When `true`, documents will be deletable and overwritable, but will take up more space on disk|
 |`tokenizationPipeline`|`Array`|<pre lang="javascript">[<br>  SPLIT,<br>  SKIP,<br>  LOWCASE,<br>  REPLACE,<br>  NGRAMS,<br>  STOPWORDS,<br>  SCORE_TERM_FREQUENCY<br>]</pre>| Tokenisation pipeline. Stages can be added and reordered|
