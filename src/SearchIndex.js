@@ -241,7 +241,7 @@ export class SearchIndex {
    * // you can them import like so:
    * await IMPORT(index)
    */
-  IMPORT = index => this.INDEX.IMPORT(index)
+  IMPORT = index => this.w.IMPORT(index)
 
   /**
    * find out when index was last updated
