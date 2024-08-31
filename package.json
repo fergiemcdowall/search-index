@@ -67,7 +67,7 @@
     "stream-browserify": "^3.0.0",
     "tape": "5.8.1",
     "tape-run": "^11.0.0",
-    "webpack": "5.93.0",
+    "webpack": "5.94.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4",
     "world-bank-dataset": "^1.0.0"
