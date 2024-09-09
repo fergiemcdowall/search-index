@@ -52,6 +52,7 @@ export class SearchIndex {
       tokenizer: defaultPipeline,
       ...ops
     }
+
     this.INDEX = new InvertedIndex({
       ...ops,
       // isLeaf must be like so and is not a user defined option
@@ -65,6 +66,10 @@ export class SearchIndex {
             item === null
         )
     })
+
+    // event bus
+    this.EVENTS = this.INDEX.EVENTS
+
     // Now that constructor is not async- not sure where this should be called...
     this._CACHE = new LRUCache({ max: ops.cacheLength })
     this.r = new Reader(ops, this._CACHE, this.INDEX)
@@ -236,7 +241,7 @@ export class SearchIndex {
    * // you can them import like so:
    * await IMPORT(index)
    */
-  IMPORT = index => this.INDEX.IMPORT(index)
+  IMPORT = index => this.w.IMPORT(index)
 
   /**
    * find out when index was last updated

@@ -64,10 +64,10 @@ const expectedIndex = [
   { key: ['IDX', 'manufacturer', ['volvo', '1.00']], value: [0, 1] }
 ]
 
-test('create a search index for exporting from', async t => {
+test('create a search index for exporting from', t => {
   t.plan(1)
   try {
-    global[exportingIndexName] = await new SearchIndex({
+    global[exportingIndexName] = new SearchIndex({
       name: exportingIndexName
     })
     t.ok(global[exportingIndexName])
@@ -86,6 +86,23 @@ test('can add data', t => {
   )
 })
 
+test('can search and get hits', t => {
+  t.plan(1)
+  global[exportingIndexName].SEARCH(['bmw']).then(res => {
+    t.deepEquals(res, {
+      RESULT: [
+        {
+          _id: 1,
+          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
+          _score: 1.1
+        }
+      ],
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+    })
+  })
+})
+
 test('can export data', t => {
   t.plan(1)
   global[exportingIndexName].EXPORT().then(index => {
@@ -96,10 +113,10 @@ test('can export data', t => {
   })
 })
 
-test('create a search index for importing to', async t => {
+test('create a search index for importing to', t => {
   t.plan(1)
   try {
-    global[importingIndexName] = await new SearchIndex({
+    global[importingIndexName] = new SearchIndex({
       name: importingIndexName
     })
     t.ok(global[importingIndexName])
@@ -124,9 +141,37 @@ test('can add data that will be overwritten', t => {
     )
 })
 
+test('search for "bmw" will _not_ give hits (but will create a cache record)', t => {
+  t.plan(1)
+  global[importingIndexName].SEARCH(['bmw']).then(res => {
+    t.deepEquals(res, {
+      RESULT: [],
+      RESULT_LENGTH: 0,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
+    })
+  })
+})
+
 test('can import data', t => {
   t.plan(1)
   global[importingIndexName].IMPORT(exportedIndex).then(() => t.ok('imported'))
+})
+
+test('search for "bmw" _will_ give hits since cache is overwritten', t => {
+  t.plan(1)
+  global[importingIndexName].SEARCH(['bmw']).then(res => {
+    t.deepEquals(res, {
+      RESULT: [
+        {
+          _id: 1,
+          _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }],
+          _score: 1.1
+        }
+      ],
+      RESULT_LENGTH: 1,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+    })
+  })
 })
 
 test('verify structure of imported data', t => {
@@ -136,5 +181,3 @@ test('verify structure of imported data', t => {
     t.deepEqual(index, expectedIndex)
   })
 })
-
-// TODO: test IMPORT
