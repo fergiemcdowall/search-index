@@ -109,6 +109,8 @@ test('SCORE TFIDF JSON all fields', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['tesla'] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
         RESULT: [
           {
             _id: '2',
@@ -180,6 +182,8 @@ test('SCORE TFIDF JSON all fields as default', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['tesla'] },
+        OPTIONS: { SCORE: {}, SORT: true },
         RESULT: [
           {
             _id: '2',
@@ -253,6 +257,8 @@ test('SCORE TFIDF JSON when using ALL_DOCUMENTS', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -387,6 +393,8 @@ test('SCORE VALUE JSON when using ALL_DOCUMENTS', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: { SCORE: { TYPE: 'VALUE' }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -522,6 +530,8 @@ test('SCORE TFIDF JSON specified fields', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['tesla'] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF', FIELDS: ['make'] }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -734,6 +744,8 @@ test('SCORE PRODUCT JSON', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['tesla'] },
+        OPTIONS: { SCORE: { TYPE: 'PRODUCT' }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -810,6 +822,11 @@ test('SCORE CONCAT JSON', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['tesla'] },
+        OPTIONS: {
+          SCORE: { TYPE: 'CONCAT' },
+          SORT: { TYPE: 'ALPHABETIC', DIRECTION: 'DESCENDING' }
+        },
         RESULT: [
           {
             _id: '2',
@@ -884,6 +901,13 @@ test('dump "price" into SCORE', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          AND: [
+            'tesla',
+            { FIELD: ['price'], VALUE: { GTE: null, LTE: undefined } }
+          ]
+        },
+        OPTIONS: { SCORE: { TYPE: 'VALUE', FIELDS: ['price'] }, SORT: true },
         RESULT: [
           {
             _id: '3',

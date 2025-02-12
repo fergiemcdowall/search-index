@@ -58,6 +58,8 @@ test('create a search-index with memory-level', async t => {
   ])
 
   t.deepEquals(res2, {
+    QUERY: { AND: ['body.text:cool', 'body.text:really', 'body.text:bananas'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [
       {
         _id: 'b',

@@ -40,6 +40,8 @@ test('set up as per issue #571', async function (t) {
       DOCUMENTS: true
     }),
     {
+      QUERY: { AND: ['beatles'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, DOCUMENTS: true },
       RESULT: [
         {
           _id: 1,

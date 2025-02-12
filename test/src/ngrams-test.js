@@ -57,6 +57,8 @@ test('create a search index with ngrams', async function (t) {
   ])
   t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
   t.deepEquals(await si.QUERY('lives there'), {
+    QUERY: 'lives there',
+    OPTIONS: {},
     RESULT: [
       {
         _id: 0,
@@ -98,6 +100,8 @@ test('create a search index with ngrams (no fields specified)', async function (
   ])
   t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
   t.deepEquals(await si.QUERY('lives there'), {
+    QUERY: 'lives there',
+    OPTIONS: {},
     RESULT: [
       {
         _id: 0,
@@ -140,6 +144,8 @@ test('create a search index with ngrams (no fields specified, custom join)', asy
   ])
   t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives$there'])
   t.deepEquals(await si.QUERY('lives$there'), {
+    QUERY: 'lives$there',
+    OPTIONS: {},
     RESULT: [
       {
         _id: 0,

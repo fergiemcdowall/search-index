@@ -104,6 +104,10 @@ test('simple aggregation', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:bmw'] },
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         BUCKETS: [
           {
             FIELD: ['make'],
@@ -156,6 +160,10 @@ test('simple AGGREGATE (JSON)', t => {
             _id: ['7', '9']
           }
         ],
+        QUERY: { AND: ['make:bmw', 'manufacturer:tesla'] },
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         RESULT: [
           {
             _id: '7',
@@ -199,6 +207,10 @@ test('simple AGGREGATE (JSON)', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['brand:tesla', 'manufacturer:tesla'] },
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         RESULT: [
           {
             _id: '7',
@@ -262,6 +274,10 @@ test('simple aggregation', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: 'make:bmw' },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         RESULT: [
           {
             _id: '1',
@@ -307,6 +323,10 @@ test('simple AGGREGATE, using DISTINCT (JSON)', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: { FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'c' } } },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }],
         RESULT: [
           {
@@ -349,6 +369,10 @@ test('simple aggregation', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: { FIELD: ['make'], VALUE: { GTE: 'bmw', LTE: 'bmw' } } },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         FACETS: [{ FIELD: 'make', VALUE: 'bmw', _id: ['1', '7', '9'] }],
         RESULT: [
           {
@@ -392,6 +416,11 @@ test('simple aggregation, return full documents', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: { FIELD: ['make'], VALUE: { GTE: 'bmw', LTE: 'bmw' } } },
+        OPTIONS: {
+          DOCUMENTS: true,
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'u' } }]
+        },
         RESULT: [
           {
             _id: '1',

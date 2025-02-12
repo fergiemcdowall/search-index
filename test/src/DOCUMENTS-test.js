@@ -81,6 +81,8 @@ test('simple SEARCH with 2 clauses and documents (JSON)', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['paul', 'and'] },
+        OPTIONS: { DOCUMENTS: true, SCORE: 'TFIDF', SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -170,6 +172,8 @@ test('access ALL_DOCUMENTS() through QUERY()', t => {
     })
     .then(documents => {
       t.deepEqual(documents, {
+        QUERY: { ALL_DOCUMENTS: 1 },
+        OPTIONS: {},
         RESULT: [
           {
             _id: data[0]._id,
@@ -190,6 +194,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1)', t => {
     })
     .then(documents => {
       t.deepEqual(documents, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: {},
         RESULT: data.map(doc => ({
           _id: doc._id,
           _doc: doc
@@ -216,6 +222,8 @@ test('access ALL_DOCUMENTS() through QUERY() unlimited (-1) with PAGE', t => {
     )
     .then(documents => {
       t.deepEqual(documents, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: { PAGE: { NUMBER: 0, SIZE: 2 } },
         RESULT: data.slice(0, 2).map(doc => ({
           _id: doc._id,
           _doc: doc
