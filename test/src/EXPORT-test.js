@@ -90,6 +90,8 @@ test('can search and get hits', t => {
   t.plan(1)
   global[exportingIndexName].SEARCH(['bmw']).then(res => {
     t.deepEquals(res, {
+      QUERY: { AND: ['bmw'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 1,
@@ -145,6 +147,8 @@ test('search for "bmw" will _not_ give hits (but will create a cache record)', t
   t.plan(1)
   global[importingIndexName].SEARCH(['bmw']).then(res => {
     t.deepEquals(res, {
+      QUERY: { AND: ['bmw'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [],
       RESULT_LENGTH: 0,
       PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
@@ -161,6 +165,8 @@ test('search for "bmw" _will_ give hits since cache is overwritten', t => {
   t.plan(1)
   global[importingIndexName].SEARCH(['bmw']).then(res => {
     t.deepEquals(res, {
+      QUERY: { AND: ['bmw'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 1,

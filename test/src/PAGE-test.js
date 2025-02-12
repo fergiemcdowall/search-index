@@ -125,6 +125,8 @@ test('get all', t => {
   t.plan(1)
   global[indexName].QUERY({ FIELD: 'make' }).then(res => {
     t.deepEqual(res, {
+      QUERY: { FIELD: ['make'], VALUE: { GTE: null, LTE: undefined } },
+      OPTIONS: {},
       RESULT: [
         { _id: 1, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
         { _id: 7, _match: [{ FIELD: 'make', VALUE: 'bmw', SCORE: '1.00' }] },
@@ -178,6 +180,8 @@ test('get page 2 (called "1": count from "0") with page size of 3 (JSON)', t => 
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { FIELD: ['make'], VALUE: { GTE: null, LTE: undefined } },
+        OPTIONS: { PAGE: { NUMBER: 1, SIZE: 3 } },
         RESULT: [
           {
             _id: 0,

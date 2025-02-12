@@ -22,6 +22,8 @@ test('set up as per issue #535', async function (t) {
   ])
 
   t.deepEquals(await si.SEARCH(['q']), {
+    QUERY: { AND: ['q'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [
       {
         _id: 'qwertyu',
@@ -36,6 +38,8 @@ test('set up as per issue #535', async function (t) {
   t.ok(await si.FLUSH())
 
   t.deepEquals(await si.SEARCH(['q']), {
+    QUERY: { AND: ['q'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [],
     RESULT_LENGTH: 0,
     PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
@@ -47,6 +51,8 @@ test('set up as per issue #535', async function (t) {
   ])
 
   t.deepEquals(await si.SEARCH(['q']), {
+    QUERY: { AND: ['q'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [
       {
         _id: 'qwertyu',

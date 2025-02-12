@@ -46,6 +46,8 @@ test('create a search index with synonyms (can be in all fields)', async functio
   t.deepEquals(await si.DICTIONARY('livestock'), [])
 
   t.deepEquals(await si.QUERY('sparrow'), {
+    QUERY: 'sparrow',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'sparrow', SCORE: '1.00' }] }
     ],
@@ -54,6 +56,8 @@ test('create a search index with synonyms (can be in all fields)', async functio
   })
 
   t.deepEquals(await si.QUERY('bird'), {
+    QUERY: 'bird',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'bird', SCORE: '1.00' }] }
     ],
@@ -85,6 +89,8 @@ test('create a search index with synonyms (specific fields)', async function (t)
   t.deepEquals(await si.DICTIONARY('myself'), ['myself'])
 
   t.deepEquals(await si.QUERY('me'), {
+    QUERY: 'me',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
       { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
@@ -94,6 +100,8 @@ test('create a search index with synonyms (specific fields)', async function (t)
   })
 
   t.deepEquals(await si.QUERY('myself'), {
+    QUERY: 'myself',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'myself', SCORE: '1.00' }] }
     ],

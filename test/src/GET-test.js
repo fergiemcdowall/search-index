@@ -266,6 +266,8 @@ test('simple QUERY using json with QUERY', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: { FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'c' } } },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '1',
@@ -304,6 +306,10 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          GET: { FIELD: ['extrafield'], VALUE: { GTE: null, LTE: undefined } }
+        },
+        OPTIONS: { SCORE: { TYPE: 'SUM' }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -427,6 +433,8 @@ test('create a search index with query and index side character normalisation (Q
       }
     ),
     {
+      QUERY: { GET: 'bør' },
+      OPTIONS: { PIPELINE: swapØtoO },
       RESULT: [
         {
           _id: ids[0],

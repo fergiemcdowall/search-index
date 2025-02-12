@@ -91,6 +91,8 @@ test('simple AND with 2 clauses', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:volvo', 'manufacturer:bmw'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 8,
@@ -144,6 +146,10 @@ test('simple AGGREGATE', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: 'brand:tesla' },
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' } }]
+        },
         BUCKETS: [
           { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
         ],
@@ -184,6 +190,12 @@ test('QUERY with FACETS', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          GET: { FIELD: ['brand'], VALUE: { GTE: 'tesla', LTE: 'tesla' } }
+        },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: null, LTE: undefined } }]
+        },
         RESULT: [
           {
             _id: 7,
@@ -224,6 +236,13 @@ test('QUERY with FACETS where query gives an empty result', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          GET: {
+            FIELD: ['brand'],
+            VALUE: { GTE: 'teslaXXXXX', LTE: 'teslaXXXXX' }
+          }
+        },
+        OPTIONS: { FACETS: [{ FIELD: 'make' }] },
         RESULT: [],
         RESULT_LENGTH: 0,
         FACETS: [],
@@ -241,6 +260,8 @@ test('simple QUERY', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: 'make:volvo' },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 4,
@@ -270,6 +291,10 @@ test('simple NOT', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          NOT: { INCLUDE: 'manufacturer:tesla', EXCLUDE: 'brand:volvo' }
+        },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 6,
@@ -300,6 +325,10 @@ test('simple NOT with DOCUMENTS', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          NOT: { INCLUDE: 'manufacturer:tesla', EXCLUDE: 'brand:volvo' }
+        },
+        OPTIONS: { DOCUMENTS: true },
         RESULT: [
           {
             _id: 6,
@@ -337,6 +366,8 @@ test('simple OR with 2 clauses', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['make:volvo', 'brand:tesla'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 4,
@@ -369,6 +400,8 @@ test('simple SEARCH', t => {
   t.plan(1)
   global[indexName].SEARCH(['tesla']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['tesla'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 2,
@@ -444,6 +477,10 @@ test('get all documents', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: null, LTE: undefined } }]
+        },
         RESULT: [
           {
             _id: 0,
@@ -581,6 +618,11 @@ test('get all documents', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { ALL_DOCUMENTS: -1 },
+        OPTIONS: {
+          FACETS: [{ FIELD: ['make'], VALUE: { GTE: null, LTE: undefined } }],
+          PAGE: { NUMBER: 0, SIZE: 3 }
+        },
         RESULT: [
           {
             _id: 0,

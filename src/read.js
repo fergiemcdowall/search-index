@@ -12,8 +12,6 @@ export class Reader {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   #parseJsonQuery = (q, options = {}) => {
-    // options.PAGE = { NUMBER: 0, SIZE: 10, ...options.PAGE }
-
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -44,9 +42,12 @@ export class Reader {
     const formatResults = result =>
       result.RESULT
         ? Object.assign(result, {
+          QUERY: { q, options },
           RESULT_LENGTH: result.RESULT.length
         })
         : {
+            QUERY: q,
+            OPTIONS: options,
             RESULT: result,
             RESULT_LENGTH: result.length
           }

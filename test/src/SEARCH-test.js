@@ -72,8 +72,10 @@ test('can add data', t => {
 
 test('simple SEARCH with 1 clause', t => {
   t.plan(1)
-  global[indexName].SEARCH(['paul']).then(res => {
+  global[indexName].SEARCH(['paul'], { FOO: 'BAR' }).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['paul'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, FOO: 'BAR' },
       RESULT: [
         {
           _id: 0,
@@ -111,6 +113,8 @@ test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
   global[indexName].SEARCH(['paul', 'musical']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['paul', 'musical'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 9,
@@ -135,6 +139,8 @@ test('simple _SEARCH with 2 clauses and documents', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['paul', 'musical'] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, DOCUMENTS: true },
         RESULT: [
           {
             _id: 9,
@@ -159,6 +165,8 @@ test('simple _SEARCH with 2 clauses', t => {
   t.plan(1)
   global[indexName].SEARCH(['paul', 'and']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['paul', 'and'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 0,
@@ -195,6 +203,8 @@ test('SEARCH in all fields', t => {
   t.plan(1)
   global[indexName].SEARCH(['1920']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['1920'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 2,

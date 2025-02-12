@@ -96,6 +96,8 @@ test('Match maKE:BMW', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['maKE:BMW'] },
+        OPTIONS: {},
         RESULT: [
           { _id: 9, _match: [{ FIELD: 'maKE', VALUE: 'BMW', SCORE: '1.00' }] }
         ],
@@ -113,6 +115,8 @@ test('Match make:bmw', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:bmw'] },
+        OPTIONS: {},
         RESULT: [],
         RESULT_LENGTH: 0,
         PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
@@ -128,6 +132,8 @@ test('Match make:BMW', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:BMW'] },
+        OPTIONS: {},
         RESULT: [
           { _id: 1, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] },
           { _id: 7, _match: [{ FIELD: 'make', VALUE: 'BMW', SCORE: '1.00' }] }
@@ -164,6 +170,8 @@ test('Match maKE:BMW', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['maKE:BMW'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 1,
@@ -189,6 +197,8 @@ test('Match make:bmw', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:bmw'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 1,
@@ -214,6 +224,8 @@ test('Match make:BMW', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['make:BMW'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 1,

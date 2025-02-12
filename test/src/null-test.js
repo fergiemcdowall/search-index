@@ -80,6 +80,10 @@ test('GET all docs with null values', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          AND: [{ FIELD: ['brand'], VALUE: { GTE: null, LTE: undefined } }]
+        },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '0',

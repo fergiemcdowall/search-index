@@ -46,6 +46,14 @@ test('can aggregate totalamt using underlying index', t => {
     })
     .then(result =>
       t.deepEqual(result, {
+        QUERY: { AND: ['board_approval_month:october'] },
+        OPTIONS: {
+          SCORE: { TYPE: 'TFIDF' },
+          SORT: true,
+          FACETS: [
+            { FIELD: ['totalamt'], VALUE: { GTE: null, LTE: undefined } }
+          ]
+        },
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c783',
@@ -224,6 +232,16 @@ test('can aggregate totalamt using custom buckets', t => {
     })
     .then(result =>
       t.deepEqual(result, {
+        QUERY: { AND: ['board_approval_month:october'] },
+        OPTIONS: {
+          SCORE: { TYPE: 'TFIDF' },
+          SORT: true,
+          BUCKETS: [
+            { FIELD: ['totalamt'], VALUE: { GTE: 0, LTE: 0 } },
+            { FIELD: ['totalamt'], VALUE: { GTE: 10000000, LTE: 10000000 } },
+            { FIELD: ['totalamt'], VALUE: { GTE: 200000000, LTE: 200000000 } }
+          ]
+        },
         BUCKETS: [
           {
             FIELD: ['totalamt'],
@@ -593,6 +611,14 @@ test('can run a query and create facets on impagency', t => {
     })
     .then(result => {
       t.deepEqual(result, {
+        QUERY: { AND: ['board_approval_month:october'] },
+        OPTIONS: {
+          SCORE: { TYPE: 'TFIDF' },
+          SORT: true,
+          FACETS: [
+            { FIELD: ['impagency'], VALUE: { GTE: null, LTE: undefined } }
+          ]
+        },
         FACETS: [
           {
             FIELD: 'impagency',
@@ -826,6 +852,12 @@ test('JSON AGGREGATE', t => {
     })
     .then(result => {
       t.deepEqual(result, {
+        QUERY: { AND: ['board_approval_month:october'] },
+        OPTIONS: {
+          SCORE: { TYPE: 'TFIDF' },
+          SORT: true,
+          BUCKETS: [{ FIELD: ['impagency'], VALUE: { GTE: 'of', LTE: 'of' } }]
+        },
         BUCKETS: [
           {
             FIELD: ['impagency'],

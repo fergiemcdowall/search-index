@@ -12,6 +12,8 @@ test('create a search index with no character normalisation', async t => {
   })
   const ids = (await si.PUT(data)).map(status => status._id)
   t.deepEquals(await si.SEARCH(['bor']), {
+    QUERY: { AND: ['bor'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [
       {
         _id: ids[1],
@@ -90,6 +92,8 @@ test('create a search index with query side character normalisation (QUERY)', as
       }
     ),
     {
+      QUERY: { AND: ['bør'] },
+      OPTIONS: { PIPELINE: swapØtoO },
       RESULT: [
         {
           _id: ids[1],
@@ -120,6 +124,12 @@ test('create a search index with query side character normalisation (SEARCH)', a
       PIPELINE: swapØtoO
     }),
     {
+      QUERY: { AND: ['bør'] },
+      OPTIONS: {
+        SCORE: { TYPE: 'TFIDF' },
+        SORT: true,
+        PIPELINE: swapØtoO
+      },
       RESULT: [
         {
           _id: ids[1],
@@ -160,6 +170,8 @@ test('create a search index with query and index side character normalisation', 
     })
   ).map(status => status._id)
   t.deepEquals(await si.SEARCH(['bor'], swapØtoO), {
+    QUERY: { AND: ['bor'] },
+    OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
     RESULT: [
       {
         _id: ids[0],

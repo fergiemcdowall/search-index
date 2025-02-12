@@ -119,6 +119,10 @@ test('query', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: 'brand:tesla' },
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' } }]
+        },
         BUCKETS: [
           { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
         ],
@@ -145,6 +149,10 @@ test('inspect cache', t => {
     '{"funcLabel":"#parseJsonQuery","params":[{"GET":"brand:tesla"},{"BUCKETS":[{"FIELD":"make","VALUE":"volvo"}]}]}'
   )
   t.deepEquals(global[indexName]._CACHE.values().next().value, {
+    QUERY: { GET: 'brand:tesla' },
+    OPTIONS: {
+      BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' } }]
+    },
     RESULT: [
       {
         _id: 7,
@@ -184,22 +192,24 @@ test('inspect cache', t => {
 
 test('run a duplicate query', t => {
   t.plan(1)
+  const query = {
+    GET: 'brand:tesla'
+  }
   global[indexName]
-    .QUERY(
-      {
-        GET: 'brand:tesla'
-      },
-      {
-        BUCKETS: [
-          {
-            FIELD: 'make',
-            VALUE: 'volvo'
-          }
-        ]
-      }
-    )
+    .QUERY(query, {
+      BUCKETS: [
+        {
+          FIELD: 'make',
+          VALUE: 'volvo'
+        }
+      ]
+    })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: query,
+        OPTIONS: {
+          BUCKETS: [{ FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' } }]
+        },
         BUCKETS: [
           { FIELD: ['make'], VALUE: { GTE: 'volvo', LTE: 'volvo' }, _id: [8] }
         ],
