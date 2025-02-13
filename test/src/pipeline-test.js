@@ -1,4 +1,4 @@
-import sw from 'stopword'
+import { eng } from 'stopword'
 import test from 'tape'
 import { SearchIndex } from 'search-index'
 import { stemmer } from 'stemmer'
@@ -34,7 +34,7 @@ test('can alter order of tokenization pipeline', async function (t) {
 
   t.deepEquals(
     await PUT(docs, {
-      stopwords: sw.eng,
+      stopwords: eng,
       ngrams: {
         fields: ['line2'],
         lengths: [1, 2]
@@ -76,7 +76,7 @@ test('can alter order of tokenization pipeline', async function (t) {
 
   t.deepEquals(
     await PUT(docs, {
-      stopwords: sw.eng,
+      stopwords: eng,
       ngrams: {
         fields: ['line2'],
         lengths: [1, 2]
@@ -201,7 +201,7 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
 
   t.deepEquals(
     await PUT(docs, {
-      stopwords: sw.eng,
+      stopwords: eng,
       tokenizer: (tokens, field, ops) =>
         SPLIT([tokens, field, ops])
           .then(LOWCASE)

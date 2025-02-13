@@ -366,12 +366,11 @@ test('create a search index with query and index side character normalisation', 
   ).map(status => status._id)
 
   t.deepEquals(await si.INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']]), ids)
-  try {
-    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']])
-    t.fail('that key should not be in the database')
-  } catch (e) {
-    t.ok(e instanceof Error)
-  }
+
+  t.deepEquals(
+    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']]),
+    undefined
+  )
 
   const swapØtoO = token =>
     new Promise(resolve => {
@@ -411,12 +410,11 @@ test('create a search index with query and index side character normalisation (Q
   ).map(status => status._id)
 
   t.deepEquals(await si.INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']]), ids)
-  try {
-    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']])
-    t.fail('that key should not be in the database')
-  } catch (e) {
-    t.ok(e instanceof Error)
-  }
+
+  t.deepEquals(
+    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']]),
+    undefined
+  )
 
   const swapØtoO = token =>
     new Promise(resolve => {
