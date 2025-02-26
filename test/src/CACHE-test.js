@@ -268,7 +268,7 @@ test('cache has stripped all duplicate entries', t => {
     '{"funcLabel":"#SEARCH","params":[["tesla"],null]}',
     '{"funcLabel":"#SEARCH","params":["tesla",null]}',
     '{"funcLabel":"#DOCUMENTS","params":[]}',
-    '{"funcLabel":"#DICTIONARY","params":[null]}',
+    '{"funcLabel":"#DICTIONARY","params":[null,null]}',
     '{"funcLabel":"#parseJsonQuery","params":["two",null]}',
     '{"funcLabel":"#parseJsonQuery","params":["one",null]}'
   ]
@@ -290,7 +290,7 @@ test('oldest cache entry is now newest', t => {
     '{"funcLabel":"#SEARCH","params":[["tesla"],null]}',
     '{"funcLabel":"#SEARCH","params":["tesla",null]}',
     '{"funcLabel":"#DOCUMENTS","params":[]}',
-    '{"funcLabel":"#DICTIONARY","params":[null]}',
+    '{"funcLabel":"#DICTIONARY","params":[null,null]}',
     '{"funcLabel":"#parseJsonQuery","params":["one",null]}'
   ]
   t.plan(keys.length)

@@ -41,9 +41,12 @@ test('create a search index with synonyms (can be in all fields)', async functio
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('animal'), ['animal'])
-  t.deepEquals(await si.DICTIONARY('herb'), ['herb'])
-  t.deepEquals(await si.DICTIONARY('livestock'), [])
+  t.deepEquals(await si.DICTIONARY('animal'), {
+    RESULT: ['animal'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('herb'), { RESULT: ['herb'], OPTIONS: {} })
+  t.deepEquals(await si.DICTIONARY('livestock'), { RESULT: [], OPTIONS: {} })
 
   t.deepEquals(await si.QUERY('sparrow'), {
     QUERY: 'sparrow',
@@ -86,7 +89,10 @@ test('create a search index with synonyms (specific fields)', async function (t)
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('myself'), ['myself'])
+  t.deepEquals(await si.DICTIONARY('myself'), {
+    RESULT: ['myself'],
+    OPTIONS: {}
+  })
 
   t.deepEquals(await si.QUERY('me'), {
     QUERY: 'me',

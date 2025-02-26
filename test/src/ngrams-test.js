@@ -43,19 +43,26 @@ test('create a search index with ngrams', async function (t) {
     ]
   )
 
-  t.deepEquals(await si.DICTIONARY('who'), [
-    'who',
-    'who lives',
-    'who lives there'
-  ])
-  t.deepEquals(await si.DICTIONARY('are'), ['are'])
-  t.deepEquals(await si.DICTIONARY('xxx'), [])
-  t.deepEquals(await si.DICTIONARY('parsley'), [
-    'parsley',
-    'parsley sage',
-    'parsley sage rosemary'
-  ])
-  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
+  t.deepEquals(await si.DICTIONARY('who'), {
+    RESULT: ['who', 'who lives', 'who lives there'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('are'), {
+    RESULT: ['are'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('xxx'), {
+    RESULT: [],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('parsley'), {
+    RESULT: ['parsley', 'parsley sage', 'parsley sage rosemary'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('lives'), {
+    RESULT: ['lives', 'lives there'],
+    OPTIONS: {}
+  })
   t.deepEquals(await si.QUERY('lives there'), {
     QUERY: 'lives there',
     OPTIONS: {},
@@ -86,19 +93,26 @@ test('create a search index with ngrams (no fields specified)', async function (
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('who'), [
-    'who',
-    'who lives',
-    'who lives there'
-  ])
-  t.deepEquals(await si.DICTIONARY('are'), ['are', 'are you', 'are you going'])
-  t.deepEquals(await si.DICTIONARY('xxx'), [])
-  t.deepEquals(await si.DICTIONARY('parsley'), [
-    'parsley',
-    'parsley sage',
-    'parsley sage rosemary'
-  ])
-  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives there'])
+  t.deepEquals(await si.DICTIONARY('who'), {
+    RESULT: ['who', 'who lives', 'who lives there'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('are'), {
+    RESULT: ['are', 'are you', 'are you going'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('xxx'), {
+    RESULT: [],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('parsley'), {
+    RESULT: ['parsley', 'parsley sage', 'parsley sage rosemary'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('lives'), {
+    RESULT: ['lives', 'lives there'],
+    OPTIONS: {}
+  })
   t.deepEquals(await si.QUERY('lives there'), {
     QUERY: 'lives there',
     OPTIONS: {},
@@ -130,19 +144,23 @@ test('create a search index with ngrams (no fields specified, custom join)', asy
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('who'), [
-    'who',
-    'who$lives',
-    'who$lives$there'
-  ])
-  t.deepEquals(await si.DICTIONARY('are'), ['are', 'are$you', 'are$you$going'])
-  t.deepEquals(await si.DICTIONARY('xxx'), [])
-  t.deepEquals(await si.DICTIONARY('parsley'), [
-    'parsley',
-    'parsley$sage',
-    'parsley$sage$rosemary'
-  ])
-  t.deepEquals(await si.DICTIONARY('lives'), ['lives', 'lives$there'])
+  t.deepEquals(await si.DICTIONARY('who'), {
+    RESULT: ['who', 'who$lives', 'who$lives$there'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('are'), {
+    RESULT: ['are', 'are$you', 'are$you$going'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('xxx'), { RESULT: [], OPTIONS: {} })
+  t.deepEquals(await si.DICTIONARY('parsley'), {
+    RESULT: ['parsley', 'parsley$sage', 'parsley$sage$rosemary'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('lives'), {
+    RESULT: ['lives', 'lives$there'],
+    OPTIONS: {}
+  })
   t.deepEquals(await si.QUERY('lives$there'), {
     QUERY: 'lives$there',
     OPTIONS: {},

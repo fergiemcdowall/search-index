@@ -691,7 +691,29 @@ test('DICTIONARY with specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY('body.text').then(res => {
     global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
-      t.deepEqual(res, [
+      t.deepEqual(res, {
+        RESULT: [
+          'bananas',
+          'cool',
+          'different',
+          'document',
+          'is',
+          'really',
+          'something',
+          'this',
+          'totally'
+        ],
+        OPTIONS: {}
+      })
+    })
+  })
+})
+
+test('DICTIONARY with specified field (JSON API)', t => {
+  t.plan(1)
+  global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
         'bananas',
         'cool',
         'different',
@@ -701,25 +723,9 @@ test('DICTIONARY with specified field', t => {
         'something',
         'this',
         'totally'
-      ])
+      ],
+      OPTIONS: {}
     })
-  })
-})
-
-test('DICTIONARY with specified field (JSON API)', t => {
-  t.plan(1)
-  global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
-    t.deepEqual(res, [
-      'bananas',
-      'cool',
-      'different',
-      'document',
-      'is',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
   })
 })
 
@@ -734,55 +740,64 @@ test('DICTIONARY with gte lte', t => {
       }
     })
     .then(res => {
-      t.deepEqual(res, ['different', 'document', 'is', 'really'])
+      t.deepEqual(res, {
+        RESULT: ['different', 'document', 'is', 'really'],
+        OPTIONS: {}
+      })
     })
 })
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.deepEqual(res, [
-      200,
-      500,
-      5000,
-      'a',
-      'bananas',
-      'cool',
-      'coolness',
-      'different',
-      'document',
-      'documentness',
-      'is',
-      'quite',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        200,
+        500,
+        5000,
+        'a',
+        'bananas',
+        'cool',
+        'coolness',
+        'different',
+        'document',
+        'documentness',
+        'is',
+        'quite',
+        'really',
+        'something',
+        'this',
+        'totally'
+      ],
+      OPTIONS: {}
+    })
   })
 })
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.deepEqual(res, [
-      200,
-      500,
-      5000,
-      'a',
-      'bananas',
-      'cool',
-      'coolness',
-      'different',
-      'document',
-      'documentness',
-      'is',
-      'quite',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        200,
+        500,
+        5000,
+        'a',
+        'bananas',
+        'cool',
+        'coolness',
+        'different',
+        'document',
+        'documentness',
+        'is',
+        'quite',
+        'really',
+        'something',
+        'this',
+        'totally'
+      ],
+      OPTIONS: {}
+    })
   })
 })
 

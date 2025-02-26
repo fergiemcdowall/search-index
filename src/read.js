@@ -164,9 +164,9 @@ export class Reader {
       .then(appendDocuments)
   }
 
-  #DICTIONARY = token =>
-    this.DISTINCT(token).then(results =>
-      Array.from(
+  #DICTIONARY = (token, options = {}) =>
+    this.DISTINCT(token).then(results => ({
+      RESULT: Array.from(
         results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
       ).sort((a, b) =>
         // This should sort an array of strings and
@@ -176,8 +176,9 @@ export class Reader {
           numeric: true,
           sensitivity: 'base'
         })
-      )
-    )
+      ),
+      OPTIONS: options
+    }))
 
   #DOCUMENTS = (...requestedDocs) =>
     requestedDocs.length
@@ -234,8 +235,8 @@ export class Reader {
       })
   }
 
-  DICTIONARY = token =>
-    this.cachePipeline(this.#DICTIONARY, '#DICTIONARY', token)
+  DICTIONARY = (token, dops) =>
+    this.cachePipeline(this.#DICTIONARY, '#DICTIONARY', token, dops)
 
   DISTINCT = (...tokens) =>
     this.#ii.DISTINCT(...tokens).then(result =>

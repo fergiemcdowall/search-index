@@ -143,7 +143,7 @@ export class SearchIndex {
    * // Return all words in the index
    * const allWords = await DICTIONARY()
    */
-  DICTIONARY = token => this.r.DICTIONARY(token)
+  DICTIONARY = (token, options) => this.r.DICTIONARY(token, options)
 
   /**
    * Returns the complete list of words stored in the index for the given Token. Returns for the whole index if no token is specified. DISTINCT differs from DICTIONARY in that it returns Tokens rather than strings. This means that one word that appears in many different fields will be returned per field in DISTINCT with the fieldname, but only once in DICTIONARY

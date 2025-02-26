@@ -57,16 +57,19 @@ test('can alter order of tokenization pipeline', async function (t) {
     await DICTIONARY({
       FIELD: 'line2'
     }),
-    [
-      'and thyme',
-      'parsley',
-      'parsley sage',
-      'rosemary',
-      'rosemary and',
-      'sage',
-      'sage rosemary',
-      'thyme'
-    ]
+    {
+      RESULT: [
+        'and thyme',
+        'parsley',
+        'parsley sage',
+        'rosemary',
+        'rosemary and',
+        'sage',
+        'sage rosemary',
+        'thyme'
+      ],
+      OPTIONS: {}
+    }
   )
 
   t.deepEquals(await DELETE(0, 1), [
@@ -101,15 +104,18 @@ test('can alter order of tokenization pipeline', async function (t) {
     await DICTIONARY({
       FIELD: 'line2'
     }),
-    [
-      'parsley',
-      'parsley sage',
-      'rosemary',
-      'rosemary thyme',
-      'sage',
-      'sage rosemary',
-      'thyme'
-    ]
+    {
+      RESULT: [
+        'parsley',
+        'parsley sage',
+        'rosemary',
+        'rosemary thyme',
+        'sage',
+        'sage rosemary',
+        'thyme'
+      ],
+      OPTIONS: {}
+    }
   )
 })
 
@@ -150,33 +156,39 @@ test('can add custom pipeline stage', async function (t) {
     await DICTIONARY({
       FIELD: 'line1'
     }),
-    [
-      '1enil',
-      'a',
-      'are',
-      'cambric',
-      'deep',
-      'fair',
-      'forest',
-      'going',
-      'green',
-      'her',
-      'in',
-      'make',
-      'me',
-      'scarborough',
-      'shirt',
-      'tell',
-      'the',
-      'to',
-      'you'
-    ]
+    {
+      RESULT: [
+        '1enil',
+        'a',
+        'are',
+        'cambric',
+        'deep',
+        'fair',
+        'forest',
+        'going',
+        'green',
+        'her',
+        'in',
+        'make',
+        'me',
+        'scarborough',
+        'shirt',
+        'tell',
+        'the',
+        'to',
+        'you'
+      ],
+      OPTIONS: {}
+    }
   )
   t.deepEquals(
     await DICTIONARY({
       FIELD: 'line2'
     }),
-    ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme']
+    {
+      RESULT: ['2enil', 'and', 'parsley', 'rosemary', 'sage', 'thyme'],
+      OPTIONS: {}
+    }
   )
 })
 
@@ -221,6 +233,18 @@ test('can add custom pipeline stage (stemmer)', async function (t) {
     await DICTIONARY({
       FIELD: 'line3'
     }),
-    ['crest', 'ground', 'live', 'on', 'rememb', 'snow', 'sparrow', 'trace']
+    {
+      RESULT: [
+        'crest',
+        'ground',
+        'live',
+        'on',
+        'rememb',
+        'snow',
+        'sparrow',
+        'trace'
+      ],
+      OPTIONS: {}
+    }
   )
 })
