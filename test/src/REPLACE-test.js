@@ -94,16 +94,32 @@ test('create a search index with synonyms (specific fields)', async function (t)
     OPTIONS: {}
   })
 
-  t.deepEquals(await si.QUERY('me'), {
-    QUERY: 'me',
-    OPTIONS: {},
-    RESULT: [
-      { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
-      { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
-    ],
-    RESULT_LENGTH: 2,
-    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
-  })
+  t.deepEquals(
+    await si.QUERY('me', {
+      SCORE: {
+        TYPE: 'TFIDF'
+      },
+      SORT: true
+    }),
+    {
+      QUERY: 'me',
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
+      RESULT: [
+        {
+          _id: 0,
+          _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }],
+          _score: 0.41
+        },
+        {
+          _id: 1,
+          _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }],
+          _score: 0.41
+        }
+      ],
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+    }
+  )
 
   t.deepEquals(await si.QUERY('myself'), {
     QUERY: 'myself',
