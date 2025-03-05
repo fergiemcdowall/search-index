@@ -69,6 +69,7 @@ export class SearchIndex {
 
     // event bus
     this.EVENTS = this.INDEX.EVENTS
+    this.EVENTS.on('ready', () => console.log('I AM READDY YO!'))
 
     // Now that constructor is not async- not sure where this should be called...
     this._CACHE = new LRUCache({ max: ops.cacheLength })

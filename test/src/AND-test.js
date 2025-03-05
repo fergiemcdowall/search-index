@@ -307,9 +307,7 @@ test('AND with no VALUE (JSON)', t => {
   })
 })
 
-// TODO: AND with nested OR
-
-test('AND with no VALUE (JSON)', t => {
+test('AND with nested OR (JSON)', t => {
   t.plan(1)
   const { QUERY } = global[indexName]
   const q = {
@@ -321,8 +319,16 @@ test('AND with no VALUE (JSON)', t => {
     ]
   }
   QUERY(q).then(res => {
+    console.log(q)
     t.deepEqual(res, {
-      QUERY: q,
+      QUERY: {
+        AND: [
+          'brand:volvo',
+          {
+            OR: ['make:bmw', 'make:volvo']
+          }
+        ]
+      },
       OPTIONS: {},
       RESULT: [
         {

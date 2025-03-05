@@ -71,7 +71,7 @@
   "dependencies": {
     "browser-level": "2.0.0",
     "classic-level": "2.0.0",
-    "fergies-inverted-index": "^13.1.2",
+    "fergies-inverted-index": "13.1.4",
     "lru-cache": "11.0.2",
     "ngraminator": "3.0.2",
     "p-queue": "8.1.0",

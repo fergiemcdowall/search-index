@@ -3,7 +3,7 @@ export class Reader {
   #docExistsSpace
   #ii
 
-  constructor(ops, cache, ii) {
+  constructor (ops, cache, ii) {
     this.#docExistsSpace = ops.docExistsSpace
     this.#ii = ii
     this.#cache = cache
@@ -22,7 +22,9 @@ export class Reader {
       if (cmd.VALUE) return this.#ii.GET(cmd)
 
       // else:
-      if (cmd.AND) return this.#ii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      if (cmd.AND) {
+        return this.#ii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      }
       if (cmd.GET) return this.#ii.GET(cmd.GET, options.PIPELINE)
       if (cmd.NOT) {
         return this.#ii.NOT(
@@ -42,9 +44,9 @@ export class Reader {
     const formatResults = result =>
       result.RESULT
         ? Object.assign(result, {
-            QUERY: { q, options },
-            RESULT_LENGTH: result.RESULT.length
-          })
+          QUERY: { q, options },
+          RESULT_LENGTH: result.RESULT.length
+        })
         : {
             QUERY: q,
             OPTIONS: options,
@@ -56,24 +58,24 @@ export class Reader {
     const appendDocuments = result =>
       options.DOCUMENTS
         ? this.DOCUMENTS(...result.RESULT.map(doc => doc._id)).then(documents =>
-            Object.assign(result, {
-              RESULT: result.RESULT.map((doc, i) =>
-                Object.assign(doc, {
-                  _doc: documents[i]
-                })
-              )
-            })
-          )
+          Object.assign(result, {
+            RESULT: result.RESULT.map((doc, i) =>
+              Object.assign(doc, {
+                _doc: documents[i]
+              })
+            )
+          })
+        )
         : result
 
     // SCORE IF SPECIFIED
     const score = result =>
       options.SCORE
         ? this.SCORE(result.RESULT, options.SCORE).then(scoredResult =>
-            Object.assign(result, {
-              RESULT: scoredResult
-            })
-          )
+          Object.assign(result, {
+            RESULT: scoredResult
+          })
+        )
         : result
 
     // SORT IF SPECIFIED
@@ -92,10 +94,10 @@ export class Reader {
     const buckets = result =>
       options.BUCKETS
         ? this.#ii.BUCKETS(...options.BUCKETS).then(bkts =>
-            Object.assign(result, {
-              BUCKETS: this.#ii.AGGREGATION_FILTER(bkts, result.RESULT, false)
-            })
-          )
+          Object.assign(result, {
+            BUCKETS: this.#ii.AGGREGATION_FILTER(bkts, result.RESULT, false)
+          })
+        )
         : result
 
     // FACETS IF SPECIFIED
@@ -148,9 +150,9 @@ export class Reader {
     const weight = result =>
       options.WEIGHT
         ? Object.assign(
-            { RESULT: this.WEIGHT(result.RESULT, options.WEIGHT) },
-            result
-          )
+          { RESULT: this.WEIGHT(result.RESULT, options.WEIGHT) },
+          result
+        )
         : result
 
     return runQuery(q)
@@ -183,10 +185,10 @@ export class Reader {
   #DOCUMENTS = (...requestedDocs) =>
     requestedDocs.length
       ? Promise.all(
-          requestedDocs.map(_id =>
-            this.#ii.STORE.get([this.#docExistsSpace, _id]).catch(e => null)
-          )
+        requestedDocs.map(_id =>
+          this.#ii.STORE.get([this.#docExistsSpace, _id]).catch(e => null)
         )
+      )
       : this.ALL_DOCUMENTS()
 
   // TODO: maybe add a default page size?
@@ -230,9 +232,9 @@ export class Reader {
     return this.#cache.has(cacheKey)
       ? Promise.resolve(this.#cache.get(cacheKey))
       : func(...params).then(res => {
-          this.#cache.set(cacheKey, res)
-          return res
-        })
+        this.#cache.set(cacheKey, res)
+        return res
+      })
   }
 
   DICTIONARY = (token, dops) =>
@@ -324,10 +326,8 @@ export class Reader {
       scoreOps
     )
 
-    const filterFields = item => {
-      if (!scoreOps.FIELDS) return true
-      return scoreOps.FIELDS.includes(item.FIELD)
-    }
+    const filterFields = item =>
+      !scoreOps.FIELDS ? true : scoreOps.FIELDS.includes(item.FIELD)
 
     const filterMatch = _match => (_match || []).filter(filterFields)
 
@@ -335,46 +335,46 @@ export class Reader {
       resolve(
         scoreOps.TYPE === 'TFIDF'
           ? this.DOCUMENT_COUNT().then(docCount =>
-              results.map((result, _, resultSet) => {
-                const idf = Math.log((docCount + 1) / resultSet.length)
-                result._score = +(result._match || [])
-                  .filter(filterFields)
-                  .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
-                  // TODO: make precision an option
-                  .toFixed(2)
-                return result
-              })
-            )
+            results.map((result, _, resultSet) => {
+              const idf = Math.log((docCount + 1) / resultSet.length)
+              result._score = +(result._match || [])
+                .filter(filterFields)
+                .reduce((acc, cur) => acc + idf * +cur.SCORE, 0)
+              // TODO: make precision an option
+                .toFixed(2)
+              return result
+            })
+          )
           : scoreOps.TYPE === 'PRODUCT'
             ? results.map(r => ({
-                ...r,
-                _score: +filterMatch(r._match)
-                  .reduce((acc, cur) => acc * +cur.SCORE, 1)
-                  .toFixed(2)
-              }))
+              ...r,
+              _score: +filterMatch(r._match)
+                .reduce((acc, cur) => acc * +cur.SCORE, 1)
+                .toFixed(2)
+            }))
             : scoreOps.TYPE === 'CONCAT'
               ? results.map(r => ({
-                  ...r,
-                  _score: filterMatch(r._match).reduce(
-                    (acc, cur) => acc + cur.SCORE,
-                    ''
-                  )
-                }))
+                ...r,
+                _score: filterMatch(r._match).reduce(
+                  (acc, cur) => acc + cur.SCORE,
+                  ''
+                )
+              }))
               : scoreOps.TYPE === 'SUM'
                 ? results.map(r => ({
-                    ...r,
-                    _score: +filterMatch(r._match)
-                      .reduce((acc, cur) => acc + +cur.SCORE, 0)
-                      .toFixed(2) // TODO: make precision an option
-                  }))
+                  ...r,
+                  _score: +filterMatch(r._match)
+                    .reduce((acc, cur) => acc + +cur.SCORE, 0)
+                    .toFixed(2) // TODO: make precision an option
+                }))
                 : scoreOps.TYPE === 'VALUE'
                   ? results.map(r => ({
-                      ...r,
-                      _score: filterMatch(r._match).reduce(
-                        (acc, cur) => acc + cur.VALUE,
-                        ''
-                      )
-                    }))
+                    ...r,
+                    _score: filterMatch(r._match).reduce(
+                      (acc, cur) => acc + cur.VALUE,
+                      ''
+                    )
+                  }))
                   : null
       )
     )
