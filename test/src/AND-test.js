@@ -319,7 +319,6 @@ test('AND with nested OR (JSON)', t => {
     ]
   }
   QUERY(q).then(res => {
-    console.log(q)
     t.deepEqual(res, {
       QUERY: {
         AND: [
