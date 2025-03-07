@@ -50,8 +50,8 @@ export class Reader {
         : {
             QUERY: q,
             OPTIONS: options,
-            RESULT: result,
-            RESULT_LENGTH: result.length
+            RESULT_LENGTH: result.length,
+            RESULT: result
           }
 
     // APPEND DOCUMENTS IF SPECIFIED
