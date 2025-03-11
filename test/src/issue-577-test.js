@@ -40,6 +40,8 @@ test('set up as per issue #577', async function (t) {
       DOCUMENTS: true
     }),
     {
+      QUERY: { AND: ['*'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, DOCUMENTS: true },
       RESULT: [
         {
           _id: 1,
@@ -81,6 +83,8 @@ test('set up as per issue #577', async function (t) {
       DOCUMENTS: true
     }),
     {
+      QUERY: { AND: ['*'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, DOCUMENTS: true },
       RESULT: [
         {
           _id: 1,

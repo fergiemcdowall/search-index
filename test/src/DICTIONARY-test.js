@@ -112,29 +112,32 @@ test('simple DICTIONARY', t => {
       FIELD: ['colour']
     })
     .then(res => {
-      t.deepEqual(res, ['blue', 'red', 'yellow'])
+      t.deepEqual(res, { RESULT: ['blue', 'red', 'yellow'], OPTIONS: {} })
     })
 })
 
 test('simple DICTIONARY- all entries', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.deepEqual(res, [
-      0,
-      9,
-      10,
-      33,
-      222,
-      1000000,
-      99999999999,
-      10000000000000,
-      'blue',
-      'bmw',
-      'red',
-      'tesla',
-      'volvo',
-      'yellow'
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        0,
+        9,
+        10,
+        33,
+        222,
+        1000000,
+        99999999999,
+        10000000000000,
+        'blue',
+        'bmw',
+        'red',
+        'tesla',
+        'volvo',
+        'yellow'
+      ],
+      OPTIONS: {}
+    })
   })
 })
 
@@ -145,7 +148,10 @@ test('simple DICTIONARY, multiple fields', t => {
       FIELD: ['colour', 'brand']
     })
     .then(res => {
-      t.deepEqual(res, ['blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow'])
+      t.deepEqual(res, {
+        RESULT: ['blue', 'bmw', 'red', 'tesla', 'volvo', 'yellow'],
+        OPTIONS: {}
+      })
     })
 })
 
@@ -159,7 +165,10 @@ test('simple DICTIONARY, multiple fields, gte', t => {
       }
     })
     .then(res => {
-      t.deepEqual(res, ['red', 'tesla', 'volvo', 'yellow'])
+      t.deepEqual(res, {
+        RESULT: ['red', 'tesla', 'volvo', 'yellow'],
+        OPTIONS: {}
+      })
     })
 })
 
@@ -174,7 +183,7 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
       }
     })
     .then(res => {
-      t.deepEqual(res, ['red', 'tesla'])
+      t.deepEqual(res, { RESULT: ['red', 'tesla'], OPTIONS: {} })
     })
 })
 
@@ -185,14 +194,14 @@ test('simple DICTIONARY (field: colour)', t => {
       FIELD: ['colour']
     })
     .then(res => {
-      t.deepEqual(res, ['blue', 'red', 'yellow'])
+      t.deepEqual(res, { RESULT: ['blue', 'red', 'yellow'], OPTIONS: {} })
     })
 })
 
 test('simple DICTIONARY (begins with "bl")', t => {
   t.plan(1)
   global[indexName].DICTIONARY('bl').then(res => {
-    t.deepEqual(res, ['blue'])
+    t.deepEqual(res, { RESULT: ['blue'], OPTIONS: {} })
   })
 })
 
@@ -200,7 +209,7 @@ test('FuzzySet test', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(dict => {
     const fs = FuzzySet()
-    dict.forEach(d => fs.add(d + ''))
+    dict.RESULT.forEach(d => fs.add(d + ''))
     t.deepEqual(fs.get('blux'), [[0.75, 'blue']])
   })
 })
@@ -216,6 +225,16 @@ test('simple DICTIONARY, multiple fields, gte + lte', t => {
       }
     })
     .then(res => {
-      t.deepEqual(res, [0, 9, 10, 33])
+      t.deepEqual(res, { RESULT: [0, 9, 10, 33], OPTIONS: {} })
     })
+})
+
+test('simple DICTIONARY, timestamped', t => {
+  t.plan(1)
+  global[indexName].DICTIONARY('yel', { timestamp: '20250217' }).then(res => {
+    t.deepEqual(res, {
+      RESULT: ['yellow'],
+      OPTIONS: { timestamp: '20250217' }
+    })
+  })
 })

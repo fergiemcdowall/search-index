@@ -1,23 +1,16 @@
 import { packageVersion } from './version.js'
 
 export const validateVersion = index => {
-  return new Promise((resolve, reject) => {
-    const key = ['CREATED_WITH']
+  const key = ['CREATED_WITH']
+  return index.STORE.get(key).then(v => {
     const version = 'search-index@' + packageVersion
-    return index.STORE.get(key)
-      .then(v =>
-        // throw a rejection if versions do not match
-        version === v
-          ? resolve()
-          : reject(
-            new Error(
-              'This index was created with ' +
-                  v +
-                  ', you are running ' +
-                  version
-            )
-          )
+    // if no created timestamp then create one (this is a new index)
+    if (typeof v === 'undefined') return index.STORE.put(key, version)
+    // throw a rejection if versions do not match
+    if (version !== v) {
+      return new Error(
+        'This index was created with ' + v + ', you are running ' + version
       )
-      .catch(e => index.STORE.put(key, version).then(resolve))
+    }
   })
 }

@@ -59,6 +59,10 @@ test('can search', t => {
     .SEARCH(['body.text:cool', 'body.text:really', 'body.text:bananas'])
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          AND: ['body.text:cool', 'body.text:really', 'body.text:bananas']
+        },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
         RESULT: [
           {
             _id: 'b',
@@ -90,6 +94,10 @@ test('can search with QUERY', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          AND: ['body.text:cool', 'body.text:really', 'body.text:bananas']
+        },
+        OPTIONS: { SCORE: 'TFIDF' },
         RESULT: [
           {
             _id: 'b',
@@ -111,6 +119,8 @@ test('can search in any field', t => {
   t.plan(1)
   global[indexName].SEARCH(['cool', 'really', 'bananas']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['cool', 'really', 'bananas'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 'b',
@@ -135,6 +145,8 @@ test('can do 0-hit', t => {
     .SEARCH(['cool', 'really', 'sdasdadsasd', 'bananas'])
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['cool', 'really', 'sdasdadsasd', 'bananas'] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
         RESULT: [],
         RESULT_LENGTH: 0,
         PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
@@ -146,6 +158,8 @@ test('can do a mixture of fielded search and any-field search', t => {
   t.plan(1)
   global[indexName].SEARCH(['title:cool', 'documentness']).then(res => {
     t.deepEqual(res, {
+      QUERY: { AND: ['title:cool', 'documentness'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 'a',
@@ -178,6 +192,8 @@ test('can _SEARCH by numeric value (and return DOCUMENT)', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: [500] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true, DOCUMENTS: true },
         RESULT: [
           {
             _id: 'b',
@@ -439,6 +455,8 @@ test('AND with embedded OR (JSON API)', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['bananas'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 'b',
@@ -459,6 +477,10 @@ test('AND with embedded OR (JSON API)', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          AND: ['bananas', { OR: ['body.text:cool', 'body.text:coolness'] }]
+        },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 'b',
@@ -514,6 +536,8 @@ test('QUERY with a string and then connect documents', t => {
   t.plan(1)
   global[indexName].QUERY('bananas', { DOCUMENTS: true }).then(res => {
     t.deepEqual(res, {
+      QUERY: 'bananas',
+      OPTIONS: { DOCUMENTS: true },
       RESULT: [
         {
           _id: 'b',
@@ -636,6 +660,8 @@ test('_SEARCH with embedded _OR', t => {
     .SEARCH([{ OR: ['bananas', 'different'] }, 'coolness'])
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: [{ OR: ['bananas', 'different'] }, 'coolness'] },
+        OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
         RESULT: [
           {
             _id: 'c',
@@ -665,7 +691,29 @@ test('DICTIONARY with specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY('body.text').then(res => {
     global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
-      t.deepEqual(res, [
+      t.deepEqual(res, {
+        RESULT: [
+          'bananas',
+          'cool',
+          'different',
+          'document',
+          'is',
+          'really',
+          'something',
+          'this',
+          'totally'
+        ],
+        OPTIONS: {}
+      })
+    })
+  })
+})
+
+test('DICTIONARY with specified field (JSON API)', t => {
+  t.plan(1)
+  global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
+    t.deepEqual(res, {
+      RESULT: [
         'bananas',
         'cool',
         'different',
@@ -675,25 +723,9 @@ test('DICTIONARY with specified field', t => {
         'something',
         'this',
         'totally'
-      ])
+      ],
+      OPTIONS: {}
     })
-  })
-})
-
-test('DICTIONARY with specified field (JSON API)', t => {
-  t.plan(1)
-  global[indexName].DICTIONARY({ FIELD: ['body.text'] }).then(res => {
-    t.deepEqual(res, [
-      'bananas',
-      'cool',
-      'different',
-      'document',
-      'is',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
   })
 })
 
@@ -708,55 +740,64 @@ test('DICTIONARY with gte lte', t => {
       }
     })
     .then(res => {
-      t.deepEqual(res, ['different', 'document', 'is', 'really'])
+      t.deepEqual(res, {
+        RESULT: ['different', 'document', 'is', 'really'],
+        OPTIONS: {}
+      })
     })
 })
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.deepEqual(res, [
-      200,
-      500,
-      5000,
-      'a',
-      'bananas',
-      'cool',
-      'coolness',
-      'different',
-      'document',
-      'documentness',
-      'is',
-      'quite',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        200,
+        500,
+        5000,
+        'a',
+        'bananas',
+        'cool',
+        'coolness',
+        'different',
+        'document',
+        'documentness',
+        'is',
+        'quite',
+        'really',
+        'something',
+        'this',
+        'totally'
+      ],
+      OPTIONS: {}
+    })
   })
 })
 
 test('DICTIONARY without specified field', t => {
   t.plan(1)
   global[indexName].DICTIONARY().then(res => {
-    t.deepEqual(res, [
-      200,
-      500,
-      5000,
-      'a',
-      'bananas',
-      'cool',
-      'coolness',
-      'different',
-      'document',
-      'documentness',
-      'is',
-      'quite',
-      'really',
-      'something',
-      'this',
-      'totally'
-    ])
+    t.deepEqual(res, {
+      RESULT: [
+        200,
+        500,
+        5000,
+        'a',
+        'bananas',
+        'cool',
+        'coolness',
+        'different',
+        'document',
+        'documentness',
+        'is',
+        'quite',
+        'really',
+        'something',
+        'this',
+        'totally'
+      ],
+      OPTIONS: {}
+    })
   })
 })
 

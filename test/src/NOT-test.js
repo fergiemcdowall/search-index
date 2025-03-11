@@ -130,6 +130,8 @@ test('simple NOT in QUERY', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { NOT: { INCLUDE: 'make:volvo', EXCLUDE: 'brand:tesla' } },
+        OPTIONS: {},
         RESULT: [
           {
             _id: 4,

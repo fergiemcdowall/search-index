@@ -136,42 +136,45 @@ test('_GET over 2 fields', t => {
       VALUE: 'volvo'
     })
     .then(res => {
-      t.deepEqual(res, [
-        {
-          _id: '4',
-          _match: [
-            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '5',
-          _match: [
-            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '8',
-          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '0',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '1',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '2',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '9',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        }
-      ])
+      t.deepEqual(
+        res.sort((a, b) => a._id.localeCompare(b._id)),
+        [
+          {
+            _id: '4',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '5',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '8',
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '0',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '1',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '2',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '9',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          }
+        ].sort((a, b) => a._id.localeCompare(b._id))
+      )
     })
 })
 
@@ -266,6 +269,8 @@ test('simple QUERY using json with QUERY', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { GET: { FIELD: ['make'], VALUE: { GTE: 'a', LTE: 'c' } } },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '1',
@@ -304,6 +309,10 @@ test('QUERY by specifying a FIELD but no VALUE', t => {
     )
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          GET: { FIELD: ['extrafield'], VALUE: { GTE: null, LTE: undefined } }
+        },
+        OPTIONS: { SCORE: { TYPE: 'SUM' }, SORT: true },
         RESULT: [
           {
             _id: '0',
@@ -360,12 +369,11 @@ test('create a search index with query and index side character normalisation', 
   ).map(status => status._id)
 
   t.deepEquals(await si.INDEX.STORE.get(['IDX', 'text', ['bor', '1.00']]), ids)
-  try {
-    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']])
-    t.fail('that key should not be in the database')
-  } catch (e) {
-    t.ok(e instanceof Error)
-  }
+
+  t.deepEquals(
+    await si.INDEX.STORE.get(['IDX', 'text', ['bør', '1.00']]),
+    undefined
+  )
 
   const swapØtoO = token =>
     new Promise(resolve => {
@@ -405,12 +413,11 @@ test('create a search index with query and index side character normalisation (Q
   ).map(status => status._id)
 
   t.deepEquals(await si.INDEX.STORE.get(['IDX', 'body', ['bor', '1.00']]), ids)
-  try {
-    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']])
-    t.fail('that key should not be in the database')
-  } catch (e) {
-    t.ok(e instanceof Error)
-  }
+
+  t.deepEquals(
+    await si.INDEX.STORE.get(['IDX', 'body', ['bør', '1.00']]),
+    undefined
+  )
 
   const swapØtoO = token =>
     new Promise(resolve => {
@@ -427,6 +434,8 @@ test('create a search index with query and index side character normalisation (Q
       }
     ),
     {
+      QUERY: { GET: 'bør' },
+      OPTIONS: { PIPELINE: swapØtoO },
       RESULT: [
         {
           _id: ids[0],

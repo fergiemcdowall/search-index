@@ -41,11 +41,16 @@ test('create a search index with synonyms (can be in all fields)', async functio
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('animal'), ['animal'])
-  t.deepEquals(await si.DICTIONARY('herb'), ['herb'])
-  t.deepEquals(await si.DICTIONARY('livestock'), [])
+  t.deepEquals(await si.DICTIONARY('animal'), {
+    RESULT: ['animal'],
+    OPTIONS: {}
+  })
+  t.deepEquals(await si.DICTIONARY('herb'), { RESULT: ['herb'], OPTIONS: {} })
+  t.deepEquals(await si.DICTIONARY('livestock'), { RESULT: [], OPTIONS: {} })
 
   t.deepEquals(await si.QUERY('sparrow'), {
+    QUERY: 'sparrow',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'sparrow', SCORE: '1.00' }] }
     ],
@@ -54,6 +59,8 @@ test('create a search index with synonyms (can be in all fields)', async functio
   })
 
   t.deepEquals(await si.QUERY('bird'), {
+    QUERY: 'bird',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line3', VALUE: 'bird', SCORE: '1.00' }] }
     ],
@@ -82,18 +89,41 @@ test('create a search index with synonyms (specific fields)', async function (t)
     { _id: 1, status: 'CREATED', operation: 'PUT' }
   ])
 
-  t.deepEquals(await si.DICTIONARY('myself'), ['myself'])
-
-  t.deepEquals(await si.QUERY('me'), {
-    RESULT: [
-      { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }] },
-      { _id: 0, _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }] }
-    ],
-    RESULT_LENGTH: 2,
-    PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+  t.deepEquals(await si.DICTIONARY('myself'), {
+    RESULT: ['myself'],
+    OPTIONS: {}
   })
 
+  t.deepEquals(
+    await si.QUERY('me', {
+      SCORE: {
+        TYPE: 'TFIDF'
+      },
+      SORT: true
+    }),
+    {
+      QUERY: 'me',
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
+      RESULT: [
+        {
+          _id: 0,
+          _match: [{ FIELD: 'line3', VALUE: 'me', SCORE: '1.00' }],
+          _score: 0.41
+        },
+        {
+          _id: 1,
+          _match: [{ FIELD: 'line1', VALUE: 'me', SCORE: '1.00' }],
+          _score: 0.41
+        }
+      ],
+      RESULT_LENGTH: 2,
+      PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
+    }
+  )
+
   t.deepEquals(await si.QUERY('myself'), {
+    QUERY: 'myself',
+    OPTIONS: {},
     RESULT: [
       { _id: 1, _match: [{ FIELD: 'line1', VALUE: 'myself', SCORE: '1.00' }] }
     ],

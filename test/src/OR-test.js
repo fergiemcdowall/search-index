@@ -158,6 +158,8 @@ test('simple _OR with 2 clauses', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['brand:volvo', 'manufacturer:tesla'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '0',
@@ -252,6 +254,10 @@ test('simple OR with 2 clauses (embedded AND) (JSON)', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          OR: [{ AND: ['brand:volvo', 'manufacturer:tesla'] }, 'make:bmw']
+        },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '2',

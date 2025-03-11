@@ -1,15 +1,11 @@
 {
   "name": "search-index",
-  "version": "5.1.3",
+  "version": "6.0.0",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
-    "elasticsearch",
-    "elastic",
-    "lunr.js",
-    "flexsearch",
-    "norch",
-    "solr"
+    "offline",
+    "front-end"
   ],
   "engines": {
     "node": ">=12"
@@ -33,7 +29,7 @@
     "lint": "standard --fix *.js test/src/* src/*",
     "prettyify": "prettier --config .prettierrc.json src/*.js test/src/*.js --write",
     "symlink-for-test": "cd node_modules && ln -sf ../../search-index && cd ..",
-    "test": "npm run format-code && npm run test-node && npm run test-browser",
+    "test": "node -v && npm run format-code && npm run test-node && npm run test-browser",
     "test-browser": "npm run symlink-for-test && npm run build && cat test/sandbox/browser-tests.js | tape-run",
     "test-node": "npm run symlink-for-test && npm run empty-sandbox && tape test/src/*-test.js",
     "toc": "doctoc docs/API.md --title '# API Documentation for search-index' && doctoc docs/FAQ.md --title '# FAQ'"
@@ -49,36 +45,36 @@
   },
   "homepage": "https://fergiemcdowall.github.io/search-index/",
   "devDependencies": {
-    "assert": "^2.0.0",
+    "assert": "2.1.0",
     "doctoc": "2.2.1",
     "fuzzyset": "1.0.5",
     "level-out": "^1.0.1",
-    "level-read-stream": "^1.1.0",
-    "memory-level": "^1.0.0",
+    "level-read-stream": "2.0.0",
+    "memory-level": "3.0.0",
     "open-cli": "8.0.0",
     "os-browserify": "^0.3.0",
     "path": "^0.12.7",
     "path-browserify": "^1.0.1",
-    "prettier": "^2.8.8",
+    "prettier": "3.5.1",
     "process": "^0.11.10",
-    "standard": "17.1.0",
+    "standard": "17.1.2",
     "stemmer": "2.0.1",
-    "stopword": "2.0.8",
-    "stream-browserify": "^3.0.0",
-    "tape": "5.8.1",
-    "tape-run": "^11.0.0",
-    "webpack": "5.93.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4",
+    "stopword": "3.1.4",
+    "stream-browserify": "3.0.0",
+    "tape": "5.9.0",
+    "tape-run": "11.0.0",
+    "webpack": "5.97.1",
+    "webpack-cli": "6.0.1",
+    "webpack-dev-server": "5.2.0",
     "world-bank-dataset": "^1.0.0"
   },
   "dependencies": {
-    "browser-level": "^1.0.1",
-    "classic-level": "^1.4.1",
-    "fergies-inverted-index": "^13.1.1",
-    "lru-cache": "11.0.0",
+    "browser-level": "2.0.0",
+    "classic-level": "2.0.0",
+    "fergies-inverted-index": "13.1.4",
+    "lru-cache": "11.0.2",
     "ngraminator": "3.0.2",
-    "p-queue": "8.0.1",
-    "term-vector": "^1.0.0"
+    "p-queue": "8.1.0",
+    "term-vector": "1.0.1"
   }
 }

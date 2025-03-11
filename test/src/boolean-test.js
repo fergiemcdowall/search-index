@@ -61,6 +61,8 @@ test('AND', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: ['sectorcode:bz', 'sectorcode:bc'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c789',
@@ -84,6 +86,8 @@ test('OR', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['sectorcode:ti', 'sectorcode:bz'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c782',
@@ -120,6 +124,8 @@ test('OR', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['sectorcode:yz', 'sectorcode:bc'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c784',
@@ -144,6 +150,8 @@ test('OR', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['sectorcode:yz', 'sectorcode:bc'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c784',
@@ -168,6 +176,8 @@ test('OR', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { OR: ['sectorcode:fh', 'sectorcode:yw', 'sectorcode:yz'] },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c784',
@@ -213,6 +223,13 @@ test('can NOT', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: {
+          NOT: {
+            INCLUDE: 'sectorcode:ti',
+            EXCLUDE: 'board_approval_month:november'
+          }
+        },
+        OPTIONS: {},
         RESULT: [
           {
             _id: '52b213b38594d8a2be17c786',

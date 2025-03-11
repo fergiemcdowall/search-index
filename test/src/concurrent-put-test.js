@@ -29,6 +29,8 @@ test('can concurrently PUT', async function (t) {
       AND: ['this']
     }),
     {
+      QUERY: { AND: ['this'] },
+      OPTIONS: {},
       RESULT: new Array(size).fill().map((item, i) => ({
         _id: i,
         _match: [{ FIELD: 'text', VALUE: 'this', SCORE: '1.00' }]

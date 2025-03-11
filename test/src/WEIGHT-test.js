@@ -104,6 +104,12 @@ test('create a search index to test WEIGHT', async function (t) {
       }
     ),
     {
+      QUERY: { AND: ['bmw'] },
+      OPTIONS: {
+        SCORE: 'TFIDF',
+        WEIGHT: [{ FIELD: 'make', WEIGHT: 2 }],
+        SORT: true
+      },
       RESULT: [
         {
           _id: 1,
@@ -152,6 +158,12 @@ test('create a search index to test WEIGHT', async function (t) {
       ]
     }),
     {
+      QUERY: { AND: ['bmw'] },
+      OPTIONS: {
+        SCORE: { TYPE: 'TFIDF' },
+        SORT: true,
+        WEIGHT: [{ FIELD: 'make', WEIGHT: 2 }]
+      },
       RESULT: [
         {
           _id: 1,
@@ -212,6 +224,12 @@ test('create a search index to test WEIGHT', async function (t) {
       }
     ),
     {
+      QUERY: { AND: ['red', { OR: ['make:bmw', 'make:volvo', 'make:tesla'] }] },
+      OPTIONS: {
+        SCORE: 'SUM',
+        WEIGHT: [{ FIELD: 'make', VALUE: 'bmw', WEIGHT: 2 }],
+        SORT: true
+      },
       RESULT: [
         {
           _id: 1,
@@ -270,6 +288,12 @@ test('create a search index to test WEIGHT', async function (t) {
       }
     ),
     {
+      QUERY: { OR: ['colour:red', 'brand:tesla'] },
+      OPTIONS: {
+        SCORE: { TYPE: 'PRODUCT' },
+        WEIGHT: [{ VALUE: 'red', WEIGHT: 3 }],
+        SORT: true
+      },
       RESULT: [
         {
           _id: 1,
@@ -330,6 +354,15 @@ test('create a search index to test WEIGHT', async function (t) {
       }
     ),
     {
+      QUERY: { OR: ['colour:red', 'brand:tesla'] },
+      OPTIONS: {
+        SCORE: { TYPE: 'PRODUCT' },
+        WEIGHT: [
+          { VALUE: 'red', WEIGHT: 3 },
+          { VALUE: 'tesla', WEIGHT: 0.2 }
+        ],
+        SORT: true
+      },
       RESULT: [
         {
           _id: 1,

@@ -12,8 +12,6 @@ export class Reader {
   // This function reads queries in a JSON format and then translates them to
   // Promises
   #parseJsonQuery = (q, options = {}) => {
-    // options.PAGE = { NUMBER: 0, SIZE: 10, ...options.PAGE }
-
     const runQuery = cmd => {
       // if string or object with only FIELD or VALUE, assume
       // that this is a GET
@@ -24,7 +22,9 @@ export class Reader {
       if (cmd.VALUE) return this.#ii.GET(cmd)
 
       // else:
-      if (cmd.AND) return this.#ii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      if (cmd.AND) {
+        return this.#ii.AND(cmd.AND.map(runQuery), options.PIPELINE)
+      }
       if (cmd.GET) return this.#ii.GET(cmd.GET, options.PIPELINE)
       if (cmd.NOT) {
         return this.#ii.NOT(
@@ -44,11 +44,14 @@ export class Reader {
     const formatResults = result =>
       result.RESULT
         ? Object.assign(result, {
+          QUERY: { q, options },
           RESULT_LENGTH: result.RESULT.length
         })
         : {
-            RESULT: result,
-            RESULT_LENGTH: result.length
+            QUERY: q,
+            OPTIONS: options,
+            RESULT_LENGTH: result.length,
+            RESULT: result
           }
 
     // APPEND DOCUMENTS IF SPECIFIED
@@ -163,9 +166,9 @@ export class Reader {
       .then(appendDocuments)
   }
 
-  #DICTIONARY = token =>
-    this.DISTINCT(token).then(results =>
-      Array.from(
+  #DICTIONARY = (token, options = {}) =>
+    this.DISTINCT(token).then(results => ({
+      RESULT: Array.from(
         results.reduce((acc, cur) => acc.add(cur.VALUE), new Set())
       ).sort((a, b) =>
         // This should sort an array of strings and
@@ -175,8 +178,9 @@ export class Reader {
           numeric: true,
           sensitivity: 'base'
         })
-      )
-    )
+      ),
+      OPTIONS: options
+    }))
 
   #DOCUMENTS = (...requestedDocs) =>
     requestedDocs.length
@@ -233,8 +237,8 @@ export class Reader {
       })
   }
 
-  DICTIONARY = token =>
-    this.cachePipeline(this.#DICTIONARY, '#DICTIONARY', token)
+  DICTIONARY = (token, dops) =>
+    this.cachePipeline(this.#DICTIONARY, '#DICTIONARY', token, dops)
 
   DISTINCT = (...tokens) =>
     this.#ii.DISTINCT(...tokens).then(result =>
@@ -322,10 +326,8 @@ export class Reader {
       scoreOps
     )
 
-    const filterFields = item => {
-      if (!scoreOps.FIELDS) return true
-      return scoreOps.FIELDS.includes(item.FIELD)
-    }
+    const filterFields = item =>
+      !scoreOps.FIELDS ? true : scoreOps.FIELDS.includes(item.FIELD)
 
     const filterMatch = _match => (_match || []).filter(filterFields)
 
@@ -406,6 +408,7 @@ export class Reader {
         }
       }
     }
+
     return results
       .sort((a, b) => {
         if (a._id < b._id) return -1

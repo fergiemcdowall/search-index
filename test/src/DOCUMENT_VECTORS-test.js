@@ -95,7 +95,7 @@ test('DOCUMENT_VECTORS()', t => {
   t.plan(1)
   global[indexName].DOCUMENT_VECTORS('3', '7', '9').then(vec => {
     t.deepEqual(vec, [
-      null,
+      undefined,
       {
         _id: '7',
         text: [
@@ -181,7 +181,7 @@ test('create a search index with storeVectors: false', t => {
 test('DOCUMENT_VECTORS()', t => {
   t.plan(1)
   global[indexName + '1'].DOCUMENT_VECTORS('3', '7', '9').then(vec => {
-    t.deepEqual(vec, [null, null, null])
+    t.deepEqual(vec, [undefined, undefined, undefined])
   })
 })
 
@@ -201,6 +201,6 @@ test('default is storeVectors: false', async t => {
 test('DOCUMENT_VECTORS()', t => {
   t.plan(1)
   global[indexName + '2'].DOCUMENT_VECTORS('3', '7', '9').then(vec => {
-    t.deepEqual(vec, [null, null, null])
+    t.deepEqual(vec, [undefined, undefined, undefined])
   })
 })

@@ -46,6 +46,8 @@ test('simple _SEARCH with 1 clause', async t => {
   t.plan(3)
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
+      QUERY: { AND: ['Zeppelin'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [
         {
           _id: 3,
@@ -66,6 +68,8 @@ test('simple _SEARCH with 1 clause', async t => {
 
   await global[indexName].SEARCH(['Zeppelin']).then(res =>
     t.deepEqual(res, {
+      QUERY: { AND: ['Zeppelin'] },
+      OPTIONS: { SCORE: { TYPE: 'TFIDF' }, SORT: true },
       RESULT: [],
       RESULT_LENGTH: 0,
       PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }

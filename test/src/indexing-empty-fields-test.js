@@ -41,6 +41,8 @@ test('should give no results for AND: [""]', t => {
     })
     .then(res => {
       t.deepEqual(res, {
+        QUERY: { AND: [''] },
+        OPTIONS: {},
         RESULT: [],
         RESULT_LENGTH: 0,
         PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 0, DOC_OFFSET: 0 }
