@@ -25,7 +25,6 @@ test('can search', t => {
   const start = Date.now()
   idx.SEARCH(['gremlins'], { DOCUMENTS: true }).then(res => {
     t.pass('Search took ' + (Date.now() - start) + 'ms')
-    // console.log(JSON.stringify(res, null, 2))
     console.log(
       JSON.stringify(
         res.RESULT.map(item => item._doc.title),
@@ -51,10 +50,44 @@ test('can IMPORT a serialized index into an empty search-index', t => {
     name: sandbox + indexName + '2',
     stopwords: eng
   })
-  t.plan(1)
+  t.plan(2)
   const moviesDump = JSON.parse(readFileSync(sandbox + indexName + '-dump'))
-  const start = Date.now()
+  let start = Date.now()
+
   idx2
     .IMPORT(moviesDump)
     .then(() => t.pass('index IMPORTed in ' + (Date.now() - start) + 'ms'))
+    .then(() => {
+      console.log('closing yo')
+      start = Date.now()
+      idx2.INDEX.STORE.close().then(() =>
+        t.pass('index closed in ' + (Date.now() - start) + 'ms')
+      )
+    })
+})
+
+test('can reopen index', t => {
+  t.plan(2)
+  let start = Date.now()
+  const idx3 = new SearchIndex({
+    name: sandbox + indexName + '2',
+    stopwords: eng
+  })
+  idx3.EVENTS.on('ready', () => {
+    t.pass('index reopened and ready in ' + (Date.now() - start) + 'ms')
+    idx3.SEARCH(['gremlins'], { DOCUMENTS: true }).then(res => {
+      t.pass(
+        'Time from reopening to getting results from new index took ' +
+          (Date.now() - start) +
+          'ms'
+      )
+      console.log(
+        JSON.stringify(
+          res.RESULT.map(item => item._doc.title),
+          null,
+          2
+        )
+      )
+    })
+  })
 })
