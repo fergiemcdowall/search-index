@@ -1,0 +1,18 @@
+import test from 'tape'
+import { SearchIndex } from 'search-index'
+import { readFileSync } from 'node:fs'
+import { eng } from 'stopword'
+const sandbox = 'test/sandbox/'
+
+const idx = await new SearchIndex({
+  name: sandbox + 'indexingStressTest',
+  stopwords: eng
+})
+
+test('can add some data', t => {
+  t.plan(1)
+  const start = Date.now()
+  idx.PUT(JSON.parse(readFileSync('test/data/movies.json'))).then(() => {
+    t.pass(Date.now() - start + 'ms')
+  })
+})

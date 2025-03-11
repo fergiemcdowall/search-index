@@ -7,7 +7,7 @@ export class Writer {
   #ops
   #queue
 
-  constructor (ops, cache, ii) {
+  constructor(ops, cache, ii) {
     this.#cache = cache
     this.#ii = ii
     this.#ops = ops
