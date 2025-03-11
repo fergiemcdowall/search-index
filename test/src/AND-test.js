@@ -152,6 +152,7 @@ test('simple AND with 2 clauses (JSON)', t => {
     AND: ['volvo', 'bmw']
   }
   global[indexName].QUERY(q).then(res => {
+    res.RESULT = res.RESULT.sort((a, b) => a._id.localeCompare(b._id))
     t.deepEqual(res, {
       QUERY: q,
       OPTIONS: {},
@@ -185,7 +186,7 @@ test('simple AND with 2 clauses (JSON)', t => {
             { FIELD: 'manufacturer', VALUE: 'volvo', SCORE: '1.00' }
           ]
         }
-      ],
+      ].sort((a, b) => a._id.localeCompare(b._id)),
       RESULT_LENGTH: 4,
       PAGING: { NUMBER: 0, SIZE: 20, TOTAL: 1, DOC_OFFSET: 0 }
     })

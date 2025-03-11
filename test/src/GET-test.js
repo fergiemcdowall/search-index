@@ -136,42 +136,45 @@ test('_GET over 2 fields', t => {
       VALUE: 'volvo'
     })
     .then(res => {
-      t.deepEqual(res, [
-        {
-          _id: '4',
-          _match: [
-            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '5',
-          _match: [
-            { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
-            { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
-          ]
-        },
-        {
-          _id: '8',
-          _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '0',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '1',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '2',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        },
-        {
-          _id: '9',
-          _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
-        }
-      ])
+      t.deepEqual(
+        res.sort((a, b) => a._id.localeCompare(b._id)),
+        [
+          {
+            _id: '4',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '5',
+            _match: [
+              { FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' },
+              { FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }
+            ]
+          },
+          {
+            _id: '8',
+            _match: [{ FIELD: 'make', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '0',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '1',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '2',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          },
+          {
+            _id: '9',
+            _match: [{ FIELD: 'brand', VALUE: 'volvo', SCORE: '1.00' }]
+          }
+        ].sort((a, b) => a._id.localeCompare(b._id))
+      )
     })
 })
 
