@@ -1,10 +1,9 @@
-const sandbox = 'test/sandbox/'
-const indexName = 'indexingStressTest'
 import test from 'tape'
-import { MemoryLevel } from 'memory-level'
 import { SearchIndex } from 'search-index'
 import { eng } from 'stopword'
 import { readFileSync, writeFileSync } from 'node:fs'
+const sandbox = 'test/sandbox/'
+const indexName = 'indexingStressTest'
 
 const idx = new SearchIndex({
   name: sandbox + indexName,
@@ -68,7 +67,7 @@ test('can IMPORT a serialized index into an empty search-index', t => {
 
 test('can reopen index', t => {
   t.plan(2)
-  let start = Date.now()
+  const start = Date.now()
   const idx3 = new SearchIndex({
     name: sandbox + indexName + '2',
     stopwords: eng
