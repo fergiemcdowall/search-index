@@ -13,16 +13,14 @@ export class Writer {
     this.#ops = ops
     this.#queue = new PQueue({ concurrency: 1 })
     // Initialize document count (async fire and forget)
-    this.#setDocCount(0)
+    this.#incrementDocCount(0)
   }
 
   // TODO: should be queued
-  #setDocCount = increment =>
-    this.#ii.STORE.get(['DOCUMENT_COUNT'])
-      .then(count =>
-        this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + (+increment || 0))
-      )
-      .catch(e => this.#ii.STORE.put(['DOCUMENT_COUNT'], 0))
+  #incrementDocCount = (increment = 0) =>
+    this.#ii.STORE.get(['DOCUMENT_COUNT']).then((count = 0) =>
+      this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + +increment)
+    )
 
   #PUT = (docs, putOptions) => {
     this.#cache.clear()
@@ -39,7 +37,9 @@ export class Writer {
           !ops.storeRawDocs
         )
           .then(() =>
-            this.#setDocCount(result.filter(r => r.status === 'CREATED').length)
+            this.#incrementDocCount(
+              result.filter(r => r.status === 'CREATED').length
+            )
           )
           .then(() => result)
       )
@@ -49,7 +49,9 @@ export class Writer {
     this.#ii.DELETE(_ids).then(result =>
       this.DELETE_RAW(..._ids)
         .then(() =>
-          this.#setDocCount(-result.filter(d => d.status === 'DELETED').length)
+          this.#incrementDocCount(
+            -result.filter(d => d.status === 'DELETED').length
+          )
         )
         .then(() => this.#cache.clear())
         .then(() => result)

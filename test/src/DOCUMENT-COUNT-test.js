@@ -92,6 +92,13 @@ test('create a search index', t => {
   }
 })
 
+test('simple DOCUMENT_COUNT on empty index', t => {
+  t.plan(1)
+  global[indexName].DOCUMENT_COUNT().then(count => {
+    t.equals(count, 0)
+  })
+})
+
 test('can add data', t => {
   t.plan(1)
   global[indexName].PUT(data.slice(0, 4)).then(res =>

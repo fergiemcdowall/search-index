@@ -261,7 +261,9 @@ export class Reader {
   DOCUMENTS = (...docs) =>
     this.cachePipeline(this.#DOCUMENTS, '#DOCUMENTS', ...docs)
 
-  DOCUMENT_COUNT = () => this.#ii.STORE.get(['DOCUMENT_COUNT'])
+  // if count is undefined return 0
+  DOCUMENT_COUNT = () =>
+    this.#ii.STORE.get(['DOCUMENT_COUNT']).then((count = 0) => count)
 
   DOCUMENT_VECTORS = (...requestedDocs) =>
     Promise.all(
