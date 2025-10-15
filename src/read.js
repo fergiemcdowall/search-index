@@ -161,9 +161,9 @@ export class Reader {
       .then(facets)
       .then(weight)
       .then(score)
+      .then(appendDocuments)
       .then(sort)
       .then(page)
-      .then(appendDocuments)
   }
 
   #DICTIONARY = (token, options = {}) =>
@@ -388,24 +388,39 @@ export class Reader {
     options = Object.assign(
       {
         DIRECTION: 'DESCENDING',
-        TYPE: 'NUMERIC'
+        TYPE: 'NUMERIC',
+        FIELD: '_score'
       },
       options || {}
     )
+    
+    // Function to get the value to sort by
+    const getSortValue = (result) => {
+      if (options.FIELD === '_score') {
+        return result._score
+      }
+      // For document fields, get the value from the document
+      return result._doc ? result._doc[options.FIELD] : result[options.FIELD]
+    }
+    
     const sortFunction = {
       NUMERIC: {
-        DESCENDING: (a, b) => +b._score - +a._score,
-        ASCENDING: (a, b) => +a._score - +b._score
+        DESCENDING: (a, b) => +getSortValue(b) - +getSortValue(a),
+        ASCENDING: (a, b) => +getSortValue(a) - +getSortValue(b)
       },
       ALPHABETIC: {
         DESCENDING: (a, b) => {
-          if (a._score < b._score) return 1
-          if (a._score > b._score) return -1
+          const aVal = getSortValue(a)
+          const bVal = getSortValue(b)
+          if (aVal < bVal) return 1
+          if (aVal > bVal) return -1
           return 0
         },
         ASCENDING: (a, b) => {
-          if (a._score < b._score) return -1
-          if (a._score > b._score) return 1
+          const aVal = getSortValue(a)
+          const bVal = getSortValue(b)
+          if (aVal < bVal) return -1
+          if (aVal > bVal) return 1
           return 0
         }
       }
