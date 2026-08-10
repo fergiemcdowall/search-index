@@ -14,7 +14,8 @@ export class Writer {
     this.#queue = new PQueue({ concurrency: 1 })
   }
 
-  // TODO: should be queued
+  // This is a read-modify-write, so every caller must run on #queue (which has
+  // a concurrency of 1) or concurrent writes will lose increments.
   // A missing or non-integer DOCUMENT_COUNT counts as 0, so any corruption of
   // this value will reset the count
   #incrementDocCount = (increment = 0) =>
@@ -59,7 +60,7 @@ export class Writer {
         .then(() => result)
     )
 
-  DELETE = (...docIds) => this.#DELETE(docIds)
+  DELETE = (...docIds) => this.#queue.add(() => this.#DELETE(docIds))
 
   DELETE_RAW = (...docIds) =>
     Promise.all(
