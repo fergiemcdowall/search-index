@@ -7,20 +7,22 @@ export class Writer {
   #ops
   #queue
 
-  constructor (ops, cache, ii) {
+  constructor(ops, cache, ii) {
     this.#cache = cache
     this.#ii = ii
     this.#ops = ops
     this.#queue = new PQueue({ concurrency: 1 })
-    // Initialize document count (async fire and forget)
-    this.#incrementDocCount(0)
   }
 
   // TODO: should be queued
+  // A missing or non-integer DOCUMENT_COUNT counts as 0, so any corruption of
+  // this value will reset the count
   #incrementDocCount = (increment = 0) =>
-    this.#ii.STORE.get(['DOCUMENT_COUNT']).then((count = 0) =>
-      this.#ii.STORE.put(['DOCUMENT_COUNT'], +count + +increment)
-    )
+    this.#ii.STORE.get(['DOCUMENT_COUNT'])
+      .catch(() => 0)
+      .then(count =>
+        this.#ii.STORE.put(['DOCUMENT_COUNT'], (+count || 0) + +increment)
+      )
 
   #PUT = (docs, putOptions) => {
     this.#cache.clear()

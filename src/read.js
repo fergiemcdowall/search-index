@@ -261,9 +261,10 @@ export class Reader {
   DOCUMENTS = (...docs) =>
     this.cachePipeline(this.#DOCUMENTS, '#DOCUMENTS', ...docs)
 
-  // if count is undefined return 0
+  // if count is missing (undefined) or was persisted as null by an older
+  // version (NaN is serialised as null by the json valueEncoding) return 0
   DOCUMENT_COUNT = () =>
-    this.#ii.STORE.get(['DOCUMENT_COUNT']).then((count = 0) => count)
+    this.#ii.STORE.get(['DOCUMENT_COUNT']).then(count => +count || 0)
 
   DOCUMENT_VECTORS = (...requestedDocs) =>
     Promise.all(
