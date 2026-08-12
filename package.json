@@ -1,6 +1,6 @@
 {
   "name": "search-index",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "A network resilient, persistent full-text search library for the browser and Node.js",
   "keywords": [
     "search",
@@ -76,5 +76,8 @@
     "ngraminator": "3.0.2",
     "p-queue": "8.1.0",
     "term-vector": "1.0.1"
+  },
+  "overrides": {
+    "electron": "43.4.0"
   }
 }
