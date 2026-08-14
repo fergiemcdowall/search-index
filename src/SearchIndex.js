@@ -74,7 +74,24 @@ export class SearchIndex {
     this._CACHE = new LRUCache({ max: ops.cacheLength })
     this.r = new Reader(ops, this._CACHE, this.INDEX)
     this.w = new Writer(ops, this._CACHE, this.INDEX)
-    validateVersion(this.INDEX)
+
+    /**
+     * Rejects if this index was created by an incompatible version of
+     * search-index. The constructor cannot be async, so this is the only way to
+     * await the check. It is also reported on the `EVENTS` bus as an `error`.
+     * @type {Promise}
+     * @example
+     * const si = new SearchIndex(options)
+     * await si.VERSION_VALIDATED
+     */
+    this.VERSION_VALIDATED = validateVersion(this.INDEX)
+    this.VERSION_VALIDATED.catch(error => {
+      // Emitting 'error' with no listener attached would throw, and a rejection
+      // thrown from a synchronous constructor cannot be caught by the caller.
+      // Anyone who wants the error unconditionally should await
+      // VERSION_VALIDATED instead.
+      if (this.EVENTS.listenerCount('error')) this.EVENTS.emit('error', error)
+    })
   }
 
   /**
