@@ -107,8 +107,8 @@ Alternatively:
 const { PUT, QUERY, /* etc */ } = new SearchIndex(options)
 ```
 
-When intantiated in a browser `search-index` will use `indexedDB`
-as a keystore by default, when intantiated in node.js it will use
+When instantiated in a browser `search-index` will use `indexedDB`
+as a keystore by default, when instantiated in node.js it will use
 `levelDB`. `search-index` can also use other keystores via the `db`
 parameter.
 
