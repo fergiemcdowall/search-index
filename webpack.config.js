@@ -73,12 +73,16 @@ export default [
     ...config,
     plugins: [
       ...config.plugins,
+      // Define only this one key. Defining the whole `process` object
+      // replaces every `process` reference in the bundle, which wipes out
+      // the `process/browser.js` shim provided above -- `process.nextTick`
+      // then minifies to `void 0` and tape's stream helpers
+      // (@ljharb/through, @ljharb/resumer) throw "is not a function",
+      // since browsers have no `setImmediate` to fall back on.
       new webpack.DefinePlugin({
-        process: {
-          env: {
-            SI_TEST_ENTRYPOINT: '"entrypoints/browserlevel.js"'
-          }
-        }
+        'process.env.SI_TEST_ENTRYPOINT': JSON.stringify(
+          'entrypoints/browserlevel.js'
+        )
       })
     ],
     // Use "mode: 'production" to keep bundle size low(ish- around 3mb)

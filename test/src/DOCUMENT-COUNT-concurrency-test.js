@@ -6,8 +6,6 @@ const indexName = sandbox + 'DOCUMENT_COUNT-concurrency'
 
 const data = [...Array(10)].map((_, n) => ({ _id: 'd' + n, body: 'document' }))
 
-console.log(data)
-
 const global = {}
 
 test('create a search index', t => {
