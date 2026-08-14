@@ -11,4 +11,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
-      - run: npm cit
+      - run: npm ci
+      # magical incantation to fix SUID sandbox helper binary issue as per
+      # https://github.com/electron/electron/issues/42510#issuecomment-2171583086
+      - run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - run: xvfb-run npm test
