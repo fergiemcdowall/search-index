@@ -2,18 +2,13 @@ name: tests
 on: [pull_request, push]
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['22.x', '24.x', '26.x']
+        node: [22, 24, 26]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Use node ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install
-        run: npm install
-      - name: Test
-        run: npm test
+          node-version: ${{ matrix.node }}
+      - run: npm cit
