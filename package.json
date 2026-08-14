@@ -48,7 +48,6 @@
     "assert": "2.1.0",
     "doctoc": "2.5.0",
     "fuzzyset": "1.0.7",
-    "level-out": "^1.0.1",
     "level-read-stream": "2.0.0",
     "memory-level": "3.1.0",
     "open-cli": "9.0.0",
